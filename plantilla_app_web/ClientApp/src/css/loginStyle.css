@@ -1,0 +1,142 @@
+﻿.form-control:focus {
+    border-color: #ffca00 !important;
+    box-shadow: 0 0 5px rgb(228, 202, 98) !important;
+}
+
+.form-control {
+    -webkit-border-radius: 12px;
+    -moz-border-radius: 12px;
+    border-radius: 12px;
+}
+
+.bg_background_blue {
+    background: transparent linear-gradient(63deg, #005CB9 0%, #00C2FF 100%) 0% 0% no-repeat padding-box;
+    opacity: 1;
+    height: 102vh;
+}
+
+.shadowIn {
+    box-shadow: inset 2px 0px 10px 3px rgba(0, 0, 0, 0.2);
+}
+
+.bg_fixed {
+    height: 100vh;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+}
+
+.bg-page {
+    background-image: url('./Imagenes/00-Fondo-20.svg');
+    background-color: whitesmoke !important;
+    background-size: cover;
+    background-position: bottom;
+    background-repeat: no-repeat;
+}
+
+.card-login {
+    background-color: white;
+    border: 1px solid #D4E7FF;
+    border-radius: 5px;
+    box-shadow: 0px 3px 6px #0000000F;
+    width: 405px;
+    height: 514px;
+    text-align: center;
+}
+
+.container-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+
+bg-body-white {
+    background-color: whitesmoke !important;
+}
+
+.blueBackground, .blueBackgroundRect {
+    background: rgb(0, 117, 196);
+    background: linear-gradient( 90deg, rgba(0, 117, 196, 1) 50%, rgba(3, 180, 255, 1) 100% );
+    color: white;
+}
+
+.blueBackground {
+    border-radius: 20px 20px 0px 0px;
+}
+
+.blueBackgroundVersion {
+    background: rgb(0, 117, 196);
+    background: linear-gradient( 90deg, rgba(0, 117, 196, 1) 50%, rgba(3, 180, 255, 1) 100% );
+    border-radius: 6px 6px 6px 6px;
+    color: white;
+}
+
+.text-name-sistema {
+    text-align: center;
+    font-family: Medium;
+    font-size: 39px;
+    letter-spacing: 0px;
+    color: #004BAC;
+    opacity: 1;
+}
+
+.text-white-h1 {
+    text-align: center;
+    font-family: Medium;
+    font-size: 54px;
+    letter-spacing: 0px;
+    color: #FFFFFF;
+    opacity: 1;
+}
+
+.text-white-h2 {
+    text-align: center;
+    font-family: Medium;
+    font-size: 31px;
+    letter-spacing: 0px;
+    color: #FFFFFF;
+    opacity: 1;
+}
+
+.text-white {
+    color: white;
+    font-weight: bold;
+}
+
+.text-right {
+    text-align: right !important;
+}
+
+.lbl-warning {
+    color: red;
+}
+
+.lbl-input {
+    padding-left: 10px;
+    font-family: Regular;
+    text-align: left;
+    letter-spacing: 0px;
+    color: #727374;
+    opacity: 1;
+}
+
+.txt-input {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 0px 6px #07FFD62B;
+    border: 1px solid #0939D033;
+    border-radius: 51px !important;
+    opacity: 1;
+    width: 282px;
+    height: 24px;
+}
+
+.link-input {
+    text-align: left !important;
+    text-transform: none !important;
+    letter-spacing: 0px !important;
+    color: #213D96 !important;
+    opacity: 1 !important;
+}

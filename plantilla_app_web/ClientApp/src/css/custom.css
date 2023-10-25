@@ -1,0 +1,297 @@
+/* Provide sufficient contrast against white background */
+
+body {
+    background-image: url('./Imagenes/fondo.png');
+    background-size: contain;
+    background-position: bottom;
+    background-repeat: repeat;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+@font-face {
+    font-family: KarbonBold;
+    src: local("Karbon Bold"), local("Karbon-Bold"), url('./fonts/karbon/Karbon-Bold.ttf');
+    font-weight: bold;
+}
+
+@font-face {
+    font-family: 'Karbon';
+    src: url('./fonts/karbon/Karbon-Regular.ttf');
+}
+
+@font-face {
+    font-family: 'Bold';
+    src: url('./fonts/karbon/Karbon-Bold.ttf');
+}
+
+@font-face {
+    font-family: 'Medium';
+    src: url('./fonts/karbon/Karbon-Medium.ttf');
+}
+
+@font-face {
+    font-family: 'Regular';
+    src: url('./fonts/karbon/Karbon-Regular.ttf');
+}
+
+@font-face {
+    font-family: 'RegularItalic';
+    src: url('./fonts/karbon/Karbon-RegularItalic.ttf');
+}
+
+.bg_smoke {
+    background-color: whitesmoke !important;
+}
+
+a {
+    color: #0366d6;
+}
+
+code {
+    color: #E01A76;
+}
+
+.nav-link.active {
+    border-bottom: 4mm ridge #E1E1E1;
+    background-color: #E1E1E1;
+}
+
+.modal-loading {
+    background-color: rgba(0, 0, 0, 0.0);
+    border-color: rgba(0, 0, 0, 0.0);
+}
+
+.spinner-border {
+    border-width: 0.35em;
+}
+
+.btn-action-table {
+    color: #fff;
+    background-color: #0590E9;
+    border-color: #0277bd;
+}
+
+    .btn-action-table:hover {
+        color: #fff;
+        background-color: #0481CF;
+        border-color: #0268A3;
+    }
+
+    .btn-action-table:first-child:active {
+        color: #fff;
+        background-color: #0599F5;
+        border-color: #0280C9;
+    }
+
+    .btn-action-table:first-child:disabled {
+        color: #fff;
+        background-color: #4BAEEC;
+        border-color: #3E95C8;
+    }
+
+.btn-guardar-cambios {
+    color: #fff;
+    background-color: #2e7d32;
+    border-color: #227D26;
+}
+
+    .btn-guardar-cambios:hover {
+        color: #fff;
+        background-color: #256328;
+        border-color: #1B631E;
+    }
+
+    .btn-guardar-cambios:first-child:active {
+        color: #fff;
+        background-color: #338A37;
+        border-color: #258A2A;
+    }
+
+    .btn-guardar-cambios:disabled {
+        color: #fff;
+        background-color: #629365;
+        border-color: #549357;
+    }
+
+.btn-ok-alert {
+    color: #fff;
+    background-color: #ffc107;
+    border-color: #FFC821;
+}
+
+    .btn-ok-alert:focus {
+        color: #fff;
+        background-color: #ffc107;
+        border-color: #FFC821;
+    }
+
+    .btn-ok-alert:hover {
+        color: #fff;
+        background-color: #E6AE07;
+        border-color: #E6B41E;
+    }
+
+    .btn-ok-alert:first-child:active {
+        color: #fff;
+        background-color: #FFC821;
+        border-color: #FFC108;
+    }
+
+    .btn-ok-alert:first-child:disabled {
+        color: #fff;
+        background-color: #FFD454;
+        border-color: #FFDB6E;
+    }
+
+.btn-cancel-alert {
+    color: #fff;
+    background-color: #FF5722;
+    border-color: #FF4108;
+}
+
+    .btn-cancel-alert:last-child:active {
+        color: #fff;
+        background-color: #E64C1E;
+        border-color: #BF3106;
+    }
+
+    .btn-cancel-alert:hover {
+        color: #fff;
+        background-color: #BF4019;
+        border-color: #E63B07;
+    }
+
+    .btn-cancel-alert:disabled {
+        color: #fff;
+        background-color: #FF906E;
+        border-color: #FF7C54;
+    }
+
+.float-right {
+    float: right !important;
+}
+
+.widthPrincipal {
+    width: 99.35%;
+}
+
+#container_main, #body_container_main {
+    overflow-y: auto;
+}
+
+#map {
+    width: 100%;
+    height: 600px;
+}
+
+/*
+    Contador de pasos en formulario
+*/
+
+.stepper-wrapper {
+    font-family: Arial;
+    margin-top: 50px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.stepper-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+}
+
+    .stepper-item::before {
+        position: absolute;
+        content: "";
+        border-bottom: 2px solid #ccc;
+        width: 100%;
+        top: 20px;
+        left: -50%;
+        z-index: 2;
+    }
+
+    .stepper-item::after {
+        position: absolute;
+        content: "";
+        border-bottom: 2px solid #ccc;
+        width: 100%;
+        top: 20px;
+        left: 50%;
+        z-index: 2;
+    }
+
+    .stepper-item .step-counter {
+        position: relative;
+        z-index: 5;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #ccc;
+        margin-bottom: 6px;
+    }
+
+    .stepper-item.active {
+        font-weight: bold;
+        text-decoration: underline solid 2px;
+        text-decoration-color: rgb(0, 117, 196);
+    }
+
+    .stepper-item.completed .step-counter {
+        background-color: rgb(0, 117, 196);
+        border: 2px solid #ffc107;
+        color: aliceblue;
+    }
+
+    .stepper-item.completed::after {
+        position: absolute;
+        content: "";
+        border: 2px solid #ffc107;
+        width: 100%;
+        top: 20px;
+        left: 50%;
+        z-index: 3;
+    }
+
+    .stepper-item:first-child::before {
+        content: none;
+    }
+
+    .stepper-item:last-child::after {
+        content: none;
+    }
+
+/* Estilos para motores Webkit y blink (Chrome, Safari, Opera... )*/
+
+#body_container_main::-webkit-scrollbar {
+    -webkit-appearance: none;
+}
+
+    #body_container_main::-webkit-scrollbar:vertical {
+        width: 10px;
+    }
+
+#body_container_main::-webkit-scrollbar-button:increment, #body_container_main::-webkit-scrollbar-button {
+    display: none;
+}
+
+#body_container_main::-webkit-scrollbar:horizontal {
+    height: 10px;
+}
+
+#body_container_main::-webkit-scrollbar-thumb {
+    background-color: #797979;
+    border-radius: 20px;
+    border: 2px solid #f1f2f3;
+}
+
+#body_container_main::-webkit-scrollbar-track {
+    border-radius: 10px;
+}
