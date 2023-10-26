@@ -91,6 +91,13 @@ namespace Infrastructure.Login {
                         //LOGUEO_DISPOSITIVO_NO_REGISTRADO = "L7";
                         //LOGUEO_EXITOSO_FUERA_HORARIO = "L8";
                     }
+                    else
+                    {
+                        if (res.codigo == "L6")
+                        {
+                            res.codigo = "001";
+                        }
+                    }
                 } else {
                     res.mensajes = new string [1];
                     res.mensajes [0] = "Datos sin respuesta";

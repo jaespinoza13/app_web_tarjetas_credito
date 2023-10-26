@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "plantilla_app_web", "plantilla_app_web\plantilla_app_web.csproj", "{83D87B58-D883-4847-BE59-3BD347BE6B60}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "app_web_tarjetas_credito", "app_web_tarjetas_credito\app_web_tarjetas_credito.csproj", "{83D87B58-D883-4847-BE59-3BD347BE6B60}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{0E3D4632-D79F-4D9D-B3CF-1E9A311E2A18}"
 EndProject

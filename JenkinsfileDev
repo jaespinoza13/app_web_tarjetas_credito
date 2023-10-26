@@ -9,11 +9,11 @@ pipeline {
     environment {
         VERSION_DESPLIEGUE  = '1.0.0'
         VERSION_PRODUCCION  = '0.0.0'
-        NOMBRE_CONTENEDOR   = 'appweb-plantilla'
-        NOMBRE_IMAGEN       = 'appweb_plantilla'
-        PUERTO              = '5225'
+        NOMBRE_CONTENEDOR   = 'appweb-tarjetas-credito'
+        NOMBRE_IMAGEN       = 'appweb_tarjetas_credito'
+        PUERTO              = '7010'
         PUERTO_CONTENEDOR   = '80'
-		RUTA_CONFIG         = '/config/AppWebPlantilla'
+		RUTA_CONFIG         = '/config/AppWebTarjetasCredito'
     }
 
     stages {

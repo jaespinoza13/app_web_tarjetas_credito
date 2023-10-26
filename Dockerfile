@@ -7,21 +7,21 @@ EXPOSE 80
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 
 WORKDIR /src
-COPY ["plantilla_app_web/plantilla_app_web.csproj", "plantilla_app_web/"]
+COPY ["app_web_tarjetas_credito/app_web_tarjetas_credito.csproj", "app_web_tarjetas_credito/"]
 COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
 COPY ["Domain/Domain.csproj", "Domain/"]
-RUN dotnet restore "plantilla_app_web/plantilla_app_web.csproj"
+RUN dotnet restore "app_web_tarjetas_credito/app_web_tarjetas_credito.csproj"
 
 COPY . .
-WORKDIR "/src/plantilla_app_web"
-RUN dotnet build "plantilla_app_web.csproj" -c Release -o /app/build
+WORKDIR "/src/app_web_tarjetas_credito"
+RUN dotnet build "app_web_tarjetas_credito.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "plantilla_app_web.csproj" -c Release -o /app/publish
+RUN dotnet publish "app_web_tarjetas_credito.csproj" -c Release -o /app/publish
 
 FROM node:18.12.1 as node-builder
 WORKDIR /node
-COPY ./plantilla_app_web/ClientApp /node
+COPY ./app_web_tarjetas_credito/ClientApp /node
 ENV NODE_ENV production
 RUN npm cache clean --force
 RUN npm install
@@ -32,4 +32,4 @@ WORKDIR /app
 RUN mkdir /app/wwwroot
 COPY --from=publish /app/publish .
 COPY --from=node-builder /node/build ./wwwroot
-ENTRYPOINT ["dotnet", "plantilla_app_web.dll"]
+ENTRYPOINT ["dotnet", "app_web_tarjetas_credito.dll"]
