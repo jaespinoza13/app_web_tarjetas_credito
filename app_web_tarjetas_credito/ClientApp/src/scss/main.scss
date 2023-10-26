@@ -408,7 +408,7 @@ input.no_valido {
 }
 
 .card {
-    border-radius: calc($border-radius - 15px);
+    border-radius: calc(10px);
     border: 1px solid $border-color;
     display: flex;
     flex-direction: column;
