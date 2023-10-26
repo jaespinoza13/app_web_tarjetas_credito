@@ -107,21 +107,26 @@ function NavMenu(props) {
     }, [props.id]);
 
     return (
-        <header id={idHeader}>
-            <Col className="widthPrincipal">
-                <Row className="blueBackgroundRect align-items-center">
-                    <Col xs={6}>
-                        <img
-                            alt="logo"
-                            src="/Imagenes/logo.png"
-                            style={{ width: 250 }}
-                        />
-                    </Col>
-                    <Col xs={6}>
-                        <h1 className="text-right">{toCapitalize(props.nombreSistema)}</h1>
-                    </Col>
-                </Row>
-            </Col>
+        <nav id={idHeader}>
+            <div className="info-sistema">
+                <img src="/Imagenes/logo.png" alt="imagen_coopmego"/>
+                    <h2>|</h2>
+                    <h2>{toCapitalize(props.nombreSistema)}</h2>
+            </div>
+            {/*<Col className="widthPrincipal">*/}
+            {/*    <Row className="blueBackgroundRect align-items-center">*/}
+            {/*        <Col xs={6}>*/}
+            {/*            <img*/}
+            {/*                alt="logo"*/}
+            {/*                src="/Imagenes/logo.png"*/}
+            {/*                style={{ width: 250 }}*/}
+            {/*            />*/}
+            {/*        </Col>*/}
+            {/*        <Col xs={6}>*/}
+            {/*            <h1 className="text-right">{toCapitalize(props.nombreSistema)}</h1>*/}
+            {/*        </Col>*/}
+            {/*    </Row>*/}
+            {/*</Col>*/}
             <Navbar className="navbar-expand-sm navbar-toggleable-sm ng-white border-bottom bg_smoke" light>
                 <NavbarBrand tag={Link} to="/"></NavbarBrand>
                 <NavbarToggler onClick={() => setCollapsed(!collapsed)} className="mr-2" />
@@ -185,7 +190,7 @@ function NavMenu(props) {
                     </Col>
                 </Row>
             </Col>
-        </header>
+        </nav>
     );
 }
 
