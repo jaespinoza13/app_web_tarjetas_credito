@@ -11,7 +11,7 @@ import VerLogsTexto from './components/Logs/VerLogTexto';
 import LogsMongo from './components/Logs/LogMongo';
 import SeguimientoTransaccion from './components/Logs/SeguimientoTran';
 import { IsNullOrWhiteSpace, validateToken } from './js/utiles';
-import './scss/main.scss'
+import './scss/main.css'
 import { desencriptar, generate, get, set } from './js/crypt';
 import { fetchMenuPrincipal } from './services/RestServices';
 import { connect, useDispatch } from 'react-redux';
