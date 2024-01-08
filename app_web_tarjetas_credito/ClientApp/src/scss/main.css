@@ -1,19 +1,19 @@
 @import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css");
 @font-face {
   font-family: "Karbon";
-  src: url("../fonts/Karbon-Regular.ttf");
+  src: url("../css/fonts/karbon/Karbon-Regular.ttf");
 }
 @font-face {
   font-family: "Karbon-Medium";
-  src: url("../fonts/Karbon-Medium.ttf");
+  src: url("../css/fonts/karbon/Karbon-Medium.ttf");
 }
 @font-face {
   font-family: "Karbon-Bold";
-  src: url("../fonts/Karbon-Bold.ttf");
+  src: url("../css/fonts/karbon/Karbon-Bold.ttf");
 }
 @font-face {
   font-family: "Karbon-Italic";
-  src: url("../fonts/Karbon-RegularItalic.ttf");
+  src: url("../css/fonts/karbon/Karbon-RegularItalic.ttf");
 }
 * {
   box-sizing: border-box;

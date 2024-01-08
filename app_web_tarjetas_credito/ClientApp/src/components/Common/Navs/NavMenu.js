@@ -67,6 +67,19 @@ function NavMenu(props) {
     const [nombreUsuario, setNombreUsuario] = useState("");
     const [url, setUrl] = useState("");
     const [idHeader, setIdHeader] = useState((!IsNullOrWhiteSpace(props.id)) ? props.id : "header_main");
+    const [isCollapsedDropdown, setCollapsedDropDown] = useState(false);
+
+    const toggleDropdownOn = () => {
+        if (isCollapsedDropdown) {
+            setCollapsedDropDown(false);
+        }
+    }
+
+    const toggleDropdownOff = () => {
+        if (!isCollapsedDropdown) {
+            setCollapsedDropDown(true);
+        }
+    }
 
     const toggle = () => setDropdownOpen(!dropdownOpen);
 
@@ -115,8 +128,8 @@ function NavMenu(props) {
             </div>
             <div class="actions">
                 <div class="profile">
-                    <button class="btn_mg btn_mg__secondary" id="profile">{nombreUsuario}</button>
-                    <div class="dropdown_mg active" id="dropdown_mg">
+                    <button class="btn_mg btn_mg__secondary" id="profile" onMouseEnter={toggleDropdownOn} onMouseLeave={toggleDropdownOff}>{nombreUsuario}</button>
+                    <div class={`dropdown_mg ${isCollapsedDropdown ? '' : 'active'}`} id="dropdown_mg">
                         <a href="#">Cambiar contraseña</a>
                         <a href="#">Preguntas de seguridad</a>
                     </div>

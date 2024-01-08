@@ -133,6 +133,7 @@ class App extends Component {
     }
 
     render() {
+        console.log(this.props.listaFuncionalidades);
         return (
             <Layout listaMenus={this.state.listaMenus} listaUrls={this.state.listUrls} >
                 <Menus

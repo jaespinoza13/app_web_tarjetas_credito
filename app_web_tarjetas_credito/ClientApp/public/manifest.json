@@ -1,6 +1,6 @@
 {
-  "short_name": "plantilla_app_web",
-  "name": "plantilla_app_web",
+  "short_name": "web_tarjetas_credito",
+  "name": "app_web_tarjetas_credito",
   "icons": [
     {
       "src": "favicon.ico",

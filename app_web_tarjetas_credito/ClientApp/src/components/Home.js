@@ -5,23 +5,36 @@ import {
 } from 'reactstrap';
 import { get } from '../js/crypt';
 
+import Sidebar from "./Common/Navs/Sidebar";
+
+
 const mapStateToProps = (state) => {
     var array = [...state.GetListaMejoras.data];
+    console.log(array);
     for (let i = 0; i < array.length; i++) {
         array[i] = get(array[i]);
     }
+
+    var funcionalidades = [...state];
+    console.log(funcionalidades);
+    //for (let funcionalidad = 0; funcionalidad < funcionalidades.length; funcionalidad++) {
+    //    funcionalidades[funcionalidad] = get(funcionalidades[funcionalidad]);
+    //}
     return {
         token: state.tokenActive.data,
         dataNombreSistema: get(state.GetParametros.data["sistema"]),
         dataVersion: get(state.GetParametros.data["version"]),
         dataFechaActualizacion: get(state.GetParametros.data["fActual"]),
-        dataListaMejoras: array
+        dataListaMejoras: array,
+        listaFuncionalidades: funcionalidades
     };
 };
 
 function Home(props) {
+    console.log(props);
     return (
         <div>
+            <Sidebar></Sidebar>
             <Container className="border-bottom text-center">
                 <h2>CoopMego - {props.dataNombreSistema}</h2>
                 <h4>
