@@ -93,6 +93,8 @@ export const getListaSeguimiento = "FETCH_GET_LISTA_SEGUIMIENTO";
 /** Operación de obtener la lista de conexiones de MongoDB */
 export const getListaConexiones = "FETCH_GET_CONEXIONES";
 
+export const getValidaciones = "GET_VALIDAR_PERSONA"
+
 /**
  * Obtener la Url de un servicio de acuerdo a su nombre de Proceso Unico
  * @author jacarrion1
@@ -172,6 +174,9 @@ export function ServiceUrl(request, params = []) {
             break;
         case setConexion:
             pathOut = 'lgs/edit/con';
+            break;
+        case getValidaciones:
+            pathOut = 'tc/validacion';
             break;
         default:
             return null;
@@ -314,7 +319,6 @@ export async function ServicioPostExecute(request, body, token, { encryptS = tru
                 },
                 body: encryptS ? JSON.stringify({ data: await encriptar(key, strBody) }) : strBody
             };
-
             const response = await fetch(ServiceUrl(request, params), requestOptions);
             if (response.ok) {
                 localStorage.setItem("Acept", ts);
@@ -403,6 +407,7 @@ function pathRewrite(path) {
         "lgs/obtener/con": '/logs/get/conexiones',
         "lgs/agregar/con": '/logs/add/conexion',
         "lgs/edit/con": '/logs/set/conexion',
+        "tc/validacion": '/tarjetacredito/validacion',
     };
     if (path) {
         var p = context[path];

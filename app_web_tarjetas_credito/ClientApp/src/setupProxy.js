@@ -26,6 +26,7 @@ const context =  [
     "/logs/get/conexiones",
     "/logs/add/conexion",
     "/logs/set/conexion",
+    "/tarjetacredito/validacion"
 ];
 
 module.exports = function(app) {

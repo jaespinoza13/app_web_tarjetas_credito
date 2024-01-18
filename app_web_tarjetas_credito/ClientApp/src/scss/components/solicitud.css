@@ -1,0 +1,21 @@
+.consulta_buro{
+    margin-top: 1.5rem;
+    display: flex;
+    width: 100%;    
+}
+
+#listado_solicitudes {
+    margin-top: 1.5rem;
+}
+
+.form_mg.form_mg__md {
+    flex: 1;
+    flex-direction: row;
+    box-sizing: border-box;
+}
+
+.form_mg__item_row {
+    flex-direction: row;
+    align-items: center;
+    width: 75%;
+}

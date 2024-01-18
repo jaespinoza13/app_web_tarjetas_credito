@@ -16,6 +16,7 @@ import { desencriptar, generate, get, set } from './js/crypt';
 import { fetchMenuPrincipal } from './services/RestServices';
 import { connect, useDispatch } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
+import Solicitud from './components/Solicitud/Solicitud';
 
 
 const mapStateToProps = (state) => {
@@ -133,9 +134,9 @@ class App extends Component {
     }
 
     render() {
-        console.log(this.props.listaFuncionalidades);
         return (
             <Layout listaMenus={this.state.listaMenus} listaUrls={this.state.listUrls} >
+                
                 <Menus
                     listaMenus={this.state.listaMenus}
                     id_perfil={this.state.idUsuario}
@@ -147,6 +148,7 @@ class App extends Component {
                     <Route exact path='/' component={!this.state.isAuthenticated ? Login : Home} />
                     <Route path='/auth' component={Login} />
                     <Route path='/logout' component={!this.state.isAuthenticated ? Login : Logout} />
+                    <Route path='/solicitud' component={!this.state.isAuthenticated ? Login : Solicitud} />
                     {this.state.listaMenus.find(x => x.url === "/logs") ?
                         <Route exact path='/logs' component={!this.state.isAuthenticated ? Login : HomeLogs} />
                         : ""}

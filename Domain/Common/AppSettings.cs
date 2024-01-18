@@ -73,5 +73,9 @@
         public int minutos_inactividad { get; set; }
         public string dominio { get; set; }
         #endregion
+        public string ws_personas { get; set; }
+        public string service_get_validaciones { get; set; }
+        public string auth_user_ws_personas { get; set; }
+        public string auth_pass_ws_personas { get; set; }
     }
 }

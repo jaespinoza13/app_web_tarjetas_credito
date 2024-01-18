@@ -15,8 +15,7 @@ const mapStateToProps = (state) => {
         array[i] = get(array[i]);
     }
 
-    var funcionalidades = [...state];
-    console.log(funcionalidades);
+    console.log(state);
     //for (let funcionalidad = 0; funcionalidad < funcionalidades.length; funcionalidad++) {
     //    funcionalidades[funcionalidad] = get(funcionalidades[funcionalidad]);
     //}
@@ -25,8 +24,7 @@ const mapStateToProps = (state) => {
         dataNombreSistema: get(state.GetParametros.data["sistema"]),
         dataVersion: get(state.GetParametros.data["version"]),
         dataFechaActualizacion: get(state.GetParametros.data["fActual"]),
-        dataListaMejoras: array,
-        listaFuncionalidades: funcionalidades
+        dataListaMejoras: array
     };
 };
 

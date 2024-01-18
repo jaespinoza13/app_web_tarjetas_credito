@@ -308,7 +308,7 @@ input::placeholder {
   font-family: "Karbon", sans-serif;
 }
 
-input:focus, select:focus {
+input:focus {
   box-shadow: 0px 0px 6px rgba(7, 255, 214, 0.168627451);
 }
 
@@ -574,28 +574,6 @@ table td:nth-child(even) {
 
 .form_mg > button.btn_mg {
   align-self: center;
-}
-
-.modal {
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgb(0, 0, 0); /* Fallback color */
-  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
-}
-
-.modal-content {
-  height: 50%;
-  display: block;
-  margin: 15% auto;
-  padding: 20px;
-  width: 80%;
-  background-color: #fefefe;
-  border-radius: 25px;
 }
 
 @keyframes ripple {

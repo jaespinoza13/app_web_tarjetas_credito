@@ -1,4 +1,4 @@
-import { ServicioGetExecute, getMenuPrincipal, getPreguntaUsuario, ServicioPostExecute, getValidarPreguntaUsuario, setResetPassword, getLogin, getLoginPerfil, getPreguntas, setPreguntas, setPassword, setPasswordPrimeraVez, getListaBases, getListaConexiones, setConexion, addConexion, getListaSeguimiento, getListaDocumentos, getListaColecciones, getDescargarLogsTexto, getLogsTexto, getContenidoLogsTexto } from './Services';
+import { ServicioGetExecute, getMenuPrincipal, getPreguntaUsuario, ServicioPostExecute, getValidarPreguntaUsuario, setResetPassword, getLogin, getLoginPerfil, getPreguntas, setPreguntas, setPassword, setPasswordPrimeraVez, getListaBases, getListaConexiones, setConexion, addConexion, getListaSeguimiento, getListaDocumentos, getListaColecciones, getDescargarLogsTexto, getLogsTexto, getContenidoLogsTexto, getValidaciones } from './Services';
 import { setAlertText, setErrorRedirigir } from "../redux/Alert/actions";
 import hex_md5 from '../js/md5';
 import { desencriptar, generate, get, set } from '../js/crypt';
@@ -748,6 +748,39 @@ export function fetchContenidoArchivoLogs(ws, archivo, desde, hasta, token, onSu
             }
         } else {
             if (dispatch) dispatch(setErrorRedirigir("/logsTexto"));
+            if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
+        }
+    });
+}
+
+/**
+ * Obtener el contenido de un archivo de Log
+ * @author retorres
+ * @version 1.0
+ * @param {string} strCedula
+ * @param {(contenido:string, nroTotalRegistros: number) => void} onSuccess
+ * @param {Function} dispatch
+ */
+export function fetchValidacionSocio(strCedula, token, onSucces, dispatch) {
+    console.log("fetchValidacionSocio");
+    if (dispatch) dispatch(setErrorRedirigir(""));
+
+    let body = {
+        str_documento: strCedula
+    };
+    ServicioPostExecute(getValidaciones, body, token, { dispatch: dispatch}).then((data) => {
+        if (data) {
+            if (data.error) {
+                if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
+            } else {
+                console.log(data);
+                if (data.str_res_codigo === "000") {
+                    onSucces(data);
+                } else {
+                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                }
+            }
+        } else {
             if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
         }
     });
