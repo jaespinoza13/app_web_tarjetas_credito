@@ -22,10 +22,10 @@ function Sidebar(props) {
                         <button className="btn_mg btn_mg__secondary" id="toggle-sidebar" onClick={toggleSideBar}>&#60;</button>
                     </div>
                     <div className="sidebar_profile">
-                        <img src="../dist/images/avatar1.png" alt=""></img>
-                        <h3>Cosme Fulanito</h3>
+                        <img src="../../" alt=""></img>
+                        <h3>Roberth Torres</h3>
                         <hr></hr>
-                        <h4>Asistente de Operaciones 2</h4>
+                        <h4>Progamador de Sistemas Informáticos</h4>
                     </div>
                 </div>
                 <div className="sidebar_menu">
