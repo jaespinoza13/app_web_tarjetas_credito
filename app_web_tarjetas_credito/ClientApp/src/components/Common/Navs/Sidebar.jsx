@@ -10,7 +10,6 @@ function Sidebar(props) {
     const [collapsed, setCollapsed] = useState(false);
     const [funcionalidades, setFuncionalidades] = useState([]);
 
-    console.log(props);
     function toggleSideBar() {
         setCollapsed(!collapsed);
     }

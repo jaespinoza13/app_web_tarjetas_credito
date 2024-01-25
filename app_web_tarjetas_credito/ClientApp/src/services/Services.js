@@ -93,7 +93,10 @@ export const getListaSeguimiento = "FETCH_GET_LISTA_SEGUIMIENTO";
 /** Operación de obtener la lista de conexiones de MongoDB */
 export const getListaConexiones = "FETCH_GET_CONEXIONES";
 
+/** Tarjetas de crédito*/
 export const getValidaciones = "GET_VALIDAR_PERSONA"
+export const getScore = "GET_SCORE"
+export const getInfoSocio = "GET_INFO_SOCIO"
 
 /**
  * Obtener la Url de un servicio de acuerdo a su nombre de Proceso Unico
@@ -177,6 +180,12 @@ export function ServiceUrl(request, params = []) {
             break;
         case getValidaciones:
             pathOut = 'tc/validacion';
+            break;
+        case getScore:
+            pathOut = 'tc/score'
+            break;
+        case getInfoSocio:
+            pathOut = 'tc/socio'
             break;
         default:
             return null;
@@ -408,6 +417,8 @@ function pathRewrite(path) {
         "lgs/agregar/con": '/logs/add/conexion',
         "lgs/edit/con": '/logs/set/conexion',
         "tc/validacion": '/tarjetacredito/validacion',
+        "tc/score": '/tarjetacredito/score',
+        "tc/socio": '/tarjetacredito/infoSocio'
     };
     if (path) {
         var p = context[path];

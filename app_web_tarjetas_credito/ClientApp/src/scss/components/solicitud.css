@@ -19,3 +19,7 @@
     align-items: center;
     width: 75%;
 }
+
+.content{
+    display:flex
+}

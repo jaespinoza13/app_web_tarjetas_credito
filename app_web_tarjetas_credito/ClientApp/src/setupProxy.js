@@ -26,7 +26,9 @@ const context =  [
     "/logs/get/conexiones",
     "/logs/add/conexion",
     "/logs/set/conexion",
-    "/tarjetacredito/validacion"
+    "/tarjetacredito/validacion",
+    "/tarjetacredito/score",
+    "/tarjetacredito/infoSocio"
 ];
 
 module.exports = function(app) {

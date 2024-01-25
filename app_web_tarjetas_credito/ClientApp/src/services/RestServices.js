@@ -1,4 +1,4 @@
-import { ServicioGetExecute, getMenuPrincipal, getPreguntaUsuario, ServicioPostExecute, getValidarPreguntaUsuario, setResetPassword, getLogin, getLoginPerfil, getPreguntas, setPreguntas, setPassword, setPasswordPrimeraVez, getListaBases, getListaConexiones, setConexion, addConexion, getListaSeguimiento, getListaDocumentos, getListaColecciones, getDescargarLogsTexto, getLogsTexto, getContenidoLogsTexto, getValidaciones } from './Services';
+import { ServicioGetExecute, getMenuPrincipal, getPreguntaUsuario, ServicioPostExecute, getValidarPreguntaUsuario, setResetPassword, getLogin, getLoginPerfil, getPreguntas, setPreguntas, setPassword, setPasswordPrimeraVez, getListaBases, getListaConexiones, setConexion, addConexion, getListaSeguimiento, getListaDocumentos, getListaColecciones, getDescargarLogsTexto, getLogsTexto, getContenidoLogsTexto, getValidaciones, getScore, getInfoSocio } from './Services';
 import { setAlertText, setErrorRedirigir } from "../redux/Alert/actions";
 import hex_md5 from '../js/md5';
 import { desencriptar, generate, get, set } from '../js/crypt';
@@ -754,7 +754,7 @@ export function fetchContenidoArchivoLogs(ws, archivo, desde, hasta, token, onSu
 }
 
 /**
- * Obtener el contenido de un archivo de Log
+ * Obtener las validaciones del socio/cliente
  * @author retorres
  * @version 1.0
  * @param {string} strCedula
@@ -775,6 +775,76 @@ export function fetchValidacionSocio(strCedula, token, onSucces, dispatch) {
             } else {
                 console.log(data);
                 if (data.str_res_codigo === "000") {
+                    onSucces(data);
+                } else {
+                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                }
+            }
+        } else {
+            if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
+        }
+    });
+}
+
+
+/**
+* Obtener los datos del buró
+* @author retorres
+* @version 1.0
+* @param {string} strCedula
+* @param {string} strTipoDocumento
+* @param {(contenido:string, nroTotalRegistros: number) => void} onSuccess
+* @param {Function} dispatch
+*/
+export function fetchScore(strTipoDocumento,strCedula, token, onSucces, dispatch) {
+    if (dispatch) dispatch(setErrorRedirigir(""));
+
+    let body = {
+
+        str_identificacion: strCedula,
+        str_tipo_identificacion: strTipoDocumento,
+    };
+    ServicioPostExecute(getScore, body, token, { dispatch: dispatch }).then((data) => {
+        if (data) {
+            if (data.error) {
+                if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
+            } else {
+                console.log(data);
+                if (data.str_res_codigo === "000") {
+                    onSucces(data);
+                } else {
+                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                }
+            }
+        } else {
+            if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
+        }
+    });
+}
+
+/**
+* Obtener la información del socio
+* @author retorres
+* @version 1.0
+* @param {string} strCedula
+* @param {string} strTipoDocumento
+* @param {(contenido:string, nroTotalRegistros: number) => void} onSuccess
+* @param {Function} dispatch
+*/
+export function fetchInfoSocio(strCedula, token, onSucces, dispatch) {
+    if (dispatch) dispatch(setErrorRedirigir(""));
+
+    let body = {
+        str_num_documento: strCedula,
+    };
+    //estandarizar el campo de cedula
+    ServicioPostExecute(getInfoSocio, body, token, { dispatch: dispatch }).then((data) => {
+        if (data) {
+            if (data.error) {
+                if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
+            } else {
+                console.log(data);
+                if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
                     if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));

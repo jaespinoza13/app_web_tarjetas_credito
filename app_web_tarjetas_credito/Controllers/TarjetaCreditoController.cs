@@ -1,5 +1,7 @@
 ﻿using Domain.Common;
 using Domain.Common.Interfaces;
+using Domain.Models.TarjetaCredito.GetInfoSocio;
+using Domain.Models.TarjetaCredito.GetScore;
 using Domain.Models.TarjetaCredito.GetValidaciones;
 using Infrastructure.Login;
 using Infrastructure.TarjetaCredito;
@@ -37,6 +39,29 @@ namespace plantilla_app_web.Controllers
             res.lst_validaciones = res.lst_validaciones;
             res.str_res_codigo = "000";
             return Utiles.crypt(res, Request.Headers);            
+        }
+
+        [Route("score")]
+        [ServiceFilter(typeof(CryptoFilter))]
+        [HttpPost]
+        public ResCrypt Post(ReqGetScore req)
+        {
+            ResGetScore resGetScore = new ResGetScore();
+            string ip = Utiles.getIP();
+            ResGetScore res = tarjetaCreditoDat.getScore(req);
+            resGetScore.response = res.response;
+            resGetScore.str_res_codigo = res.str_res_codigo;
+            return Utiles.crypt(res, Request.Headers);
+        }
+
+        [Route("infoSocio")]
+        [ServiceFilter(typeof(CryptoFilter))]
+        [HttpPost]
+        public ResCrypt Post(ReqGetInfoSocio req)
+        {
+            ResGetInfoSocio resGetInfoSocio = new ResGetInfoSocio();
+            resGetInfoSocio = tarjetaCreditoDat.getInfoSocio(req);
+            return Utiles.crypt(resGetInfoSocio, Request.Headers);
         }
     }
 }
