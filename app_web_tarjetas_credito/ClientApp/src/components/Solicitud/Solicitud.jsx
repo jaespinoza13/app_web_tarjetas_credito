@@ -222,7 +222,7 @@ function Solicitud(props) {
                         <tbody>
                             {
                                 validaciones.map((validacion) => {
-                                    return (<tr>
+                                    return (<tr key={validacion.str_descripcion_alerta}>
                                         <td>{validacion.str_descripcion_alerta}</td>
                                         <td>{validacion.str_estado_alerta}</td>
                                     </tr>);

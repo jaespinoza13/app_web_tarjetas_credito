@@ -47,6 +47,7 @@ function Login(props) {
             setdisableBtn(true);
             setProgress(30);
             await handleSubmitLogin(login, password, props.token, async (data) => {
+                console.log(data);
                 setProgress(60);
                 var str = "";
                 if (data.mensajes.length > 1) {

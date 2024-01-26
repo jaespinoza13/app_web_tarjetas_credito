@@ -40,7 +40,6 @@ export function fetchMenuPrincipal(idPerfil, token, onSuccess, dispatch) {
                 }
             }
         } else {
-            console.log(data);
             if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
         }
     });
@@ -762,7 +761,6 @@ export function fetchContenidoArchivoLogs(ws, archivo, desde, hasta, token, onSu
  * @param {Function} dispatch
  */
 export function fetchValidacionSocio(strCedula, token, onSucces, dispatch) {
-    console.log("fetchValidacionSocio");
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
