@@ -229,7 +229,7 @@ function Login(props) {
                         <div className="card_header">
                             <h2>Inicio de sesión</h2>
                         </div>
-                        <form className="form_mg" onSubmit={handlerSubmit}>
+                        <form className="form_mg" onSubmit={handlerSubmit} autoComplete="off">
                             <FormGroup>
                                 <InputMego
                                     type="text"

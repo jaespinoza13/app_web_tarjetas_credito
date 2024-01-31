@@ -33,6 +33,7 @@ function Solicitud(props) {
     const [score, setScore] = useState({});
     const [infoSocio, setInfoSocio] = useState([]);
     const [isInfoSocio, setIsInfoSocio] = useState(false);
+    const [isModalVisible, setisModalVisible] = useState(false);
 
 
 
@@ -68,7 +69,7 @@ function Solicitud(props) {
     }
 
     const closeModalHandler = () => {
-        setOpenModal(false);
+        setisModalVisible(false);
     }
 
     useEffect(() => {
@@ -81,9 +82,16 @@ function Solicitud(props) {
 
     useEffect(() => {
         if (validaciones.length > 0) {
-            setOpenModal(true);
+            setisModalVisible(true);
             setIsValidaciones(true);
             accionSiguienteHandler(validaciones);
+            const isValidacionesOk = validaciones.some((validacion) => validacion.str_estado_alerta === "------");
+            console.log(isValidacionesOk);
+            if (accion === 'solicitud')
+                setBtnDisabled(isValidacionesOk);
+            else
+                setBtnDisabled(false);
+
         }
     }, [validaciones]);
 
@@ -210,7 +218,112 @@ function Solicitud(props) {
                 </table>
             </div>
 
-            {openModal && <Modal>
+            {/*{openModal &&*/}
+            {/*    <Modal>*/}
+            {/*        {isValidaciones && <div>*/}
+            {/*            <table>*/}
+            {/*                <thead>*/}
+            {/*                    <tr>*/}
+            {/*                        <th>Validación</th>*/}
+            {/*                        <th>Estado</th>*/}
+            {/*                    </tr>*/}
+            {/*                </thead>*/}
+            {/*                <tbody>*/}
+            {/*                    {*/}
+            {/*                        validaciones.map((validacion) => {*/}
+            {/*                            return (<tr key={validacion.str_descripcion_alerta}>*/}
+            {/*                                <td>{validacion.str_descripcion_alerta}</td>*/}
+            {/*                                <td>{validacion.str_estado_alerta}</td>*/}
+            {/*                            </tr>);*/}
+            {/*                        })*/}
+            {/*                    }*/}
+            {/*                </tbody>*/}
+            {/*            </table>*/}
+            {/*        </div>}*/}
+            {/*        {isScore && <div>*/}
+            {/*            {score.response.result.identificacionTitular &&*/}
+            {/*                <div style={{ display: 'flex', flexDirection:'column' }}>*/}
+            {/*                    <label htmlFor="">Nombre:</label>*/}
+            {/*                    <input name="nombre" type="text" value={score.response.result.identificacionTitular[0]?.nombreRazonSocial} disabled={true}></input>*/}
+            {/*                    <label htmlFor="score">Score:</label>*/}
+            {/*                    <input name="score" type="text" value={score.response.result && score.response.result.scoreFinanciero && score.response.result.scoreFinanciero[0] && score.response.result.scoreFinanciero[0].score ? score.response.result.scoreFinanciero[0].score : 800} disabled={true}></input>*/}
+            {/*                    <label htmlFor="name">Detalle de deudas:</label>*/}
+            {/*                    {score.response.result.deudaVigenteTotal.map((deuda) => {*/}
+            {/*                        return (<div>*/}
+            {/*                            <label>{deuda.sistemaCrediticio}</label>*/}
+            {/*                            <div>*/}
+            {/*                                <div>*/}
+            {/*                                    <label>Total deuda:</label>*/}
+            {/*                                    <input value={deuda.totalDeuda}></input>*/}
+            {/*                                    <label>Valor demanda judicial:</label>*/}
+            {/*                                    <input value={deuda.valorDemandaJudicial}></input>*/}
+            {/*                                    <label>Valor por vencer:</label>*/}
+            {/*                                    <input value={deuda.valorPorVencer}></input>*/}
+            {/*                                </div>*/}
+            {/*                            </div>                                    */}
+            {/*                        </div>);*/}
+            {/*                        })*/}
+            {/*                    }*/}
+            {/*                </div>*/}
+                        
+            {/*            }*/}
+                    
+            {/*        </div>}*/}
+            {/*        {isInfoSocio && <div style={{ display: "flex", flexDirection: "column" }}>*/}
+            {/*            <div style={{ display: "flex", flexDirection: "row", alignSelf:"center" }}>*/}
+            {/*                <label>Nombres:</label>*/}
+            {/*                <input value={infoSocio[0].nombres}></input>*/}
+            {/*                <label>Apellido paterno:</label>*/}
+            {/*                <input value={infoSocio[0].apellido_paterno}></input>*/}
+            {/*                <label>Apellido materno:</label>*/}
+            {/*                <input value={infoSocio[0].apellido_materno}></input>*/}
+            {/*            </div>*/}
+            {/*            <div style={{ display: "flex", flexDirection: "row", width: "100%" }}>*/}
+            {/*                <div style={{ display: "flex", flexDirection: "column", width: "50%", marginRight:"20px" }}>*/}
+            {/*                    <label>Fecha de nacimiento:</label>*/}
+            {/*                    <input value={infoSocio[0].fecha_nacimiento}></input>*/}
+            {/*                    <label>Años reside en el pais:</label>*/}
+            {/*                    <input value="N/D"></input>*/}
+            {/*                    <label>Nivel de educación:</label>*/}
+            {/*                    <input value={infoSocio[0].nivel_educacion}></input>*/}
+            {/*                    <label>Código de profesión:</label>*/}
+            {/*                    <input value={infoSocio[0].codigo_profesion}></input>*/}
+            {/*                    <label>Actividad:</label>*/}
+            {/*                    <input value={infoSocio[0].actividad_economica}></input>*/}
+            {/*                    <label>Ocupación:</label>*/}
+            {/*                    <input value={infoSocio[0].ocupacion}></input>*/}
+            {/*                    <label>Estado civil:</label>*/}
+            {/*                    <input value={infoSocio[0].estado_civil}></input>*/}
+            {/*                </div>*/}
+            {/*                <div style={{ display: "flex", flexDirection: "column", width:"50%" }}>*/}
+            {/*                    <label>Nacionalidad:</label>*/}
+            {/*                    <input value={infoSocio[0].nacionalidad}></input>*/}
+            {/*                    <label>Sexo:</label>*/}
+            {/*                    <input value={infoSocio[0].sexo === "M" ? "Masculino" : "Femenino"} ></input>*/}
+            {/*                    <label>Sector:</label>*/}
+            {/*                    <input value={infoSocio[0].sector}></input>*/}
+            {/*                    <label>Subsector:</label>*/}
+            {/*                    <input value={infoSocio[0].subsector}></input>*/}
+            {/*                    <label>Tipo de persona:</label>*/}
+            {/*                    <input value={infoSocio[0].tipo_persona}></input>*/}
+            {/*                    <label>Medio de información:</label>*/}
+            {/*                    <input value={infoSocio[0].medio_informacion}></input>*/}
+            {/*                    <label>Calificación de riesgo:</label>*/}
+            {/*                    <input value={infoSocio[0].calificacion_riesgo}></input>*/}
+            {/*                </div>*/}
+            {/*            </div>*/}
+                    
+            {/*        </div>}*/}
+            {/*        <button className="btn_mg btn_mg__secondary" onClick={closeModalHandler} >Cerrar</button>*/}
+            {/*        <button className="btn_mg btn_mg__primary" disabled={isBtnDisabled} onClick={getScoreSocioHandler}>Siguiente</button>*/}
+            {/*    </Modal>*/}
+
+            <Modal
+                modalIsVisible={isModalVisible}
+                titulo={`${accion.charAt(0).toUpperCase() + accion.slice(1)} de tarjeta de crédito`}
+                onNextClick={getScoreSocioHandler}
+                onCloseClick={closeModalHandler}
+                isBtnDisabled={isBtnDisabled}>
                 {isValidaciones && <div>
                     <table>
                         <thead>
@@ -233,7 +346,7 @@ function Solicitud(props) {
                 </div>}
                 {isScore && <div>
                     {score.response.result.identificacionTitular &&
-                        <div style={{ display: 'flex', flexDirection:'column' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
                             <label htmlFor="">Nombre:</label>
                             <input name="nombre" type="text" value={score.response.result.identificacionTitular[0]?.nombreRazonSocial} disabled={true}></input>
                             <label htmlFor="score">Score:</label>
@@ -251,63 +364,62 @@ function Solicitud(props) {
                                             <label>Valor por vencer:</label>
                                             <input value={deuda.valorPorVencer}></input>
                                         </div>
-                                    </div>                                    
+                                    </div>
                                 </div>);
-                                })
+                            })
                             }
                         </div>
-                        
+
                     }
-                    
+
                 </div>}
                 {isInfoSocio && <div style={{ display: "flex", flexDirection: "column" }}>
-                    <div style={{ display: "flex", flexDirection: "row", alignSelf:"center" }}>
+                    <div style={{ display: "flex", flexDirection: "row", alignSelf: "center" }}>
                         <label>Nombres:</label>
-                        <input value={infoSocio[0].nombres}></input>
+                        <input value={infoSocio[0].nombres} readOnly="true"></input>
                         <label>Apellido paterno:</label>
-                        <input value={infoSocio[0].apellido_paterno}></input>
+                        <input value={infoSocio[0].apellido_paterno} readOnly="true"></input>
                         <label>Apellido materno:</label>
-                        <input value={infoSocio[0].apellido_materno}></input>
+                        <input value={infoSocio[0].apellido_materno} readOnly="true"></input>
                     </div>
                     <div style={{ display: "flex", flexDirection: "row", width: "100%" }}>
-                        <div style={{ display: "flex", flexDirection: "column", width: "50%", marginRight:"20px" }}>
+                        <div style={{ display: "flex", flexDirection: "column", width: "50%", marginRight: "20px" }}>
                             <label>Fecha de nacimiento:</label>
-                            <input value={infoSocio[0].fecha_nacimiento}></input>
+                            <input value={infoSocio[0].fecha_nacimiento} readOnly="true"></input>
                             <label>Años reside en el pais:</label>
-                            <input value="N/D"></input>
+                            <input value="N/D" readOnly="true"></input>
                             <label>Nivel de educación:</label>
-                            <input value={infoSocio[0].nivel_educacion}></input>
+                            <input value={infoSocio[0].nivel_educacion} readOnly="true"></input>
                             <label>Código de profesión:</label>
-                            <input value={infoSocio[0].codigo_profesion}></input>
+                            <input value={infoSocio[0].codigo_profesion} readOnly="true"></input>
                             <label>Actividad:</label>
-                            <input value={infoSocio[0].actividad_economica}></input>
+                            <input value={infoSocio[0].actividad_economica} readOnly="true"></input>
                             <label>Ocupación:</label>
-                            <input value={infoSocio[0].ocupacion}></input>
+                            <input value={infoSocio[0].ocupacion} readOnly="true"></input>
                             <label>Estado civil:</label>
-                            <input value={infoSocio[0].estado_civil}></input>
+                            <input value={infoSocio[0].estado_civil} readOnly="true"></input>
                         </div>
-                        <div style={{ display: "flex", flexDirection: "column", width:"50%" }}>
+                        <div style={{ display: "flex", flexDirection: "column", width: "50%" }}>
                             <label>Nacionalidad:</label>
-                            <input value={infoSocio[0].nacionalidad}></input>
+                            <input value={infoSocio[0].nacionalidad} readOnly="true"></input>
                             <label>Sexo:</label>
-                            <input value={infoSocio[0].sexo === "M" ? "Masculino" : "Femenino"} ></input>
+                            <input value={infoSocio[0].sexo === "M" ? "Masculino" : "Femenino"} readOnly="true"></input>
                             <label>Sector:</label>
-                            <input value={infoSocio[0].sector}></input>
+                            <input value={infoSocio[0].sector} readOnly="true"></input>
                             <label>Subsector:</label>
-                            <input value={infoSocio[0].subsector}></input>
+                            <input value={infoSocio[0].subsector} readOnly="true"></input>
                             <label>Tipo de persona:</label>
-                            <input value={infoSocio[0].tipo_persona}></input>
+                            <input value={infoSocio[0].tipo_persona} readOnly="true"></input>
                             <label>Medio de información:</label>
-                            <input value={infoSocio[0].medio_informacion}></input>
+                            <input value={infoSocio[0].medio_informacion} readOnly="true"></input>
                             <label>Calificación de riesgo:</label>
-                            <input value={infoSocio[0].calificacion_riesgo}></input>
+                            <input value={infoSocio[0].calificacion_riesgo} readOnly="true"></input>
                         </div>
                     </div>
-                    
+
                 </div>}
-                <button className="btn_mg btn_mg__secondary" onClick={closeModalHandler} >Cerrar</button>
-                <button className="btn_mg btn_mg__primary" disabled={isBtnDisabled} onClick={getScoreSocioHandler}>Siguiente</button>
-            </Modal>}
+            </Modal>
+            
         </div>
     </div>);
 

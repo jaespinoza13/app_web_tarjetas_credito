@@ -71,7 +71,7 @@ hr {
 
 .sidebar {
   width: 25rem;
-  height: 100vh;
+  height: calc(100vh - 4rem);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -117,7 +117,7 @@ hr {
 }
 
 .sidebar_info {
-  height: 20%;
+  height: 12rem;
   border: 1px solid #D4E7FF;
   padding-top: 2rem;
   width: 100%;
@@ -237,7 +237,7 @@ img.list_icon {
 
 .container_mg {
   padding: 0 3em;
-  width: 100%;
+  flex-grow: 4;
 }
 
 button {
@@ -247,6 +247,7 @@ button {
   position: relative;
   overflow: hidden;
   transition: background-color 400ms;
+height: 27px;
 }
 
 span.ripple {
@@ -276,6 +277,13 @@ span.ripple {
 .btn_mg__primary {
   padding: 0.4rem 2.5rem;
   background-color: #FED400;
+}
+
+.btn_mg__primary:disabled {
+  background-color: #B6B7B8;
+  padding: 0.4rem 2.5rem;
+  cursor: default;
+  opacity: 0.7;
 }
 
 .btn_mg__secondary {
@@ -577,25 +585,94 @@ table td:nth-child(even) {
 }
 
 .modal {
-  position: fixed;
+  visibility: hidden;
+  position: absolute;
   z-index: 1;
   left: 0;
-  top: 0;
+  bottom: 0;
   width: 100%;
   height: 100%;
-  overflow: auto;
+  overflow: hidden;
   background-color: rgb(0, 0, 0); /* Fallback color */
   background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
 }
 
+.modal.modal-show {
+  visibility: visible;
+}
+
+.modal-content.modal-content-show {
+  visibility: visible;
+  animation: modal-up 0.2s forwards;
+  animation-timing-function: ease-in;
+}
+
+.modal-content.modal-content-hide {
+  visibility: hidden;
+  animation: modal-down 0.2s forwards;
+  animation-timing-function: ease-in;
+}
+
 .modal-content {
-  height: 50%;
-  display: block;
-  margin: 15% auto;
-  padding: 20px;
-  width: 80%;
-  background-color: #fefefe;
-  border-radius: 25px;
+    height: 50%;
+    display: block;
+    bottom: 0;
+    margin: 15% auto;
+    padding: 0rem;
+    width: 80%;
+    background-color: #fefefe;
+    border-radius: 25px;
+    border: 1px solid #D4E7FF;
+    position: relative;
+    overflow: hidden;
+}
+
+.modal-content .modal-header {
+    position: relative;
+    background-color: #F8F8F8;
+    padding: 1rem;
+    height: 10%;
+    overflow: hidden;
+}
+
+.modal-content .modal-body {
+    position: relative;
+    padding: 1rem;
+    height: 80%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+}
+
+.modal-content .modal-footer {
+    position: relative;
+    background-color: #F8F8F8;
+    padding: 1rem;
+    height: 10%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+}
+
+@keyframes modal-up {
+  from {
+    bottom: -5rem;
+  }
+  to {
+    bottom: 0;
+  }
+}
+@keyframes modal-down {
+  from {
+    bottom: 0;
+  }
+  to {
+    bottom: -5rem;
+  }
+}
+.f-row {
+  display: flex;
 }
 
 @keyframes ripple {
