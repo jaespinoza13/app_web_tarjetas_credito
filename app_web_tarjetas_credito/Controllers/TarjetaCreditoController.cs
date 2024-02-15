@@ -36,8 +36,6 @@ namespace plantilla_app_web.Controllers
             ResGetValidaciones resGetValidaciones = new ResGetValidaciones();
             string ip = Utiles.getIP();
             ResGetValidaciones res = tarjetaCreditoDat.getValidaciones(req);
-            res.lst_validaciones = res.lst_validaciones;
-            res.str_res_codigo = "000";
             return Utiles.crypt(res, Request.Headers);            
         }
 

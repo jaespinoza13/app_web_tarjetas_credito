@@ -247,7 +247,12 @@ button {
   position: relative;
   overflow: hidden;
   transition: background-color 400ms;
-height: 27px;
+    height: 27px;
+}
+
+button img {
+    width: 100%;
+    height: 100%;
 }
 
 span.ripple {
@@ -306,6 +311,15 @@ input, select {
   color: #3D3D3D;
 }
 
+    input[type="radio"] {
+        accent-color: #004CAC;
+        margin-right: 0.3rem;
+    }
+
+    input[type="radio"]  ~ label {
+        margin-right: 1rem;
+    }
+
 input::-moz-placeholder {
   color: #B6B7B8;
   font-family: "Karbon", sans-serif;
@@ -325,6 +339,17 @@ input.no_valido {
   border: 1px solid #FB7373;
   padding-right: 1.5em;
   position: relative;
+}
+
+textarea {
+    resize: none;
+    border: 1px solid #D4E7FF;
+    padding: 0.3rem;
+}
+
+textarea:focus-visible {
+    outline: none;
+    box-shadow: 0px 0px 6px rgba(7, 255, 214, 0.168627451);
 }
 
 select option {
@@ -629,7 +654,7 @@ table td:nth-child(even) {
 
 .modal-content .modal-header {
     position: relative;
-    background-color: #F8F8F8;
+    background-color: #D4E7FF;
     padding: 1rem;
     height: 10%;
     overflow: hidden;

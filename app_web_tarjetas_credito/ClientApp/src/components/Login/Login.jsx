@@ -43,6 +43,7 @@ function Login(props) {
 
     const handlerSubmit = async (e) => {
         e.preventDefault();
+        console.log(login, password);
         if (!disableBtn) {
             setdisableBtn(true);
             setProgress(30);
