@@ -28,7 +28,8 @@ const context =  [
     "/logs/set/conexion",
     "/tarjetacredito/validacion",
     "/tarjetacredito/score",
-    "/tarjetacredito/infoSocio"
+    "/tarjetacredito/infoSocio",
+    "/tarjetacredito/infoEco"
 ];
 
 module.exports = function(app) {

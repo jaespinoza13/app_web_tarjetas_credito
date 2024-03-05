@@ -46,7 +46,7 @@ function Sidebar(props) {
                         <button className="btn_mg btn_mg__secondary" id="toggle-sidebar" onClick={toggleSideBar}>&#60;</button>
                     </div>
                     <div className="sidebar_profile">
-                        <img src="../../../images/avatar1.png" alt=""></img>
+                        <img src="/Imagenes/avatar1.png" alt=""></img>
                         <h3>{nombreUsuario}</h3>
                         <hr></hr>
                         <h4>{perfilUsuario }</h4>

@@ -84,6 +84,7 @@
         public string ws_tarjeta_credito { get; set; } = String.Empty;
         public string auth_ws_tarjeta_credito { get; set; } = String.Empty;
         public string service_get_info_socio { get; set; } = String.Empty;
+        public string service_get_info_economica { get; set; } = String.Empty;
         #endregion
     }
 }

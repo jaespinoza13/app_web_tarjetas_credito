@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Domain.Models.TarjetaCredito.GetInfoEconomica;
 using Domain.Models.TarjetaCredito.GetInfoSocio;
 using Domain.Models.TarjetaCredito.GetScore;
 using Domain.Models.TarjetaCredito.GetValidaciones;
@@ -122,6 +123,39 @@ namespace Infrastructure.TarjetaCredito
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
+            }
+            return res;
+        }
+
+        public ResGetInfoEconomica getInfoEconomica(ReqGetInfoEconomica req)
+        {
+            ResGetInfoEconomica res = new ResGetInfoEconomica();
+            try
+            {
+                req.llenarDatosConfig(_settings);
+                req.str_id_servicio = "REQ_" + _settings.service_get_info_economica;
+                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_info_economica)
+                {
+                    ThrowOnAnyError = true,
+                    MaxTimeout = _settings.time_out
+                };
+                var client = new RestClient(options);
+                var request = new RestRequest();
+                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                request.AddHeader("Content-Type", "application/json");
+                request.AddParameter("application/json", req, ParameterType.RequestBody);
+                request.Method = Method.Post;
+
+                var response = new RestResponse();
+                response = client.Post(request);
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    res = JsonSerializer.Deserialize<ResGetInfoEconomica>(response.Content!);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
             }
             return res;
         }

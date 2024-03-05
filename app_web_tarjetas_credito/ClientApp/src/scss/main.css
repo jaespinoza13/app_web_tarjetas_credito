@@ -69,6 +69,86 @@ hr {
   display: flex;
 }
 
+.m-1 {
+    margin: 0.3rem;
+}
+
+.m-2 {
+    margin: 0.6rem;
+}
+
+.m-3 {
+    margin: 0.9rem;
+}
+
+.m-4 {
+    margin: 1.2rem;
+}
+
+.mt-1 {
+    margin-top: 0.3rem;
+}
+
+.mt-2 {
+    margin-top: 0.6rem;
+}
+
+.mt-3 {
+    margin-top: 0.9rem;
+}
+
+.mt-4 {
+    margin-top: 1.2rem;
+}
+
+.mb-1 {
+    margin-bottom: 0.3rem;
+}
+
+.mb-2 {
+    margin-bottom: 0.6rem;
+}
+
+.mb-3 {
+    margin-bottom: 0.9rem;
+}
+
+.mb-4 {
+    margin-bottom: 1.2rem;
+}
+
+.ml-1 {
+    margin-left: 0.3rem;
+}
+
+.ml-2 {
+    margin-left: 0.6rem;
+}
+
+.ml-3 {
+    margin-left: 0.9rem;
+}
+
+.ml-4 {
+    margin-left: 1.2rem;
+}
+
+.mr-1 {
+    margin-right: 0.3rem;
+}
+
+.mr-2 {
+    margin-right: 0.6rem;
+}
+
+.mr-3 {
+    margin-right: 0.9rem;
+}
+
+.mr-4 {
+    margin-right: 1.2rem;
+}
+
 .sidebar {
   width: 25rem;
   height: calc(100vh - 4rem);
@@ -139,34 +219,51 @@ hr {
   text-align: left;
 }
 
-.sidebar_menu__items a {
-  color: #004CAC;
-  font-size: 1.2rem;
-  position: relative;
+li{
+    list-style:none;
 }
 
-.sidebar_menu__items a.item__master {
-  padding: 0.4rem 1.5rem;
-  position: relative;
+.item_slaves li.nav-item {
+    list-style-type: none;
+    width: 100%;
+    list-style: none;
+}
+
+li.nav-item {
+    width: 100%;
+}
+
+.item__master {
+    color: #004CAC;
+    font-size: 1.2rem;
+    padding-left: 1rem;
+    position: relative;
+}
+
+.sidebar_menu__items a.nav-link {
+    padding: 0.4rem 1.5rem;
+    position: relative;
+    width: 100%;
+    display: block;
 }
 
 .sidebar_menu__items a.item__slave {
-  padding: 0.4rem 2.5rem;
-  position: relative;
+    padding: 0.4rem 2.5rem;
+    position: relative;
 }
 
 .item_slaves.show {
-  display: contents;
-  transition: display 0.4s ease-in;
+    display: contents;
+    transition: display 0.4s ease-in;
 }
 
 .item_slaves {
-  display: none;
+    display: none;
 }
 
 .sidebar_menu__items a.active {
-  background-color: #D4E7FF;
-  font-family: "Karbon-Medium", sans-serif;
+    background-color: #D4E7FF;
+    font-family: "Karbon-Medium", sans-serif;
 }
 
 img.list_icon {

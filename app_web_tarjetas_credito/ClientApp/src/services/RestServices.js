@@ -1,4 +1,4 @@
-import { ServicioGetExecute, getMenuPrincipal, getPreguntaUsuario, ServicioPostExecute, getValidarPreguntaUsuario, setResetPassword, getLogin, getLoginPerfil, getPreguntas, setPreguntas, setPassword, setPasswordPrimeraVez, getListaBases, getListaConexiones, setConexion, addConexion, getListaSeguimiento, getListaDocumentos, getListaColecciones, getDescargarLogsTexto, getLogsTexto, getContenidoLogsTexto, getValidaciones, getScore, getInfoSocio } from './Services';
+import { ServicioGetExecute, getMenuPrincipal, getPreguntaUsuario, ServicioPostExecute, getValidarPreguntaUsuario, setResetPassword, getLogin, getLoginPerfil, getPreguntas, setPreguntas, setPassword, setPasswordPrimeraVez, getListaBases, getListaConexiones, setConexion, addConexion, getListaSeguimiento, getListaDocumentos, getListaColecciones, getDescargarLogsTexto, getLogsTexto, getContenidoLogsTexto, getValidaciones, getScore, getInfoSocio, getInfoEco } from './Services';
 import { setAlertText, setErrorRedirigir } from "../redux/Alert/actions";
 import hex_md5 from '../js/md5';
 import { desencriptar, generate, get, set } from '../js/crypt';
@@ -760,11 +760,12 @@ export function fetchContenidoArchivoLogs(ws, archivo, desde, hasta, token, onSu
  * @param {(contenido:string, nroTotalRegistros: number) => void} onSuccess
  * @param {Function} dispatch
  */
-export function fetchValidacionSocio(strCedula, token, onSucces, dispatch) {
+export function fetchValidacionSocio(strCedula, strTipoValidacion, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
-        str_documento: strCedula
+        str_identificacion: strCedula,
+        str_nemonico_alerta: strTipoValidacion
     };
     ServicioPostExecute(getValidaciones, body, token, { dispatch: dispatch}).then((data) => {
         if (data) {
@@ -791,24 +792,31 @@ export function fetchValidacionSocio(strCedula, token, onSucces, dispatch) {
 * @version 1.0
 * @param {string} strCedula
 * @param {string} strTipoDocumento
+* @param {string} strLugar
+* @param {string} strNombres
+* @param {string} strOficial
+* @param {string} strCargo
 * @param {(contenido:string, nroTotalRegistros: number) => void} onSuccess
 * @param {Function} dispatch
 */
-export function fetchScore(strTipoDocumento,strCedula, token, onSucces, dispatch) {
+export function fetchScore(strTipoDocumento, strCedula, strNombres, strLugar, strOficial, strCargo, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
 
         str_identificacion: strCedula,
         str_tipo_identificacion: strTipoDocumento,
+        str_nombres: strNombres,
+        str_lugar: strLugar,
+        str_oficial: strOficial,
+        str_cargo: strCargo
     };
     ServicioPostExecute(getScore, body, token, { dispatch: dispatch }).then((data) => {
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
             } else {
-                console.log(data);
-                if (data.str_res_codigo === "000") {
+                if (data.str_res_codigo === "000" || data.str_res_codigo === "010") {
                     onSucces(data);
                 } else {
                     if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
@@ -833,10 +841,43 @@ export function fetchInfoSocio(strCedula, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
-        str_num_documento: strCedula,
+        str_identificacion: strCedula,
     };
     //estandarizar el campo de cedula
     ServicioPostExecute(getInfoSocio, body, token, { dispatch: dispatch }).then((data) => {
+        if (data) {
+            if (data.error) {
+                if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
+            } else {
+                console.log(data);
+                if (data.str_res_estado_transaccion === "OK") {
+                    onSucces(data);
+                } else {
+                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                }
+            }
+        } else {
+            if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
+        }
+    });
+}
+
+/**
+* Obtener la información del socio
+* @author retorres
+* @version 1.0
+* @param {string} strEnte
+* @param {(contenido:string, nroTotalRegistros: number) => void} onSuccess
+* @param {Function} dispatch
+*/
+export function fetchInfoEconomica(strEnte, token, onSucces, dispatch) {
+    if (dispatch) dispatch(setErrorRedirigir(""));
+
+    let body = {
+        str_ente: strEnte.toString()
+    }
+
+    ServicioPostExecute(getInfoEco, body, token, { dispatch: dispatch }).then((data) => {
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));

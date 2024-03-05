@@ -9,6 +9,6 @@ namespace Domain.Models.TarjetaCredito.GetInfoSocio
 {
     public class ReqGetInfoSocio : Header
     {
-        public string str_num_documento { get; set; } = String.Empty;
+        public string str_identificacion { get; set; } = String.Empty;
     }
 }

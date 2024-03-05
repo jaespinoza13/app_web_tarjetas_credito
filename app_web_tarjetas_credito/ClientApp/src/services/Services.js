@@ -97,6 +97,7 @@ export const getListaConexiones = "FETCH_GET_CONEXIONES";
 export const getValidaciones = "GET_VALIDAR_PERSONA"
 export const getScore = "GET_SCORE"
 export const getInfoSocio = "GET_INFO_SOCIO"
+export const getInfoEco = "GET_INFORMACION_ECONOMICA"
 
 /**
  * Obtener la Url de un servicio de acuerdo a su nombre de Proceso Unico
@@ -186,6 +187,9 @@ export function ServiceUrl(request, params = []) {
             break;
         case getInfoSocio:
             pathOut = 'tc/socio'
+            break;
+        case getInfoEco:
+            pathOut = 'tc/infoEco'
             break;
         default:
             return null;
@@ -288,7 +292,7 @@ export async function ServicioPostExecute(request, body, token, { encryptS = tru
 
     const sender = localStorage.getItem('sender');
     if (exProcess) localStorage.setItem("sender", set("Param"));
-
+    
     if (!IsNullOrWhiteSpace(token) && validateToken(token)) {
         if (IsNullOrWhiteSpace("sender")) {
             localStorage.removeItem("sender");
@@ -418,7 +422,8 @@ function pathRewrite(path) {
         "lgs/edit/con": '/logs/set/conexion',
         "tc/validacion": '/tarjetacredito/validacion',
         "tc/score": '/tarjetacredito/score',
-        "tc/socio": '/tarjetacredito/infoSocio'
+        "tc/socio": '/tarjetacredito/infoSocio',
+        "tc/infoEco": '/tarjetacredito/infoEco'
     };
     if (path) {
         var p = context[path];

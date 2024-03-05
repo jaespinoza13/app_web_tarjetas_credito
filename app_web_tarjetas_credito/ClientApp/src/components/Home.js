@@ -10,12 +10,10 @@ import Sidebar from "./Common/Navs/Sidebar";
 
 const mapStateToProps = (state) => {
     var array = [...state.GetListaMejoras.data];
-    console.log(array);
     for (let i = 0; i < array.length; i++) {
         array[i] = get(array[i]);
     }
 
-    console.log(state);
     //for (let funcionalidad = 0; funcionalidad < funcionalidades.length; funcionalidad++) {
     //    funcionalidades[funcionalidad] = get(funcionalidades[funcionalidad]);
     //}
@@ -29,9 +27,8 @@ const mapStateToProps = (state) => {
 };
 
 function Home(props) {
-    console.log(props);
     return (
-        <div>
+        <div className="content">
             <Sidebar></Sidebar>
             <Container className="border-bottom text-center">
                 <h2>CoopMego - {props.dataNombreSistema}</h2>

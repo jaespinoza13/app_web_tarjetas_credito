@@ -9,6 +9,7 @@ namespace Domain.Models.TarjetaCredito.GetValidaciones
 {
     public class ReqGetValidaciones : Header
     {
-        public string str_documento {  get; set; }
+        public string str_identificacion { get; set; } = string.Empty;
+        public string str_nemonico_alerta { get; set; } = string.Empty;
     }
 }

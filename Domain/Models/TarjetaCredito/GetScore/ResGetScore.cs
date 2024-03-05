@@ -10,7 +10,7 @@ namespace Domain.Models.TarjetaCredito.GetScore
     public class ResGetScore : ResComun
     {
         // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
-        public string str_url_contrato { get; set; }
+        public string file_bytes { get; set; }
         public int int_cliente { get; set; }
         public Response response { get; set; }
         

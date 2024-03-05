@@ -1,5 +1,6 @@
 ﻿using Domain.Common;
 using Domain.Common.Interfaces;
+using Domain.Models.TarjetaCredito.GetInfoEconomica;
 using Domain.Models.TarjetaCredito.GetInfoSocio;
 using Domain.Models.TarjetaCredito.GetScore;
 using Domain.Models.TarjetaCredito.GetValidaciones;
@@ -44,12 +45,31 @@ namespace plantilla_app_web.Controllers
         [HttpPost]
         public ResCrypt Post(ReqGetScore req)
         {
-            ResGetScore resGetScore = new ResGetScore();
+            ReqGetScore reqGetScore = new ReqGetScore();
+            reqGetScore.str_login = req.str_login;
+            reqGetScore.str_mac_dispositivo = req.str_mac_dispositivo;
+            reqGetScore.str_sesion = req.str_sesion;
+            reqGetScore.str_id_oficina = req.str_id_oficina;
+            reqGetScore.str_id_perfil = req.str_id_perfil;
+            reqGetScore.str_ip_dispositivo = Utiles.getIP();
+            reqGetScore.str_tipo_identificacion = req.str_tipo_identificacion;
+            reqGetScore.str_identificacion = req.str_identificacion;
+            reqGetScore.str_nombres = req.str_nombres;
+            reqGetScore.str_lugar = req.str_lugar;
+            reqGetScore.str_oficial = req.str_oficial;
+            reqGetScore.str_cargo = req.str_cargo;
             string ip = Utiles.getIP();
-            ResGetScore res = tarjetaCreditoDat.getScore(req);
-            resGetScore.response = res.response;
-            resGetScore.str_res_codigo = res.str_res_codigo;
+            ResGetScore res = tarjetaCreditoDat.getScore(reqGetScore);
             return Utiles.crypt(res, Request.Headers);
+        }
+
+        [Route("infoEco")]
+        [ServiceFilter(typeof(CryptoFilter))]
+        [HttpPost]
+        public ResCrypt Post(ReqGetInfoEconomica req)
+        {
+            ResGetInfoEconomica res = tarjetaCreditoDat.getInfoEconomica(req);
+            return Utiles.crypt(res, Request.Headers);            
         }
 
         [Route("infoSocio")]

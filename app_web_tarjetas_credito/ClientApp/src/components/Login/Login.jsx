@@ -66,6 +66,9 @@ function Login(props) {
                 if (data.codigo === "000") {
                     data.datosUsuario.str_sesion = data.datosUsuario.id_usuario + "" + data.datosUsuario.id_perfil + "" + ts + "" + data.datosUsuario.id_persona;
                     localStorage.setItem('sender', set(data.datosUsuario.login));
+                    localStorage.setItem('office', set(data.datosUsuario.id_oficina));
+                    localStorage.setItem('role', set(data.datosUsuario.nombre_perfil));
+                    localStorage.setItem('sender_name', set(data.datosUsuario.nombre));
                     data.datosUsuario.canRedirect = true;
                     saveUser({ data: await encriptar(key, JSON.stringify(data.datosUsuario)) });
                     saveSession(true);

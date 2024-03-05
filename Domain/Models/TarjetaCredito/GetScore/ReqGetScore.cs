@@ -11,5 +11,9 @@ namespace Domain.Models.TarjetaCredito.GetScore
     {
         public string str_tipo_identificacion { get; set; } = string.Empty;
         public string str_identificacion { get; set; } = string.Empty;
+        public string str_nombres {  get; set; } = string.Empty;
+        public string str_lugar {  get; set; } = string.Empty;
+        public string str_oficial {  get; set; } = string.Empty;
+        public string str_cargo {  get; set; } = string.Empty;
     }
 }

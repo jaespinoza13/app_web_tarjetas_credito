@@ -10,25 +10,33 @@ namespace Domain.Models.TarjetaCredito.GetInfoSocio
     public class ResGetInfoSocio : ResComun
     {
         public List<DatosCliente>? datos_cliente { get; set; }
+        public List<Direccion>? lst_dir_domicilio { get; set; }
+        public List<Direccion>? lst_dir_trabajo { get; set; }
     }
 
     public class DatosCliente
     {
-        public string nombres { get; set; } = String.Empty;
-        public string apellido_paterno { get; set; } = String.Empty;
-        public string apellido_materno { get; set; } = String.Empty;
-        public string fecha_nacimiento { get; set; } = String.Empty;
-        public string nivel_educacion { get; set; } = String.Empty;
-        public string codigo_profesion { get; set; } = String.Empty;
-        public string actividad_economica { get; set; } = String.Empty;
-        public string ocupacion { get; set; } = String.Empty;
-        public string estado_civil { get; set; } = String.Empty;
-        public string nacionalidad { get; set; } = String.Empty;
-        public string sexo { get; set; } = String.Empty;
-        public string sector { get; set; } = String.Empty;
-        public string subsector { get; set; } = String.Empty;
-        public string tipo_persona { get; set; } = String.Empty;
-        public string medio_informacion { get; set; } = String.Empty;
-        public string calificacion_riesgo { get; set; } = String.Empty;
+        public string str_nombres { get; set; }
+        public string str_apellido_paterno { get; set; }
+        public string str_apellido_materno { get; set; }
+        public string str_fecha_nacimiento { get; set; }
+        public string str_nivel_educacion { get; set; }
+        public string str_codigo_profesion { get; set; }
+        public string str_actividad_economica { get; set; }
+        public string str_ocupacion { get; set; }
+        public string str_estado_civil { get; set; }
+        public string str_nacionalidad { get; set; }
+        public string str_sexo { get; set; }
+        public string str_tipo_persona { get; set; }
+        public string str_medio_informacion { get; set; }
+        public string str_calificacion_riesgo { get; set; }
+    }
+    public class Direccion
+    {
+        public string str_dir_ciudad { get; set; }
+        public string str_dir_sector { get; set; }
+        public string str_dir_barrio { get; set; }
+        public string str_dir_descripcion_dom { get; set; }
+        public string str_dir_num_casa { get; set; }
     }
 }
