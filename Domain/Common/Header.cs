@@ -40,8 +40,8 @@
         public string str_version_servicio { get; set; } = "1.0";
         public string str_mac_dispositivo { get; set; }
         public string str_ip_dispositivo { get; set; } = String.Empty;
-        public string str_remitente { get; set; } = "ADMININSTRACION LOGS";
-        public string str_receptor { get; set; } = "wsLogs";
+        public string str_remitente { get; set; } = "TARJETAS DE CRÉDITO";
+        public string str_receptor { get; set; } = "apiGatewayTarjetasCredito";
         public string str_tipo_peticion { get; set; } = "REQ";
         public string str_id_msj { get; set; } = DateTime.Now.ToFileTime().ToString();
         public DateTime dt_fecha_operacion { get; set; } = DateTime.Now;

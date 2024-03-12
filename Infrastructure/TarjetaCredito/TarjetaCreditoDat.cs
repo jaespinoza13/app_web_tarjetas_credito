@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Domain.Models.TarjetaCredito.AddAutorizacion;
 using Domain.Models.TarjetaCredito.GetInfoEconomica;
 using Domain.Models.TarjetaCredito.GetInfoSocio;
 using Domain.Models.TarjetaCredito.GetScore;
@@ -156,6 +157,40 @@ namespace Infrastructure.TarjetaCredito
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
+            }
+            return res;
+        }
+
+        public ResAddAutorizacion addAutorizacion(ReqAddAutorizacion req)
+        {
+            ResAddAutorizacion res = new ResAddAutorizacion();
+            try
+            {
+                req.llenarDatosConfig(_settings);
+                req.str_id_servicio = "REQ_" + _settings.service_add_autorizacion;
+                var options = new RestClientOptions(_settings.ws_aval + _settings.service_add_autorizacion)
+                {
+                    ThrowOnAnyError = true,
+                    MaxTimeout = _settings.time_out
+                };
+                var client = new RestClient(options);
+                var request = new RestRequest();
+                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_aval);
+                request.AddHeader("Content-Type", "application/json");
+                request.AddParameter("application/json", req, ParameterType.RequestBody);
+                request.Method = Method.Post;
+
+                var response = new RestResponse();
+                response = client.Post(request);
+
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    res = JsonSerializer.Deserialize<ResAddAutorizacion>(response.Content!);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
             }
             return res;
         }

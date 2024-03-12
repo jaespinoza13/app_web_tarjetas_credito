@@ -29,7 +29,8 @@ const context =  [
     "/tarjetacredito/validacion",
     "/tarjetacredito/score",
     "/tarjetacredito/infoSocio",
-    "/tarjetacredito/infoEco"
+    "/tarjetacredito/infoEco",
+    "/tarjetacredito/addAutorizacion"
 ];
 
 module.exports = function(app) {

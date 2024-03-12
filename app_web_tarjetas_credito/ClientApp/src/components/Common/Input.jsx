@@ -24,7 +24,7 @@ function InputMego(props) {
             <div className="form_mg__item">
                 <label htmlFor={id} className="pbmg1 lbl-input">{label}</label>
                 <input type="text" name="username" id={id} {...props} />
-                <a href="#!" rel="noreferrer" className="link_mg pbmg1 link-input" tabindex="-1" onClick={(e) => onClickBtn(e)}>{textBtn}</a>
+                <a href="#!" rel="noreferrer" className="link_mg pbmg1 link-input" tabIndex="-1" onClick={(e) => onClickBtn(e)}>{textBtn}</a>
             </div>
         );
     }

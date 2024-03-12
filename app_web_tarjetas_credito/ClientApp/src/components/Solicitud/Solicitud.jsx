@@ -2,7 +2,7 @@
 import '../../scss/main.css';
 import '../../scss/components/solicitud.css';
 import { useState, useEffect, useReducer } from "react";
-import { fetchValidacionSocio, fetchScore, fetchInfoSocio, fetchInfoEconomica } from "../../services/RestServices";
+import { fetchValidacionSocio, fetchScore, fetchInfoSocio, fetchInfoEconomica, fetchAddAutorizacion } from "../../services/RestServices";
 import { IsNullOrWhiteSpace } from '../../js/utiles';
 import Modal from '../Common/Modal/Modal';
 import Sidebar from '../Common/Navs/Sidebar';
@@ -30,7 +30,10 @@ function Solicitud(props) {
     const [validaciones, setValidaciones] = useState([]);
     const [isBtnDisabled, setBtnDisabled] = useState(false);
     const [ciValido, setCiValido] = useState(true);
+
+    //Validaciones
     const [isValidaciones, setIsValidaciones] = useState(false);
+    const [isValidacionesOk, setIsValidacionesOk] = useState(false);
     const [isInfoEconomica, setIsInfoEconomica] = useState(false);
     //Solicitud - prospeccion
     const [nombresSolicitud, setNombresSolicitud] = useState("");
@@ -117,19 +120,22 @@ function Solicitud(props) {
     }
 
     const closeModalHandler = () => {
-        setisModalVisible(false);
-        setIsValidaciones(false);
-        setIsScore(false);
-        setScore({});
-        setInfoSocio([]);
-        setIsInfoSocio(false);
-        setisModalVisible(false);
-        setIsDatosSolicitud(false);
-        setIsInfoEconomica(false);
-        setLugarEntrega();
-        setDirecciónEntrega("");
-        setNombreTarjeta("");
-        setImprimeAutorizacion(false);
+        if (isModalScoreVisible) {
+            setIsModalScoreVisible(false);
+        } else {
+            setisModalVisible(false);
+            setIsValidaciones(false);
+            setIsScore(false);
+            setScore({});
+            setInfoSocio([]);
+            setIsInfoSocio(false);
+            setIsDatosSolicitud(false);
+            setIsInfoEconomica(false);
+            setLugarEntrega();
+            setDirecciónEntrega("");
+            setNombreTarjeta("");
+            setImprimeAutorizacion(false);
+        }
     }
 
     useEffect(() => {
@@ -145,18 +151,22 @@ function Solicitud(props) {
             setisModalVisible(true);
             setIsValidaciones(true);
             accionSiguienteHandler(validaciones);
-            const isValidacionesOk = validaciones.some((validacion) => validacion.str_estado_alerta === "INCORRECTO");
+            const validacionesOk = validaciones.some((validacion) => validacion.str_estado_alerta === "INCORRECTO");
+            setIsValidacionesOk(validacionesOk);
             const estadoAutorizacion = validaciones.find((validacion) => { return validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" })
             if (estadoAutorizacion.str_estado_alerta === "INCORRECTO") {
                 setImprimeAutorizacion(true);
             }
-            if (accion === 'solicitud')
-                setBtnDisabled(isValidacionesOk);
-            else
-                setBtnDisabled(false);
 
         }
-    }, [validaciones, accion]);
+    }, [validaciones]);
+
+    useEffect(() => {
+        if (accion === 'solicitud')
+            setBtnDisabled(isValidacionesOk);
+        else
+            setBtnDisabled(false);
+    }, [accion]);
 
     useEffect(() => {
         if (score.str_res_codigo === "000") {
@@ -264,7 +274,6 @@ function Solicitud(props) {
         //const strOficina = get(localStorage.getItem("office"));
         const strOficial = get(localStorage.getItem("sender_name"));
         const strCargo = get(localStorage.getItem("role"));
-        console.log(generaAutorizacionPdf);
         await fetchScore(tipoDoc, documento, strNombreSocio, "Matriz", strOficial, strCargo, props.token, (data) => {
             setScore(data);
             setIsDescargarPdf(false);
@@ -313,6 +322,14 @@ function Solicitud(props) {
         // Perform file upload logic here (e.g., send file to server)
         // For demonstration, just log the file details
         console.log('Uploading file:', file);
+        fetchAddAutorizacion(tipoDoc, 1, "F", documento, nombresSolicitud, pApellidoSolicitud, sApellidoSolicitud, props.token, (data) => {
+            if (data.str_res_codigo === "000") {
+                setImprimeAutorizacion(false);
+                const estadoAutorizacion = validaciones.find((validacion) => { return validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" })
+                estadoAutorizacion.str_estado_alerta = "CORRECTO";
+                setIsModalScoreVisible(false);
+            }
+        }, dispatch);
     };
 
     return (<div className="content">
@@ -663,7 +680,7 @@ function Solicitud(props) {
                     <input readOnly={datosScoreFaltante} value={sApellidoSolicitud} onChange={sApellidoSolicitudHandler}></input>
                     <button className={"btn_mg btn_mg__primary"} onClick={generaAutorizacionPdf}>Generar pdf</button>
                     <button className={"btn_mg btn_mg__primary"} onClick={handleDownload} disabled={isDescargarPdf}>Descargar</button>
-                    <input type="file" ref={inputCargaRef} style={{ display: 'none' }} onChange={handleFileChange} />
+                    <input type="file" accept=".pdf" ref={inputCargaRef} style={{ display: 'none' }} onChange={handleFileChange} />
                     <button className={"btn_mg btn_mg__primary"} onClick={handleUpload} disabled={isSubirPdf}>Subir archivo</button>
                     <div className={"mt-4"} style={{ width: 100 }} dangerouslySetInnerHTML={{ __html: autorizacionPdf }} />
                     

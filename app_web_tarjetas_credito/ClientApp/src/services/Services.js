@@ -98,6 +98,7 @@ export const getValidaciones = "GET_VALIDAR_PERSONA"
 export const getScore = "GET_SCORE"
 export const getInfoSocio = "GET_INFO_SOCIO"
 export const getInfoEco = "GET_INFORMACION_ECONOMICA"
+export const addAutorizacion = "ADD_AUTORIZACION"
 
 /**
  * Obtener la Url de un servicio de acuerdo a su nombre de Proceso Unico
@@ -190,6 +191,9 @@ export function ServiceUrl(request, params = []) {
             break;
         case getInfoEco:
             pathOut = 'tc/infoEco'
+            break;
+        case addAutorizacion:
+            pathOut = 'tc/addAut'
             break;
         default:
             return null;
@@ -332,6 +336,7 @@ export async function ServicioPostExecute(request, body, token, { encryptS = tru
                 },
                 body: encryptS ? JSON.stringify({ data: await encriptar(key, strBody) }) : strBody
             };
+            
             const response = await fetch(ServiceUrl(request, params), requestOptions);
             if (response.ok) {
                 localStorage.setItem("Acept", ts);
@@ -423,7 +428,8 @@ function pathRewrite(path) {
         "tc/validacion": '/tarjetacredito/validacion',
         "tc/score": '/tarjetacredito/score',
         "tc/socio": '/tarjetacredito/infoSocio',
-        "tc/infoEco": '/tarjetacredito/infoEco'
+        "tc/infoEco": '/tarjetacredito/infoEco',
+        "tc/addAut": '/tarjetacredito/addAutorizacion'
     };
     if (path) {
         var p = context[path];

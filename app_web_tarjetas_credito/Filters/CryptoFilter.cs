@@ -14,7 +14,7 @@ namespace plantilla_app_web.Filters {
             this._settings = options.CurrentValue;
         }
 
-        private bool isUserCookieCorrect( AuthorizationFilterContext context, string idUsuario, string idPerfil ) {
+        private bool isUserCookieCorrect( AuthorizationFilterContext context, string idUsuario, string idPerfil )   {
             string str_timestamp = context.HttpContext.Request.Headers ["aceptar"]!;
             string str_timestamp_inicial = context.HttpContext.Request.Headers ["receiver"]!;
             string str_ip_cliente = context.HttpContext.Request.Headers ["remitente"]!;

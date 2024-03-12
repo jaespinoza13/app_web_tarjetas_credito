@@ -1,5 +1,6 @@
 ﻿using Domain.Common;
 using Domain.Common.Interfaces;
+using Domain.Models.TarjetaCredito.AddAutorizacion;
 using Domain.Models.TarjetaCredito.GetInfoEconomica;
 using Domain.Models.TarjetaCredito.GetInfoSocio;
 using Domain.Models.TarjetaCredito.GetScore;
@@ -80,6 +81,15 @@ namespace plantilla_app_web.Controllers
             ResGetInfoSocio resGetInfoSocio = new ResGetInfoSocio();
             resGetInfoSocio = tarjetaCreditoDat.getInfoSocio(req);
             return Utiles.crypt(resGetInfoSocio, Request.Headers);
+        }
+
+        [Route("addAutorizacion")]
+        [ServiceFilter(typeof(CryptoFilter))]
+        [HttpPost]
+        public ResCrypt Post(ReqAddAutorizacion req)
+        {
+            ResAddAutorizacion res = tarjetaCreditoDat.addAutorizacion(req);
+            return Utiles.crypt(res, Request.Headers);
         }
     }
 }
