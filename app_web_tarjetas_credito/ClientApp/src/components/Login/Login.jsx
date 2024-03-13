@@ -99,8 +99,10 @@ function Login(props) {
                     setProgress(90);
                     setOpenPass1ra(true);
                 } else {
+                    console.log(data.mensajes[0]);
                     setIsLogin(0);
                     setProgress(95);
+                    setMsg(data.mensajes[0]);
                 }
                 setdisableBtn(false);
                 setProgress(100);
@@ -269,6 +271,9 @@ function Login(props) {
                                         setPassOff(passOff);
                                     })}
                                 />
+                            </FormGroup>
+                            <FormGroup>
+                                <label>{msg}</label>
                             </FormGroup>
                             <button className="btn_mg btn_mg__primary" style={{ width: "200px" }} disabled={disableBtn}>{disableBtn ? <CircularProgress /> : ""}Continuar</button>
                             <span className="version-app"><br />{props.dataVersion}</span>

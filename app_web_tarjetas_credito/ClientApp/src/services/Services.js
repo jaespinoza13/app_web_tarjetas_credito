@@ -99,6 +99,8 @@ export const getScore = "GET_SCORE"
 export const getInfoSocio = "GET_INFO_SOCIO"
 export const getInfoEco = "GET_INFORMACION_ECONOMICA"
 export const addAutorizacion = "ADD_AUTORIZACION"
+export const getSolicitudes = "GET_SOLICITUDES_TC"
+export const addSolicitud = "ADD_SOLICITUD_TC"
 
 /**
  * Obtener la Url de un servicio de acuerdo a su nombre de Proceso Unico
@@ -194,6 +196,12 @@ export function ServiceUrl(request, params = []) {
             break;
         case addAutorizacion:
             pathOut = 'tc/addAut'
+            break;
+        case getSolicitudes:
+            pathOut = "tc/getSolic"
+            break;
+        case addSolicitud:
+            pathOut = "tc/addSolic"
             break;
         default:
             return null;
@@ -429,7 +437,9 @@ function pathRewrite(path) {
         "tc/score": '/tarjetacredito/score',
         "tc/socio": '/tarjetacredito/infoSocio',
         "tc/infoEco": '/tarjetacredito/infoEco',
-        "tc/addAut": '/tarjetacredito/addAutorizacion'
+        "tc/addAut": '/tarjetacredito/addAutorizacion',
+        "tc/getSolic": '/tarjetacredito/getSolicitudes',
+        "tc/addSolic": '/tarjetacredito/addSolicitud'
     };
     if (path) {
         var p = context[path];

@@ -1,8 +1,10 @@
 ﻿using Domain.Common;
 using Domain.Models.TarjetaCredito.AddAutorizacion;
+using Domain.Models.TarjetaCredito.AddSolicitud;
 using Domain.Models.TarjetaCredito.GetInfoEconomica;
 using Domain.Models.TarjetaCredito.GetInfoSocio;
 using Domain.Models.TarjetaCredito.GetScore;
+using Domain.Models.TarjetaCredito.GetSolicitudes;
 using Domain.Models.TarjetaCredito.GetValidaciones;
 using RestSharp;
 using System;
@@ -84,7 +86,7 @@ namespace Infrastructure.TarjetaCredito
                 response = client.Post(request);
                 if(response.StatusCode == HttpStatusCode.OK)
                 {
-                    res = JsonSerializer.Deserialize<ResGetScore>(response.Content!);
+                    res = JsonSerializer.Deserialize<ResGetScore>(response.Content!)!;
                 }
             }
             catch (Exception ex)
@@ -118,7 +120,7 @@ namespace Infrastructure.TarjetaCredito
                 response = client.Post(request);
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    res = JsonSerializer.Deserialize<ResGetInfoSocio>(response.Content!);
+                    res = JsonSerializer.Deserialize<ResGetInfoSocio>(response.Content!)!;
                 }
             }
             catch (Exception ex)
@@ -151,7 +153,7 @@ namespace Infrastructure.TarjetaCredito
                 response = client.Post(request);
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    res = JsonSerializer.Deserialize<ResGetInfoEconomica>(response.Content!);
+                    res = JsonSerializer.Deserialize<ResGetInfoEconomica>(response.Content!)!;
                 }
             }
             catch (Exception e)
@@ -185,7 +187,76 @@ namespace Infrastructure.TarjetaCredito
 
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    res = JsonSerializer.Deserialize<ResAddAutorizacion>(response.Content!);
+                    res = JsonSerializer.Deserialize<ResAddAutorizacion>(response.Content!)!;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            return res;
+        }
+
+        public ResGetSolicitudes getSolicitudes(ReqGetSolicitudes req)
+        {
+            ResGetSolicitudes res = new ResGetSolicitudes();
+            try
+            {
+                req.llenarDatosConfig(_settings);
+                req.str_id_servicio = "REQ_" + _settings.service_get_solicitudes;
+                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_solicitudes)
+                {
+                    ThrowOnAnyError = true,
+                    MaxTimeout = _settings.time_out
+                };
+
+                var client = new RestClient(options);
+                var request = new RestRequest();
+                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                request.AddHeader("Content-Type", "application/json");
+                request.AddParameter("application/json", req, ParameterType.RequestBody);
+                request.Method = Method.Post;
+
+                var response = new RestResponse();
+                response = client.Post(request);
+
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    res = JsonSerializer.Deserialize<ResGetSolicitudes>(response.Content!)!;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            return res;
+        }
+
+        public ResAddSolicitud addSolicitud(ReqAddSolicitud req)
+        {
+            ResAddSolicitud res = new ResAddSolicitud();
+            try
+            {
+                req.llenarDatosConfig(_settings);
+                req.str_id_servicio = "REQ_" + _settings.service_add_solicitud;
+                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_add_solicitud){
+                    ThrowOnAnyError = true,
+                    MaxTimeout = _settings.time_out
+                };
+
+                var client = new RestClient(options);
+                var request = new RestRequest();
+                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                request.AddHeader("Content-Type", "application/json");
+                request.AddParameter("application/json", req, ParameterType.RequestBody);
+                request.Method = Method.Post;
+
+                var response = new RestResponse();
+                response = client.Post(request);
+
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    res = JsonSerializer.Deserialize<ResAddSolicitud>(response.Content!)!;
                 }
             }
             catch (Exception ex)

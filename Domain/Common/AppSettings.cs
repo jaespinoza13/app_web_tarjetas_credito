@@ -74,18 +74,20 @@
         public string dominio { get; set; }
         #endregion
         #region TarjetasCredito
-        public string ws_personas { get; set; }
-        public string service_get_validaciones { get; set; }
-        public string auth_user_ws_personas { get; set; }
-        public string auth_pass_ws_personas { get; set; }
-        public string ws_aval { get; set; }
-        public string service_get_score { get; set; }
+        public string ws_personas { get; set; } = String.Empty;
+        public string service_get_validaciones { get; set; } = String.Empty;
+        public string auth_user_ws_personas { get; set; } = String.Empty;
+        public string auth_pass_ws_personas { get; set; } = String.Empty;
+        public string ws_aval { get; set; } = String.Empty;
+        public string service_get_score { get; set; } = String.Empty;
         public string auth_ws_aval { get; set; } = String.Empty;
         public string ws_tarjeta_credito { get; set; } = String.Empty;
         public string auth_ws_tarjeta_credito { get; set; } = String.Empty;
         public string service_get_info_socio { get; set; } = String.Empty;
         public string service_get_info_economica { get; set; } = String.Empty;
         public string service_add_autorizacion { get; set; } = String.Empty;
+        public string service_get_solicitudes { get; set; } = String.Empty;
+        public string service_add_solicitud { get; set; } = String.Empty;
         #endregion
     }
 }

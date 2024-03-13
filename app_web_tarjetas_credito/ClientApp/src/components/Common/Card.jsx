@@ -1,6 +1,8 @@
 ﻿function Card(props) {
+    const classNamesArr = ["card", ...(props.className || [])];
+    const classNames = classNamesArr.join(' ');
     return(
-        <div className="card">
+        <div className={classNames}>
             { props.children }
         </div >
     );

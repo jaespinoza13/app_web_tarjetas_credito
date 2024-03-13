@@ -2,7 +2,7 @@
 import '../../scss/main.css';
 import '../../scss/components/solicitud.css';
 import { useState, useEffect, useReducer } from "react";
-import { fetchValidacionSocio, fetchScore, fetchInfoSocio, fetchInfoEconomica, fetchAddAutorizacion } from "../../services/RestServices";
+import { fetchValidacionSocio, fetchScore, fetchInfoSocio, fetchInfoEconomica, fetchAddAutorizacion, fetchGetSolicitudes } from "../../services/RestServices";
 import { IsNullOrWhiteSpace } from '../../js/utiles';
 import Modal from '../Common/Modal/Modal';
 import Sidebar from '../Common/Navs/Sidebar';
@@ -23,11 +23,14 @@ const mapStateToProps = (state) => {
 };
 
 function Solicitud(props) {
+
+    //Inicio
     const dispatch = useDispatch();
     const [accion, setAccion] = useState("solicitud");
     const [tipoDoc, setTipoDoc] = useState("C");
     const [documento, setDocumento] = useState("");
     const [validaciones, setValidaciones] = useState([]);
+    const [solicitudes, setSolicitudes] = useState([]);
     const [isBtnDisabled, setBtnDisabled] = useState(false);
     const [ciValido, setCiValido] = useState(true);
 
@@ -71,6 +74,14 @@ function Solicitud(props) {
     const [autorizacionPdf, setAutorizacionPdf] = useState("");
 
     const inputCargaRef = useReducer(null);
+    //Carga de solicitudes
+    useEffect(() => {
+        fetchGetSolicitudes(props.token, (data) => {
+            if (data.str_res_codigo === "000") {
+                setSolicitudes(data.lst_solicitudes);
+            }
+        }, dispatch)
+    }, [])
 
     const nombreTarjetaHnadler = (event) => {
         setNombreTarjeta(event.target.value);
@@ -243,8 +254,6 @@ function Solicitud(props) {
     }
 
     const getScoreSocioHandler = async () => {
-        console.log(isValidaciones);
-        console.log(isValidaciones);
         if (isValidaciones) {
             if (isScoreFaltante) {
                 setIsModalScoreVisible(true);
@@ -432,32 +441,20 @@ function Solicitud(props) {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>1106546468</td>
-                            <td>Edison José Villamagua Mendieta</td>
-                            <td>Black</td>
-                            <td>$3600</td>
-                            <td>OK</td>
-                            <td>Aprobada</td>
-                            <td>Matriz</td>
-                            <td>xnojeda</td>
-                            <td>xnojeda</td>
-                            <td>09/01/2023</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td>1186549865</td>
-                            <td>Janeth del Cisne Lojan</td>
-                            <td>Black</td>
-                            <td>$3600</td>
-                            <td>OK</td>
-                            <td>Aprobada</td>
-                            <td>Matriz</td>
-                            <td>xnojeda</td>
-                            <td>xnojeda</td>
-                            <td>09/01/2023</td>
-                            <td></td>
-                        </tr>
+                        {solicitudes.map((solicitud) => {
+                            return (<tr key={solicitud.int_id}>
+                                <td>{solicitud.int_ente}</td>
+                                <td>{"Edison José Villamagua Mendieta"}</td>
+                                <td>{solicitud.str_tipo_tarjeta}</td>
+                                <td>{solicitud.dec_cupo_solicitado}</td>
+                                <td>{"200"}</td>
+                                <td>{solicitud.str_estado}</td>   
+                                <td>{"Matriz"}</td>
+                                <td>{solicitud.str_usuario_crea}</td>
+                                <td>{solicitud.str_usuario_crea}</td>
+                                <td>{solicitud.str_usuario_crea}</td>
+                            </tr>);
+                        })}
                     </tbody>
                 </table>
             </div>
@@ -618,7 +615,7 @@ function Solicitud(props) {
                 </div>}
                 {isDatosSolicitud && <div style={{ display: "flex", flexDirection: "column" }}>
                     <div style={{ display: "flex", flexDirection: "column", width: "50%", marginRight: "20px" }}>
-                        <Card >
+                        <Card className={["mb-3"] } >
                             <h3>Opción de entrega:</h3>
                             <div>
                                 <input type="radio" id="oficina" name="tipo_entrega" value="oficina" onChange={lugarEntregaHandler}></input>
@@ -661,7 +658,7 @@ function Solicitud(props) {
                             {lugarEntrega === "domicilio" && <div>
                                 <select id="domicilio_entrega" onChange={oficinaEntregaHandler} value={direccionEntrega}>
                                     {dirDocimicilioSocio.map((domicilio) => {
-                                        return (<option value={domicilio.str_dir_descripcion_dom}>{`${domicilio.str_dir_ciudad} - ${domicilio.str_dir_sector} - ${domicilio.str_dir_barrio} `}</option>);
+                                        return (<option key={domicilio.int_dir_direccion} value={domicilio.str_dir_descripcion_dom}>{`${domicilio.str_dir_ciudad} - ${domicilio.str_dir_sector} - ${domicilio.str_dir_barrio} `}</option>);
                                     }
                                     )}
                                 </select>
@@ -669,7 +666,7 @@ function Solicitud(props) {
                             {lugarEntrega === "trabajo" && <div>
                                 <select id="domicilio_entrega" onChange={oficinaEntregaHandler} value={direccionEntrega}>
                                     {dirTrabajoSocio.map((trabajo) => {
-                                        return (<option value={trabajo.str_dir_descripcion_dom}>{`${trabajo.str_dir_ciudad} - ${trabajo.str_dir_sector} - ${trabajo.str_dir_barrio} `}</option>);
+                                        return (<option key={trabajo.int_dir_direccion} value={trabajo.str_dir_descripcion_dom}>{`${trabajo.str_dir_ciudad} - ${trabajo.str_dir_sector} - ${trabajo.str_dir_barrio} `}</option>);
                                     }
                                     )}
                                 </select>
@@ -681,7 +678,7 @@ function Solicitud(props) {
                             </div>
                             }
                         </Card>
-                        <Card>
+                        <Card className={["mb-3"]}>
                             <div>
                                 <h3>Nombre para imprimir en la tarjeta:</h3>
                                 <div>
@@ -703,7 +700,7 @@ function Solicitud(props) {
                             </div>
 
                         </Card>
-                        <Card>
+                        <Card className={["mb-3"]}>
                             <div>
                                 <h3>Comentario del asesor:</h3>
                                 <textarea name="comentario_asesor" placeholder="Ingrese su comentario..." cols="50" rows="4"></textarea>

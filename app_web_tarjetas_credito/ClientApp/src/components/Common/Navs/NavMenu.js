@@ -137,7 +137,9 @@ function NavMenu(props) {
                             </div>
                         </div>
                         <button className="btn_mg btn_mg__secondary" id="logout">
-                            <img src="../dist/images/exit.svg" alt="cerrar sesion"></img>
+                            <NavItem>
+                                <NavLink tag={Link} className="text-dark" to="/logout">Salir</NavLink>
+                            </NavItem>
                         </button>
                     </div>
                     {/*<Col className="widthPrincipal">*/}
