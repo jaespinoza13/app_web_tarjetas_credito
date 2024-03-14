@@ -9,6 +9,8 @@ namespace Domain.Models.TarjetaCredito.AddSolicitud
 {
     public class ReqAddSolicitud : Header
     {
+        public string str_ente { get; set; }
+        public string str_token { get; set; } = string.Empty;
         public string str_comentario { get; set; } = String.Empty;
         public string str_tipo_documento { get; set; } = String.Empty;
         public string str_num_documento { get; set; } = String.Empty;

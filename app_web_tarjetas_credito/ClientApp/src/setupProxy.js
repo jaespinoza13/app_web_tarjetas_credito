@@ -31,7 +31,8 @@ const context =  [
     "/tarjetacredito/infoSocio",
     "/tarjetacredito/infoEco",
     "/tarjetacredito/addAutorizacion",
-    "/tarjetacredito/getSolicitudes"
+    "/tarjetacredito/getSolicitudes",
+    "/tarjetacredito/addSolicitud"
 ];
 
 module.exports = function(app) {

@@ -2,7 +2,7 @@
 import '../../scss/main.css';
 import '../../scss/components/solicitud.css';
 import { useState, useEffect, useReducer } from "react";
-import { fetchValidacionSocio, fetchScore, fetchInfoSocio, fetchInfoEconomica, fetchAddAutorizacion, fetchGetSolicitudes } from "../../services/RestServices";
+import { fetchValidacionSocio, fetchScore, fetchInfoSocio, fetchInfoEconomica, fetchAddAutorizacion, fetchGetSolicitudes, fetchAddSolicitud } from "../../services/RestServices";
 import { IsNullOrWhiteSpace } from '../../js/utiles';
 import Modal from '../Common/Modal/Modal';
 import Sidebar from '../Common/Navs/Sidebar';
@@ -73,6 +73,9 @@ function Solicitud(props) {
     const [isAutorizacion, setIsAutorizacion] = useState(false);
     const [autorizacionPdf, setAutorizacionPdf] = useState("");
 
+    //Info solicitud
+    const [comentarioAsesor, setComentarioAsesor] = useState("");
+
     const inputCargaRef = useReducer(null);
     //Carga de solicitudes
     useEffect(() => {
@@ -120,9 +123,9 @@ function Solicitud(props) {
         await fetchValidacionSocio(documento, '', props.token, (data) => {
             setValidaciones([...data.list_datos_alertas]);
             setEnteSolicitud(data.str_ente);
-            setNombresSolicitud();
-            setPApellidoSolicitud();
-            setSApellidoSolicitud();
+            setNombresSolicitud(data.str_nombres);
+            setPApellidoSolicitud(data.str_apellido_paterno);
+            setSApellidoSolicitud(data.str_apellido_materno);
             validaAlertaBuro("ALERTA_SOLICITUD_TC_005", [...data.list_datos_alertas])
         }, dispatch)
     }
@@ -230,6 +233,7 @@ function Solicitud(props) {
         }
     }
 
+    
     const getAutorizacion = () => {
 
     }
@@ -284,6 +288,76 @@ function Solicitud(props) {
             setIsInfoEconomica(false);
             setIsDatosSolicitud(true);
         }
+        if (isDatosSolicitud) {
+            // Original date string
+            var dateString = infoSocio[0].str_fecha_nacimiento;
+
+            // Split the date string into day, month, and year
+            var parts = dateString.split('/');
+
+            // Create a new Date object with the year, month, and day in the correct order
+            var dateObject = new Date(parts[2], parts[0] - 1, parts[1]);
+
+            // Get the ISO 8601 format (YYYY-MM-DD) from the date object
+            var isoDateString = dateObject.toISOString().split('T')[0];
+            let body = {
+                str_comentario: comentarioAsesor,
+                str_tipo_documento: tipoDoc,
+                str_num_documento: documento,
+                int_ente: parseInt(enteSolicitud),
+                int_tipo_tarjeta: 0,
+                str_nombres: [infoSocio[0].str_nombres, pApellidoSolicitud, sApellidoSolicitud].join(' '),
+                str_primer_apellido: pApellidoSolicitud,
+                str_segundo_apellido: sApellidoSolicitud,
+                dtt_fecha_nacimiento: isoDateString,
+                str_sexo: (infoSocio[0].str_sexo === 'Masculino' ? 'M' : 'F'),
+                dec_cupo_solicitado: 100,
+                dec_cupo_aprobado: 1000,
+                str_celular: "0993048204",
+                str_correo: "roberthtorres40@gmail.com",
+                str_usuario_proc: get(localStorage.getItem("sender_name")),
+                int_oficina_proc: 1,
+                int_ente_aprobador: 0,
+                str_codigo_producto: "1",
+                int_codigo_sucursal: 1,
+                int_modelo_tratamiento: 1,
+                str_codigo_afinidad: "A1",
+                int_num_promotor: 1,
+                str_habilitada_compra: "S",
+                dec_max_compra: 5,
+                str_denominacion_tarjeta: "ROBERTH TORRES",
+                str_marca_graba: "S",
+                str_calle_num_puerta: "s26",
+                str_localidad: "LOJA",
+                str_barrio: "CIUDAD ALEGRÍA",
+                str_codigo_provincia: "A",
+                str_codigo_postal: "11001",
+                str_zona_geografica: "L05",
+                str_grupo_liquidacion: "S",
+                dec_imp_lim_compras: 1,
+                str_telefono_2: "072112109",
+                str_datos_adicionales: "string",
+                str_codigo_ocupacion: "AS",
+                str_duracion: "5",
+                str_marca_emision: "A",
+                str_rfc: "S",
+                str_marca_tpp: "S",
+                str_rsrv_uso_credencial_1: "string",
+                str_rsrv_uso_credencial_2: "string",
+                str_cuarta_linea: "string",
+                str_comentario_proceso: "string",
+                int_numero_cuenta: 404010093840,
+                str_ente: enteSolicitud
+            }
+            console.log(body);
+            fetchAddSolicitud(body, props.token, (data) => {
+                console.log(data);
+            }, dispatch);
+        }
+    }
+
+    const comentarioHandler = (event) => {
+        setComentarioAsesor(event.target.value);
     }
 
     const lugarEntregaHandler = (event) => {
@@ -392,6 +466,8 @@ function Solicitud(props) {
         return resultado;
     }
 
+    
+
     return (<div className="content">
         <Sidebar></Sidebar>
         <div className="container_mg">
@@ -417,7 +493,7 @@ function Solicitud(props) {
                             </select>
 
                         </div>
-                        <button className="btn_mg btn_mg__primary" disabled={isErrorDocumento}>Siguiente</button>
+                        <button tabIndex="3" className="btn_mg btn_mg__primary" disabled={isErrorDocumento}>Siguiente</button>
 
                     </form>
 
@@ -703,7 +779,7 @@ function Solicitud(props) {
                         <Card className={["mb-3"]}>
                             <div>
                                 <h3>Comentario del asesor:</h3>
-                                <textarea name="comentario_asesor" placeholder="Ingrese su comentario..." cols="50" rows="4"></textarea>
+                                <textarea name="comentario_asesor" placeholder="Ingrese su comentario..." cols="50" rows="4" value={comentarioAsesor} onChange={comentarioHandler}></textarea>
                             </div>
 
                         </Card>

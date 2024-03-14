@@ -59,24 +59,9 @@ function Sidebar(props) {
                         {/*})}*/}
 
                         <div className="sidebar_menu__item">
-                            <a className="active item__master">Reportes</a>
-                            <div className="item_slaves">
-                                <a className="item__slave">Reportes</a>
-                            </div>
-                        </div>
-                        <div className="sidebar_menu__item">
                             <NavItem>
                                 <NavLink tag={Link} className="text-dark" to="/solicitud">Solicitud</NavLink>
                             </NavItem>
-                        </div>
-                        <div className="sidebar_menu__item">
-                            <a className="item__master">Reportes</a>
-                            <div className="item_slaves">
-                                <a className="item__slave">
-                                    Reportes
-                                </a>
-                                <a className="item__slave">Reportes</a>
-                            </div>
                         </div>
                         <div className="sidebar_menu__item">
                             <a className="item__master">Reportes</a>
