@@ -562,3 +562,41 @@ export async function persistirConexionesStorage(loginUser, idUser, locales) {
     localesIni[set(loginUser + idUser)] = await cifrarConexionesLocales(locales);
     localStorage.setItem("COEXIONES_LOCALES", JSON.stringify(localesIni));
 }
+
+export function validaCedula (strCedula) {
+    let suma = 0;
+    let resultado = false;
+
+    // Validar longitud de la cédula o RUC
+    if (strCedula.length !== 10) {
+        // Si la longitud no es igual a 10, retorna falso
+        return false;
+    }
+
+    // Iterar sobre los primeros 9 dígitos de la cédula o RUC
+    for (let i = 0; i < 9; i++) {
+        // Obtener el i-ésimo dígito como número
+        const j = parseInt(strCedula.charAt(i), 10);
+
+        // Determinar el factor multiplicador (1 o 2)
+        let x = (i % 2 === 0) ? j * 2 : j;
+
+        // Si el resultado de la multiplicación es mayor a 9, ajustar
+        if (x > 9) {
+            x = x - 9;
+        }
+
+        // Sumar el resultado al acumulador
+        suma += x;
+    }
+
+    // Calcular el dígito verificador
+    const verificador = (10 - (suma % 10)) % 10;
+
+    // Comparar el dígito verificador calculado con el último dígito de la cédula o RUC
+    if (verificador === parseInt(strCedula.charAt(9), 10)) {
+        resultado = true;
+    }
+
+    return resultado;
+}

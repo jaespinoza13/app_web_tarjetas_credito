@@ -1,6 +1,6 @@
 import React, { Component, useEffect, useState } from 'react';
 import { getAuthenticated, getUser } from 'react-session-persist';
-import { Route, Switch } from 'react-router';
+import { Route, Switch, Redirect } from 'react-router';
 import Layout from './components/Layout';
 import Home from './components/Home';
 import Login from './components/Login/Login';
@@ -17,6 +17,7 @@ import { fetchMenuPrincipal } from './services/RestServices';
 import { connect, useDispatch } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import Solicitud from './components/Solicitud/Solicitud';
+import NuevaSolicitud from './components/Solicitud/NuevaSolicitud';
 
 
 const mapStateToProps = (state) => {
@@ -148,7 +149,16 @@ class App extends Component {
                     <Route exact path='/' component={!this.state.isAuthenticated ? Login : Home} />
                     <Route path='/auth' component={Login} />
                     <Route path='/logout' component={!this.state.isAuthenticated ? Login : Logout} />
-                    <Route path='/solicitud' component={!this.state.isAuthenticated ? Login : Solicitud} />
+                    <Route path='/solicitud'>
+                        {this.state.isAuthenticated ? (
+                            <>
+                                <Route exact path='/solicitud' component={Solicitud} />
+                                <Route path='/solicitud/nueva' component={NuevaSolicitud} />
+                            </>
+                        ) : (
+                            <Route render={() => <Redirect to="/auth" />} />
+                        )}
+                    </Route>
                     {this.state.listaMenus.find(x => x.url === "/logs") ?
                         <Route exact path='/logs' component={!this.state.isAuthenticated ? Login : HomeLogs} />
                         : ""}

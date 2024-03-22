@@ -43,7 +43,9 @@ function Sidebar(props) {
             <div className={`sidebar ${collapsed ? 'sidebar_min' : ''}`} id='sidebar'>
                 <div className="sidebar_info">
                     <div className="sidebar_minimize">
-                        <button className="btn_mg btn_mg__secondary" id="toggle-sidebar" onClick={toggleSideBar}>&#60;</button>
+                        <button className="btn_mg btn_mg__tertiary" id="toggle-sidebar" onClick={toggleSideBar}>
+                            <img src="Imagenes/menu.png"></img>
+                        </button>
                     </div>
                     <div className="sidebar_profile">
                         <img src="/Imagenes/avatar1.png" alt=""></img>

@@ -1,4 +1,5 @@
 ﻿import { connect, useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import '../../scss/main.css';
 import '../../scss/components/solicitud.css';
 import { useState, useEffect, useReducer } from "react";
@@ -7,7 +8,11 @@ import { IsNullOrWhiteSpace } from '../../js/utiles';
 import Modal from '../Common/Modal/Modal';
 import Sidebar from '../Common/Navs/Sidebar';
 import Card from '../Common/Card';
+import Item from '../Common/UI/Item';
 import { get } from '../../js/crypt';
+import Button from '../Common/UI/Button';
+import Toggler from '../Common/UI/Toggler';
+import Chip from '../Common/UI/Chip';
 
 
 const mapStateToProps = (state) => {
@@ -33,6 +38,10 @@ function Solicitud(props) {
     const [solicitudes, setSolicitudes] = useState([]);
     const [isBtnDisabled, setBtnDisabled] = useState(false);
     const [ciValido, setCiValido] = useState(true);
+    const [isLstSolicitudes, setIsLstSolicitudes] = useState(true);
+    const [isLstProspecciones, setIsLstProspecciones] = useState(false);
+    const navigate = useHistory();
+
 
     //Ingreso información para validaciones
     const [isErrorDocumento, setIsErrorDocumento] = useState(true);
@@ -78,13 +87,13 @@ function Solicitud(props) {
 
     const inputCargaRef = useReducer(null);
     //Carga de solicitudes
-    useEffect(() => {
-        fetchGetSolicitudes(props.token, (data) => {
-            if (data.str_res_codigo === "000") {
-                setSolicitudes(data.lst_solicitudes);
-            }
-        }, dispatch)
-    }, [])
+    //useEffect(() => {
+    //    fetchGetSolicitudes(props.token, (data) => {
+    //        if (data.str_res_codigo === "000") {
+    //            setSolicitudes(data.lst_solicitudes);
+    //        }
+    //    }, dispatch)
+    //}, [])
 
     const nombreTarjetaHnadler = (event) => {
         setNombreTarjeta(event.target.value);
@@ -428,6 +437,16 @@ function Solicitud(props) {
         }, dispatch);
     };
 
+    const handleSelectedToggle = (index) => {
+        if (index === 0) {
+            setIsLstProspecciones(false);
+            setIsLstSolicitudes(true);
+        } else {
+            setIsLstSolicitudes(false);
+            setIsLstProspecciones(true);
+        }
+    }
+
     const validaCedula = (strCedula) => {
         let suma = 0;
         let resultado = false;
@@ -466,101 +485,192 @@ function Solicitud(props) {
         return resultado;
     }
 
+    const irNuevaSolicitud = () => {
+        navigate.push('/solicitud/nueva');
+    }
+
     
 
-    return (<div className="content">
+    return (<div className="f-row">
         <Sidebar></Sidebar>
         <div className="container_mg">
             <div className="consulta_buro">
-                <Card>
-                    <form className="form_mg form_mg__md" onSubmit={submitConsultaValidaciones}>
-                        <div className="form_mg__item form_mg__item_row">
+                <Item xs={2} sm={2} md={2} lg={2} xl={2}>
+                    <Card>
+                        {/*<form className="form_mg form_mg__md" onSubmit={submitConsultaValidaciones}>*/}
+                        {/*    <div className="form_mg__item form_mg__item_row">*/}
 
-                            <label htmlFor="username" className="pbmg1">Ingrese documento</label>
-                            <input className={`${!ciValido && 'no_valido'}`} tabIndex="1" type="number" value={documento} name="username" placeholder="Número de cédula" id="username" autoComplete="off" onChange={documentoHandler} />
+                        {/*        <label htmlFor="username" className="pbmg1">Ingrese documento</label>*/}
+                        {/*        <input className={`${!ciValido && 'no_valido'}`} tabIndex="1" type="number" value={documento} name="username" placeholder="Número de cédula" id="username" autoComplete="off" onChange={documentoHandler} />*/}
 
-                            <label htmlFor="tipo_accion">Seleccione acción...</label>
-                            <select tabIndex="1" id="tipo_accion" onChange={accionHandler}>
-                                <option value="solicitud">Solicitud</option>
-                                <option value="prospeccion">Prospección</option>
-                            </select>
+                        {/*        <label htmlFor="tipo_accion">Seleccione acción...</label>*/}
+                        {/*        <select tabIndex="1" id="tipo_accion" onChange={accionHandler}>*/}
+                        {/*            <option value="solicitud">Solicitud</option>*/}
+                        {/*            <option value="prospeccion">Prospección</option>*/}
+                        {/*        </select>*/}
 
-                            <label htmlFor="tipo_documento">Seleccione tipo documento...</label>
-                            <select tabIndex="2" id="tipo_documento" onChange={tipoDocHandler} value={tipoDoc}>
-                                <option value="C">Cédula</option>
-                                <option value="R">R.U.C</option>
-                                <option value="P">Pasaporte</option>
-                            </select>
+                        {/*        <label htmlFor="tipo_documento">Seleccione tipo documento...</label>*/}
+                        {/*        <select tabIndex="2" id="tipo_documento" onChange={tipoDocHandler} value={tipoDoc}>*/}
+                        {/*            <option value="C">Cédula</option>*/}
+                        {/*            <option value="R">R.U.C</option>*/}
+                        {/*            <option value="P">Pasaporte</option>*/}
+                        {/*        </select>*/}
 
-                        </div>
-                        <button tabIndex="3" className="btn_mg btn_mg__primary" disabled={isErrorDocumento}>Siguiente</button>
+                        {/*    </div>*/}
+                        <img style={{ width: "15%" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg"></img>
+                        <h4 className="mt-2">Solicitud / Prospección</h4>
+                        <h5 className="mt-2">Genera una nueva solicitud o prospección de tarjeta de crédito</h5>
+                        <Button tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={irNuevaSolicitud}>Siguiente</Button>
 
-                    </form>
+                        {/*</form>*/}
 
-                </Card>
+                    </Card>
+
+                </Item>
             </div>
-            <div id="listado_solicitudes">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Identificación</th>
-                            <th>Nombre solicitante</th>
-                            <th>Producto TC</th>
-                            <th>Monto</th>
-                            <th>Calificación</th>
-                            <th>Estado</th>
-                            <th>Oficina Crea</th>
-                            <th>Oficial</th>
-                            <th>Usuario</th>
-                            <th>Fecha modificación</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1106546468</td>
-                            <td>Edison José Villamagua Mendieta</td>
-                            <td>Black</td>
-                            <td>$3600</td>
-                            <td>OK</td>
-                            <td>Aprobada</td>
-                            <td>Matriz</td>
-                            <td>xnojeda</td>
-                            <td>xnojeda</td>
-                            <td>09/01/2023</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td>1186549865</td>
-                            <td>Janeth del Cisne Lojan</td>
-                            <td>Black</td>
-                            <td>$3600</td>
-                            <td>OK</td>
-                            <td>Aprobada</td>
-                            <td>Matriz</td>
-                            <td>xnojeda</td>
-                            <td>xnojeda</td>
-                            <td>09/01/2023</td>
-                            <td></td>
-                        </tr>
+            <Toggler className="mt-2" toggles={["Solicitudes", "Prospecciones"]} selectedToggle={handleSelectedToggle}></Toggler>
 
-                        {/*{solicitudes.map((solicitud) => {*/}
-                        {/*    return (<tr key={solicitud.int_id}>*/}
-                        {/*        <td>{solicitud.int_ente}</td>*/}
-                        {/*        <td>{"Edison José Villamagua Mendieta"}</td>*/}
-                        {/*        <td>{solicitud.str_tipo_tarjeta}</td>*/}
-                        {/*        <td>{solicitud.dec_cupo_solicitado}</td>*/}
-                        {/*        <td>{"200"}</td>*/}
-                        {/*        <td>{solicitud.str_estado}</td>   */}
-                        {/*        <td>{"Matriz"}</td>*/}
-                        {/*        <td>{solicitud.str_usuario_crea}</td>*/}
-                        {/*        <td>{solicitud.str_usuario_crea}</td>*/}
-                        {/*        <td>{solicitud.str_usuario_crea}</td>*/}
-                        {/*    </tr>);*/}
-                        {/*})}*/}
-                    </tbody>
-                </table>
-            </div>
+            {isLstSolicitudes &&
+                <div id="listado_solicitudes" className="mt-3">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Identificación</th>
+                                <th>Nombre solicitante</th>
+                                <th>Producto TC</th>
+                                <th>Monto</th>
+                                <th>Calificación</th>
+                                <th>Estado</th>
+                                <th>Oficina Crea</th>
+                                <th>Oficial</th>
+                                <th>Usuario</th>
+                                <th>Fecha modificación</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1106546468</td>
+                                <td>Edison José Villamagua Mendieta</td>
+                                <td><Chip type="black">Black</Chip></td>
+                                <td>$3600</td>
+                                <td>OK</td>
+                                <td>Aprobada</td>
+                                <td>Matriz</td>
+                                <td>xnojeda</td>
+                                <td>xnojeda</td>
+                                <td>09/01/2023</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>1186549865</td>
+                                <td>Janeth del Cisne Lojan</td>
+                                <td><Chip type="black">Black</Chip></td>
+                                <td>$3600</td>
+                                <td>OK</td>
+                                <td>Aprobada</td>
+                                <td>Matriz</td>
+                                <td>xnojeda</td>
+                                <td>xnojeda</td>
+                                <td>09/01/2023</td>
+                                <td></td>
+                            </tr>
+
+                            {/*{solicitudes.map((solicitud) => {*/}
+                            {/*    return (<tr key={solicitud.int_id}>*/}
+                            {/*        <td>{solicitud.int_ente}</td>*/}
+                            {/*        <td>{"Edison José Villamagua Mendieta"}</td>*/}
+                            {/*        <td>{solicitud.str_tipo_tarjeta}</td>*/}
+                            {/*        <td>{solicitud.dec_cupo_solicitado}</td>*/}
+                            {/*        <td>{"200"}</td>*/}
+                            {/*        <td>{solicitud.str_estado}</td>   */}
+                            {/*        <td>{"Matriz"}</td>*/}
+                            {/*        <td>{solicitud.str_usuario_crea}</td>*/}
+                            {/*        <td>{solicitud.str_usuario_crea}</td>*/}
+                            {/*        <td>{solicitud.str_usuario_crea}</td>*/}
+                            {/*    </tr>);*/}
+                            {/*})}*/}
+                        </tbody>
+                    </table>
+                </div>
+            }
+            {isLstProspecciones &&
+                <div id="listado_solicitudes">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Identificación</th>
+                                <th>Nombre solicitante</th>
+                                <th>Producto TC</th>
+                                <th>Monto</th>
+                                <th>Calificación</th>
+                                <th>Estado</th>
+                                <th>Oficina Crea</th>
+                                <th>Oficial</th>
+                                <th>Usuario</th>
+                                <th>Fecha modificación</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1106546468</td>
+                                <td>Edison José Villamagua Mendieta</td>
+                                <td><Chip type="standar">Standar</Chip></td>
+                                <td>$3600</td>
+                                <td>OK</td>
+                                <td>Aprobada</td>
+                                <td>Matriz</td>
+                                <td>xnojeda</td>
+                                <td>xnojeda</td>
+                                <td>09/01/2023</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>1186549865</td>
+                                <td>Janeth del Cisne Lojan</td>
+                                <td><Chip type="gold">Gold</Chip></td>
+                                <td>$3600</td>
+                                <td>OK</td>
+                                <td>Aprobada</td>
+                                <td>Matriz</td>
+                                <td>xnojeda</td>
+                                <td>xnojeda</td>
+                                <td>09/01/2023</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>1186549865</td>
+                                <td>Janeth del Cisne Lojan</td>
+                                <td><Chip type="black">Black</Chip></td>
+                                <td>$3600</td>
+                                <td>OK</td>
+                                <td>Aprobada</td>
+                                <td>Matriz</td>
+                                <td>xnojeda</td>
+                                <td>xnojeda</td>
+                                <td>09/01/2023</td>
+                                <td></td>
+                            </tr>
+
+                            {/*{solicitudes.map((solicitud) => {*/}
+                            {/*    return (<tr key={solicitud.int_id}>*/}
+                            {/*        <td>{solicitud.int_ente}</td>*/}
+                            {/*        <td>{"Edison José Villamagua Mendieta"}</td>*/}
+                            {/*        <td>{solicitud.str_tipo_tarjeta}</td>*/}
+                            {/*        <td>{solicitud.dec_cupo_solicitado}</td>*/}
+                            {/*        <td>{"200"}</td>*/}
+                            {/*        <td>{solicitud.str_estado}</td>   */}
+                            {/*        <td>{"Matriz"}</td>*/}
+                            {/*        <td>{solicitud.str_usuario_crea}</td>*/}
+                            {/*        <td>{solicitud.str_usuario_crea}</td>*/}
+                            {/*        <td>{solicitud.str_usuario_crea}</td>*/}
+                            {/*    </tr>);*/}
+                            {/*})}*/}
+                        </tbody>
+                    </table>
+                </div>
+            }
             <Modal
                 modalIsVisible={isModalVisible}
                 titulo={`${accion.charAt(0).toUpperCase() + accion.slice(1)} de tarjeta de crédito`}

@@ -28,23 +28,27 @@ const mapStateToProps = (state) => {
 
 function Home(props) {
     return (
-        <div className="content">
+        <div className="f-row">
             <Sidebar></Sidebar>
-            <Container className="border-bottom text-center">
-                <h2>CoopMego - {props.dataNombreSistema}</h2>
-                <h4>
-                    <b>Versi&oacute;n:</b>{' '}{props.dataVersion}
-                    <br />
-                    <b>Fecha Actualizaci&oacute;n:</b>{' '}{props.dataFechaActualizacion}
-                </h4>
-            </Container>
-            <Container>
-                <h3>Mejoras:</h3>
-                <ul>
-                    {props.dataListaMejoras.map((item, index) =>
-                        <li key={"Mejora_" + index}>{item}</li>
-                    )}
-                </ul>
+            <Container className="border-bottom text-center ">
+                <Container>
+                    <h3>Bienvenido al sistema de </h3>
+                    <h2>{props.dataNombreSistema}</h2>
+                    <h3>Crea y administra solicitudes de tarjeta de crédito</h3>
+                    <h4>
+                        <b>Versi&oacute;n:</b>{' '}{props.dataVersion}
+                        <br />
+                        <b>Fecha Actualizaci&oacute;n:</b>{' '}{props.dataFechaActualizacion}
+                    </h4>
+                </Container>
+                <Container>
+                    <h3>Mejoras:</h3>
+                    <ul>
+                        {props.dataListaMejoras.map((item, index) =>
+                            <li key={"Mejora_" + index}>{item}</li>
+                        )}
+                    </ul>
+                </Container>
             </Container>
         </div>
     );
