@@ -98,9 +98,11 @@ export const getValidaciones = "GET_VALIDAR_PERSONA"
 export const getScore = "GET_SCORE"
 export const getInfoSocio = "GET_INFO_SOCIO"
 export const getInfoEco = "GET_INFORMACION_ECONOMICA"
+export const getContrato = "GET_CONTRATO"
 export const addAutorizacion = "ADD_AUTORIZACION"
 export const getSolicitudes = "GET_SOLICITUDES_TC"
 export const addSolicitud = "ADD_SOLICITUD_TC"
+export const getInfoFinan = "GET_SITUACION_FINANCIERA"
 
 /**
  * Obtener la Url de un servicio de acuerdo a su nombre de Proceso Unico
@@ -197,11 +199,17 @@ export function ServiceUrl(request, params = []) {
         case addAutorizacion:
             pathOut = 'tc/addAut'
             break;
+        case getContrato:
+            pathOut = 'tc/getContrato'
+            break;
         case getSolicitudes:
             pathOut = "tc/getSolic"
             break;
         case addSolicitud:
             pathOut = "tc/addSolic"
+            break;
+        case getInfoFinan:
+            pathOut = "tc/getInfoFin"
             break;
         default:
             return null;
@@ -301,7 +309,7 @@ export async function ServicioGetExecute(request, token, { encrypt = true, param
  */
 export async function ServicioPostExecute(request, body, token, { encryptS = true, encryptR = true, params = null, responseJSON = true, responseBLOB = false, dispatch = null, exProcess = false, background = false } = {}) {
     if (dispatch && !background) dispatch(setStateLoad(true));
-
+    console.log(request);
     const sender = localStorage.getItem('sender');
     if (exProcess) localStorage.setItem("sender", set("Param"));
     
@@ -311,7 +319,6 @@ export async function ServicioPostExecute(request, body, token, { encryptS = tru
         } else {
             localStorage.setItem("sender", sender);
         }
-
         try {
             var datosUsuario = await getUsuario();
             datosUsuario = typeof datosUsuario === 'string' || datosUsuario instanceof String ? null : datosUsuario;
@@ -330,6 +337,9 @@ export async function ServicioPostExecute(request, body, token, { encryptS = tru
             body.str_id_oficina = datosUsuario ? datosUsuario.id_oficina + "" : "";
             body.str_id_perfil = datosUsuario ? datosUsuario.id_perfil + "" : "";
             var strBody = JSON.stringify(body);
+            console.log(ServiceUrl(request, params));
+            console.log(request);
+            console.log(params);
             const requestOptions = {
                 method: 'POST',
                 headers: {
@@ -438,8 +448,10 @@ function pathRewrite(path) {
         "tc/socio": '/tarjetacredito/infoSocio',
         "tc/infoEco": '/tarjetacredito/infoEco',
         "tc/addAut": '/tarjetacredito/addAutorizacion',
+        "tc/getContrato": '/tarjetacredito/getContrato',
         "tc/getSolic": '/tarjetacredito/getSolicitudes',
-        "tc/addSolic": '/tarjetacredito/addSolicitud'
+        "tc/addSolic": '/tarjetacredito/addSolicitud',
+        "tc/getInfoFin": '/tarjetacredito/getInfoFinan'
     };
     if (path) {
         var p = context[path];

@@ -12,6 +12,11 @@ const ValidacionSocio = (props) => {
     const [cedulaSocio, setCedulaSocio] = useState("");
     const [montoSolicitado, setMontoSolicitado] = useState(0);
 
+    const [nombresSocio, setNombresSocio] = useState("");
+    const [apellidosSocio, setApellidosSocio] = useState("");
+    const [celularSocio, setCelularSocio] = useState("");
+    const [correoSocio, setCorreoSocio] = useState("");
+
     //Estado validacion
     const [isCedulaValida, setIsCedulaValida] = useState(false);
 
@@ -27,6 +32,44 @@ const ValidacionSocio = (props) => {
 
     const setMontoSolicitadoHandler = (value) => {
         setMontoSolicitado(value);
+        props.setMontoSolicitado(value);
+    }
+
+    const nombresSocioHandler = (valor) => {
+        setNombresSocio(valor);
+        props.datosIngresados({
+            nombres: valor,
+            apellidos: apellidosSocio,
+            celular: celularSocio,
+            correo: correoSocio
+        })
+    }
+    const apellidosSocioHandler = (valor) => {
+        setApellidosSocio(valor);
+        props.datosIngresados({
+        nombres: nombresSocio,
+        apellidos: valor,
+        celular: celularSocio,
+        correo: correoSocio
+        })
+    }
+    const celularSocioHandler = (valor) => {
+        setCedulaSocio(valor);
+        props.datosIngresados({
+        nombres: nombresSocio,
+        apellidos: apellidosSocio,
+        celular: valor,
+        correo: correoSocio
+        })
+    }
+    const correoSocioHandler = (valor) => {
+        setCorreoSocio(valor);
+        props.datosIngresados({
+        nombres: nombresSocio,
+        apellidos: apellidosSocio,
+        celular: celularSocio,
+        correo: valor
+        })
     }
 
     return (
@@ -40,21 +83,35 @@ const ValidacionSocio = (props) => {
             {props.paso === 1 &&
             <div>
                 <h2>Datos del Socio</h2>
-                    <Card>
-                        <label>Nombres:</label>
-                        {/*<h4>{}</h4>*/}
-                        {/*<hr className="dashed"></hr>*/}
-                        {/*<label>Ente:</label>*/}
-                        {/*<h4>{enteSocio}</h4>*/}
-                        {/*<hr className="dashed"></hr>*/}
-                        {/*<label>Correo:</label>*/}
-                        {/*<h4>{correoSocio}</h4>*/}
-                        {/*<hr className="dashed"></hr>*/}
-                        {/*<label>Número celular:</label>*/}
-                        {/*<h3>{celularSocio}</h3>*/}
-                    </Card>
+                    {props.ingresoDatos ?
+                        <Card>
+                            <label>Nombres:</label>
+                            <Input type="text" placeholder="Ej. Roberth Esteban" setValueHandler={nombresSocioHandler} value={nombresSocio}></Input>
+                            <label>Apellidos:</label>
+                            <Input type="text" placeholder="Ej. Torres Reyes" setValueHandler={apellidosSocioHandler}></Input>
+                            <h2 className="mt-4 mb-3">Datos de contacto</h2>
+                            <label>Correo:</label>
+                            <Input type="text" placeholder="Ej. test@test.com" setValueHandler={correoSocioHandler}></Input>
+                            <label>Número celular:</label>
+                            <Input type="text" placeholder="Ej. 0999999999" setValueHandler={celularSocioHandler}></Input>
+                        </Card>
+                        : 
+                        <Card>
+                            <label>Nombres:</label>
+                            <h4>{`${props.infoSocio.str_nombres} ${props.infoSocio.str_apellido_paterno} ${props.infoSocio.str_apellido_materno}`}</h4>
+                            <hr className="dashed"></hr>
+                            <label>Ente:</label>
+                            <h4>{props.infoSocio.str_ente}</h4>
+                            <hr className="dashed"></hr>
+                            <label>Correo:</label>
+                            <h4>{props.infoSocio.str_email}</h4>
+                            <hr className="dashed"></hr>
+                            <label>Número celular:</label>
+                            <h3>{props.infoSocio.str_celular}</h3>
+                        </Card>
+                    }
                     <h2>Cupo solicitado</h2>
-                    <Input type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setMontoSolicitadoHandler}></Input>
+                    <Input type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setMontoSolicitadoHandler} value={montoSolicitado}></Input>
             </div>
             }
 

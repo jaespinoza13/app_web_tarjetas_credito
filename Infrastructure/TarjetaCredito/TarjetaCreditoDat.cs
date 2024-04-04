@@ -1,7 +1,10 @@
 ﻿using Domain.Common;
 using Domain.Models.TarjetaCredito.AddAutorizacion;
 using Domain.Models.TarjetaCredito.AddSolicitud;
+using Domain.Models.TarjetaCredito.GetContrato;
+using Domain.Models.TarjetaCredito.GetContratos;
 using Domain.Models.TarjetaCredito.GetInfoEconomica;
+using Domain.Models.TarjetaCredito.GetInfoFinanciera;
 using Domain.Models.TarjetaCredito.GetInfoSocio;
 using Domain.Models.TarjetaCredito.GetScore;
 using Domain.Models.TarjetaCredito.GetSolicitudes;
@@ -91,7 +94,8 @@ namespace Infrastructure.TarjetaCredito
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                res.str_res_codigo = "500";
+                res.str_res_info_adicional = "Ocurrió un error al obtener los datos del score";
             }
             return res;
         }
@@ -159,6 +163,40 @@ namespace Infrastructure.TarjetaCredito
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
+            }
+            return res;
+        }
+
+        public ResGetContrato getContrato(ReqGetContrato req)
+        {
+            ResGetContrato res = new ResGetContrato();
+            try
+            {
+                req.llenarDatosConfig(_settings);
+                req.str_id_servicio = "REQ_" + _settings.service_get_contrato;
+                var options = new RestClientOptions(_settings.ws_aval + _settings.service_get_contrato)
+                {
+                    ThrowOnAnyError = true,
+                    MaxTimeout = _settings.time_out
+                };
+                var client = new RestClient(options);
+                var request = new RestRequest();
+                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_aval);
+                request.AddHeader("Content-Type", "application/json");
+                request.AddParameter("application/json", req, ParameterType.RequestBody);
+                request.Method = Method.Post;
+
+                var response = new RestResponse();
+                response = client.Post(request);
+
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    res = JsonSerializer.Deserialize<ResGetContrato>(response.Content!)!;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
             }
             return res;
         }
@@ -257,6 +295,41 @@ namespace Infrastructure.TarjetaCredito
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
                     res = JsonSerializer.Deserialize<ResAddSolicitud>(response.Content!)!;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            return res;
+        }
+
+        public ResGetInfoFinan getInfoFinan(ReqGetInfoFinan req)
+        {
+            ResGetInfoFinan res = new ResGetInfoFinan();
+            try
+            {
+                req.llenarDatosConfig(_settings);
+                req.str_id_servicio = "REQ_" + _settings.service_get_info_finan;
+                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_info_finan)
+                {
+                    ThrowOnAnyError = true,
+                    MaxTimeout = _settings.time_out
+                };
+
+                var client = new RestClient(options);
+                var request = new RestRequest();
+                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                request.AddHeader("Content-Type", "application/json");
+                request.AddParameter("application/json", req, ParameterType.RequestBody);
+                request.Method = Method.Post;
+
+                var response = new RestResponse();
+                response = client.Post(request);
+
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    res = JsonSerializer.Deserialize<ResGetInfoFinan>(response.Content!)!;
                 }
             }
             catch (Exception ex)

@@ -2,7 +2,10 @@
 using Domain.Common.Interfaces;
 using Domain.Models.TarjetaCredito.AddAutorizacion;
 using Domain.Models.TarjetaCredito.AddSolicitud;
+using Domain.Models.TarjetaCredito.GetContrato;
+using Domain.Models.TarjetaCredito.GetContratos;
 using Domain.Models.TarjetaCredito.GetInfoEconomica;
+using Domain.Models.TarjetaCredito.GetInfoFinanciera;
 using Domain.Models.TarjetaCredito.GetInfoSocio;
 using Domain.Models.TarjetaCredito.GetScore;
 using Domain.Models.TarjetaCredito.GetSolicitudes;
@@ -85,6 +88,15 @@ namespace plantilla_app_web.Controllers
             return Utiles.crypt(resGetInfoSocio, Request.Headers);
         }
 
+        [Route("getContrato")]
+        [ServiceFilter(typeof(CryptoFilter))]
+        [HttpPost]
+        public ResCrypt Post(ReqGetContrato req)
+        {
+            ResGetContrato res = tarjetaCreditoDat.getContrato(req);
+            return Utiles.crypt(res, Request.Headers);
+        }
+
         [Route("addAutorizacion")]
         [ServiceFilter(typeof(CryptoFilter))]
         [HttpPost]
@@ -110,6 +122,15 @@ namespace plantilla_app_web.Controllers
         {
             ResAddSolicitud res = tarjetaCreditoDat.addSolicitud(req);
             return Utiles.crypt (res, Request.Headers);
+        }
+
+        [Route("getInfoFinan")]
+        [ServiceFilter(typeof(CryptoFilter))]
+        [HttpPost]
+        public ResCrypt Post(ReqGetInfoFinan req)
+        {
+            ResGetInfoFinan res = tarjetaCreditoDat.getInfoFinan(req);
+            return Utiles.crypt(res, Request.Headers);
         }
     }
 }

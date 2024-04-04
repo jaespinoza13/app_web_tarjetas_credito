@@ -1,3 +1,17 @@
 ﻿.validacion {
     align-items: center;
+    position: relative;
+}
+
+.validacion button {
+    position: absolute;
+    right: -25px;
+}
+
+#download-btn {
+    padding: 1.3rem 1rem;
+}
+
+#upload-btn {
+    padding: 1.3rem 1rem;
 }

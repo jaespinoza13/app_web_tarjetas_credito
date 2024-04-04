@@ -1,27 +1,95 @@
-﻿import Accordion from "../Common/UI/Accordion";
+﻿import "../../css/Components/DatosSocio.css";
+import Accordion from "../Common/UI/Accordion";
 import { Fragment, useState } from "react";
 import { useDispatch } from 'react-redux';
 import Item from "../Common/UI/Item";
-import { fetchInfoSocio } from "../../services/RestServices";
+import { fetchInfoSocio, fetchInfoEconomica, fetchGetInfoFinan } from "../../services/RestServices";
+import Switch from "../Common/UI/Switch";
+import Toggler from "../Common/UI/Toggler";
+import Input from "../Common/UI/Input";
+import Textarea from "../Common/UI/Textarea";
 
 const DatosSocio = (props) => {
     const dispatch = useDispatch();
+
+    const comentarioNegacion = [
+        {
+            prm_id: 1,
+            prm_valor_ini: "Solicitará en otra IFI"
+        },
+        {
+            prm_id: 2,
+            prm_valor_ini: "Monto muy bajo"
+        },
+        {
+            prm_id: 3,
+            prm_valor_ini: "No desea por el momento"
+        },
+        {
+            prm_id: 4,
+            prm_valor_ini: "Regresará con la documentación"
+        }
+    ];
+
+    const comentarioAfirmacion = [
+        {
+            prm_id: 5,
+            prm_valor_ini: "En trámite de ser socio"
+        },
+        {
+            prm_id: 6,
+            prm_valor_ini: "Lorem Ipsum"
+        },
+        {
+            prm_id: 7,
+            prm_valor_ini: "Lorem Ipsum"
+        },
+        {
+            prm_id: 8,
+            prm_valor_ini: "Regresará con la documentación"
+        }
+    ];
     //Acordeon Score
     const [estadoAccordionScore, setEstadoAccordionScore] = useState(true);
     const [estadoLoadingScore, setEstadoLoadingScore] = useState(false);
     const [contentReadyScore, setContentReadyScore] = useState(true);
     //Acordeon InfoSocio
     const [estadoAccordionInfoSocio, setEstadoAccordionInfoSocio] = useState(false);
+    const [estadoAccordionInfoFinan, setEstadoAccordionInfoFinan] = useState(false);
+    const [estadoAccordionInfoEco, setEstadoAccordionInfoEco] = useState(false);
     const [estadoLoadingInfoSocio, setEstadoLoadingInfoSocio] = useState(false);
+    const [estadoLoadingInfoFinan, setEstadoLoadingInfoFinan] = useState(false);
+    const [estadoLoadingInfoEco, setEstadoLoadingInfoEco] = useState(false);
+    const [estadoMediosNotif, setEstadoMediosNotif] = useState(false);
     const [contentReadyInfoSocio, setContentReadyInfoSocio] = useState(false);
+    const [contentReadyInfoFinan, setContentReadyInfoFinan] = useState(false);
+    const [contentReadyInfoEco, setContentReadyInfoEco] = useState(false);
 
     const [infoSocio, setInfoSocio] = useState([]);
+    const [infoEco, setInfoEco] = useState([]);
     const [dirDocimicilioSocio, setDirDomicilioSocio] = useState([]);
     const [dirTrabajoSocio, setDirTrabajoSocio] = useState([]);
+
+    //ComentarioGestion
+    const [deseaTarjeta, setDeseaTarjeta] = useState(false);
+    const [comentarioAdicional, setComentarioAdicional] = useState(false);
+
+    //InfoEconomica
+    const [infoEconomica, setInfoEconomica] = useState([]);
+    const [ingresos, setIngresos] = useState([]);
+    const [egresos, setEgresos] = useState([]);
+
+    //InfoFinanciera
+    const [dpf, setDpf] = useState([]);
+    const [creditosHis, setCreditosHis] = useState([]);
 
     const toggleAccordionScore = () => {
         setEstadoAccordionScore(!estadoAccordionScore);
         console.log(estadoAccordionScore)
+    }
+
+    const comentarioAdicionalHanlder = (e) => {
+        setComentarioAdicional(e);
     }
 
     const getInfoSocioHandler = () => {
@@ -33,10 +101,15 @@ const DatosSocio = (props) => {
         }
     }
 
-    const getInfoSocio = async () => {
+    
+    const deseaTarjetaHandler = (value) => {
+        setDeseaTarjeta(value);
+    }
+
+    const getInfoSocio = () => {
 
         setEstadoLoadingInfoSocio(true);
-        await fetchInfoSocio("1105970717", props.token, (data) => {
+        fetchInfoSocio("1105970717", props.token, (data) => {
             setDirDomicilioSocio([...data.lst_dir_domicilio]);
             setDirTrabajoSocio([...data.lst_dir_trabajo]);
             setInfoSocio([...data.datos_cliente]);
@@ -46,17 +119,49 @@ const DatosSocio = (props) => {
         setEstadoLoadingInfoSocio(false);
     }
 
+    const getInfoFinan = () => {
+        setEstadoLoadingInfoFinan(true);
+        fetchGetInfoFinan(props.informacionSocio.str_ente, props.token, (data) => {
+            setDpf(...[data.lst_dep_plazo_fijo]);
+            setCreditosHis(...[data.lst_creditos_historicos]);
+            setEstadoAccordionInfoFinan(true);
+            setContentReadyInfoFinan(true);
+        }, dispatch);
+        setEstadoLoadingInfoFinan(false);
+    }
 
+    const seleccionComentarioAfirma = (value) => {
+        console.lgo(value);
+    }
+    const seleccionComentarioNega = (value) => {
+        console.lgo(value);
+    }
+
+    const getInfoMediosNotif = () => {
+        setEstadoMediosNotif(!estadoMediosNotif);
+    }
+
+    const getInfoEco = () => {
+        setEstadoLoadingInfoEco(true);
+        fetchInfoEconomica(props.informacionSocio.str_ente, props.token, (data) => {
+            setInfoEconomica(data)
+            setIngresos([...data.lst_ingresos_socio]);
+            setEgresos([...data.lst_egresos_socio]);
+            setEstadoAccordionInfoEco(true);
+            setContentReadyInfoEco(true);
+        }, dispatch);
+        setEstadoLoadingInfoEco(false);
+    }
 
     return (
-        <div className="f-col">
+        <div className="f-col w-100">
+            {props.tipoGestion }
             <div id="montoSugerido" className="f-col">
                 <img></img>
                 <div className="datosMonto">
                     <h3>Monto sugerido:</h3>
                     <h2>{`$ ${props.montoSugerido || '10000.00'}`}</h2>
                 </div>
-
             </div>
             <div id="infoSocio" className="w-100">
                 <Accordion contentReady={contentReadyScore} title="Score" rotate={estadoAccordionScore} loading={estadoLoadingScore} toggleAccordion={toggleAccordionScore}>
@@ -131,15 +236,149 @@ const DatosSocio = (props) => {
                     </div>
                 </Accordion>
                 {props.tipoGestion === 'solicitud' &&
-                <Fragment>
-                    <Accordion title="Score"></Accordion>
-                    <Accordion title="Score"></Accordion>
-                    <Accordion title="Score"></Accordion>
-                    <Accordion title="Score"></Accordion>
-                </Fragment>
-            }
+                    <Fragment>
+                        <Accordion className="mt-3" title="Medios de notificación" rotate={estadoMediosNotif} loading={estadoLoadingInfoSocio} toggleAccordion={() => { getInfoMediosNotif(); }} contentReady={contentReadyInfoSocio}>
+                            <div className="m-2">
+                            <label>Celular:</label>
+                            <input value={`${props.informacionSocio.str_celular || ''}`} readOnly={true}></input>
+                            <label>Correo:</label>
+                            <input value={`${props.informacionSocio.str_email || ''}`} readOnly={true}></input>
+                            </div>
+                        </Accordion>
+                        <Accordion className="mt-3" title="Información económica" rotate={estadoAccordionInfoEco} loading={estadoLoadingInfoEco} toggleAccordion={() => { getInfoEco(); }} contentReady={contentReadyInfoEco}>
+                            <div className="f-row">
+                                <div className={"m-2"}>
+                                    <h3>Ingresos</h3>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Ingreso</th>
+                                                <th>Valor Reportado</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {
+                                                ingresos.map((ingreso) => {
+                                                    return (<tr key={ingreso.int_codigo}>
+                                                        <td>{ingreso.str_descripcion}</td>
+                                                        <td>{ingreso.dcm_valor}</td>
+                                                    </tr>);
+                                                })
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div className={"m-2"}>
+                                    <h3>Egresos</h3>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Egreso</th>
+                                                <th>Valor Reportado</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {
+                                                egresos.map((egreso) => {
+                                                    return (<tr key={egreso.int_codigo}>
+                                                        <td>{egreso.str_descripcion}</td>
+                                                        <td>{egreso.dcm_valor}</td>
+                                                    </tr>);
+                                                })
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </Accordion>
+                        <Accordion className="mt-3" title="Situación financiera CoopMego" rotate={estadoAccordionInfoFinan} loading={estadoLoadingInfoFinan} toggleAccordion={() => { getInfoFinan(); }} contentReady={contentReadyInfoFinan}>
+                            <div className={"m-2"}>
+                                <h3>Créditos históricos</h3>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Id.</th>
+                                            <th>Tipo</th>
+                                            <th>Operación</th>
+                                            <th>Monto Aprobado</th>
+                                            <th>Fecha vencimiento</th>
+                                            <th>Fecha concesión</th>
+                                            <th>Cuotas vencidas</th>
+                                            <th>Días mora</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {
+                                            creditosHis.map((credito) => {
+                                                return (<tr key={credito.int_operacion}>
+                                                    <td>{credito.str_tipo}</td>
+                                                    <td>{credito.int_operacion}</td>
+                                                    <td>{credito.str_operacion_cred}</td>
+                                                    <td>{`$ ${credito.dcm_monto_aprobado}`}</td>
+                                                    <td>{credito.dtt_fecha_vencimiento}</td>
+                                                    <td>{credito.dtt_fecha_concesion}</td>
+                                                    <td>{credito.int_cuotas_vencidas}</td>
+                                                    <td>{credito.int_dias_mora}</td>
+                                                </tr>);
+                                            })
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div className={"m-2"}>
+                                <h3>Depósitos a plazo fijo</h3>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Número cta</th>
+                                            <th>Tipo cta</th>
+                                            <th>Monto disponible</th>
+                                            <th>Fecha</th>
+                                            <th>Estado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {
+                                            dpf.map((valor) => {
+                                                return (<tr key={valor.int_id_cuenta}>
+                                                    <td>{valor.str_num_cuenta}</td>
+                                                    <td>{valor.str_tipo_cta}</td>
+                                                    <td>{`$ ${valor.dcm_ahorro}`}</td>
+                                                    <td>{valor.dtt_fecha_movimiento}</td>
+                                                    <td>{valor.str_estado}</td>
+                                                </tr>);
+                                            })
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </Accordion>
+                    </Fragment>
+                }
             </div>
-            <div id="comentarioGestion"></div>
+            <div id="comentarioGestion">
+                <div className="tipoComentario mt-4 mb-4">
+                <Fragment>
+                    <h3>Está interesado en adquirir la tarjeta de crédito</h3>
+                        {props.tipoGestion === 'prospeccion' && <Switch onChange={deseaTarjetaHandler} value={deseaTarjeta}></Switch>}
+                    
+                </Fragment>
+                </div>
+                {props.tipoGestion === "prospeccion" && <div>
+                    <h3 className="mb-2">Comentario de la gestión</h3>
+                    {deseaTarjeta &&
+                        <Toggler selectedToggle={seleccionComentarioAfirma} toggles={["Solicitará en otra IFI", "Monto muy bajo", "No desea por el momento", "Regresará con la documentación"]}></Toggler>
+                    }
+                    {deseaTarjeta ||
+                        <Toggler selectedToggle={seleccionComentarioNega} toggles={["En trámite de ser socio", "Lorem Ipsum", "Lorem Ipsum", "Regresará con la documentación"]}></Toggler>
+                    }
+                </div>}
+                <div className="mt-4">
+                    <h3 className="mb-2">Comentario Adicional</h3>
+                    <Textarea placeholder="Ej. Texto de ejemplo" type="textarea" onChange={comentarioAdicionalHanlder}></Textarea>
+                </div>
+
+            </div>
         </div>
     );
 }

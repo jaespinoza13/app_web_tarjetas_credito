@@ -1,7 +1,7 @@
-﻿import "../../../scss/main.css";
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 
 const Modal = (props) => {
+    const defaultType = "md";
     const [animation, setAnimation] = useState('');
     const [modalVisible, setModalVisible] = useState(false);
     let timeoutModal;
@@ -25,7 +25,7 @@ const Modal = (props) => {
     }, [props.modalIsVisible]);
     return (
         <div className={`modal ${modalVisible ? 'modal-show' : ''}`}>
-            <div className={`modal-content ${animation}`}>
+            <div className={`modal-content modal-content-${props.type || defaultType} ${animation}`}>
                 <div className="modal-header">
                     <h2>{props.titulo}</h2>
                 </div>
@@ -33,7 +33,7 @@ const Modal = (props) => {
                     {props.children}
                 </div>
                 <div className="modal-footer">
-                    <button className="btn_mg btn_mg__secondary"  onClick={props.onCloseClick} >Cerrar</button>
+                    <button className="btn_mg btn_mg__tertiary close-modal" onClick={props.onCloseClick} ><img src="Imagenes/close.svg"></img> </button>
                     <button className="btn_mg btn_mg__primary" disabled={props.isBtnDisabled} onClick={props.onNextClick}>Siguiente</button>
                 </div>
             </div>

@@ -9,8 +9,10 @@ import ValidacionSocio from './ValidacionSocio';
 import Item from '../Common/UI/Item';
 import ValidacionesGenerales from './ValidacionesGenerales';
 import DatosSocio from './DatosSocio';
-import { fetchScore, fetchValidacionSocio } from '../../services/RestServices';
+import { fetchScore, fetchValidacionSocio, fetchAddAutorizacion } from '../../services/RestServices';
 import { get } from '../../js/crypt';
+import ModalAlert from '../Common/Alert';
+import Modal from '../Common/Modal/Modal';
 
 const mapStateToProps = (state) => {
     var bd = state.GetWebService.data;
@@ -28,6 +30,9 @@ const mapStateToProps = (state) => {
 
 const NuevaSolicitud = (props) => {
     const dispatch = useDispatch();
+    //Info sesión
+    const [usuario, setUsuario] = useState("");
+
     const [lstValidacionesOk, setLstValidacionesOk] = useState([]);
     const [tipoGestion, setTipoGestion] = useState("");
     const [score, setScore] = useState("");
@@ -36,37 +41,124 @@ const NuevaSolicitud = (props) => {
     const [validacionesOk, setValidacionesOk] = useState([]);
     const [validacionesErr, setValidacionesErr] = useState([]);
     const [nombreSocio, setNombreSocio] = useState('');
+    const [apellidosSocio, setApellidosSocio] = useState('');
     const [enteSocio, setEnteSocio] = useState('');
     const [celularSocio, setCelularSocio] = useState('');
     const [correoSocio, setCorreoSocio] = useState('');
     const [cedulaSocio, setCedulaSocio] = useState('');
     const [infoSocio, setInfoSocio] = useState([]);
+    const [datosFaltan, setDatosFaltan] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
+
+    const [montoSolicitado, setMontoSolicitado] = useState(0);
+    const [isBtnDisabled, setIsBtnDisabled] = useState(false);
+    const [gestion, setGestion] = useState("propspeccion");
+
+    //Errores
+    const [mensajeErrorScore, setMensajeErrorScore] = useState("");
+    const [mostrarAlerta, setMostrarAlerta] = useState(false);
 
     //Boton siguiente
     const [estadoBotonSiguiente, setEstadoBotonSiguiente] = useState(true);
+
+    //Score
+    const [autorizacionOk, setAutorizacionOk] = useState(false);
+    const [archivoAutorizacion, setArchivoAutorizacion] = useState('');
+    const [step, setStep] = useState(0);
+    const [subirAutorizacion, setSubirAutorizacion] = useState(false);
+
+    //Prospeccion - Solicitud
+    useEffect(() => {
+        const strOficial = get(localStorage.getItem("sender_name"));
+        setUsuario(strOficial);
+    }, []);
+
+    useEffect(() => {
+        if (step === 2 && autorizacionOk) {
+            setEstadoBotonSiguiente(false);
+        }
+        else if (step === 2 && archivoAutorizacion) {
+            setEstadoBotonSiguiente(false);
+        }
+        else if (step === 2 && !archivoAutorizacion) {
+            setEstadoBotonSiguiente(true);
+        }
+    }, [archivoAutorizacion]);
+
+    useEffect(() => {
+        if (step === 1 && (montoSolicitado > 0 && montoSolicitado !== '') && validaCamposSocio()) {
+            setEstadoBotonSiguiente(false);
+        }
+        else {
+            //
+            setEstadoBotonSiguiente(false);
+        }
+    }, [montoSolicitado, step, nombreSocio, apellidosSocio, correoSocio, celularSocio]);
 
     useEffect(() => {
         if (score.str_res_codigo === "000") {
             setStep(step + 1);
         }
+        else if (score.str_res_codigo === "") {
+            setMensajeErrorScore("Hubo un error al obtener el score, intente más tarde");
+            setMostrarAlerta(true);
+        }
     }, [score]);
 
     useEffect(() => {
-        if (validacionesOk.length > 0 || validacionesErr.length > 0) {
-            setStep(step + 1);
+        const index = validacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" && validacion.str_estado_alerta);
+        if (!index && step === 2) {
+            setEstadoBotonSiguiente(false);
         }
-    }, [enteSocio]);
+        else {
+            setAutorizacionOk(false);
+            setSubirAutorizacion(false);
+        }
+    }, [validacionesErr]);
 
-    const steps = [
-        { title: "ValidacionSocio" },
-        { title: "MostarDatosSocio" },
-        { title: "MostarDatosSocio" },
-        { title: "MostarDatosSocio" },
-    ]
-    const [step, setStep] = useState(0);
+    useEffect(() => {
+        if (lstValidacionesOk.length === 10) {
+            setGestion("propspeccion");
+        }
+        else {
+            setGestion("solicitud");
+        }
+    }, [validacionesOk]);
+
+    useEffect(() => {
+        if (infoSocio.str_nombres === "") {
+            setDatosFaltan(true);
+        }
+    }, [infoSocio]);
+
+    useEffect(() => {
+        if (step === 1) {
+            setEstadoBotonSiguiente(true);
+        }
+    }, [step]);
+
+    const validaCamposSocio = () => {        
+        if (nombreSocio !== "" && apellidosSocio !== "" && correoSocio !== "" && celularSocio.length === 10) {
+            console.log("validaCamposSocio true");
+            return true
+        }
+        console.log("validaCamposSocio false");
+        return false;
+    }
+
+    const agregarComentarioHandler = (e) => {
+
+    }
+
+    const siguientePasoHandler = () => {
+        setModalVisible(false);
+        setStep(1);
+    }
+
 
     const nextHandler = async () => {
         if (step === 0) {
+            setNombreSocio("");
             fetchValidacionSocio(cedulaSocio, '', props.token, (data) => {
                 const arrValidacionesOk = [...data.lst_datos_alerta_true];
                 const arrValidacionesErr = [...data.lst_datos_alerta_false];
@@ -76,23 +168,55 @@ const NuevaSolicitud = (props) => {
                 setCelularSocio(data.str_celular);
                 setCorreoSocio(data.str_email);
                 setInfoSocio(data);
+                setApellidosSocio(`${data.str_apellido_paterno} ${data.str_apellido_materno}`)
                 setNombreSocio(`${data.str_nombres} ${data.str_apellido_paterno} ${data.str_apellido_materno}`);
-                console.log(validacionesOk);
+                if (data.str_nombres !== "") {
+                    setStep(1);
+                }
+                else {
+                    setModalVisible(true);
+                }
                 const objValidaciones = {
                     "lst_validaciones_ok": [...data.lst_datos_alerta_true],
                     "lst_validaciones_err": [...data.lst_datos_alerta_false]
                 }
                 handleLists(objValidaciones);
+                const index = arrValidacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" && validacion.str_estado_alerta);
+                console.log(index);
             }, dispatch)
         }
+        if (step === 1) {
+            console.log(autorizacionOk);
+            if (autorizacionOk) {
+                setEstadoBotonSiguiente(false);
+            }
+            else {
+                setEstadoBotonSiguiente(true);
+            }
+            setStep(2);
+        }
         if (step == 2) {
+
+            if (subirAutorizacion) {
+                fetchAddAutorizacion("C", 1, "F", cedulaSocio, nombreSocio, apellidosSocio, apellidosSocio, props.token, (data) => {
+                    if (data.str_res_codigo === "000") {
+                        const estadoAutorizacion = validacionesErr.find((validacion) => { return validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" })
+                        estadoAutorizacion.str_estado_alerta = "True";                        
+                        setSubirAutorizacion(false);                       
+                    }
+                }, dispatch);
+                return;
+            }
+
             //const strNombreSocio = `${nombresSolicitud} ${pApellidoSolicitud} ${sApellidoSolicitud}`;
             const strOficina = "MATRIZ";
             //const strOficina = get(localStorage.getItem("office"));
             const strOficial = get(localStorage.getItem("sender_name"));
             const strCargo = get(localStorage.getItem("role"));
+            
             await fetchScore("C", cedulaSocio, nombreSocio, "Matriz", strOficial, strCargo, props.token, (data) => {
                 setScore(data);
+                console.log(data);
                 //setIsDescargarPdf(false);
             }, dispatch);
             return;
@@ -112,38 +236,93 @@ const NuevaSolicitud = (props) => {
         }
     }
 
+    const montoSolicitadoHandler = (e) => {
+        setMontoSolicitado(e);
+    }
+
+    const datosIngresadosHandler = (e) => {
+        setNombreSocio(e.nombres);
+        setApellidosSocio(e.apellidos);
+        setCelularSocio(e.celular);
+        setCorreoSocio(e.correo);
+    }
+
+    const closeModalHandler = () => {
+        setModalVisible(false);
+    }
+
+    const getFileHandler = (e) => {
+        setArchivoAutorizacion(e);
+    }
+
+
+
     return (
         <div className="f-row" >
             <Sidebar></Sidebar>
             <div className="stepper"></div>
+            {estadoBotonSiguiente.toString()}
             <Card className={["m-max w-100 justify-content-space-between align-content-center"]}>
                 <div className="f-row">
                     {(step === 0 || step === 1) &&
                         <div className="f-row w-100">
                             <Item xs={3} sm={3} md={3} lg={3} xl={3} className=""></Item>
-                            <Item xs={6} sm={6} md={6} lg={6} xl={6} className="">
-                                <ValidacionSocio paso={step} token={props.token} setCedulaSocio={cedulaSocioHandler} infoSocio={infoSocio}></ValidacionSocio>
+                            <Item xs={6} sm={6} md={6} lg={6} xl={6} className="justify-content-center">
+                                <ValidacionSocio paso={step}
+                                    token={props.token}
+                                    setCedulaSocio={cedulaSocioHandler}
+                                    setMontoSolicitado={montoSolicitadoHandler}
+                                    infoSocio={infoSocio}
+                                    ingresoDatos={datosFaltan}
+                                    datosIngresados={datosIngresadosHandler}
+                                ></ValidacionSocio>
                             </Item>
+                            <Item xs={3} sm={3} md={3} lg={3} xl={3} className=""></Item>
                         </div>
                     }
 
                     {(step === 2) &&
-                        <ValidacionesGenerales lst_validaciones={lstValidacionesOk}></ValidacionesGenerales>
+                        <ValidacionesGenerales token={props.token} lst_validaciones={lstValidacionesOk} onFileUpload={getFileHandler}></ValidacionesGenerales>
                     }
                     {(step === 3) &&
-                        <DatosSocio lst_validaciones={lstValidacionesOk} score={score} token={props.token}></DatosSocio>
+                        <DatosSocio
+                            informacionSocio={infoSocio}
+                            lst_validaciones={lstValidacionesOk}
+                            score={score}
+                            token={props.token}
+                            onAgregarComentario={agregarComentarioHandler}
+                            tipoGestion={gestion}
+                        ></DatosSocio>
                     }
                 </div>
                 <div id="botones" className="f-row ">
                     <Item xs={2} sm={2} md={2} lg={2} xl={2} className=""></Item>
-                    <Item xs={8} sm={8} md={8} lg={8} xl={8} className="f-row justify-content-space-between">
+                    <Item xs={8} sm={8} md={8} lg={8} xl={8} className="f-row justify-content-space-evenly">
                         <Button className={["btn_mg btn_mg__primary mt-2"]} disabled={estadoBotonSiguiente} onClick={nextHandler}>Siguiente</Button>
-                        <Button className={["btn_mg btn_mg__secondary mt-2"]} disabled={false} onClick={nextHandler}>Continuar como prospecto</Button>
+                        {(step === 2 && !autorizacionOk) && <Button className={["btn_mg btn_mg__secondary mt-2"]} disabled={false} onClick={nextHandler}>Continuar como prospecto</Button>}
                     </Item>
                     
                 </div>
 
             </Card>
+            
+            <Modal
+                modalIsVisible={modalVisible}
+                titulo={`Información!!!`}
+                onNextClick={siguientePasoHandler}
+                onCloseClick={closeModalHandler}
+                isBtnDisabled={isBtnDisabled}
+                type="sm"
+             >
+                {modalVisible && <div>
+                    <h4>{usuario}</h4>
+                    <p className="mt-3 mb-3">La persona con la cédula <strong>{cedulaSocio}</strong> no es socio de CoopMego</p>
+                    <p className="mb-3">Para poder realizar una solicitud de Tarjeta de crédito, la persona solicitante debe ser socio de CoopMego.</p>
+                    <p className="mb-3">Presiona en continuar si deseas realizar una prospección a esta persona</p>
+
+                </div>}
+            </Modal>
+            
         </div >
     )
 }

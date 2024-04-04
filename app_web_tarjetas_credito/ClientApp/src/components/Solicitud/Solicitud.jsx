@@ -497,26 +497,6 @@ function Solicitud(props) {
             <div className="consulta_buro">
                 <Item xs={2} sm={2} md={2} lg={2} xl={2}>
                     <Card>
-                        {/*<form className="form_mg form_mg__md" onSubmit={submitConsultaValidaciones}>*/}
-                        {/*    <div className="form_mg__item form_mg__item_row">*/}
-
-                        {/*        <label htmlFor="username" className="pbmg1">Ingrese documento</label>*/}
-                        {/*        <input className={`${!ciValido && 'no_valido'}`} tabIndex="1" type="number" value={documento} name="username" placeholder="Número de cédula" id="username" autoComplete="off" onChange={documentoHandler} />*/}
-
-                        {/*        <label htmlFor="tipo_accion">Seleccione acción...</label>*/}
-                        {/*        <select tabIndex="1" id="tipo_accion" onChange={accionHandler}>*/}
-                        {/*            <option value="solicitud">Solicitud</option>*/}
-                        {/*            <option value="prospeccion">Prospección</option>*/}
-                        {/*        </select>*/}
-
-                        {/*        <label htmlFor="tipo_documento">Seleccione tipo documento...</label>*/}
-                        {/*        <select tabIndex="2" id="tipo_documento" onChange={tipoDocHandler} value={tipoDoc}>*/}
-                        {/*            <option value="C">Cédula</option>*/}
-                        {/*            <option value="R">R.U.C</option>*/}
-                        {/*            <option value="P">Pasaporte</option>*/}
-                        {/*        </select>*/}
-
-                        {/*    </div>*/}
                         <img style={{ width: "15%" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg"></img>
                         <h4 className="mt-2">Solicitud / Prospección</h4>
                         <h5 className="mt-2">Genera una nueva solicitud o prospección de tarjeta de crédito</h5>

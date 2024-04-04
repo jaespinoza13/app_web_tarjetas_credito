@@ -30,9 +30,11 @@ const context =  [
     "/tarjetacredito/score",
     "/tarjetacredito/infoSocio",
     "/tarjetacredito/infoEco",
+    "/tarjetacredito/getContrato",
     "/tarjetacredito/addAutorizacion",
     "/tarjetacredito/getSolicitudes",
-    "/tarjetacredito/addSolicitud"
+    "/tarjetacredito/addSolicitud",
+    "/tarjetacredito/getInfoFinan"
 ];
 
 module.exports = function(app) {
