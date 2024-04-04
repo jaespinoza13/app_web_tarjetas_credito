@@ -1,6 +1,8 @@
 ﻿const Personalizacion = (props) => {
     return (
-        <div></div>
+        <div>
+        <h3>Personalización</h3>
+        </div>
     );
 }
 
