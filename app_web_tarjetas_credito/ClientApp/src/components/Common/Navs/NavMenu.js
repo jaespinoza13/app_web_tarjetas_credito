@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, Fragment } from 'react';
 import { connect } from 'react-redux';
 import { getUser } from 'react-session-persist';
 import {
@@ -120,107 +120,33 @@ function NavMenu(props) {
     }, [props.id]);
 
     return (
-        <div>
-            {nombreUsuario && 
-                <nav id={idHeader}>
-                    <div className="info-sistema">
-                        <img src="/Imagenes/coopmego-logo-white.svg" alt="imagen_coopmego" />
-                        <h2>|</h2>
-                        <h2>{toCapitalize(props.nombreSistema)}</h2>
-                    </div>
-                    <div className="actions">
-                        <div className="profile" onMouseEnter={toggleDropdownOn} onMouseLeave={toggleDropdownOff}>
-                            <button className="btn_mg btn_mg__secondary" id="profile">{nombreUsuario}</button>
-                            <div className={`dropdown_mg ${isCollapsedDropdown ? 'active' : ''}`} id="dropdown_mg">
-                                <a href="#">Cambiar contraseña</a>
-                                <a href="#">Preguntas de seguridad</a>
-                            </div>
+        <Fragment>
+            {
+                nombreUsuario && 
+                    <nav id={idHeader}>
+                        <div className="info-sistema">
+                            <img src="/Imagenes/coopmego-logo-white.svg" alt="imagen_coopmego" />
+                            <h2>|</h2>
+                            <h2>{toCapitalize(props.nombreSistema)}</h2>
                         </div>
-                        <button className="btn_mg btn_mg__secondary" id="logout">
-                            <NavItem>
-                                <NavLink tag={Link} className="text-dark" to="/logout">Salir</NavLink>
-                            </NavItem>
-                        </button>
-                    </div>
-                    {/*<Col className="widthPrincipal">*/}
-                    {/*    <Row className="blueBackgroundRect align-items-center">*/}
-                    {/*        <Col xs={6}>*/}
-                    {/*            <img*/}
-                    {/*                alt="logo"*/}
-                    {/*                src="/Imagenes/logo.png"*/}
-                    {/*                style={{ width: 250 }}*/}
-                    {/*            />*/}
-                    {/*        </Col>*/}
-                    {/*        <Col xs={6}>*/}
-                    {/*            <h1 className="text-right">{toCapitalize(props.nombreSistema)}</h1>*/}
-                    {/*        </Col>*/}
-                    {/*    </Row>*/}
-                    {/*</Col>*/}
-                    {/*<Navbar className="navbar-expand-sm navbar-toggleable-sm ng-white border-bottom bg_smoke" light>*/}
-                    {/*    <NavbarBrand tag={Link} to="/"></NavbarBrand>*/}
-                    {/*    <NavbarToggler onClick={() => setCollapsed(!collapsed)} className="mr-2" />*/}
-                    {/*    <Collapse className="d-sm-inline-flex flex-sm-row-reverse" isOpen={collapsed} navbar>*/}
-                    {/*        <ul className="navbar-nav flex-grow">*/}
-                    {/*            <NavItem>*/}
-                    {/*                <NavLink tag={Link} className="text-dark" to="/" active={linkSelected === "/"}>Home</NavLink>*/}
-                    {/*            </NavItem>*/}
-                    {/*            {props.listaMenus.map((item) =>*/}
-                    {/*                <NavItem key={item.id}>*/}
-                    {/*                    {item.funcionesHijas && item.funcionesHijas.length > 0 ?*/}
-                    {/*                        <Dropdown nav isOpen={dropdownOpen} toggle={toggle} id={item.url}>*/}
-                    {/*                            <DropdownToggle nav caret>{item.nombre}</DropdownToggle>*/}
-                    {/*                            <DropdownMenu>*/}
-                    {/*                                {item.funcionesHijas.map((fun) =>*/}
-                    {/*                                    <DropdownItem key={"FHija_" + fun.fun_id}>*/}
-                    {/*                                        <NavLink tag={Link} to={fun.fun_url} active={linkSelected === item.url} className="text-dark">{toCapitalize(fun.fun_nombre)}</NavLink>*/}
-                    {/*                                    </DropdownItem>*/}
-                    {/*                                )}*/}
-                    {/*                            </DropdownMenu>*/}
-                    {/*                        </Dropdown>*/}
-                    {/*                        :*/}
-                    {/*                        <NavLink tag={Link} to={item.url} active={linkSelected === item.url} className="text-dark" id={item.url}>{toCapitalize(item.nombre)}</NavLink>*/}
-                    {/*                    }*/}
-                    {/*                </NavItem>*/}
-                    {/*            )}*/}
-                    {/*            <NavItem>*/}
-                    {/*                <NavLink tag={Link} className="text-dark" target="_blank" to="/ManualLogs.pdf">Manual</NavLink>*/}
-                    {/*            </NavItem>*/}
-                    {/*            <NavItem>*/}
-                    {/*                <NavLink tag={Link} className="text-dark" to="#" onClick={() => setOpenCambiarPass(!openCambiarPass)}>Cambiar Password</NavLink>*/}
-                    {/*                {openCambiarPass ?*/}
-                    {/*                    <CambiarPassword openModal={openCambiarPass} setOpenModal={setOpenCambiarPass} callIn={"NAV"} />*/}
-                    {/*                    : ""}*/}
-                    {/*            </NavItem>*/}
-                    {/*            <NavItem>*/}
-                    {/*                <NavLink tag={Link} className="text-dark" to="#" onClick={() => setOpenCambiarPreguntas(!openCambiarPreguntas)}>Cambiar Preguntas</NavLink>*/}
-                    {/*                {openCambiarPreguntas ?*/}
-                    {/*                    <CambiarPreguntas openModal={openCambiarPreguntas} setOpenModal={setOpenCambiarPreguntas} callIn={"NAV"} />*/}
-                    {/*                    : ""}*/}
-                    {/*            </NavItem>*/}
-                    {/*            <NavItem>*/}
-                    {/*                <NavLink tag={Link} className="text-dark" to="/logout">Salir</NavLink>*/}
-                    {/*            </NavItem>*/}
-                    {/*            <NavItem>*/}
-                    {/*                &nbsp;*/}
-                    {/*            </NavItem>*/}
-                    {/*        </ul>*/}
-                    {/*    </Collapse>*/}
-                    {/*</Navbar>*/}
-                    {/*<Col className="widthPrincipal">*/}
-                    {/*    <Row className="bg-light">*/}
-                    {/*        <Col className="d-none d-md-block d-lg-block">*/}
-                    {/*            &nbsp;*/}
-                    {/*        </Col>*/}
-                    {/*        <Col className="text-center">*/}
-                    {/*            <Clock tstampActual={props.tstampActual} dataTinactividad={props.dataTinactividad} />*/}
-                    {/*        </Col>*/}
-                    {/*        <Col className="text-right">*/}
-                    {/*            <b>{perfilUsuario}:</b> {nombreUsuario}*/}
-                    {/*        </Col>*/}
-                    {/*    </Row>*/}
-                    {/*</Col>*/}
-                </nav> }
-        </div>
+                        <div className="actions">
+                            <div className="profile" onMouseEnter={toggleDropdownOn} onMouseLeave={toggleDropdownOff}>
+                                <button className="btn_mg btn_mg__secondary" id="profile">{nombreUsuario}</button>
+                                <div className={`dropdown_mg ${isCollapsedDropdown ? 'active' : ''}`} id="dropdown_mg">
+                                    <a href="#">Cambiar contraseña</a>
+                                    <a href="#">Preguntas de seguridad</a>
+                                </div>
+                            </div>
+                            <button className="btn_mg btn_mg__secondary" id="logout">
+                                <NavItem>
+                                    <NavLink tag={Link} className="text-dark" to="/logout">Salir</NavLink>
+                                </NavItem>
+                            </button>
+                        </div>
+                    </nav> 
+            }
+        </Fragment>
+        
     );
 }
 

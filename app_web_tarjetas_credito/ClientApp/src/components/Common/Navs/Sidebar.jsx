@@ -39,43 +39,81 @@ function Sidebar(props) {
     }, [perfilUsuario]);
 
     return (
-        <div className="content">
-            <div className={`sidebar ${collapsed ? 'sidebar_min' : ''}`} id='sidebar'>
-                <div className="sidebar_info">
-                    <div className="sidebar_minimize">
-                        <button className="btn_mg btn_mg__tertiary" id="toggle-sidebar" onClick={toggleSideBar}>
-                            <img src="Imagenes/menu.png"></img>
-                        </button>
-                    </div>
-                    <div className="sidebar_profile">
-                        <img src="/Imagenes/avatar1.png" alt=""></img>
-                        <h3>{nombreUsuario}</h3>
-                        <hr></hr>
-                        <h4>{perfilUsuario }</h4>
-                    </div>
+        /*<div className="content">*/
+        <div className={`sidebar ${collapsed && 'sidebar_min'}`} id="sidebar">
+            <div className="sidebar_info">
+                <div className="sidebar_minimize">
+                    <button className="btn_mg btn_mg__tertiary" id="toggle-sidebar" onClick={toggleSideBar}>
+                        <img src="Imagenes/menu.png" alt="icono_oculta_menu"></img>
+                    </button>
                 </div>
-                <div className="sidebar_menu">
-                    <div className="sidebar_menu__items">
-                        {/*{listaFuncionalidades.forEach(element => {*/}
-                        {/*    console.log(element);*/}
-                        {/*})}*/}
-
-                        <div className="sidebar_menu__item">
-                            <NavItem>
-                                <NavLink tag={Link} className="text-dark" to="/solicitud">Solicitud</NavLink>
-                            </NavItem>
-                        </div>
-                        <div className="sidebar_menu__item">
-                            <a className="item__master">Reportes</a>
-                            <div className="item_slaves">
-                                <a className="item__slave">Reportes</a>
-                                <a className="item__slave">Reportes</a>
-                            </div>
-                        </div>
-                    </div>
+                <div className="sidebar_profile">
+                    <img src="Imagenes/avatar1.png" alt=""/>
+                    <h3>{nombreUsuario}</h3>
+                    <hr></hr>
+                    <h4>{perfilUsuario }</h4>
                 </div>
             </div>
+            <div className="sidebar_menu">
+                <div className="sidebar_menu__items">
+                    <div className="sidebar_menu__item">
+                         <NavItem>
+                                <NavLink tag={Link} className="text-dark" to="/solicitud">Solicitud</NavLink>
+                         </NavItem>
+                    </div>
+                    <div className="sidebar_menu__item">
+                        <a className="item__master">Reportes</a>
+                        <div className="item_slaves">
+                            <a className="item__slave">
+                                Reportes
+                            </a>
+                            <a className="item__slave">Reportes</a>
+                        </div>
+                    </div>
+                    <div className="sidebar_menu__item">
+                        <a className="item__master">Reportes</a>
+                        <div className="item_slaves">
+                            <a className="item__slave">Reportes</a>
+                            <a className="item__slave">Reportes</a>
+                        </div>
+                    </div>
+                </div>
+            </div>            
         </div>
+
+
+            //<div className={`sidebar ${collapsed ? 'sidebar_min' : ''}`} id='sidebar'>
+            //    <div className="sidebar_info">
+            //        <div className="sidebar_minimize">
+            //            <button className="btn_mg btn_mg__tertiary" id="toggle-sidebar" onClick={toggleSideBar}>
+            //                <img src="Imagenes/menu.png"></img>
+            //            </button>
+            //        </div>
+            //        <div className="sidebar_profile">
+            //            <img src="/Imagenes/avatar1.png" alt=""></img>
+            //            <h3>{nombreUsuario}</h3>
+            //            <hr></hr>
+            //            <h4>{perfilUsuario }</h4>
+            //        </div>
+            //    </div>
+            //    <div className="sidebar_menu">
+            //        <div className="sidebar_menu__items">
+            //            <div className="sidebar_menu__item">
+            //                <NavItem>
+            //                    <NavLink tag={Link} className="text-dark" to="/solicitud">Solicitud</NavLink>
+            //                </NavItem>
+            //            </div>
+            //            <div className="sidebar_menu__item">
+            //                <a className="item__master">Reportes</a>
+            //                <div className="item_slaves">
+            //                    <a className="item__slave">Reportes</a>
+            //                    <a className="item__slave">Reportes</a>
+            //                </div>
+            //            </div>
+            //        </div>
+            //    </div>
+            //</div>
+        //</div>
     );
 }
 

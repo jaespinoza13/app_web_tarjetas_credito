@@ -86,9 +86,9 @@ function Layout(props) {
                     btnAceptar={"Aceptar"} />
                 : ''}
             <NavMenu id={"header_main"} tstampActual={tstampActual} listaMenus={props.listaMenus} listaUrls={props.listaUrls} />
-            <Col className="widthPrincipal">
+            {/*<Col className="widthPrincipal">*/}
                 {props.children}
-            </Col>
+            {/*</Col>*/}
         </div>
     );
 }

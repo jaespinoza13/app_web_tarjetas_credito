@@ -34,7 +34,8 @@ const context =  [
     "/tarjetacredito/addAutorizacion",
     "/tarjetacredito/getSolicitudes",
     "/tarjetacredito/addSolicitud",
-    "/tarjetacredito/getInfoFinan"
+    "/tarjetacredito/getInfoFinan",
+    "/tarjetacredito/addProspecto"
 ];
 
 module.exports = function(app) {

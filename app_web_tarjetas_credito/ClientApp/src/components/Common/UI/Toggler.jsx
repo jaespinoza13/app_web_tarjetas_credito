@@ -9,7 +9,7 @@ const Toggler = (props) => {
     }
 
     return (
-        <div className={`toggler ${props.className}`} value={activeIndex}> 
+        <div className={`toggler ${props.className || ''}`} value={activeIndex}> 
             {props.toggles.map((element, index) => (
                 <Button
                     key={index} // Ensure each button has a unique key

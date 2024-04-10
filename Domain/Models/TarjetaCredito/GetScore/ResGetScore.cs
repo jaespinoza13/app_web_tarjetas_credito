@@ -190,7 +190,7 @@ namespace Domain.Models.TarjetaCredito.GetScore
         public double maxMontoDeuda { get; set; }
         public string peorEdadVencidoDirecta36M { get; set; }
         public double maySaldoVencDirecta36M { get; set; }
-        public DateTime fechaUltimoVencido { get; set; }
+        public DateTime? fechaUltimoVencido { get; set; }
     }
 
     public class IndicadoresTarjetum

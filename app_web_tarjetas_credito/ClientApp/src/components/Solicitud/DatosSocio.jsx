@@ -90,12 +90,13 @@ const DatosSocio = (props) => {
 
     const comentarioAdicionalHanlder = (e) => {
         setComentarioAdicional(e);
+        props.onComentarioAdic(e);
     }
 
     const getInfoSocioHandler = () => {
         console.log(infoSocio.length);
         if (infoSocio.length > 0) {
-            setEstadoAccordionInfoSocio(!estadoAccordionInfoSocio)
+            setEstadoAccordionInfoSocio(!estadoAccordionInfoSocio);
         } else {
             getInfoSocio();
         }
@@ -115,6 +116,7 @@ const DatosSocio = (props) => {
             setInfoSocio([...data.datos_cliente]);
             setEstadoAccordionInfoSocio(true);
             setContentReadyInfoSocio(true);
+            props.onInfoSocio(data);
         }, dispatch);
         setEstadoLoadingInfoSocio(false);
     }
@@ -131,10 +133,10 @@ const DatosSocio = (props) => {
     }
 
     const seleccionComentarioAfirma = (value) => {
-        console.lgo(value);
+        props.onComentario(value);
     }
     const seleccionComentarioNega = (value) => {
-        console.lgo(value);
+        props.onComentario(value);
     }
 
     const getInfoMediosNotif = () => {
@@ -156,8 +158,8 @@ const DatosSocio = (props) => {
     return (
         <div className="f-col w-100">
             {props.tipoGestion }
-            <div id="montoSugerido" className="f-col">
-                <img></img>
+            <div id="montoSugerido" className="f-row w-100 ">
+                <img src="Imagenes/monetization_on.svg"></img>
                 <div className="datosMonto">
                     <h3>Monto sugerido:</h3>
                     <h2>{`$ ${props.montoSugerido || '10000.00'}`}</h2>

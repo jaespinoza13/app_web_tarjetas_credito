@@ -103,6 +103,7 @@ export const addAutorizacion = "ADD_AUTORIZACION"
 export const getSolicitudes = "GET_SOLICITUDES_TC"
 export const addSolicitud = "ADD_SOLICITUD_TC"
 export const getInfoFinan = "GET_SITUACION_FINANCIERA"
+export const addProspecto = "ADD_PROSPECTO_TC"
 
 /**
  * Obtener la Url de un servicio de acuerdo a su nombre de Proceso Unico
@@ -211,6 +212,9 @@ export function ServiceUrl(request, params = []) {
         case getInfoFinan:
             pathOut = "tc/getInfoFin"
             break;
+        case addProspecto:
+            pathOut = "tc/addProspecto"
+            break;
         default:
             return null;
     }
@@ -309,7 +313,6 @@ export async function ServicioGetExecute(request, token, { encrypt = true, param
  */
 export async function ServicioPostExecute(request, body, token, { encryptS = true, encryptR = true, params = null, responseJSON = true, responseBLOB = false, dispatch = null, exProcess = false, background = false } = {}) {
     if (dispatch && !background) dispatch(setStateLoad(true));
-    console.log(request);
     const sender = localStorage.getItem('sender');
     if (exProcess) localStorage.setItem("sender", set("Param"));
     
@@ -337,9 +340,6 @@ export async function ServicioPostExecute(request, body, token, { encryptS = tru
             body.str_id_oficina = datosUsuario ? datosUsuario.id_oficina + "" : "";
             body.str_id_perfil = datosUsuario ? datosUsuario.id_perfil + "" : "";
             var strBody = JSON.stringify(body);
-            console.log(ServiceUrl(request, params));
-            console.log(request);
-            console.log(params);
             const requestOptions = {
                 method: 'POST',
                 headers: {
@@ -451,7 +451,8 @@ function pathRewrite(path) {
         "tc/getContrato": '/tarjetacredito/getContrato',
         "tc/getSolic": '/tarjetacredito/getSolicitudes',
         "tc/addSolic": '/tarjetacredito/addSolicitud',
-        "tc/getInfoFin": '/tarjetacredito/getInfoFinan'
+        "tc/getInfoFin": '/tarjetacredito/getInfoFinan',
+        "tc/addProspecto": '/tarjetacredito/addProspecto'
     };
     if (path) {
         var p = context[path];

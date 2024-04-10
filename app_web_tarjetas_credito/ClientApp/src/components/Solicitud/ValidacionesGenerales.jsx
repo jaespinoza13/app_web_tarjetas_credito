@@ -1,6 +1,6 @@
 ﻿import Card from "../Common/Card";
 import '../../scss/components/ValidacionesGenerales.css';
-import { useState, Fragment } from "react";
+import { useState, Fragment, useEffect } from "react";
 import Button from "../Common/UI/Button";
 import { fetchGetContrato } from "../../services/RestServices";
 import { useDispatch } from 'react-redux';
@@ -11,17 +11,35 @@ const ValidacionesGenerales = (props) => {
     const [isGenerandoAutorizacion, setIsGenerandoAutorizacion] = useState(false);
     const [archivoAutorizacion, setArchivoAutorizacion] = useState('');
 
+    useEffect(() => {
+        props.onAddAutorizacion(isGenerandoAutorizacion);
+    }, [isGenerandoAutorizacion]);
+
+    useEffect(() => {
+        if (!props.onShowAutorizacion) {
+            setIsGenerandoAutorizacion(false);
+        }
+    }, [props.onShowAutorizacion]);
+
     const getDocAutorizacion = () => {
         setIsGenerandoAutorizacion(true);
     }
 
     const descargarArchivo = (data) => {
-        const pdfData = atob(data.file_bytes);
-        const blob = new Blob([pdfData], { type: "application/pdf" });
-        const downloadLink = document.createElement("a");
-        downloadLink.href = window.URL.createObjectURL(blob);
-        downloadLink.download = "Autorizacion_" + Date.now("yyyyMMdd") + ".pdf"
-        downloadLink.click();
+        try {
+            const pdfData = atob(data.file_bytes);
+            const blob = new Blob([pdfData], { type: "application/pdf" });
+            const downloadLink = document.createElement("a");
+            downloadLink.href = 'data:application/octet-stream;base64,' + pdfData;;
+
+            // Format the current date for the filename
+            const currentDate = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+            downloadLink.download = "Autorizacion_" + currentDate + ".pdf";
+
+            downloadLink.click();
+        } catch (error) {
+            console.error("Error downloading PDF:", error);
+        }
     }
 
     const getContrato = () => {

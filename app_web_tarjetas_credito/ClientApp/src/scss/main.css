@@ -36,6 +36,9 @@ nav {
     align-items: center;
     justify-content: space-between;
     padding: 0 4rem;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
     nav > * {
@@ -195,7 +198,9 @@ hr.dashed {
     align-items: center;
     border: 1px solid #D4E7FF;
     box-shadow: 0px 0px 6px rgba(7, 255, 214, 0.168627451);
-    position: relative;
+    position: sticky;
+    top: 4rem;
+    left: 0;
     flex-direction: column;
     background-color: #fff;
     transition: 0.3s ease;
@@ -203,13 +208,15 @@ hr.dashed {
 
     .sidebar.sidebar_min {
         width: 4rem;
-        height: 100vh;
+        height: calc(100vh - 4rem);
         display: flex;
         flex-direction: column;
         align-items: center;
         border: 1px solid #D4E7FF;
         box-shadow: 0px 0px 6px rgba(7, 255, 214, 0.168627451);
-        position: relative;
+        position: sticky;
+        top: 4rem;
+        left: 0;
         flex-direction: column;
         background-color: #fff;
         transition: 0.3s ease;
@@ -368,6 +375,7 @@ button {
     overflow: hidden;
     transition: background-color 400ms;
     height: 27px;
+    outline: none;
 }
 
 span.ripple {
@@ -395,11 +403,13 @@ span.ripple {
     display: flex;
     align-items: center;
     background-color: #F8F8F8;
+    justify-content: center;
 }
 
 .btn_mg__primary {
     padding: 0.4rem 1.4rem;
     background-color: #FED400;
+    min-width: 13.5rem;
 }
 
     .btn_mg__primary:disabled {
@@ -430,19 +440,6 @@ span.ripple {
         background-color: #B6B7B8;
         cursor: default;
         opacity: 0.7;
-    }
-
-.btn_mg__toggler {
-    border-radius: 7px;
-    padding: 0.3rem 0.5rem;
-    background-color: #F2F4FD;
-}
-
-    .btn_mg__toggler.active {
-        border-radius: 7px;
-        padding: 0.3rem 0.5rem;
-        background-color: #F8F8F8;
-        border: 1px solid #2A77FF;
     }
 
 label {
@@ -1011,6 +1008,28 @@ h3.chip {
     align-items: center;
 }
 
+    .toggler.f-col {
+        height: auto;
+    }
+
+        .toggler.f-col > .btn_mg__toggler {
+            width: 100%;
+        }
+
+.btn_mg__toggler {
+    border-radius: 7px;
+    padding: 0.3rem 0.5rem;
+    background-color: #F2F4FD;
+    min-width: 9.5rem;
+    text-align: center;
+    min-height: 1.5rem;
+}
+
+    .btn_mg__toggler.active {
+        background-color: #F8F8F8;
+        border: 1px solid #2A77FF;
+    }
+
 .accordion {
     position: relative;
 }
@@ -1043,7 +1062,7 @@ h3.chip {
 .accordion-content.open {
     border: 1px solid #C1CBEA;
     max-height: 500px; /* Expand to fit content when open */
-    overflow-y: auto;
+    overflow-y: scroll;
 }
 
 .accordion-header > button.loading > img.loading {

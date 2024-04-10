@@ -90,6 +90,7 @@
         public string service_get_solicitudes { get; set; } = String.Empty;
         public string service_add_solicitud { get; set; } = String.Empty;
         public string service_get_info_finan { get; set; } = String.Empty;
+        public string service_add_prospecto { get; set; } = String.Empty;
         #endregion
     }
 }
