@@ -68,7 +68,7 @@ const NuevaSolicitud = (props) => {
     const [archivoAutorizacion, setArchivoAutorizacion] = useState('');
     const [step, setStep] = useState(0);
     const [subirAutorizacion, setSubirAutorizacion] = useState(false);
-    const [isUploadingAthorization, setIsUploadingAthorization] = useState();
+    const [isUploadingAthorization, setIsUploadingAthorization] = useState(false);
 
     //Prospeccion - Solicitud
 
@@ -122,17 +122,17 @@ const NuevaSolicitud = (props) => {
         }
     }, [score]);
 
-    //useEffect(() => {
-    //    const index = validacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" && validacion.str_estado_alerta);
-    //    if (!index && step === 2) {
-    //        setEstadoBotonSiguiente(false);
-    //        setAutorizacionOk(true);
-    //    }
-    //    else {
-    //        setAutorizacionOk(false);
-    //        setSubirAutorizacion(false);
-    //    }
-    //}, [validacionesErr]);
+    useEffect(() => {
+        const index = validacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" && validacion.str_estado_alerta);
+        if (!index && step === 2) {
+            setEstadoBotonSiguiente(false);
+            setAutorizacionOk(true);
+        }
+        else {
+            setAutorizacionOk(false);
+            setSubirAutorizacion(false);
+        }
+    }, [validacionesErr]);
 
     useEffect(() => {
         if (validacionesOk.length === 10) {
@@ -221,7 +221,7 @@ const NuevaSolicitud = (props) => {
         }
         if (step == 2) {
 
-            if (isUploadingAthorization) {
+            if (showAutorizacion) {
                 fetchAddAutorizacion("C", 1, "F", cedulaSocio, nombreSocio, apellidosSocio, apellidosSocio, props.token, (data) => {
                     if (data.str_res_codigo === "000") {
                         const estadoAutorizacion = validacionesErr.find((validacion) => { return validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" })
@@ -320,12 +320,19 @@ const NuevaSolicitud = (props) => {
         setComentarioAdic(data);
     }
 
-    const [showAutorizacion, setShowAutorizacion] =useState(false);
+    const [showAutorizacion, setShowAutorizacion] = useState(false);
+
+    const showAutorizacionHandler = (data) => {
+        console.log(data);
+        console.log(showAutorizacion);
+        setShowAutorizacion(data);
+    }
 
     return (
         <div className="f-row" >
             <Sidebar></Sidebar>
             <div className="stepper"></div>
+            {`isUploadingAthorization ${isUploadingAthorization}` }
             {estadoBotonSiguiente.toString()}
             <Card className={["m-max w-100 justify-content-space-between align-content-center"]}>
                 <div className="f-row">
@@ -353,6 +360,7 @@ const NuevaSolicitud = (props) => {
                             onFileUpload={getFileHandler}
                             onAddAutorizacion={handleAutorizacion}
                             onShowAutorizacion={showAutorizacion}
+                            onSetShowAutorizacion={showAutorizacionHandler}
                         ></ValidacionesGenerales>
                     }
                     {(step === 3) &&

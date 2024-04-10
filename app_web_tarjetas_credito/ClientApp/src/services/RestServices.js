@@ -1060,7 +1060,7 @@ export function fetchAddProspecto(str_num_documento, ente, nombres, apellidos, c
 
     let body = {
         str_num_documento,
-        int_ente: ente,
+        int_ente: ente || 0,
         str_nombres: nombres,
         str_apellidos: apellidos,
         str_celular: celular,

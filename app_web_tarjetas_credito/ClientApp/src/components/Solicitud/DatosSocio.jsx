@@ -94,7 +94,6 @@ const DatosSocio = (props) => {
     }
 
     const getInfoSocioHandler = () => {
-        console.log(infoSocio.length);
         if (infoSocio.length > 0) {
             setEstadoAccordionInfoSocio(!estadoAccordionInfoSocio);
         } else {

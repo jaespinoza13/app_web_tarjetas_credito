@@ -12,7 +12,9 @@ const ValidacionesGenerales = (props) => {
     const [archivoAutorizacion, setArchivoAutorizacion] = useState('');
 
     useEffect(() => {
-        props.onAddAutorizacion(isGenerandoAutorizacion);
+        if (isGenerandoAutorizacion) {
+            props.onAddAutorizacion(true);
+        }
     }, [isGenerandoAutorizacion]);
 
     useEffect(() => {
@@ -22,7 +24,7 @@ const ValidacionesGenerales = (props) => {
     }, [props.onShowAutorizacion]);
 
     const getDocAutorizacion = () => {
-        setIsGenerandoAutorizacion(true);
+        props.onSetShowAutorizacion(true);
     }
 
     const descargarArchivo = (data) => {
@@ -53,20 +55,7 @@ const ValidacionesGenerales = (props) => {
     const handleFileChange = (event) => {
         // Get the selected file from the file input element
         props.onFileUpload(event);
-        setArchivoAutorizacion(event);
-
-
-        // Perform file upload logic here (e.g., send file to server)
-        // For demonstration, just log the file details
-        //console.log('Uploading file:', file);
-        //fetchAddAutorizacion(tipoDoc, 1, "F", documento, nombresSolicitud, pApellidoSolicitud, sApellidoSolicitud, props.token, (data) => {
-        //    if (data.str_res_codigo === "000") {
-        //        setImprimeAutorizacion(false);
-        //        const estadoAutorizacion = validaciones.find((validacion) => { return validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" })
-        //        estadoAutorizacion.str_estado_alerta = "CORRECTO";
-        //        setIsModalScoreVisible(false);
-        //    }
-        //}, dispatch);
+        setArchivoAutorizacion(event);       
     };
 
     const removeFile = () => {
@@ -75,7 +64,8 @@ const ValidacionesGenerales = (props) => {
 
     return (
         <div>
-            {isGenerandoAutorizacion
+            
+            {props.onShowAutorizacion
                 ?
                 <Fragment>
                     <Card>
