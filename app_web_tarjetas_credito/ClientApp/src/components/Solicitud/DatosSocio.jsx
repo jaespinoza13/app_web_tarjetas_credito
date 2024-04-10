@@ -66,7 +66,7 @@ const DatosSocio = (props) => {
     const [contentReadyInfoEco, setContentReadyInfoEco] = useState(false);
 
     const [infoSocio, setInfoSocio] = useState([]);
-    const [dirDocimicilioSocio, setDirDomicilioSocio] = useState([]);
+    const [infoEco, setInfoEco] = useState([]);
     const [dirDocimicilioSocio, setDirDomicilioSocio] = useState([]);
     const [dirTrabajoSocio, setDirTrabajoSocio] = useState([]);
 
