@@ -2,7 +2,7 @@ pipeline {
     
     agent {
         node {
-            label 'interface-server-development'
+            label 'apigateway-server-development'
         }
     }
 
