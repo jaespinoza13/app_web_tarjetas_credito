@@ -35,7 +35,6 @@ function Solicitud(props) {
     const [tipoDoc, setTipoDoc] = useState("C");
     const [documento, setDocumento] = useState("");
     const [validaciones, setValidaciones] = useState([]);
-    const [solicitudes, setSolicitudes] = useState([]);
     const [isBtnDisabled, setBtnDisabled] = useState(false);
     const [ciValido, setCiValido] = useState(true);
     const [isLstSolicitudes, setIsLstSolicitudes] = useState(true);
@@ -85,15 +84,19 @@ function Solicitud(props) {
     //Info solicitud
     const [comentarioAsesor, setComentarioAsesor] = useState("");
 
+    //Prostectos y solicitudes
+    const [lstProstectos, stLstProspectos] = useState([]);
+    const [lstSolicitudes, stLstSolicitudes] = useState([]);
+
     const inputCargaRef = useReducer(null);
     //Carga de solicitudes
-    //useEffect(() => {
-    //    fetchGetSolicitudes(props.token, (data) => {
-    //        if (data.str_res_codigo === "000") {
-    //            setSolicitudes(data.lst_solicitudes);
-    //        }
-    //    }, dispatch)
-    //}, [])
+    useEffect(() => {
+        fetchGetSolicitudes(props.token, (data) => {
+                console.log(data);
+                stLstProspectos(data.prospectos);
+                stLstSolicitudes(data.solicitudes);
+        }, dispatch)
+    }, [])
 
     const nombreTarjetaHnadler = (event) => {
         setNombreTarjeta(event.target.value);
@@ -579,74 +582,67 @@ function Solicitud(props) {
                     <table>
                         <thead>
                             <tr>
-                                <th>Identificación</th>
-                                <th>Nombre solicitante</th>
-                                <th>Producto TC</th>
-                                <th>Monto</th>
-                                <th>Calificación</th>
-                                <th>Estado</th>
-                                <th>Oficina Crea</th>
-                                <th>Oficial</th>
-                                <th>Usuario</th>
-                                <th>Fecha modificación</th>
-                                <th>Acciones</th>
+                                <th>Id</th>
+                                <th>Cédula</th>
+                                <th>Nombres</th>
+                                <th>Celular</th>
+                                <th>Correo</th>
+                                <th>Cupo solicitado</th>
+                                <th>Usuario Crea</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>1106546468</td>
-                                <td>Edison José Villamagua Mendieta</td>
-                                <td><Chip type="standar">Standar</Chip></td>
-                                <td>$3600</td>
-                                <td>OK</td>
-                                <td>Aprobada</td>
-                                <td>Matriz</td>
-                                <td>xnojeda</td>
-                                <td>xnojeda</td>
-                                <td>09/01/2023</td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td>1186549865</td>
-                                <td>Janeth del Cisne Lojan</td>
-                                <td><Chip type="gold">Gold</Chip></td>
-                                <td>$3600</td>
-                                <td>OK</td>
-                                <td>Aprobada</td>
-                                <td>Matriz</td>
-                                <td>xnojeda</td>
-                                <td>xnojeda</td>
-                                <td>09/01/2023</td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td>1186549865</td>
-                                <td>Janeth del Cisne Lojan</td>
-                                <td><Chip type="black">Black</Chip></td>
-                                <td>$3600</td>
-                                <td>OK</td>
-                                <td>Aprobada</td>
-                                <td>Matriz</td>
-                                <td>xnojeda</td>
-                                <td>xnojeda</td>
-                                <td>09/01/2023</td>
-                                <td></td>
-                            </tr>
+                            {/*<tr>*/}
+                            {/*    <td>1106546468</td>*/}
+                            {/*    <td>Edison José Villamagua Mendieta</td>*/}
+                            {/*    <td><Chip type="standar">Standar</Chip></td>*/}
+                            {/*    <td>$3600</td>*/}
+                            {/*    <td>OK</td>*/}
+                            {/*    <td>Aprobada</td>*/}
+                            {/*    <td>Matriz</td>*/}
+                            {/*    <td>xnojeda</td>*/}
+                            {/*    <td>xnojeda</td>*/}
+                            {/*    <td>09/01/2023</td>*/}
+                            {/*    <td></td>*/}
+                            {/*</tr>*/}
+                            {/*<tr>*/}
+                            {/*    <td>1186549865</td>*/}
+                            {/*    <td>Janeth del Cisne Lojan</td>*/}
+                            {/*    <td><Chip type="gold">Gold</Chip></td>*/}
+                            {/*    <td>$3600</td>*/}
+                            {/*    <td>OK</td>*/}
+                            {/*    <td>Aprobada</td>*/}
+                            {/*    <td>Matriz</td>*/}
+                            {/*    <td>xnojeda</td>*/}
+                            {/*    <td>xnojeda</td>*/}
+                            {/*    <td>09/01/2023</td>*/}
+                            {/*    <td></td>*/}
+                            {/*</tr>*/}
+                            {/*<tr>*/}
+                            {/*    <td>1186549865</td>*/}
+                            {/*    <td>Janeth del Cisne Lojan</td>*/}
+                            {/*    <td><Chip type="black">Black</Chip></td>*/}
+                            {/*    <td>$3600</td>*/}
+                            {/*    <td>OK</td>*/}
+                            {/*    <td>Aprobada</td>*/}
+                            {/*    <td>Matriz</td>*/}
+                            {/*    <td>xnojeda</td>*/}
+                            {/*    <td>xnojeda</td>*/}
+                            {/*    <td>09/01/2023</td>*/}
+                            {/*    <td></td>*/}
+                            {/*</tr>*/}
 
-                            {/*{solicitudes.map((solicitud) => {*/}
-                            {/*    return (<tr key={solicitud.int_id}>*/}
-                            {/*        <td>{solicitud.int_ente}</td>*/}
-                            {/*        <td>{"Edison José Villamagua Mendieta"}</td>*/}
-                            {/*        <td>{solicitud.str_tipo_tarjeta}</td>*/}
-                            {/*        <td>{solicitud.dec_cupo_solicitado}</td>*/}
-                            {/*        <td>{"200"}</td>*/}
-                            {/*        <td>{solicitud.str_estado}</td>   */}
-                            {/*        <td>{"Matriz"}</td>*/}
-                            {/*        <td>{solicitud.str_usuario_crea}</td>*/}
-                            {/*        <td>{solicitud.str_usuario_crea}</td>*/}
-                            {/*        <td>{solicitud.str_usuario_crea}</td>*/}
-                            {/*    </tr>);*/}
-                            {/*})}*/}
+                            {lstProstectos.map((prospecto) => {
+                                return (<tr key={prospecto.pro_id}>
+                                    <td>{prospecto.pro_id}</td>
+                                    <td>{prospecto.pro_documento}</td>
+                                    <td>{`${prospecto.pro_nombres} ${prospecto.pro_apellidos}`}</td>
+                                    <td>{prospecto.pro_celular}</td>
+                                    <td>{prospecto.pro_email}</td>
+                                    <td>{`$ ${prospecto.pro_cupo_solicitado}`}</td>
+                                    <td>{prospecto.pro_usuario_crea}</td>   
+                                </tr>);
+                            })}
                         </tbody>
                     </table>
                 </div>

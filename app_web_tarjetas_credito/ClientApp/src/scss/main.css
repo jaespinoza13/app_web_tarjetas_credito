@@ -191,7 +191,7 @@ hr.dashed {
 }
 
 .sidebar {
-    width: 25rem;
+    min-width: 25rem;
     height: calc(100vh - 4rem);
     display: flex;
     flex-direction: column;
@@ -207,7 +207,7 @@ hr.dashed {
 }
 
     .sidebar.sidebar_min {
-        width: 4rem;
+        min-width: 4rem;
         height: calc(100vh - 4rem);
         display: flex;
         flex-direction: column;
@@ -409,7 +409,7 @@ span.ripple {
 .btn_mg__primary {
     padding: 0.4rem 1.4rem;
     background-color: #FED400;
-    min-width: 13.5rem;
+    /*min-width: 13.5rem;*/
 }
 
     .btn_mg__primary:disabled {

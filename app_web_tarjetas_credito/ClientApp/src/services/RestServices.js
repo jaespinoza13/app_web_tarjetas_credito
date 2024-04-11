@@ -974,7 +974,11 @@ export function fetchGetContrato(token, onSucces, dispatch) {
 export function fetchGetSolicitudes(token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
-    let body = { }
+    let body = {
+        str_id_usuario: "538",
+        str_id_oficina: "1",
+        str_id_perfil: "36"
+    }
 
     ServicioPostExecute(getSolicitudes, body, token, { dispatch: dispatch }).then((data) => {
         if (data) {

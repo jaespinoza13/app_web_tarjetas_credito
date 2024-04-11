@@ -9,7 +9,7 @@ import ValidacionSocio from './ValidacionSocio';
 import Item from '../Common/UI/Item';
 import ValidacionesGenerales from './ValidacionesGenerales';
 import DatosSocio from './DatosSocio';
-import { fetchScore, fetchValidacionSocio, fetchAddAutorizacion, fetchA, fetchAddProspecto } from '../../services/RestServices';
+import { fetchScore, fetchValidacionSocio, fetchAddAutorizacion, fetchA, fetchAddProspecto, fetchAddSolicitud } from '../../services/RestServices';
 import { get } from '../../js/crypt';
 import ModalAlert from '../Common/Alert';
 import Modal from '../Common/Modal/Modal';
@@ -206,8 +206,7 @@ const NuevaSolicitud = (props) => {
                 }
                 handleLists(objValidaciones);
                 const index = arrValidacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" && validacion.str_estado_alerta);
-                console.log(index);
-            }, dispatch)
+            }, dispatch);
         }
         if (step === 1) {
             console.log(autorizacionOk);
@@ -229,6 +228,26 @@ const NuevaSolicitud = (props) => {
                         setSubirAutorizacion(false);   
                         setIsUploadingAthorization(false);
                         setShowAutorizacion(false);
+                        fetchValidacionSocio(cedulaSocio, '', props.token, (data) => {
+                            const arrValidacionesOk = [...data.lst_datos_alerta_true];
+                            const arrValidacionesErr = [...data.lst_datos_alerta_false];
+                            setValidacionesOk(arrValidacionesOk);
+                            setValidacionesErr(arrValidacionesErr);
+                            setEnteSocio(data.str_ente);
+                            setCelularSocio(data.str_celular);
+                            setCorreoSocio(data.str_email);
+                            setInfoSocio(data);
+                            setApellidosSocio(`${data.str_apellido_paterno} ${data.str_apellido_materno}`)
+                            setNombreSocio(`${data.str_nombres} ${data.str_apellido_paterno} ${data.str_apellido_materno}`);
+                            const objValidaciones = {
+                                "lst_validaciones_ok": [...data.lst_datos_alerta_true],
+                                "lst_validaciones_err": [...data.lst_datos_alerta_false]
+                            }
+                            handleLists(objValidaciones);
+                            setAutorizacionOk(false);
+                            setEstadoBotonSiguiente(false);
+                            const index = arrValidacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" && validacion.str_estado_alerta);
+                        }, dispatch);
                     }
                 }, dispatch);
                 return;
@@ -255,6 +274,30 @@ const NuevaSolicitud = (props) => {
                     setStep(-1);
                 }
             }, dispatch)
+        }
+        if (step === 4) {
+            let body = {
+                int_ente_aprobador: 589693,
+                str_tipo_documento: "C", 
+                str_num_documento: "1105970717", 
+                str_nombres: "ROBERTH ESTEBAN ", 
+                str_primer_apellido: "TORRES", 
+                str_segundo_apellido: "REYES", 
+                dtt_fecha_nacimiento: "1994-06-08", 
+                str_sexo: "M", 
+                dec_cupo_solicitado: 4500, 
+                dec_cupo_sugerido: 100,
+                str_correo: "santiago.espinoza@gmail.com",
+                str_usuario_proc: "xnojeda1",
+                int_oficina_proc: 1, 
+                str_denominacion_tarjeta: "PAPI_2",
+                str_comentario_proceso: "comentario 1",
+                str_comentario_adicional: "comentario 2"
+            }
+            console.log(body);
+            fetchAddSolicitud(body, props.token, (data) => {
+                setStep(-1);
+            }, dispatch);
         }
         
     }
@@ -323,8 +366,6 @@ const NuevaSolicitud = (props) => {
     const [showAutorizacion, setShowAutorizacion] = useState(false);
 
     const showAutorizacionHandler = (data) => {
-        console.log(data);
-        console.log(showAutorizacion);
         setShowAutorizacion(data);
     }
 
@@ -388,6 +429,7 @@ const NuevaSolicitud = (props) => {
                             onDireccionEntrega={direccionEntregaHandler}
                         ></Personalizacion>
                     }
+                    {step == 5 }
 
                     {step === -1 &&
                         <FinProceso gestion={tipoGestion}
