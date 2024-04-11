@@ -519,6 +519,7 @@ function Solicitud(props) {
                         <thead>
                             <tr>
                                 <th>Identificación</th>
+                                <th>Ente</th>
                                 <th>Nombre solicitante</th>
                                 <th>Producto TC</th>
                                 <th>Monto</th>
@@ -532,47 +533,48 @@ function Solicitud(props) {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>1106546468</td>
-                                <td>Edison José Villamagua Mendieta</td>
-                                <td><Chip type="black">Black</Chip></td>
-                                <td>$3600</td>
-                                <td>OK</td>
-                                <td>Aprobada</td>
-                                <td>Matriz</td>
-                                <td>xnojeda</td>
-                                <td>xnojeda</td>
-                                <td>09/01/2023</td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td>1186549865</td>
-                                <td>Janeth del Cisne Lojan</td>
-                                <td><Chip type="black">Black</Chip></td>
-                                <td>$3600</td>
-                                <td>OK</td>
-                                <td>Aprobada</td>
-                                <td>Matriz</td>
-                                <td>xnojeda</td>
-                                <td>xnojeda</td>
-                                <td>09/01/2023</td>
-                                <td></td>
-                            </tr>
+                            {/*<tr>*/}
+                            {/*    <td>1106546468</td>*/}
+                            {/*    <td>Edison José Villamagua Mendieta</td>*/}
+                            {/*    <td><Chip type="black">Black</Chip></td>*/}
+                            {/*    <td>$3600</td>*/}
+                            {/*    <td>OK</td>*/}
+                            {/*    <td>Aprobada</td>*/}
+                            {/*    <td>Matriz</td>*/}
+                            {/*    <td>xnojeda</td>*/}
+                            {/*    <td>xnojeda</td>*/}
+                            {/*    <td>09/01/2023</td>*/}
+                            {/*    <td></td>*/}
+                            {/*</tr>*/}
+                            {/*<tr>*/}
+                            {/*    <td>1186549865</td>*/}
+                            {/*    <td>Janeth del Cisne Lojan</td>*/}
+                            {/*    <td><Chip type="black">Black</Chip></td>*/}
+                            {/*    <td>$3600</td>*/}
+                            {/*    <td>OK</td>*/}
+                            {/*    <td>Aprobada</td>*/}
+                            {/*    <td>Matriz</td>*/}
+                            {/*    <td>xnojeda</td>*/}
+                            {/*    <td>xnojeda</td>*/}
+                            {/*    <td>09/01/2023</td>*/}
+                            {/*    <td></td>*/}
+                            {/*</tr>*/}
 
-                            {/*{solicitudes.map((solicitud) => {*/}
-                            {/*    return (<tr key={solicitud.int_id}>*/}
-                            {/*        <td>{solicitud.int_ente}</td>*/}
-                            {/*        <td>{"Edison José Villamagua Mendieta"}</td>*/}
-                            {/*        <td>{solicitud.str_tipo_tarjeta}</td>*/}
-                            {/*        <td>{solicitud.dec_cupo_solicitado}</td>*/}
-                            {/*        <td>{"200"}</td>*/}
-                            {/*        <td>{solicitud.str_estado}</td>   */}
-                            {/*        <td>{"Matriz"}</td>*/}
-                            {/*        <td>{solicitud.str_usuario_crea}</td>*/}
-                            {/*        <td>{solicitud.str_usuario_crea}</td>*/}
-                            {/*        <td>{solicitud.str_usuario_crea}</td>*/}
-                            {/*    </tr>);*/}
-                            {/*})}*/}
+                            {lstSolicitudes.map((solicitud) => {
+                                return (<tr key={solicitud.int_id}>
+                                    <td>{solicitud.str_identificacion}</td>
+                                    <td>{solicitud.int_ente}</td>
+                                    <td>{solicitud.str_nombres}</td>
+                                    <td><Chip type="black">Black</Chip></td>
+                                    <td>{`$ ${solicitud.dec_cupo_solicitado}`}</td>
+                                    <td>{"AA"}</td>
+                                    <td>{solicitud.str_estado}</td>   
+                                    <td>{"Matriz"}</td>
+                                    <td>{solicitud.str_usuario_crea}</td>
+                                    <td>{solicitud.str_usuario_crea}</td>
+                                    <td>{solicitud.dtt_fecha_solicitud}</td>
+                                </tr>);
+                            })}
                         </tbody>
                     </table>
                 </div>

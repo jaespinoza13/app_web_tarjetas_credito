@@ -274,19 +274,20 @@ const NuevaSolicitud = (props) => {
         if (step === 4) {
             let body = {
                 int_ente_aprobador: 589693,
-                str_tipo_documento: "C", 
-                str_num_documento: "1105970717", 
-                str_nombres: "ROBERTH ESTEBAN ", 
+                str_tipo_documento: "C",
+                str_num_documento: cedulaSocio,
+                str_nombres: `${nombreSocio} ${apellidosSocio}`, 
                 str_primer_apellido: "TORRES", 
                 str_segundo_apellido: "REYES", 
                 dtt_fecha_nacimiento: "1994-06-08", 
-                str_sexo: "M", 
-                dec_cupo_solicitado: 4500, 
+                str_sexo: "M",
+                dec_cupo_solicitado: montoSolicitado, 
                 dec_cupo_sugerido: 100,
-                str_correo: "santiago.espinoza@gmail.com",
+                str_correo: correoSocio,
                 str_usuario_proc: "xnojeda1",
-                int_oficina_proc: 1, 
-                str_denominacion_tarjeta: "PAPI_2",
+                int_oficina_proc: 1,
+                str_ente: enteSocio,
+                str_denominacion_tarjeta: "ROBERTH TORRES",
                 str_comentario_proceso: "comentario 1",
                 str_comentario_adicional: "comentario 2"
             }
@@ -371,8 +372,6 @@ const NuevaSolicitud = (props) => {
         <div className="f-row" >
             <Sidebar></Sidebar>
             <div className="stepper"></div>
-            {`isUploadingAthorization ${isUploadingAthorization}` }
-            {estadoBotonSiguiente.toString()}
             <Card className={["m-max w-100 justify-content-space-between align-content-center"]}>
                 <div className="f-row">
                     {step}

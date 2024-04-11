@@ -8,6 +8,7 @@ import Switch from "../Common/UI/Switch";
 import Toggler from "../Common/UI/Toggler";
 import Input from "../Common/UI/Input";
 import Textarea from "../Common/UI/Textarea";
+import Button from "../Common/UI/Button";
 
 const DatosSocio = (props) => {
     const dispatch = useDispatch();
@@ -154,9 +155,18 @@ const DatosSocio = (props) => {
         setEstadoLoadingInfoEco(false);
     }
 
+    const descargarReporte = () => {
+        const pdfUrl = "Imagenes/reporteavalhtml.pdf";
+        const link = document.createElement("a");
+        link.href = pdfUrl;
+        link.download = "document.pdf"; // specify the filename
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
     return (
         <div className="f-col w-100">
-            {props.tipoGestion }
             <div id="montoSugerido" className="f-row w-100 ">
                 <img src="Imagenes/monetization_on.svg"></img>
                 <div className="datosMonto">
@@ -178,6 +188,7 @@ const DatosSocio = (props) => {
                         <input name="nombre" type="text" value={props.score.response.result.identificacionTitular[0]?.nombreRazonSocial} disabled={true}></input>
                         <label htmlFor="score">Score:</label>
                         <input name="score" type="text" value={props.score.response.result && props.score.response.result.scoreFinanciero && props.score.response.result.scoreFinanciero[0] && props.score.response.result.scoreFinanciero[0].score ? props.score.response.result.scoreFinanciero[0].score : 800} disabled={true}></input>
+                        <Button className={["btn_mg btn_mg__primary mt-2 mr-2"]} disabled={false} onClick={descargarReporte}>Descargar reporte</Button>
                         <label htmlFor="name">Detalle de deudas:</label>
                         {props.score.response.result.deudaVigenteTotal.map((deuda) => {
                             return (<div>
