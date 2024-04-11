@@ -1,4 +1,5 @@
 ﻿import { connect, useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import Card from "../Common/Card";
 import { IsNullOrWhiteSpace } from "../../js/utiles";
 import Sidebar from '../Common/Navs/Sidebar';
@@ -32,6 +33,7 @@ const mapStateToProps = (state) => {
 
 const NuevaSolicitud = (props) => {
     const dispatch = useDispatch();
+    const navigate = useHistory();
     //Info sesión
     const [usuario, setUsuario] = useState("");
 
@@ -232,13 +234,7 @@ const NuevaSolicitud = (props) => {
                             const arrValidacionesOk = [...data.lst_datos_alerta_true];
                             const arrValidacionesErr = [...data.lst_datos_alerta_false];
                             setValidacionesOk(arrValidacionesOk);
-                            setValidacionesErr(arrValidacionesErr);
-                            setEnteSocio(data.str_ente);
-                            setCelularSocio(data.str_celular);
-                            setCorreoSocio(data.str_email);
-                            setInfoSocio(data);
-                            setApellidosSocio(`${data.str_apellido_paterno} ${data.str_apellido_materno}`)
-                            setNombreSocio(`${data.str_nombres} ${data.str_apellido_paterno} ${data.str_apellido_materno}`);
+                            setValidacionesErr(arrValidacionesErr);                            
                             const objValidaciones = {
                                 "lst_validaciones_ok": [...data.lst_datos_alerta_true],
                                 "lst_validaciones_err": [...data.lst_datos_alerta_false]
@@ -299,7 +295,9 @@ const NuevaSolicitud = (props) => {
                 setStep(-1);
             }, dispatch);
         }
-        
+        if (step === -1) {
+            navigate.push('/solicitud');
+        }
     }
 
     const handleLists = (e) => {
