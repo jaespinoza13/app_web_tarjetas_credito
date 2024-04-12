@@ -242,7 +242,7 @@ function Login(props) {
                                     name="username"
                                     id="username"
                                     label="Usuario"
-                                    textBtn="Olvidé mi usuario"
+                                    textbutton="Olvidé mi usuario"
                                     onClickBtn={(e) => { e.preventDefault(); setOpenUsuario(true); }}
                                     value={login}
                                     onChange={(e) => setLogin(e.target.value)}
@@ -263,7 +263,7 @@ function Login(props) {
                                     name="password"
                                     id="password"
                                     label="Contraseña"
-                                    textBtn="Olvidé mi contraseña"
+                                    textbutton="Olvidé mi contraseña"
                                     onClickBtn={(e) => { e.preventDefault(); setIsOpen(!isOpen); }}
                                     value={passOff}
                                     onChange={(e) => setPasswordWithOff(password, e.target.value, (pass, passOff) => {

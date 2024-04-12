@@ -12,7 +12,7 @@ import Item from '../Common/UI/Item';
 import { get } from '../../js/crypt';
 import Button from '../Common/UI/Button';
 import Toggler from '../Common/UI/Toggler';
-import Chip from '../Common/UI/Chip';
+import Table from '../Common/Table';
 
 
 const mapStateToProps = (state) => {
@@ -84,6 +84,16 @@ function Solicitud(props) {
     //Info solicitud
     const [comentarioAsesor, setComentarioAsesor] = useState("");
 
+
+    //Headers tablas
+    const headerTableSolicitantes = ['Identificación', 'Ente', 'Nombre solicitante',
+        'Producto TC', 'Monto', 'Calificación', 'Estado', 'Oficina Crea',
+        'Oficial', 'Usuario', 'Fecha modificación', 'Acciones'];
+
+    const headerTableProspectos = ['Id', 'Cédula', 'Nombres',
+        'Celular', 'Correo', 'Cupo solicitado', 'Usuario Crea'];
+
+
     //Prostectos y solicitudes
     const [lstProstectos, stLstProspectos] = useState([]);
     const [lstSolicitudes, stLstSolicitudes] = useState([]);
@@ -92,7 +102,7 @@ function Solicitud(props) {
     //Carga de solicitudes
     useEffect(() => {
         fetchGetSolicitudes(props.token, (data) => {
-                console.log(data);
+            console.log(data);
                 stLstProspectos(data.prospectos);
                 stLstSolicitudes(data.solicitudes);
         }, dispatch)
@@ -504,9 +514,6 @@ function Solicitud(props) {
                         <h4 className="mt-2">Solicitud / Prospección</h4>
                         <h5 className="mt-2">Genera una nueva solicitud o prospección de tarjeta de crédito</h5>
                         <Button tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={irNuevaSolicitud}>Siguiente</Button>
-
-                        {/*</form>*/}
-
                     </Card>
 
                 </Item>
@@ -515,99 +522,12 @@ function Solicitud(props) {
 
             {isLstSolicitudes &&
                 <div id="listado_solicitudes" className="mt-3">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Identificación</th>
-                                <th>Ente</th>
-                                <th>Nombre solicitante</th>
-                                <th>Producto TC</th>
-                                <th>Monto</th>
-                                <th>Calificación</th>
-                                <th>Estado</th>
-                                <th>Oficina Crea</th>
-                                <th>Oficial</th>
-                                <th>Usuario</th>
-                                <th>Fecha modificación</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {/*<tr>*/}
-                            {/*    <td>1106546468</td>*/}
-                            {/*    <td>Edison José Villamagua Mendieta</td>*/}
-                            {/*    <td><Chip type="black">Black</Chip></td>*/}
-                            {/*    <td>$3600</td>*/}
-                            {/*    <td>OK</td>*/}
-                            {/*    <td>Aprobada</td>*/}
-                            {/*    <td>Matriz</td>*/}
-                            {/*    <td>xnojeda</td>*/}
-                            {/*    <td>xnojeda</td>*/}
-                            {/*    <td>09/01/2023</td>*/}
-                            {/*    <td></td>*/}
-                            {/*</tr>*/}
-                            {/*<tr>*/}
-                            {/*    <td>1186549865</td>*/}
-                            {/*    <td>Janeth del Cisne Lojan</td>*/}
-                            {/*    <td><Chip type="black">Black</Chip></td>*/}
-                            {/*    <td>$3600</td>*/}
-                            {/*    <td>OK</td>*/}
-                            {/*    <td>Aprobada</td>*/}
-                            {/*    <td>Matriz</td>*/}
-                            {/*    <td>xnojeda</td>*/}
-                            {/*    <td>xnojeda</td>*/}
-                            {/*    <td>09/01/2023</td>*/}
-                            {/*    <td></td>*/}
-                            {/*</tr>*/}
-
-                            {lstSolicitudes.map((solicitud) => {
-                                return (<tr key={solicitud.int_id}>
-                                    <td>{solicitud.str_identificacion}</td>
-                                    <td>{solicitud.int_ente}</td>
-                                    <td>{solicitud.str_nombres}</td>
-                                    <td><Chip type="black">Black</Chip></td>
-                                    <td>{`$ ${solicitud.dec_cupo_solicitado}`}</td>
-                                    <td>{"AA"}</td>
-                                    <td>{solicitud.str_estado}</td>   
-                                    <td>{"Matriz"}</td>
-                                    <td>{solicitud.str_usuario_crea}</td>
-                                    <td>{solicitud.str_usuario_crea}</td>
-                                    <td>{solicitud.dtt_fecha_solicitud}</td>
-                                </tr>);
-                            })}
-                        </tbody>
-                    </table>
+                    <Table headers={headerTableSolicitantes} data={lstSolicitudes} tipo={"Solicitudes"}></Table>
                 </div>
             }
             {isLstProspecciones &&
                 <div id="listado_solicitudes">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Id</th>
-                                <th>Cédula</th>
-                                <th>Nombres</th>
-                                <th>Celular</th>
-                                <th>Correo</th>
-                                <th>Cupo solicitado</th>
-                                <th>Usuario Crea</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-
-                            {lstProstectos.map((prospecto) => {
-                                return (<tr key={prospecto.pro_id}>
-                                    <td>{prospecto.pro_id}</td>
-                                    <td>{prospecto.pro_num_documento}</td>
-                                    <td>{`${prospecto.pro_nombres} ${prospecto.pro_apellidos}`}</td>
-                                    <td>{prospecto.pro_celular}</td>
-                                    <td>{prospecto.pro_email}</td>
-                                    <td>{`$ ${prospecto.pro_cupo_solicitado}`}</td>
-                                    <td>{prospecto.pro_usuario_crea}</td>   
-                                </tr>);
-                            })}
-                        </tbody>
-                    </table>
+                    <Table headers={headerTableProspectos} data={lstProstectos} tipo={"Prospectos"}></Table>
                 </div>
             }
             

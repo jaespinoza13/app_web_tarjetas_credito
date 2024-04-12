@@ -41,7 +41,7 @@ function Home(props) {
                     <h3>Mejoras:</h3>
                     
                         {props.dataListaMejoras.map((item, index) =>
-                            <p>- {item}</p>
+                            <p key={index }>- {item}</p>
                         )}
                     <h4>
                         <b>Versi&oacute;n:</b>{' '}{props.dataVersion}

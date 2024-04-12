@@ -19,7 +19,6 @@ function LoadingAlert(props) {
                 open={open}
                 keepMounted
                 maxWidth={"xs"}
-                contentClassName={"modal-loading"}
                 PaperProps={{ style: { backgroundColor: "transparent", boxShadow: "none" } }}
             >
                 <DialogContent>
