@@ -518,7 +518,11 @@ function Solicitud(props) {
 
                 </Item>
             </div>
-            <Toggler className="mt-2" toggles={["Solicitudes", "Prospecciones"]} selectedToggle={handleSelectedToggle}></Toggler>
+            <Toggler className="mt-2" toggles={[
+                { image: "", textPrincipal: `${props.nombres.split(" ")[0]} ${props.str_apellido_paterno}`, textSecundario: "", key: `${props.nombres.split(" ")[0]} ${props.str_apellido_paterno}` },
+                { image: "", textPrincipal: `${props.nombres.split(" ")[0]} ${props.str_apellido_paterno}`, textSecundario: "", key: `${props.nombres.split(" ")[0]} ${props.str_apellido_paterno}` }]}
+                selectedToggle={handleSelectedToggle}>
+            </Toggler>
 
             {isLstSolicitudes &&
                 <div id="listado_solicitudes" className="mt-3">

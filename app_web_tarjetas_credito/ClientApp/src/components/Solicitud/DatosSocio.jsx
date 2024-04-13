@@ -379,10 +379,24 @@ const DatosSocio = (props) => {
                 {props.tipoGestion === "prospeccion" && <div>
                     <h3 className="mb-2">Comentario de la gestión</h3>
                     {deseaTarjeta &&
-                        <Toggler selectedToggle={seleccionComentarioAfirma} toggles={["Solicitará en otra IFI", "Monto muy bajo", "No desea por el momento", "Regresará con la documentación"]}></Toggler>
+                        <Toggler
+                            selectedToggle={seleccionComentarioAfirma}
+                            toggles={[{ image: "", textPrincipal: "Solicitará en otra IFI", textSecundario: "", key: 1 },
+                                { image: "", textPrincipal: "Monto muy bajo", textSecundario: "", key: 2 },
+                                { image: "", textPrincipal: "No desea por el momento", textSecundario: "", key: 3 },
+                                { image: "", textPrincipal: "Regresará con la documentación", textSecundario: "", key: 4 }
+                            ]}>
+                        </Toggler>
                     }
                     {deseaTarjeta ||
-                        <Toggler selectedToggle={seleccionComentarioNega} toggles={["En trámite de ser socio", "Lorem Ipsum", "Lorem Ipsum", "Regresará con la documentación"]}></Toggler>
+                        <Toggler
+                            selectedToggle={seleccionComentarioNega}
+                            toggles={[{ image: "", textPrincipal: "En trámite de ser socio", textSecundario: "", key: 1 },
+                                { image: "", textPrincipal: "Lorem Ipsum", textSecundario: "", key: 2 },
+                                { image: "", textPrincipal: "Lorem Ipsum", textSecundario: "", key: 3 },
+                                { image: "", textPrincipal: "Regresará con la documentación", textSecundario: "", key: 4 },
+                            ]}>
+                        </Toggler>
                     }
                 </div>}
                 <div className="mt-4">

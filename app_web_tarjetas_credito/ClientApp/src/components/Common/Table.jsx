@@ -18,7 +18,7 @@ const Table = (props) => {
                             <td>{solicitud.int_ente}</td>
                             <td>{solicitud.str_nombres}</td>
                             <td><Chip type="black">Black</Chip></td>
-                            <td>{`$ ${solicitud.dec_cupo_solicitado}`}</td>
+                            <td>{`$ ${solicitud.dec_cupo_solicitado.toLocaleString}`}</td>
                             <td>{"AA"}</td>
                             <td>{solicitud.str_estado}</td>
                             <td>{"Matriz"}</td>

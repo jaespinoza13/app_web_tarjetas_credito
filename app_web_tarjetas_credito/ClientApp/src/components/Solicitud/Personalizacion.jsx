@@ -6,14 +6,17 @@ const Personalizacion = (props) => {
     const [nombreSeleccion, setNombreSeleccion] = useState("");
     const [tipoEntrega, setTipoEntrega] = useState("");
     const [direccionEntrega, setDireccionEntrega] = useState("");
+    
+    const tiposEntrega = [{ image: "", textPrincipal: "Retiro en agencia", textSecundario: "", key: "Retiro en agencia"},
+        { image: "", textPrincipal: "Entrega en domicilio", textSecundario: "", key: "Entrega en domicilio" }];
 
-    const tiposEntrega = ["Retiro en agencia", "Entrega en domicilio"];
-    const tiposDireccion = ["Casa", "Trabajo"];
+    const tiposDireccion = [{ image: "", textPrincipal: "Casa", textSecundario: "", key: 125 },
+    { image: "", textPrincipal: "Trabajo", textSecundario: "", key: 124 }];
 
     useEffect(() => {
         setNombresTarjeta([
-            `${props.nombres.split(" ")[0]} ${props.str_apellido_paterno}`,
-            `${props.nombres.split(" ")[1]} ${props.str_apellido_materno}`
+            { image: "", textPrincipal: `${props.nombres.split(" ")[0]} ${props.str_apellido_paterno}`, textSecundario: "", key: `${props.nombres.split(" ")[0]} ${props.str_apellido_paterno}` },
+            { image: "", textPrincipal: `${props.nombres.split(" ")[1]} ${props.str_apellido_paterno}`, textSecundario: "", key: `${props.nombres.split(" ")[1]} ${props.str_apellido_paterno}` }
         ]);
     }, [props.nombres]);
 
