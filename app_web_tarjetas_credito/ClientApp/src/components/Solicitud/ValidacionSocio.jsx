@@ -1,13 +1,10 @@
-﻿import { useDispatch } from 'react-redux';
-import Input from "../Common/UI/Input";
+﻿import Input from "../Common/UI/Input";
 import Card from "../Common/Card";
-import { useEffect, useState } from "react";
-import { fetchValidacionSocio } from "../../services/RestServices";
+import { useState } from "react";
 import { validaCedula } from '../../js/utiles';
 
 
 const ValidacionSocio = (props) => {
-    const dispatch = useDispatch();
     //Datos del socio
     const [cedulaSocio, setCedulaSocio] = useState("");
     const [montoSolicitado, setMontoSolicitado] = useState(0);
@@ -23,6 +20,7 @@ const ValidacionSocio = (props) => {
 
     const setCedulaHandler = (value) => {
         let validezCedula = validaCedula(value);
+        setCedulaSocio(value);
         setIsCedulaValida(validezCedula);
         props.setCedulaSocio({
             valido: validezCedula,
@@ -54,7 +52,7 @@ const ValidacionSocio = (props) => {
         })
     }
     const celularSocioHandler = (valor) => {
-        setCedulaSocio(valor);
+        setCelularSocio(valor);
         props.datosIngresados({
         nombres: nombresSocio,
         apellidos: apellidosSocio,
@@ -110,8 +108,13 @@ const ValidacionSocio = (props) => {
                             <h3>{props.infoSocio.str_celular}</h3>
                         </Card>
                     }
-                    <h2>Cupo solicitado</h2>
-                    <Input type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setMontoSolicitadoHandler} value={montoSolicitado}></Input>
+                    <div className="f-col">
+                        <h2>Cupo solicitado</h2>
+                        <div className="f-row">
+                            <h2>$</h2><Input type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setMontoSolicitadoHandler} value={montoSolicitado}></Input>
+                        </div>
+                        
+                    </div>
             </div>
             }
 

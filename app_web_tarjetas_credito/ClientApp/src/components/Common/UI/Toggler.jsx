@@ -1,9 +1,8 @@
 ﻿import { Fragment, useEffect, useState } from "react";
-import Button from "../Buttons/Button";
+import Button from "./Button";
 
 const Toggler = (props) => {
     const [activeIndex, setActiveIndex] = useState(null);
-    console.log(props.toggles);
     const togglerHandler = (index) => {
         setActiveIndex(index)
         props.selectedToggle(index);
@@ -28,7 +27,7 @@ const Toggler = (props) => {
                             </div>
                             <div className="text-toggler ml-2 text-align-left">
                                 <h4>{element.textPrincipal}</h4>
-                                <p>{element.key}</p>
+                                <p>{element.textSecundario}</p>
                             </div>
                         </Fragment>
                     }
