@@ -1,5 +1,4 @@
 ﻿import { useState, useEffect } from "react";
-import '../../../scss/main.css';
 
 
 const ModalDinamico = (props) => {
@@ -35,7 +34,7 @@ const ModalDinamico = (props) => {
                     {props.children}
                 </div>
                 <div className="modal-footer">
-                    <button className="btn_mg btn_mg__tertiary close-modal" onClick={props.onCloseClick} ><img src="Imagenes/close.svg"></img> </button>
+                    <button className="btn_mg btn_mg__tertiary close-modal" onClick={props.onCloseClick} ><img src="Imagenes/close.svg" alt="Cerrar"></img> </button>
                 </div>
             </div>
         </div>

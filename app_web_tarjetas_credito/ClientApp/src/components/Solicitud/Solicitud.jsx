@@ -17,6 +17,7 @@ import Chip from '../Common/UI/Chip';
 import RateReviewSharpIcon from '@mui/icons-material/RateReviewSharp';
 import { IconButton } from '@mui/material';
 import TableWithTextArea from '../Common/UI/TableWithTextArea';
+import ModalDinamico from '../Common/Modal/ModalDinamico';
 
 
 const mapStateToProps = (state) => {
@@ -200,23 +201,24 @@ function Solicitud(props) {
             
         </div>
 
-        <TableWithTextArea
-            //props para Model
-            modalIsVisible={isModalComentarios} 
+        <ModalDinamico
+            //props para Modal
+            modalIsVisible={isModalComentarios}
             titulo={'COMENTARIOS DEL ASESOR'}
             onCloseClick={closeModalHandler}
-            isBtnDisabled={!isModalComentarios}
             type="md"
-            onCancelarModal={cancelarComentariosHandler}
-
-            //props para Table
-            headers={headersTable_with_Text_Area}
-            body={valoresTextArea}
-            onChangeTable={textAreaHandler}
-            onSubmitComentarios={onSubmitComentarios  }
         >
+            <TableWithTextArea
+                isBtnDisabled={!isModalComentarios}
+                headers={headersTable_with_Text_Area}
+                body={valoresTextArea}
+                onChangeTable={textAreaHandler}
+                onSubmitComentarios={onSubmitComentarios}
+                onCancelarSubmit={cancelarComentariosHandler}
+            >
+            </TableWithTextArea>
 
-        </TableWithTextArea>
+        </ModalDinamico>
 
 
        

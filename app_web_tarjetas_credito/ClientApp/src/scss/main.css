@@ -1449,6 +1449,53 @@ input:checked + .slider::before {
 }
 
 
+/* CARD IMAGES*/
+.card_image {
+    position: relative;
+    max-width: 300px;
+    border-radius: 8px;
+    overflow: hidden;
+    /* padding-bottom: 10px; */
+    box-shadow: 1px 2px 8px rgba(100, 100, 100, 0.1);
+}
+
+
+.card-footer {
+    padding: 4%;
+}
+
+    .card-footer .card_image {
+        margin: 0 auto;
+    }
+
+
+.image-wrapper {
+    width: 300px;
+    /*height: 200px;*/
+    height: auto;
+    overflow: hidden;
+}
+
+
+img {
+    max-width: 100%;
+    height: auto;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+img:hover {
+    -webkit-transform: scale3d(1.2, 1.2, 1);
+    transform: scale3d(1.2, 1.2, 1);
+    transition: all 1s linear;
+}
+
+.text-box-wrapper {
+    padding: 20px
+}
+/* FIN CARD IMAGES*/
+
+
 @media screen and (max-width: 600px) {
     .responsive-table {
         overflow-x: auto;

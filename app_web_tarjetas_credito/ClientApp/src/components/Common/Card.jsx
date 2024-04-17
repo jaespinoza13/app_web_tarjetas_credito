@@ -1,10 +1,9 @@
-﻿function Card(props) {
-    const classNamesArr = ["card", ...(props.className || [])];
-    const classNames = classNamesArr.join(' ');
-    return(
-        <div className={classNames}>
-            { props.children }
-        </div >
+﻿const Card = (props) => {
+
+    return (
+        <div className={props.incluyeImagen === true ? "card_image" : "card card-row"}>
+            {props.children}
+        </div>
     );
 }
 
