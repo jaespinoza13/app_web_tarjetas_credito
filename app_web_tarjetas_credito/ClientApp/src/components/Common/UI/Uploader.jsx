@@ -27,13 +27,13 @@ const Uploader = (props) => {
     return (
         <div className="f-row uploader">
             <div className={"btn_mg btn_mg__toggler active"} onClick={handleUpload}>
-                <img className='mr-2' src="Imagenes/download.svg" alt="" />
+                <img className='mr-2' src="icons/menu.png" alt="" />
                 <input type="file" accept=".pdf" ref={inputCargaRef} style={{ display: 'none' }} onChange={handleFileChange} />
-                <div className=''>
-                    <p>
+                <div className='upload-info'>
+                    <h5 className='blue strong'>
                         {props.children}
-                    </p>
-                    <p className='filename'>{filename}</p>
+                    </h5>
+                    <h5 className='blue filename'>{filename}</h5>
                 </div>
             </div>
             {filename && <button className='btn-close' onClick={removeItemHandler}>x</button>}

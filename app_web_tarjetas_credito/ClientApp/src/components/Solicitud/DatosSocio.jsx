@@ -169,79 +169,149 @@ const DatosSocio = (props) => {
         <div className="f-col w-100">
             <div id="montoSugerido" className="f-row w-100 ">
                 <img src="Imagenes/monetization_on.svg"></img>
-                <div className="datosMonto">
-                    <h3>Monto sugerido:</h3>
-                    <h2>{`$ ${props.montoSugerido || '10000.00'}`}</h2>
+                <div className="ml-3 datosMonto">
+                    <h3 className="blue">Cupo sugerido:</h3>
+                    <h2 className="strong blue">{`${props.montoSugerido || Number('10000.00').toLocaleString('en-US')}`}</h2>
                 </div>
+            </div>
+            <div className="info f-row mb-4">
+                <h3 className="strong">{props.score.response.result.identificacionTitular[0]?.nombreRazonSocial}</h3>
             </div>
             <div id="infoSocio" className="w-100">
                 <Accordion contentReady={contentReadyScore} title="Score" rotate={estadoAccordionScore} loading={estadoLoadingScore} toggleAccordion={toggleAccordionScore}>
-                    <div className="m-4">
+                    <div className="m-4 f-row">
                         <Item xs={6} sm={6} md={6} lg={6} xl={6}>
-                            <h4>Resultado de la calificación</h4>
-                            <div>
-                                <p>Cupo sugerido:</p>
-                                <h4>{`$ ${props.montoSugerido || '10000.00'}`}</h4>
+                            <h4 className="strong mb-3">Resultado de la calificación</h4>
+                            <div className="values  mb-3">
+                                <h5>Cupo sugerido</h5>
+                                <h5 className="strong">
+                                    {`$ ${props.montoSugerido || Number('10000.00').toLocaleString("en-US")}`}
+                                </h5>
                             </div>
+                            <div className="values  mb-3">
+                                <h5>Score</h5>
+                                <h5 className="strong">
+                                    {props.score.response.result && props.score.response.result.scoreFinanciero && props.score.response.result.scoreFinanciero[0] && props.score.response.result.scoreFinanciero[0].score ? props.score.response.result.scoreFinanciero[0].score : 800}
+                                </h5>
+                            </div>
+                            <Button className={["btn_mg btn_mg__primary mt-2 mr-2"]} disabled={false} onClick={descargarReporte}>Descargar reporte</Button>
                         </Item>
-                        <Item xs={6} sm={6} md={6} lg={6} xl={6}></Item>
-                        <input name="nombre" type="text" value={props.score.response.result.identificacionTitular[0]?.nombreRazonSocial} disabled={true}></input>
-                        <label htmlFor="score">Score:</label>
-                        <input name="score" type="text" value={props.score.response.result && props.score.response.result.scoreFinanciero && props.score.response.result.scoreFinanciero[0] && props.score.response.result.scoreFinanciero[0].score ? props.score.response.result.scoreFinanciero[0].score : 800} disabled={true}></input>
-                        <Button className={["btn_mg btn_mg__primary mt-2 mr-2"]} disabled={false} onClick={descargarReporte}>Descargar reporte</Button>
-                        <label htmlFor="name">Detalle de deudas:</label>
-                        {props.score.response.result.deudaVigenteTotal.map((deuda) => {
-                            return (<div>
-                                <label>{deuda.sistemaCrediticio}</label>
-                                <div>
+                        <Item xs={6} sm={6} md={6} lg={6} xl={6}>
+                            <h4 className="strong mb-3" >Detalle de deudas:</h4>
+                            {props.score.response.result.deudaVigenteTotal.map((deuda) => {
+                                return (<div>
+                                    <label>{deuda.sistemaCrediticio}</label>
                                     <div>
-                                        <label>Total deuda:</label>
-                                        <input value={deuda.totalDeuda}></input>
-                                        <label>Valor demanda judicial:</label>
-                                        <input value={deuda.valorDemandaJudicial}></input>
-                                        <label>Valor por vencer:</label>
-                                        <input value={deuda.valorPorVencer}></input>
+                                        <div>
+                                            <label>Total deuda:</label>
+                                            <input value={deuda.totalDeuda}></input>
+                                            <label>Valor demanda judicial:</label>
+                                            <input value={deuda.valorDemandaJudicial}></input>
+                                            <label>Valor por vencer:</label>
+                                            <input value={deuda.valorPorVencer}></input>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>);
-                        })
-                        }
+                                </div>);
+                            })
+                            }
+
+                        </Item>
                     </div>
                 </Accordion>
                 <Accordion className="mt-3" title="Datos generales" rotate={estadoAccordionInfoSocio} loading={estadoLoadingInfoSocio} toggleAccordion={() => { getInfoSocioHandler(); } } contentReady={contentReadyInfoSocio}>
                     <div style={{ display: "flex", flexDirection: "column" }}>
                         <div style={{ display: "flex", flexDirection: "row", width: "100%" }}>
                             <div className="m-2" style={{ display: "flex", flexDirection: "column", width: "50%", marginRight: "20px" }}>
-                                <label>Fecha de nacimiento:</label>
-                                <input value={`${infoSocio[0]?.str_fecha_nacimiento}`} readOnly={true}></input>
-                                <label>Años reside en el pais:</label>
-                                <input value="N/D" readOnly={true}></input>
-                                <label>Nivel de educación:</label>
-                                <input value={`${infoSocio[0]?.str_nivel_educacion}`} readOnly={true}></input>
-                                <label>Código de profesión:</label>
-                                <input value={`${infoSocio[0]?.str_codigo_profesion}`} readOnly={true}></input>
-                                <label>Actividad:</label>
-                                <input value={`${infoSocio[0]?.str_actividad_economica}`} readOnly={true}></input>
-                                <label>Ocupación:</label>
-                                <input value={`${infoSocio[0]?.str_ocupacion}`} readOnly={true}></input>
-                                <label>Estado civil:</label>
-                                <input value={`${infoSocio[0]?.str_estado_civil}`} readOnly={true}></input>
+                                <div className="values  mb-3">
+                                    <h5>Fecha de nacimiento</h5>
+                                    <h5 className="strong">
+                                        {`${infoSocio[0]?.str_fecha_nacimiento}`}
+                                    </h5>
+                                </div>
+                                <div className="values mb-3">
+                                    <h5>Años reside en el pais</h5>
+                                    <h5 className="strong">
+                                        {`N/D`}
+                                    </h5>
+                                </div>
+                                <div className="values mb-3">
+                                    <h5>Nivel de educación</h5>
+                                    <h5 className="strong">
+                                        {`${infoSocio[0]?.str_nivel_educacion}`}
+                                    </h5>
+                                </div>
+
+                                <div className="values mb-3">
+                                    <h5>Código de profesión</h5>
+                                    <h5 className="strong">
+                                        {`${infoSocio[0]?.str_codigo_profesion}`}
+                                    </h5>
+                                </div>
+
+                                <div className="values mb-3">
+                                    <h5>Actividad</h5>
+                                    <h5 className="strong">
+                                        {`${infoSocio[0]?.str_actividad_economica}`}
+                                    </h5>
+                                </div>                               
+                                <div className="values mb-3">
+                                    <h5>Ocupación</h5>
+                                    <h5 className="strong">
+                                        {`${infoSocio[0]?.str_ocupacion}`}
+                                    </h5>
+                                </div>
+                                <div className="values mb-3">
+                                    <h5>Estado civil</h5>
+                                    <h5 className="strong">
+                                        {`${infoSocio[0]?.str_estado_civil}`}
+                                    </h5>
+                                </div>
                             </div>
                             <div className="m-2" style={{ display: "flex", flexDirection: "column", width: "50%" }}>
-                                <label>Nacionalidad:</label>
-                                <input value={`${infoSocio[0]?.str_nacionalidad}`} readOnly={true}></input>
-                                <label>Sexo:</label>
-                                <input value={`${infoSocio[0]?.str_sexo === "M" ? "Masculino" : "Femenino"}`} readOnly={true}></input>
-                                <label>Sector:</label>
-                                <input value={`${dirDocimicilioSocio[0]?.str_dir_sector}`} readOnly={true}></input>
-                                <label>Subsector:</label>
-                                <input value={`${dirDocimicilioSocio[0]?.str_dir_barrio}`} readOnly={true}></input>
-                                <label>Tipo de persona:</label>
-                                <input value={`${infoSocio[0]?.str_tipo_persona}`} readOnly={true}></input>
-                                <label>Medio de información:</label>
-                                <input value={`${infoSocio[0]?.str_medio_informacion}`} readOnly={true}></input>
-                                <label>Calificación de riesgo:</label>
-                                <input value={`${infoSocio[0]?.str_calificacion_riesgo}`} readOnly={true}></input>
+                                <div className="values  mb-3">
+                                    <h5>Nacionalidad</h5>
+                                    <h5 className="strong">
+                                        {`${infoSocio[0]?.str_nacionalidad}`}
+                                    </h5>
+                                </div>
+                                <div className="values mb-3">
+                                    <h5>Sexo</h5>
+                                    <h5 className="strong">
+                                        {`${infoSocio[0]?.str_sexo === "M" ? "Masculino" : "Femenino"}`}
+                                    </h5>
+                                </div>
+                                <div className="values mb-3">
+                                    <h5>Sector</h5>
+                                    <h5 className="strong">
+                                        {`${dirDocimicilioSocio[0]?.str_dir_sector}`}
+                                    </h5>
+                                </div>
+
+                                <div className="values mb-3">
+                                    <h5>Subsector</h5>
+                                    <h5 className="strong">
+                                        {`${dirDocimicilioSocio[0]?.str_dir_barrio}`}
+                                    </h5>
+                                </div>
+
+                                <div className="values mb-3">
+                                    <h5>Tipo de persona</h5>
+                                    <h5 className="strong">
+                                        {`${infoSocio[0]?.str_tipo_persona}`}
+                                    </h5>
+                                </div>
+                                <div className="values mb-3">
+                                    <h5>Medio de información</h5>
+                                    <h5 className="strong">
+                                        {`${infoSocio[0]?.str_medio_informacion}`}
+                                    </h5>
+                                </div>
+                                <div className="values mb-3">
+                                    <h5>Calificación de riesgo</h5>
+                                    <h5 className="strong">
+                                        {`${infoSocio[0]?.str_calificacion_riesgo}`}
+                                    </h5>
+                                </div>
                             </div>
                         </div>
 
@@ -250,11 +320,19 @@ const DatosSocio = (props) => {
                 {props.tipoGestion === 'solicitud' &&
                     <Fragment>
                         <Accordion className="mt-3" title="Medios de notificación" rotate={estadoMediosNotif} loading={estadoLoadingInfoSocio} toggleAccordion={() => { getInfoMediosNotif(); }} contentReady={contentReadyInfoSocio}>
-                            <div className="m-2">
-                            <label>Celular:</label>
-                            <input value={`${props.informacionSocio.str_celular || ''}`} readOnly={true}></input>
-                            <label>Correo:</label>
-                            <input value={`${props.informacionSocio.str_email || ''}`} readOnly={true}></input>
+                            <div className="m-2 w-50">
+                                <div className="values mb-3">
+                                    <h5>Celular</h5>
+                                    <h5 className="strong">
+                                        {`${props.informacionSocio.str_celular || ''}`}
+                                    </h5>
+                                </div>
+                                <div className="values mb-3">
+                                    <h5>Correo</h5>
+                                    <h5 className="strong">
+                                        {`${props.informacionSocio.str_email || ''}`}
+                                    </h5>
+                                </div>
                             </div>
                         </Accordion>
                         <Accordion className="mt-3" title="Información económica" rotate={estadoAccordionInfoEco} loading={estadoLoadingInfoEco} toggleAccordion={() => { getInfoEco(); }} contentReady={contentReadyInfoEco}>

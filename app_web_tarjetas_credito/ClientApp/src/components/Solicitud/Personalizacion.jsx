@@ -6,12 +6,63 @@ const Personalizacion = (props) => {
     const [nombreSeleccion, setNombreSeleccion] = useState("");
     const [tipoEntrega, setTipoEntrega] = useState("");
     const [direccionEntrega, setDireccionEntrega] = useState("");
+    const [tiposDireccion, setTiposDireccion] = useState([]);
     
     const tiposEntrega = [{ image: "", textPrincipal: "Retiro en agencia", textSecundario: "", key: "Retiro en agencia"},
         { image: "", textPrincipal: "Entrega en domicilio", textSecundario: "", key: "Entrega en domicilio" }];
 
-    const tiposDireccion = [{ image: "", textPrincipal: "Casa", textSecundario: "", key: 125 },
-    { image: "", textPrincipal: "Trabajo", textSecundario: "", key: 124 }];
+
+    //useEffect(() => {
+    //    console.log(props);
+    //    setTiposDireccion([
+    //        {
+    //            image: "",
+    //            textPrincipal: "Casa",
+    //            textSecundario: `${props.lstDomicilio[0].str_dir_ciudad}, ${props.lstDomicilio[0].str_dir_descripcion_dom}`,
+    //            key: props.lstDomicilio[0].int_dir_direccion
+    //        },
+    //        {
+    //            image: "",
+    //            textPrincipal: "Trabajo",
+    //            textSecundario: `${props.lstTrabajo[0].str_dir_ciudad}`,
+    //            key: props.lstTrabajo[0].int_dir_direccion
+    //        }]);
+
+
+    //}, []);
+
+    useEffect(() => {
+        console.log(props);
+        if (props.lstDomicilio && props.lstDomicilio.length > 0 && props.lstDomicilio[0].str_dir_ciudad) {
+            setTiposDireccion([
+                {
+                    image: "",
+                    textPrincipal: "Casa",
+                    textSecundario: `${props.lstDomicilio[0].str_dir_ciudad}, ${props.lstDomicilio[0].str_dir_descripcion_dom}`,
+                    key: props.lstDomicilio[0].int_dir_direccion
+                }
+            ]);
+        }
+        if (props.lstTrabajo && props.lstTrabajo.length > 0 && props.lstTrabajo[0].str_dir_ciudad) {
+            setTiposDireccion(prevState => [
+                ...prevState,
+                {
+                    image: "",
+                    textPrincipal: "Trabajo",
+                    textSecundario: `${props.lstTrabajo[0].str_dir_ciudad}, ${props.lstTrabajo[0].str_dir_descripcion_emp}`,
+                    key: props.lstTrabajo[0].int_dir_direccion
+                }
+            ]);
+        }
+    }, [props]);
+
+
+    useEffect(() => {
+        const defaultEntrega = tiposEntrega.shift(0);
+        setTipoEntrega(defaultEntrega.textPrincipal);
+        const defaultNombre = nombresTarjeta.shift(0);
+        setNombresTarjeta(defaultNombre.textPrincipal);
+    }, []);
 
     useEffect(() => {
         setNombresTarjeta([
@@ -33,11 +84,16 @@ const Personalizacion = (props) => {
     }, [direccionEntrega]);
 
     const nombreSeleccionHandler = (index) => {
-        setNombreSeleccion(nombresTarjeta[index]);
+        const nombreSeleccion = nombresTarjeta.find((nombre) => nombre.key === index);
+        console.log(nombreSeleccion.textPrincipal);
+        setNombreSeleccion(nombreSeleccion.textPrincipal);
+        
     }
 
     const tipoEntregaHandler = (index) => {
-        setTipoEntrega(tiposEntrega[index]);
+        const entregas = tiposEntrega.find((entrega) => entrega.key === index);
+        console.log(entregas.textPrincipal);
+        setTipoEntrega(entregas.textPrincipal);
     }
 
     const direccionEntregaHandler = (index) => {

@@ -2,14 +2,17 @@
 import '../../scss/components/ValidacionesGenerales.css';
 import { useState, Fragment, useEffect } from "react";
 import Button from "../Common/UI/Button";
-import { fetchGetContrato } from "../../services/RestServices";
+import { fetchGetContrato, fetchScore } from "../../services/RestServices";
 import { useDispatch } from 'react-redux';
 import Uploader from "../Common/UI/Uploader";
+import { jsPDF } from "jspdf";
 
 const ValidacionesGenerales = (props) => {
     const dispatch = useDispatch();
     const [isGenerandoAutorizacion, setIsGenerandoAutorizacion] = useState(false);
     const [archivoAutorizacion, setArchivoAutorizacion] = useState('');
+
+    useEffect(() => { console.log(props) },[]);
 
     useEffect(() => {
         if (isGenerandoAutorizacion) {
@@ -29,27 +32,68 @@ const ValidacionesGenerales = (props) => {
 
     const descargarArchivo = (data) => {
         try {
+            // Decode base64 string to binary data
             const pdfData = atob(data.file_bytes);
-            const blob = new Blob([pdfData], { type: "application/pdf" });
-            const downloadLink = document.createElement("a");
-            downloadLink.href = 'data:application/octet-stream;base64,' + pdfData;;
+            const a4WidthPt = 595.28; // A4 width in points
+            const a4HeightPt = 841.89; // A4 height in points
 
-            // Format the current date for the filename
-            const currentDate = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-            downloadLink.download = "Autorizacion_" + currentDate + ".pdf";
+            // Create jsPDF instance with landscape orientation and A4 dimensions
+            var doc = new jsPDF('p', 'px', [a4WidthPt, a4HeightPt],false, true);
 
-            downloadLink.click();
+            doc.html(pdfData, {
+                callback: function (doc) {
+                    doc.save();
+                },
+                x: 10,
+                y: 10
+            })
+
+            // Create Blob from binary data
+            //const blob = new Blob([pdfData], { type: "application/pdf" });
+
+            //// Create download link
+            //const downloadLink = document.createElement("a");
+            //downloadLink.href = URL.createObjectURL(blob);
+
+            //// Format the current date for the filename
+            //const currentDate = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+            //downloadLink.download = "Autorizacion_" + currentDate + ".pdf";
+
+            //// Trigger download
+            //downloadLink.click();
         } catch (error) {
             console.error("Error downloading PDF:", error);
         }
     }
 
+
+    function base64ToUtf8WithBom(base64String) {
+        // Decode the Base64 string to Uint8Array
+        const decodedArray = Uint8Array.from(atob(base64String), c => c.charCodeAt(0));
+
+        // Create a Uint8Array for BOM (UTF-8)
+        const bomArray = new Uint8Array([0xEF, 0xBB, 0xBF]);
+
+        // Concatenate the BOM array with the decoded array
+        const utf8WithBomArray = new Uint8Array(bomArray.length + decodedArray.length);
+        utf8WithBomArray.set(bomArray);
+        utf8WithBomArray.set(decodedArray, bomArray.length);
+
+        // Convert Uint8Array to UTF-8 string
+        const utf8WithBomString = new TextDecoder('utf-8').decode(utf8WithBomArray);
+
+        return utf8WithBomString;
+    }
+
     const getContrato = () => {
-        fetchGetContrato(props.token, (data) => {
-            if (data.str_res_codigo === "000") {
-                descargarArchivo(data);
-            }
-        }, dispatch)
+        fetchScore("C", props.cedula, props.infoSocio.nombreSocio, "Matriz", props.datosUsuario.strOficial, props.datosUsuario.strCargo, props.token, (data) => {
+            descargarArchivo(data);
+        }, dispatch);
+        //fetchScore(props.token, (data) => {
+        //    if (data.str_res_codigo === "000") {
+        //        descargarArchivo(data);
+        //    }
+        //}, dispatch)
     }
 
     const handleFileChange = (event) => {
@@ -63,7 +107,7 @@ const ValidacionesGenerales = (props) => {
     }
 
     return (
-        <div>
+        <div className="f-col justify-content-center">
             
             {props.onShowAutorizacion
                 ?
@@ -80,7 +124,7 @@ const ValidacionesGenerales = (props) => {
                 </Fragment>
 
                 :
-                <Fragment>
+                <div className="f-col">
                     <label>Validaciones</label>
                     {props.lst_validaciones.lst_validaciones_ok.length > 0 &&
                         <Card className={["w-100"]}>
@@ -113,7 +157,7 @@ const ValidacionesGenerales = (props) => {
                             })}
                         </Card>
                     }
-                </Fragment>
+                </div>
                 }
         </div>
     );

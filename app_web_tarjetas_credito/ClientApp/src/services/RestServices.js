@@ -811,6 +811,7 @@ export function fetchScore(strTipoDocumento, strCedula, strNombres, strLugar, st
         str_oficial: strOficial,
         str_cargo: strCargo
     };
+    console.log();
     ServicioPostExecute(getScore, body, token, { dispatch: dispatch }).then((data) => {
         if (data) {
             console.log(data);
