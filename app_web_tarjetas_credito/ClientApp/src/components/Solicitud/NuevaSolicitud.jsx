@@ -3,7 +3,6 @@ import { useHistory } from 'react-router-dom';
 import Card from "../Common/Card";
 import { IsNullOrWhiteSpace } from "../../js/utiles";
 import Sidebar from '../Common/Navs/Sidebar';
-import Input from '../Common/UI/Input';
 import Button from '../Common/UI/Button';
 import { useState, useEffect } from 'react';
 import ValidacionSocio from './ValidacionSocio';
@@ -12,7 +11,6 @@ import ValidacionesGenerales from './ValidacionesGenerales';
 import DatosSocio from './DatosSocio';
 import { fetchScore, fetchValidacionSocio, fetchAddAutorizacion, fetchA, fetchAddProspecto, fetchAddSolicitud } from '../../services/RestServices';
 import { get } from '../../js/crypt';
-import ModalAlert from '../Common/Alert';
 import Modal from '../Common/Modal/Modal';
 import Personalizacion from './Personalizacion';
 import FinProceso from './FinProceso';
@@ -332,9 +330,7 @@ const NuevaSolicitud = (props) => {
     const getFileHandler = (e) => {
         setArchivoAutorizacion(e);
     }
-    //const [nombreTarjeta, setNombreTarjeta] = useState("");
-    //const [tipoEntrega, setTipoEntrega] = useState("");
-    //const [direccionEntrega, setDireccionEntrega] = useState("");
+
     const nombreTarjetaHandler = (data) => {
         setNombreTarjeta(data);
     }
@@ -374,7 +370,6 @@ const NuevaSolicitud = (props) => {
             <div className="stepper"></div>
             <Card className={["m-max w-100 justify-content-space-between align-content-center"]}>
                 <div className="f-row">
-                    {step}
                     {(step === 0 || step === 1) &&
                         <div className="f-row w-100">
                             <Item xs={3} sm={3} md={3} lg={3} xl={3} className=""></Item>

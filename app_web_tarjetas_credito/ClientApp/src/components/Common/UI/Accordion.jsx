@@ -8,8 +8,8 @@
             <div className="accordion-header">
                 <h3>{props.title}</h3>
                 {props.loading
-                    ? <button className={`btn_mg btn_mg__tertiray loading`}><img className={`${props.loading ? 'loading' : ''}`} src="Imagenes/progress_activity.svg" alt="" /></button>
-                    : <button className="btn_mg btn_mg__tertiray" onClick={handleToggleAccordion}><img className={props.rotate ? 'rotated' : ''} src="Imagenes/stat_minus.svg" alt="" /></button>
+                    ? <button className={`btn_mg btn_mg__tertiray btn_mg__auto loading`}><img className={`${props.loading ? 'loading' : ''}`} src="Imagenes/progress_activity.svg" alt="" /></button>
+                    : <button className="btn_mg btn_mg__tertiray btn_mg__auto" onClick={handleToggleAccordion}><img className={props.rotate ? 'rotated' : ''} src="Imagenes/stat_minus.svg" alt="" /></button>
                 }
             </div>
             <div className={`accordion-content ${props.rotate ? 'open' : ''}`}>

@@ -33,9 +33,9 @@ function Home(props) {
             <Sidebar></Sidebar>
             <Container className="border-bottom text-center ">
                 <Container>
-                    <h3 className="mb-3">Bienvenido al sistema de </h3>
-                    <h2 className="mb-3">{props.dataNombreSistema}</h2>
-                    <h3 className="mb-3">Crea y administra solicitudes de tarjeta de credito</h3>
+                    <h3 className="mb-3 blue">Bienvenido al sistema de </h3>
+                    <h1 className="mb-3 blue strong">{props.dataNombreSistema}</h1>
+                    <h3 className="mb-3 blue">Crea y administra solicitudes de tarjeta de credito</h3>
                 </Container>
                 <Container>
                     <h3>Mejoras:</h3>

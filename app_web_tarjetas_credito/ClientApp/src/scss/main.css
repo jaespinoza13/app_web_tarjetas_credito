@@ -49,23 +49,76 @@ nav {
         flex-direction: row;
     }
 
+h1 {
+    font-family: "Karbon", sans-serif;
+}
+
 h2 {
     font-family: "Karbon", sans-serif;
 }
 
 h3 {
-    color: #004CAC;
     font-family: "Karbon", sans-serif;
 }
 
 h4 {
-    color: #004CAC;
-    font-family: "Karbon-Bold", sans-serif;
+    font-family: "Karbon", sans-serif;
 }
 
 h5 {
-    color: #004CAC;
     font-family: "Karbon", sans-serif;
+}
+
+h6 {
+    font-family: "Karbon", sans-serif;
+}
+
+h1.strong {
+    font-family: "Karbon-Bold", sans-serif;
+}
+
+h2.strong {
+    font-family: "Karbon-Bold", sans-serif;
+}
+
+h3.strong {
+    font-family: "Karbon-Bold", sans-serif;
+}
+
+h4.strong {
+    font-family: "Karbon-Bold", sans-serif;
+}
+
+h5.strong {
+    font-family: "Karbon", sans-serif;
+}
+
+h6.strong {
+    font-family: "Karbon", sans-serif;
+}
+
+h1.blue {
+    color: #004CAC;
+}
+
+h2.blue {
+    color: #004CAC;
+}
+
+h3.blue {
+    color: #004CAC;
+}
+
+h4.blue {
+    color: #004CAC;
+}
+
+h5.blue {
+    color: #004CAC;
+}
+
+h6.blue {
+    color: #004CAC;
 }
 
 p {
@@ -191,7 +244,7 @@ hr.dashed {
 }
 
 .sidebar {
-    min-width: 25rem;
+    width: 25rem;
     height: calc(100vh - 4rem);
     display: flex;
     flex-direction: column;
@@ -207,7 +260,7 @@ hr.dashed {
 }
 
     .sidebar.sidebar_min {
-        min-width: 4rem;
+        width: 4rem;
         height: calc(100vh - 4rem);
         display: flex;
         flex-direction: column;
@@ -374,8 +427,9 @@ button {
     position: relative;
     overflow: hidden;
     transition: background-color 400ms;
-    height: 27px;
     outline: none;
+    display: flex;
+    flex-direction: row;
 }
 
 span.ripple {
@@ -398,30 +452,35 @@ span.ripple {
     border-radius: 25px;
     color: #004CAC;
     letter-spacing: 0px;
-    width: -moz-fit-content;
-    width: fit-content;
+    width: 13.5rem;
     display: flex;
     align-items: center;
     background-color: #F8F8F8;
     justify-content: center;
 }
 
+.btn_mg__auto {
+    width: auto;
+}
+
 .btn_mg__primary {
     padding: 0.4rem 1.4rem;
     background-color: #FED400;
-    /*min-width: 13.5rem;*/
+    height: 27px;
 }
 
     .btn_mg__primary:disabled {
         background-color: #B6B7B8;
         cursor: default;
         opacity: 0.7;
+        height: 27px;
     }
 
 .btn_mg__secondary {
     border: 1px solid #FED400;
     padding: 0.4rem 1.4rem;
     background-color: #F8F8F8;
+    height: 27px;
 }
 
     .btn_mg__secondary:disabled {
@@ -1008,11 +1067,11 @@ h3.chip {
 }
 
 .toggler {
-    background-color: #F2F4FD;
     height: 2.5rem;
     padding: 0.4rem 1.4rem;
     display: inline-flex;
     align-items: center;
+    padding: 1.4rem 0.5rem;
 }
 
     .toggler.f-col {
@@ -1026,16 +1085,22 @@ h3.chip {
 .btn_mg__toggler {
     border-radius: 7px;
     padding: 0.3rem 0.5rem;
-    background-color: #F2F4FD;
+    border: 1px solid rgba(9, 57, 208, 0.2);
     min-width: 9.5rem;
     text-align: center;
     min-height: 1.5rem;
+    justify-content: flex-start;
 }
 
     .btn_mg__toggler.active {
         background-color: #F8F8F8;
         border: 1px solid #2A77FF;
+        box-shadow: 0px 0px 6px rgba(7, 255, 214, 0.168627451);
     }
+
+.text-toggler > * {
+    text-overflow: ellipsis;
+}
 
 .accordion {
     position: relative;
@@ -1244,6 +1309,10 @@ input:checked + .slider::before {
 
 .text-align-center {
     text-align: --webkit-center;
+}
+
+.text-align-left {
+    text-align: left;
 }
 
 @keyframes modal-up {

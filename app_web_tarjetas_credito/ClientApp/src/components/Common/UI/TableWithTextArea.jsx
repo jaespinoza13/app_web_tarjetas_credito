@@ -35,7 +35,7 @@ const TableWithTextArea = (props) => {
                                                 placeholder="Ingrese un detalle"
                                                 value={data.detalle}
                                                 type="textarea"
-                                                //style={{ border: 'none', background: 'rgb(200, 200, 200)' }}
+                                                esRequerido={ true }
                                                 onChange={(e) => props.onChangeTable(e, data.key)}
                                             ></Textarea>
                                         </td>
@@ -46,8 +46,8 @@ const TableWithTextArea = (props) => {
                             </Table>
            
                             <div className="row center_text_items">
-                                <button className="btn_mg btn_mg__primary" disabled={props.isBtnDisabled} type="submit">Guardar</button>
-                                <button className="btn_mg btn_mg__tertiary" onClick={(e) => { e.preventDefault(); props.onCancelarModal(); }}>"Cancelar"</button>
+                                <button className="btn_mg btn_mg__primary mt-2" disabled={props.isBtnDisabled} type="submit">Guardar</button>
+                                <button className="btn_mg btn_mg__secondary mt-2 " onClick={(e) => { e.preventDefault(); props.onCancelarModal(); }}>"Cancelar"</button>
                             </div>
                         </form>
                         
