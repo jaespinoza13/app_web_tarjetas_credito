@@ -86,7 +86,6 @@ const DatosSocio = (props) => {
 
     const toggleAccordionScore = () => {
         setEstadoAccordionScore(!estadoAccordionScore);
-        console.log(estadoAccordionScore)
     }
 
     const comentarioAdicionalHanlder = (e) => {
@@ -200,15 +199,19 @@ const DatosSocio = (props) => {
                             <h4 className="strong mb-3" >Detalle de deudas:</h4>
                             {props.score.response.result.deudaVigenteTotal.map((deuda) => {
                                 return (<div>
-                                    <label>{deuda.sistemaCrediticio}</label>
+                                    <h3 className="strong">{deuda.sistemaCrediticio}</h3>
                                     <div>
-                                        <div>
-                                            <label>Total deuda:</label>
-                                            <input value={deuda.totalDeuda}></input>
-                                            <label>Valor demanda judicial:</label>
-                                            <input value={deuda.valorDemandaJudicial}></input>
-                                            <label>Valor por vencer:</label>
-                                            <input value={deuda.valorPorVencer}></input>
+                                        <div className="values">
+                                            <h5>Total deuda:</h5>
+                                            <h5 className="strong">$ {Number(deuda.totalDeuda).toLocaleString("en-US")}</h5>
+                                        </div>
+                                        <div className="values">
+                                            <h5>Valor demanda judicial:</h5>
+                                            <h5 className="strong">$ {Number(deuda.valorDemandaJudicial).toLocaleString("en-US")}</h5>
+                                        </div>
+                                        <div className="values">
+                                            <h5>Valor por vencer:</h5>
+                                            <h5 className="strong">$ {Number(deuda.valorPorVencer).toLocaleString("en-US")}</h5>
                                         </div>
                                     </div>
                                 </div>);
@@ -218,6 +221,8 @@ const DatosSocio = (props) => {
                         </Item>
                     </div>
                 </Accordion>
+                {props.tipoGestion === 'solicitud' &&
+                    <Fragment>
                 <Accordion className="mt-3" title="Datos generales" rotate={estadoAccordionInfoSocio} loading={estadoLoadingInfoSocio} toggleAccordion={() => { getInfoSocioHandler(); } } contentReady={contentReadyInfoSocio}>
                     <div style={{ display: "flex", flexDirection: "column" }}>
                         <div style={{ display: "flex", flexDirection: "row", width: "100%" }}>
@@ -317,8 +322,7 @@ const DatosSocio = (props) => {
 
                     </div>
                 </Accordion>
-                {props.tipoGestion === 'solicitud' &&
-                    <Fragment>
+                
                         <Accordion className="mt-3" title="Medios de notificación" rotate={estadoMediosNotif} loading={estadoLoadingInfoSocio} toggleAccordion={() => { getInfoMediosNotif(); }} contentReady={contentReadyInfoSocio}>
                             <div className="m-2 w-50">
                                 <div className="values mb-3">

@@ -88,7 +88,6 @@ const NuevaSolicitud = (props) => {
     const [dirDocimicilioSocio, setDirDomicilioSocio] = useState([]);
     const [dirTrabajoSocio, setDirTrabajoSocio] = useState([]);
     const getIfoSocioHandler = (data) => {
-        console.log(data.lst_dir_domicilio);
         setDirDomicilioSocio([...data.lst_dir_domicilio]);
         setDirTrabajoSocio([...data.lst_dir_trabajo]);
     }
@@ -164,6 +163,12 @@ const NuevaSolicitud = (props) => {
         if (step === 1) {
             setEstadoBotonSiguiente(true);
         }
+        if (step === 2 && showAutorizacion) {
+            setTextoSiguiente("Continuar solicitud")
+        }
+        if (step === 2 && !showAutorizacion) {
+            setTextoSiguiente("Continuar")
+        }
         if (step === -1) {
             setTextoSiguiente("Volver al inicio")
         }
@@ -171,10 +176,8 @@ const NuevaSolicitud = (props) => {
 
     const validaCamposSocio = () => {        
         if (nombreSocio !== "" && apellidosSocio !== "" && correoSocio !== "" && celularSocio.length === 10) {
-            console.log("validaCamposSocio true");
             return true
         }
-        console.log("validaCamposSocio false");
         return false;
     }
 
@@ -223,7 +226,6 @@ const NuevaSolicitud = (props) => {
             }, dispatch);
         }
         if (step === 1) {
-            console.log(autorizacionOk);
             if (autorizacionOk) {
                 setEstadoBotonSiguiente(false);
             }
@@ -304,7 +306,6 @@ const NuevaSolicitud = (props) => {
                 str_comentario_proceso: "comentario 1",
                 str_comentario_adicional: "comentario 2"
             }
-            console.log(body);
             fetchAddSolicitud(body, props.token, (data) => {
                 setStep(-1);
             }, dispatch);
@@ -335,7 +336,6 @@ const NuevaSolicitud = (props) => {
     }
 
     const datosIngresadosHandler = (e) => {
-        console.log(e);
         setNombreSocio(e.nombres);
         setApellidosSocio(e.apellidos);
         setCelularSocio(e.celular);
@@ -359,11 +359,11 @@ const NuevaSolicitud = (props) => {
     }
 
     const direccionEntregaHandler = (data) => {
-        console.log(data);
         setDireccionEntrega(data);
     }
 
     const handleAutorizacion = (data) => {
+        console.log(data);
         setIsUploadingAthorization(data);
     }
 
@@ -459,7 +459,7 @@ const NuevaSolicitud = (props) => {
                     <Item xs={2} sm={2} md={2} lg={2} xl={2} className=""></Item>
                     <Item xs={8} sm={8} md={8} lg={8} xl={8} className="f-row justify-content-space-evenly">
                         <Button className={["btn_mg btn_mg__primary mt-2"]} disabled={estadoBotonSiguiente} onClick={nextHandler}>{textoSiguiente}</Button>
-                        {((step === 2 && !autorizacionOk) || (step === 2 && !showAutorizacion)) && <Button className={["btn_mg btn_mg__secondary mt-2"]} disabled={false} onClick={nextProspeccionHandler}>Continuar como prospecto</Button>}
+                        {((step === 2 && !autorizacionOk) && (step === 2 && !showAutorizacion)) && <Button className={["btn_mg btn_mg__secondary mt-2"]} disabled={false} onClick={nextProspeccionHandler}>Continuar como prospecto</Button>}
                     </Item>
                     
                 </div>

@@ -89,15 +89,9 @@ const ValidacionesGenerales = (props) => {
         fetchScore("C", props.cedula, props.infoSocio.nombreSocio, "Matriz", props.datosUsuario.strOficial, props.datosUsuario.strCargo, props.token, (data) => {
             descargarArchivo(data);
         }, dispatch);
-        //fetchScore(props.token, (data) => {
-        //    if (data.str_res_codigo === "000") {
-        //        descargarArchivo(data);
-        //    }
-        //}, dispatch)
     }
 
     const handleFileChange = (event) => {
-        // Get the selected file from the file input element
         props.onFileUpload(event);
         setArchivoAutorizacion(event);       
     };

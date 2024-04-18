@@ -71,7 +71,6 @@ export function handleSubmitLogin(login, password, token, onSuccess, dispatch) {
                 onSuccess(data);
             }
         } else {
-            console.log(data);
             if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
         }
     }).catch((e) => {
@@ -176,7 +175,6 @@ export function handlerSubmitValidarRespuesta(idUsuario, usuario, pregunta, resp
                 onSuccess(data.codigo, data.mensaje);
             }
         } else {
-            console.log(data);
             if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
         }
     });
@@ -210,7 +208,6 @@ export function handlerSubmitResetearClave(idUsuario, usuario, passNueva, token,
                 onSuccess(data.codigo, data.mensajes[0]);
             }
         } else {
-            console.log(data);
             if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
         }
     });
@@ -240,7 +237,6 @@ export function handlerSubmitCambiarClave(passNueva, token, exProcess = false, o
             if (data) {
                 if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensajes[0] }, onSuccess ? () => onSuccess(data.codigo) : null));
             } else {
-                console.log(data);
                 if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
             }
         }
@@ -272,7 +268,6 @@ export function fetchListaPreguntas(exProcess, token, onSuccess, dispatch) {
                 }
             }
         } else {
-            console.log(data);
             if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
         }
     });
@@ -344,7 +339,6 @@ export function handlerSubmitPreguntas(preguntas, respuestas, passAnterior, toke
             if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
         } else {
             if (data) {
-                console.log(data.codigo);
                 if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensajes[0] }));
                 if (onSuccess) {
                     onSuccess(data.codigo);
@@ -772,7 +766,6 @@ export function fetchValidacionSocio(strCedula, strTipoValidacion, token, onSucc
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
             } else {
-                console.log(data);
                 if (data.str_res_codigo === "000") {
                     onSucces(data);
                 } else {
@@ -811,10 +804,8 @@ export function fetchScore(strTipoDocumento, strCedula, strNombres, strLugar, st
         str_oficial: strOficial,
         str_cargo: strCargo
     };
-    console.log();
     ServicioPostExecute(getScore, body, token, { dispatch: dispatch }).then((data) => {
         if (data) {
-            console.log(data);
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
             } else {
@@ -853,7 +844,6 @@ export function fetchInfoSocio(strCedula, token, onSucces, dispatch) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
             } else {
-                console.log(data);
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
@@ -886,7 +876,6 @@ export function fetchInfoEconomica(strEnte, token, onSucces, dispatch) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
             } else {
-                console.log(data);
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
@@ -927,7 +916,6 @@ export function fetchAddAutorizacion(strTipoIdentificacion, intRegistrarAutoriza
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
             } else {
-                console.log(data);
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
@@ -959,7 +947,6 @@ export function fetchGetContrato(token, onSucces, dispatch) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
             } else {
-                console.log(data);
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
@@ -986,7 +973,6 @@ export function fetchGetSolicitudes(token, onSucces, dispatch) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
             } else {
-                console.log(data);
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
@@ -1007,7 +993,6 @@ export function fetchAddSolicitud(body,token, onSucces, dispatch) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
             } else {
-                console.log(data);
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
@@ -1034,7 +1019,6 @@ export function fetchGetInfoFinan(ente, token, onSucces, dispatch) {
     let body = {
         str_ente: ente
     }
-    console.log( body)
     ServicioPostExecute(getInfoFinan, body, token, { dispatch: dispatch }).then((data) => {
         if (data) {
             if (data.error) {
@@ -1076,13 +1060,11 @@ export function fetchAddProspecto(str_num_documento, ente, nombres, apellidos, c
         str_comentario: comentario,
         str_comentario_adicional: comentarioAdic
     }
-    console.log(body)
     ServicioPostExecute(addProspecto, body, token, { dispatch: dispatch }).then((data) => {
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
             } else {
-                console.log(data);
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {

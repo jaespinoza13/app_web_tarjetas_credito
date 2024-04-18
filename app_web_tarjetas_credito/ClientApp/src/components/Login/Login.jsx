@@ -43,12 +43,10 @@ function Login(props) {
 
     const handlerSubmit = async (e) => {
         e.preventDefault();
-        console.log(login, password);
         if (!disableBtn) {
             setdisableBtn(true);
             setProgress(30);
             await handleSubmitLogin(login, password, props.token, async (data) => {
-                console.log(data);
                 setProgress(60);
                 var str = "";
                 if (data.mensajes.length > 1) {
@@ -99,7 +97,6 @@ function Login(props) {
                     setProgress(90);
                     setOpenPass1ra(true);
                 } else {
-                    console.log(data.mensajes[0]);
                     setIsLogin(0);
                     setProgress(95);
                     setMsg(data.mensajes[0]);

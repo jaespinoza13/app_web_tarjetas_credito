@@ -32,7 +32,6 @@ const Personalizacion = (props) => {
     //}, []);
 
     useEffect(() => {
-        console.log(props);
         if (props.lstDomicilio && props.lstDomicilio.length > 0 && props.lstDomicilio[0].str_dir_ciudad) {
             setTiposDireccion([
                 {
@@ -85,14 +84,12 @@ const Personalizacion = (props) => {
 
     const nombreSeleccionHandler = (index) => {
         const nombreSeleccion = nombresTarjeta.find((nombre) => nombre.key === index);
-        console.log(nombreSeleccion.textPrincipal);
         setNombreSeleccion(nombreSeleccion.textPrincipal);
         
     }
 
     const tipoEntregaHandler = (index) => {
         const entregas = tiposEntrega.find((entrega) => entrega.key === index);
-        console.log(entregas.textPrincipal);
         setTipoEntrega(entregas.textPrincipal);
     }
 

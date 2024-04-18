@@ -20,7 +20,6 @@ const ValidacionSocio = (props) => {
 
     const setCedulaHandler = (value) => {
         let validezCedula = validaCedula(value);
-        console.log(validezCedula);
         setCedulaSocio(value);
         setIsCedulaValida(validezCedula);
         props.setCedulaSocio({

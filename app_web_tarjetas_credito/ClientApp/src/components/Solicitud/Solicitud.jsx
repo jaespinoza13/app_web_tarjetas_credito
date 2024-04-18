@@ -64,7 +64,6 @@ function Solicitud(props) {
     
     const handleSelectedToggle = (index) => {
         const lstSeleccionada = accionesSolicitud.find((acciones) => acciones.key === index);
-        console.log(lstSeleccionada.textPrincipal);
         if (lstSeleccionada.textPrincipal === "Solicitudes") {
             setIsLstProspecciones(false);
             setIsLstSolicitudes(true);
