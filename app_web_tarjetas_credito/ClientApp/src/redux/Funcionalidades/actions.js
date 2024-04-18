@@ -27,7 +27,6 @@ export const getListaFuncionalidadesRequest = 'FETCH_LISTA_FUNCIONALIDADES_REQUE
                                 dispatch(getListaFuncionalidadesSuccessAction(array));
                             }
                         } else {
-                            console.log(data);
                             dispatch(getListaFuncionalidadesSuccessAction([]));
                             dispatch(getListaFuncionalidadesFailureAction(data.codigo + " - " + data.mensaje));
                             dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));

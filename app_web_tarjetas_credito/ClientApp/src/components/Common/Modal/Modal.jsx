@@ -9,14 +9,12 @@ const Modal = (props) => {
         if (props.modalIsVisible === true) {
             setModalVisible(true);
             timeoutModal = setTimeout(() => {
-                console.log('llega show');
                 setAnimation('modal-content-show');
             }, 200)
         }
         else if (props.modalIsVisible === false) {
             setAnimation('modal-content-hide');
             timeoutModal = setTimeout(() => {
-                console.log('llega hide');
                 setModalVisible(false);
             }, 200);
         }

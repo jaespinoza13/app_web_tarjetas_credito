@@ -34,10 +34,17 @@ const NuevaSolicitud = (props) => {
     const navigate = useHistory();
     //Info sesión
     const [usuario, setUsuario] = useState("");
+    const [rol, setRol] = useState("");
+    const [datosUsuario, setDatosUsuario] = useState([]);
 
     const [lstValidaciones, setLstValidaciones] = useState([]);
     const [tipoGestion, setTipoGestion] = useState("solicitud");
     const [score, setScore] = useState("");
+
+    //Global
+    const [textoSiguiente, setTextoSiguiente] = useState("Continuar");
+
+    //ValidacionesSocio
 
     //Validaciones
     const [validacionesOk, setValidacionesOk] = useState([]);
@@ -88,6 +95,9 @@ const NuevaSolicitud = (props) => {
     useEffect(() => {
         const strOficial = get(localStorage.getItem("sender_name"));
         setUsuario(strOficial);
+        const strRol = get(localStorage.getItem("role"));
+        setRol(strRol);
+        setDatosUsuario([{ strCargo: strRol, strOficial: strOficial}]);
     }, []);
 
     useEffect(() => {
@@ -153,14 +163,21 @@ const NuevaSolicitud = (props) => {
         if (step === 1) {
             setEstadoBotonSiguiente(true);
         }
+        if (step === 2 && showAutorizacion) {
+            setTextoSiguiente("Continuar solicitud")
+        }
+        if (step === 2 && !showAutorizacion) {
+            setTextoSiguiente("Continuar")
+        }
+        if (step === -1) {
+            setTextoSiguiente("Volver al inicio")
+        }
     }, [step]);
 
     const validaCamposSocio = () => {        
         if (nombreSocio !== "" && apellidosSocio !== "" && correoSocio !== "" && celularSocio.length === 10) {
-            console.log("validaCamposSocio true");
             return true
         }
-        console.log("validaCamposSocio false");
         return false;
     }
 
@@ -209,13 +226,13 @@ const NuevaSolicitud = (props) => {
             }, dispatch);
         }
         if (step === 1) {
-            console.log(autorizacionOk);
             if (autorizacionOk) {
                 setEstadoBotonSiguiente(false);
             }
             else {
                 //setEstadoBotonSiguiente(true);
             }
+            setTextoSiguiente("Continuar solicitud");
             setStep(2);
         }
         if (step == 2) {
@@ -289,7 +306,6 @@ const NuevaSolicitud = (props) => {
                 str_comentario_proceso: "comentario 1",
                 str_comentario_adicional: "comentario 2"
             }
-            console.log(body);
             fetchAddSolicitud(body, props.token, (data) => {
                 setStep(-1);
             }, dispatch);
@@ -309,6 +325,10 @@ const NuevaSolicitud = (props) => {
             setEstadoBotonSiguiente(false);
             setCedulaSocio(e.valor);
         }
+        else {
+            setEstadoBotonSiguiente(true);
+            setCedulaSocio(e.valor);
+        }
     }
 
     const montoSolicitadoHandler = (e) => {
@@ -316,7 +336,6 @@ const NuevaSolicitud = (props) => {
     }
 
     const datosIngresadosHandler = (e) => {
-        console.log(e);
         setNombreSocio(e.nombres);
         setApellidosSocio(e.apellidos);
         setCelularSocio(e.celular);
@@ -344,6 +363,7 @@ const NuevaSolicitud = (props) => {
     }
 
     const handleAutorizacion = (data) => {
+        console.log(data);
         setIsUploadingAthorization(data);
     }
 
@@ -368,8 +388,9 @@ const NuevaSolicitud = (props) => {
         <div className="f-row" >
             <Sidebar></Sidebar>
             <div className="stepper"></div>
+            {showAutorizacion.toString()}
             <Card className={["m-max w-100 justify-content-space-between align-content-center"]}>
-                <div className="f-row">
+                <div className="f-row justify-content-center">
                     {(step === 0 || step === 1) &&
                         <div className="f-row w-100">
                             <Item xs={3} sm={3} md={3} lg={3} xl={3} className=""></Item>
@@ -393,6 +414,9 @@ const NuevaSolicitud = (props) => {
                             onFileUpload={getFileHandler}
                             onAddAutorizacion={handleAutorizacion}
                             onShowAutorizacion={showAutorizacion}
+                            infoSocio={infoSocio}
+                            datosUsuario={datosUsuario}
+                            cedula={cedulaSocio}
                             onSetShowAutorizacion={showAutorizacionHandler}
                         ></ValidacionesGenerales>
                     }
@@ -434,8 +458,8 @@ const NuevaSolicitud = (props) => {
                 <div id="botones" className="f-row ">
                     <Item xs={2} sm={2} md={2} lg={2} xl={2} className=""></Item>
                     <Item xs={8} sm={8} md={8} lg={8} xl={8} className="f-row justify-content-space-evenly">
-                        <Button className={["btn_mg btn_mg__primary mt-2"]} disabled={estadoBotonSiguiente} onClick={nextHandler}>Siguiente</Button>
-                        {(step === 2 && !autorizacionOk) && <Button className={["btn_mg btn_mg__secondary mt-2"]} disabled={false} onClick={nextProspeccionHandler}>Continuar como prospecto</Button>}
+                        <Button className={["btn_mg btn_mg__primary mt-2"]} disabled={estadoBotonSiguiente} onClick={nextHandler}>{textoSiguiente}</Button>
+                        {((step === 2 && !autorizacionOk) && (step === 2 && !showAutorizacion)) && <Button className={["btn_mg btn_mg__secondary mt-2"]} disabled={false} onClick={nextProspeccionHandler}>Continuar como prospecto</Button>}
                     </Item>
                     
                 </div>

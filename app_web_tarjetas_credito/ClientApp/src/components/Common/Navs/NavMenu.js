@@ -131,13 +131,13 @@ function NavMenu(props) {
                         </div>
                         <div className="actions">
                             <div className="profile" onMouseEnter={toggleDropdownOn} onMouseLeave={toggleDropdownOff}>
-                                <button className="btn_mg btn_mg__secondary" id="profile">{nombreUsuario}</button>
+                                <button className="btn_mg btn_mg__secondary btn_mg__auto" id="profile">{nombreUsuario}</button>
                                 <div className={`dropdown_mg ${isCollapsedDropdown ? 'active' : ''}`} id="dropdown_mg">
                                     <a href="#">Cambiar contraseña</a>
                                     <a href="#">Preguntas de seguridad</a>
                                 </div>
                             </div>
-                            <button className="btn_mg btn_mg__secondary" id="logout">
+                            <button className="btn_mg btn_mg__secondary btn_mg__auto" id="logout">
                                 <NavItem>
                                     <NavLink tag={Link} className="text-dark" to="/logout">Salir</NavLink>
                                 </NavItem>

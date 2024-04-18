@@ -90,11 +90,11 @@ h4.strong {
 }
 
 h5.strong {
-    font-family: "Karbon", sans-serif;
+    font-family: "Karbon-Bold", sans-serif;
 }
 
 h6.strong {
-    font-family: "Karbon", sans-serif;
+    font-family: "Karbon-Bold", sans-serif;
 }
 
 h1.blue {
@@ -141,7 +141,7 @@ textarea {
     width: 100%;
     border-radius: 15px;
     border: 1px solid #C1CBEA;
-    padding: 0.4rem 1.4rem;
+    padding: 0.4rem 1rem;
     resize: none;
     outline: none;
 }
@@ -464,7 +464,7 @@ span.ripple {
 }
 
 .btn_mg__primary {
-    padding: 0.4rem 1.4rem;
+    padding: 0.4rem 1rem;
     background-color: #FED400;
     height: 27px;
 }
@@ -478,7 +478,7 @@ span.ripple {
 
 .btn_mg__secondary {
     border: 1px solid #FED400;
-    padding: 0.4rem 1.4rem;
+    padding: 0.4rem 1rem;
     background-color: #F8F8F8;
     height: 27px;
 }
@@ -1068,7 +1068,7 @@ h3.chip {
 
 .toggler {
     height: 2.5rem;
-    padding: 0.4rem 1.4rem;
+    padding: 0.4rem 1rem;
     display: inline-flex;
     align-items: center;
     padding: 1.4rem 0.5rem;
@@ -1116,6 +1116,8 @@ h3.chip {
     height: 2rem;
     position: relative;
     z-index: 20;
+    align-items: center;
+    cursor: pointer;
 }
 
 .accordion-content {
@@ -1134,7 +1136,7 @@ h3.chip {
 .accordion-content.open {
     border: 1px solid #C1CBEA;
     max-height: 500px; /* Expand to fit content when open */
-    overflow-y: scroll;
+    overflow: auto;
 }
 
 .accordion-header > button.loading > img.loading {
@@ -1245,8 +1247,12 @@ input:checked + .slider::before {
 .filename {
     text-overflow: ellipsis;
     overflow: hidden;
-    width: 60%;
+    width: 80%;
     white-space: nowrap;
+}
+
+.upload-info > h5 {
+    text-align: left;
 }
 
 .btn-close {
@@ -1301,6 +1307,10 @@ input:checked + .slider::before {
 
 .justify-content-space-between {
     justify-content: space-between;
+}
+
+.justify-content-center {
+    justify-content: center;
 }
 
 .alig-content-center {
