@@ -18,6 +18,8 @@ import { connect, useDispatch } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import Solicitud from './components/Solicitud/Solicitud';
 import NuevaSolicitud from './components/Solicitud/NuevaSolicitud';
+import Orden from './components/Ordenes/Orden';
+import OrdenInnominada from './components/Ordenes/OrdenInnominada';
 
 
 const mapStateToProps = (state) => {
@@ -158,6 +160,12 @@ class App extends Component {
                         ) : (
                             <Route render={() => <Redirect to="/auth" />} />
                         )}
+                    </Route>
+                    <Route path='/orden'>
+
+                        <Route exact path='/orden' component={Orden} />
+                        <Route path='/orden/innominada' component={OrdenInnominada} />
+
                     </Route>
                     {this.state.listaMenus.find(x => x.url === "/logs") ?
                         <Route exact path='/logs' component={!this.state.isAuthenticated ? Login : HomeLogs} />
