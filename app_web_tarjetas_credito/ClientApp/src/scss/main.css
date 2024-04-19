@@ -542,6 +542,13 @@ input, select {
         position: relative;
     }
 
+textarea.no_valido {
+    box-shadow: 0px 0px 6px #FB7373;
+    border: 1px solid #FB7373;
+    padding-right: 1.5em;
+    position: relative;
+}
+
     select option {
         padding-top: 0;
         border-radius: 20px;
@@ -1422,3 +1429,91 @@ input:checked + .slider::before {
     }
 }
 /*# sourceMappingURL=main.css.map */
+
+
+.sin-height {
+    height: auto !important; /* Sobrescribe la altura definida anteriormente */
+}
+
+.center_text_items {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.table-container {
+    overflow-y: visible;
+}
+
+.responsive-table {
+    width: 90%;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+}
+
+.responsive-table th,
+.responsive-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+
+/* CARD IMAGES*/
+.card_image {
+    position: relative;
+    max-width: 300px;
+    border-radius: 8px;
+    overflow: hidden;
+    /* padding-bottom: 10px; */
+    box-shadow: 1px 2px 8px rgba(100, 100, 100, 0.1);
+}
+
+
+.card-footer {
+    padding: 4%;
+}
+
+    .card-footer .card_image {
+        margin: 0 auto;
+    }
+
+
+.image-wrapper {
+    width: 300px;
+    /*height: 200px;*/
+    height: auto;
+    overflow: hidden;
+}
+
+
+img {
+    max-width: 100%;
+    height: auto;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+img:hover {
+    -webkit-transform: scale3d(1.2, 1.2, 1);
+    transform: scale3d(1.2, 1.2, 1);
+    transition: all 1s linear;
+}
+
+.text-box-wrapper {
+    padding: 20px
+}
+/* FIN CARD IMAGES*/
+
+
+@media screen and (max-width: 600px) {
+    .responsive-table {
+        overflow-x: auto;
+    }
+
+    .responsive-table th,
+    .responsive-table td 
+    {
+        white-space: nowrap;
+    }
+}

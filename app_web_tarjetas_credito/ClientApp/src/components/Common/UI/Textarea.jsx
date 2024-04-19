@@ -3,7 +3,10 @@
         props.onChange(e.target.value);
     }
 
-    return <textarea placeholder={props.placeholder} rows={props.rows} value={props.value} onChange={textareaHandler}>
+    return <textarea
+        className={props.value === '' ? 'no_valido' : ''}
+        placeholder={props.placeholder} rows={props.rows} value={props.value} onChange={textareaHandler}
+        required={props.esRequerido === null ? false : props.esRequerido}>
 
     </textarea>
 }

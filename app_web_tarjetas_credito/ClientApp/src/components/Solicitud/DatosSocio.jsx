@@ -483,7 +483,7 @@ const DatosSocio = (props) => {
                 </div>}
                 <div className="mt-4">
                     <h3 className="mb-2">Comentario Adicional</h3>
-                    <Textarea placeholder="Ej. Texto de ejemplo" type="textarea" onChange={comentarioAdicionalHanlder}></Textarea>
+                    <Textarea placeholder="Ej. Texto de ejemplo" type="textarea" onChange={comentarioAdicionalHanlder} esRequerido={false}></Textarea>
                 </div>
 
             </div>

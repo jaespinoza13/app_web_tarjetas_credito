@@ -62,6 +62,11 @@ function Sidebar(props) {
                          </NavItem>
                     </div>
                     <div className="sidebar_menu__item">
+                        <NavItem>
+                            <NavLink tag={Link} className="text-dark" to="/orden">Ordenes</NavLink>
+                        </NavItem>
+                    </div>
+                    <div className="sidebar_menu__item">
                         <a className="item__master">Reportes</a>
                         <div className="item_slaves">
                             <a className="item__slave">
