@@ -22,6 +22,10 @@ const Input = (props) => {
             rounded={props.rounded}
             value={inputValue}
             onChange={changeHandler}
+            maxlength={props.maxlength}
+            min={props.min}
+            max={props.max}
+
             ></input>
     );
 }

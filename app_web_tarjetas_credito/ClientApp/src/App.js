@@ -162,7 +162,7 @@ class App extends Component {
                         )}
                     </Route>
                     <Route path='/orden'>
-
+                        
                         <Route exact path='/orden' component={Orden} />
                         <Route path='/orden/innominada' component={OrdenInnominada} />
 

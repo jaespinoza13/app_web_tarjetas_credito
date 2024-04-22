@@ -1463,10 +1463,14 @@ input:checked + .slider::before {
 .card_image {
     position: relative;
     max-width: 300px;
-    border-radius: 8px;
     overflow: hidden;
     /* padding-bottom: 10px; */
-    box-shadow: 1px 2px 8px rgba(100, 100, 100, 0.1);
+    border-radius: 10px;
+    border: 1px solid rgba(9, 57, 208, 0.2);
+    flex-direction: column;
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.0588235294);
+    background-color: #fff;
+    min-width: 15rem;
 }
 
 
@@ -1504,6 +1508,37 @@ img:hover {
     padding: 20px
 }
 /* FIN CARD IMAGES*/
+
+.elements_two_column {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+/* Estilo del mensaje emergente */
+.custom-icon-button::after {
+    content: attr(title);
+    position: absolute;
+    bottom: -20px; /* Ajusta la posición vertical del mensaje emergente */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+/* Mostrar el mensaje emergente al pasar el cursor sobre el icono */
+.custom-icon-button:hover::after {
+    opacity: 1;
+}
+
+
 
 
 @media screen and (max-width: 600px) {
