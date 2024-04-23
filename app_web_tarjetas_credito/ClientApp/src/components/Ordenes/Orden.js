@@ -12,6 +12,7 @@ import Chip from '../Common/UI/Chip'
 import { EngineeringOutlined, InventoryOutlined, LocalShippingOutlined, ArchiveOutlined, ViewListOutlined, DownloadOutlined, EditNoteOutlined, DeleteOutlineOutlined } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import ModalDinamico from '../Common/Modal/ModalDinamico';
+import Textarea from '../Common/UI/Textarea';
 
 function Orden(props) {
 
@@ -19,7 +20,7 @@ function Orden(props) {
         //PETICION API
         setLstOrdenes(lstOrdenesActivas);
 
-    })
+    },[])
 
     const navigate = useHistory();
     const [lstOrdenes, setLstOrdenes] = useState([]);
@@ -53,42 +54,93 @@ function Orden(props) {
 
     const [isModalEnviarOrden, setIsModalEnviarOrden] = useState(false);
     const [isModalRecepcionOrden, setIsModalRecepcionOrden] = useState(false);
+    const [isModalEnvioValija, setIsModalEnvioValija] = useState(false);
+    const [isModalRecepTarjValija, setIsModalRecepTarjValija] = useState(false);
     const [numOrdenAccion, setNumOrdenAccion] = useState();
-    
+    const [detalleRecepOrdenTarjetas, setDetalleRecepOrdenTarjetas] = useState();
 
-    const envioOrdenProveedor = (orden) => {
-        setIsModalEnviarOrden(!isModalEnviarOrden);
+    
+    //ACCIONES PARA ABRIR MODALES
+    const envioOrdenProvModal = (orden) => {
+        setIsModalEnviarOrden(true);
         setNumOrdenAccion(orden);
-        //console.log("LLEGO ORDEN ", orden)
+    }
+
+    const recepcionOrdenProvModal = (orden) => {
+        setIsModalRecepcionOrden(true);
+        setNumOrdenAccion(orden);
+    }
+
+    const envioTarjetasValijaModal = (orden) => {
+        setIsModalEnvioValija(true);
+        setNumOrdenAccion(orden);
+    }
+
+    const recepcionTarjetasValijaModal = (orden) => {
+        setIsModalRecepTarjValija(true);
+        setNumOrdenAccion(orden);
     }
 
 
+    //CERRAR MODAL
     const closeModalHandler = () => {
         setIsModalEnviarOrden(false);
         setIsModalRecepcionOrden(false);
+        setIsModalEnvioValija(false);
+        setIsModalRecepTarjValija(false);
     }
 
+    //  SUBMIT Y ACCIONES CONTRARIAS DE MODALES
     const submitOrdenProveedor = () => {
-        window.alert("SE ENVIO LA ORDEN")
+        window.alert(`SE ENVIO LA ORDEN`)
         //TODO: PETICION ENVIO ORDEN
-        setIsModalEnviarOrden(!isModalEnviarOrden);
+        setIsModalEnviarOrden(false);
+    }
+
+    const submitRecepOrdenTarjetas = () => {
+        window.alert(`Se recepta orden ${numOrdenAccion}`)
+        //TODO: PETICION -> RECEPCION EXITOSA DE TARJETAS
+        setIsModalRecepcionOrden(false)
+    }
+
+    const submitConflictoRecepTarjetas = () => {
+        window.alert(`Recepción No Completada`)
+        //TODO: PETICION -> RECEPCION NO EXITOSA DE TARJETAS
+        setIsModalRecepcionOrden(false)
+    }
+
+    const submitEnvioTarjetasResponsables = () => {
+        window.alert(`SE ENVIO TARJETAS A RESPONSABLES`)
+        //TODO: PETICION ENVIO ORDEN
+        setIsModalEnvioValija(false);
+    }
+
+    const submitRecepcionTarjetasResponsables = () => {
+        window.alert(`RESPONSABLES RECEPTARON LA ORDEN`)
+        //TODO: PETICION ENVIO ORDEN
+        setIsModalRecepTarjValija(false);
     }
 
 
+    //Detalle modal
+    const changeDetalleModal = (e) => {
+       setDetalleRecepOrdenTarjetas(e)
+    } 
 
     const AccionesOrden = ({ numOrden }) => {
+        
         return (
             <div>
-                <IconButton className="custom-icon-button" title="Enviar Orden al Proveedor" onClick={() => { envioOrdenProveedor(numOrden) } }>
+                <IconButton className="custom-icon-button" title="Enviar Orden al Proveedor" onClick={() => { envioOrdenProvModal(numOrden) } }>
                     <EngineeringOutlined></EngineeringOutlined>
                 </IconButton>
-                <IconButton className="custom-icon-button" title="Recepción de Orden de Tarjetas" onClick={() => { console.log("CLICK") }}>
+                <IconButton className="custom-icon-button" title="Recepción de Orden de Tarjetas" onClick={() => recepcionOrdenProvModal(numOrden)}>
                     <InventoryOutlined></InventoryOutlined>
                 </IconButton>
-                <IconButton className="custom-icon-button" title="Envio por Valija" onClick={() => { console.log("CLICK") }}>
+                <IconButton className="custom-icon-button" title="Envio por Valija" onClick={() => envioTarjetasValijaModal(numOrden)}>
                     <LocalShippingOutlined></LocalShippingOutlined>
                 </IconButton>
-                <IconButton className="custom-icon-button" title="Tarjetas Receptadas(destino)" onClick={() => { console.log("CLICK") }}>
+                <IconButton className="custom-icon-button" title="Tarjetas Receptadas(destino)" onClick={() => recepcionTarjetasValijaModal(numOrden)}>
                     <ArchiveOutlined></ArchiveOutlined>
                 </IconButton>
                 <IconButton className="custom-icon-button" title="Visualizar Detalle de Orden" onClick={() => { console.log("CLICK") }}>
@@ -107,7 +159,7 @@ function Orden(props) {
         )
     }
 
-    const ModalAccionesOrden = ({ visibleModal, titulo, closeClick, type, accionHandler, nombreBtnAccion, children   }) => {
+    const ModalAccionesOrden = ({ visibleModal, titulo, closeClick, type, nomBtnAccion, accionHandler, nomBtnAccionInv, accionInversaHandler, children   }) => {
 
         return (
             <ModalDinamico
@@ -123,9 +175,8 @@ function Orden(props) {
                     
 
                     <div className="row center_text_items pbmg4 ptmg4">
-                        <button className="btn_mg btn_mg__primary mt-2" disabled={false} type="submit" onClick={accionHandler}>{nombreBtnAccion}</button>
-                        <button className="btn_mg btn_mg__secondary mt-2 " onClick={closeModalHandler}>Cancelar</button>
-                        {/* TODO: canmbiar boton opcion contrario*/}
+                        <button className="btn_mg btn_mg__primary mt-2" disabled={false} type="submit" onClick={accionHandler}>{nomBtnAccion}</button>
+                        <button className="btn_mg btn_mg__secondary mt-2 " onClick={accionInversaHandler}>{nomBtnAccionInv}</button>
                     </div>
 
                 </div>
@@ -213,44 +264,102 @@ function Orden(props) {
                 <ModalAccionesOrden
                     visibleModal={isModalEnviarOrden}
                     titulo={'Envio de Orden'}
-                    closeClick={closeModalHandler}
                     type={"sm"}
+                    closeClick={closeModalHandler }
+                    nomBtnAccion={"Guardar"}
                     accionHandler={submitOrdenProveedor}
-                    nombreBtnAccion={"Guardar"}
+                    nomBtnAccionInv={"Cancelar"}
+                    accionInversaHandler={closeModalHandler}
                 >
                     <p style={{ fontSize: '20px' }}>¿Estás seguro de realizar la solicitud para la Orden Número <strong>{numOrdenAccion}</strong>?</p>
                 </ModalAccionesOrden>
 
 
                 {/*MODAL PARA RECEPCION DE ORDEN*/}
+
                 {/*<ModalAccionesOrden*/}
                 {/*    visibleModal={isModalRecepcionOrden}*/}
                 {/*    titulo={'Recepción de Orden'}*/}
-                {/*    closeClick={closeModalHandler}*/}
                 {/*    type={"sm"}*/}
-                {/*    accionHandler={submitOrdenProveedor}*/}
-                {/*    nombreBtnAccion={ "Si"}*/}
-                {/*>*/}
-                {/*    <p style={{ fontSize: '20px' }}>¿La recepción de la Orden Número <strong>{numOrdenAccion}</strong> fue exitosa?</p>*/}
+                {/*    closeClick={closeModalHandler}*/}
+                {/*    nomBtnAccion={"Recepción Exitosa"}*/}
+                {/*    accionHandler={submitRecepOrdenTarjetas }*/}
+                {/*    nomBtnAccionInv={"Recepción No Completa"}*/}
+                {/*    accionInversaHandler={submitConflictoRecepTarjetas}*/}
+                {/*>   */}
+                {/*    <div>*/}
+                {/*        <p style={{ fontSize: '20px' }}>¿La recepción de la Orden Número <strong>{numOrdenAccion}</strong> fue exitosa?</p>*/}
+                {/*        <br/>*/}
+                {/*        <Textarea*/}
+                {/*            rows={5}*/}
+                {/*            cols={30}*/}
+                {/*            placeholder="Ingrese un detalle"*/}
+                {/*            type="textarea"*/}
+                {/*            esRequerido={true}*/}
+                {/*            onChange={changeDetalleModal}*/}
+                {/*        ></Textarea>*/}
+                {/*        <br />*/}
+                {/*    </div>*/}
                 {/*</ModalAccionesOrden>*/}
 
-                {/*<ModalDinamico*/}
-                {/*    //props para Modal*/}
-                {/*    modalIsVisible={isModalEnviarOrden}*/}
-                {/*    titulo={'Envio de Orden'}*/}
-                {/*    onCloseClick={closeModalHandler}*/}
-                {/*    type="sm"*/}
-                {/*>*/}
-                {/*    <div className="pbmg4 ptmg4">*/}
-                {/*        <p style={{fontSize: '20px' }}>¿Estás seguro de realizar la solicitud para la Orden Número <strong>{numOrdenAccion}</strong>?</p>*/}
 
-                {/*        <div className="row center_text_items pbmg4 ptmg4">*/}
-                {/*            <button className="btn_mg btn_mg__primary mt-2" disabled={false} type="submit" onClick={submitOrdenProveedor}>Guardar</button>*/}
-                {/*            <button className="btn_mg btn_mg__secondary mt-2 " onClick={closeModalHandler}>"Cancelar"</button>*/}
-                {/*        </div>*/}
+                <ModalDinamico
+                    modalIsVisible={isModalRecepcionOrden}
+                    titulo={'Recepción de Orden'}
+                    onCloseClick={closeModalHandler}
+                    type="sm"
+                >
+                    <div className="pbmg4 ptmg4">
+                        <p style={{ fontSize: '20px' }}>¿La recepción de la Orden Número <strong>{numOrdenAccion}</strong> fue exitosa?</p>
+                        <br />
+                        <Textarea
+                            rows={5}
+                            cols={30}
+                            placeholder="Ingrese un detalle"
+                            type="textarea"
+                            esRequerido={true}
+                            onChange={changeDetalleModal}
+                        ></Textarea>
+                        <br />
 
-                {/*    </div>*/}
-                {/*</ModalDinamico>*/}
+                        <div className="row center_text_items pbmg4 ptmg4">
+                            <button className="btn_mg btn_mg__primary mt-2" disabled={false} type="submit" onClick={submitRecepOrdenTarjetas}>Recepción Exitosa</button>
+                            <button className="btn_mg btn_mg__secondary mt-2 " onClick={submitConflictoRecepTarjetas}>Recepción No Completa</button>
+                        </div>
+                    </div>
+                </ModalDinamico>
+
+
+                {/*MODAL PARA ENVIO ORDEN TARJETAS POR VALIJA*/}
+                <ModalAccionesOrden
+                    visibleModal={isModalEnvioValija}
+                    titulo={'Distribución de Orden de Tarjetas'}
+                    type={"sm"}
+                    closeClick={closeModalHandler}
+                    nomBtnAccion={"SI"}
+                    accionHandler={submitEnvioTarjetasResponsables}
+                    nomBtnAccionInv={"NO"}
+                    accionInversaHandler={closeModalHandler}
+                >
+                    <p style={{ fontSize: '20px' }}>¿Enviar tarjetas a responsables encargados de Orden Número <strong>{numOrdenAccion}</strong>?</p>
+                </ModalAccionesOrden>
+
+                {/*MODAL PARA RECEPCION ORDEN TARJETAS POR VALIJA*/}
+                <ModalAccionesOrden
+                    visibleModal={isModalRecepTarjValija}
+                    titulo={'Recepción distribución de Orden de Tarjetas'}
+                    type={"sm"}
+                    closeClick={closeModalHandler}
+                    nomBtnAccion={"SI"}
+                    accionHandler={submitRecepcionTarjetasResponsables}
+                    nomBtnAccionInv={"PENDIENTE"}
+                    accionInversaHandler={closeModalHandler}
+                >
+                    <p style={{ fontSize: '20px' }}>¿Encargados receptaron la orden de tarjetas número <strong>{numOrdenAccion}</strong>?</p>
+                </ModalAccionesOrden>
+
+
+
             </div>
 
 

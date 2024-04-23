@@ -10,14 +10,12 @@ const ModalDinamico = (props) => {
         if (props.modalIsVisible === true) {
             setModalVisible(true);
             timeoutModal = setTimeout(() => {
-                console.log('llega show');
                 setAnimation('modal-content-show');
             }, 200)
         }
         else if (props.modalIsVisible === false) {
             setAnimation('modal-content-hide');
             timeoutModal = setTimeout(() => {
-                console.log('llega hide');
                 setModalVisible(false);
             }, 200);
         }
@@ -34,7 +32,7 @@ const ModalDinamico = (props) => {
                     {props.children}
                 </div>
                 <div className="modal-footer">
-                    <button className="btn_mg btn_mg__tertiary close-modal" onClick={props.onCloseClick} ><img src="Imagenes/close.svg" alt="Cerrar"></img> </button>
+                    <button className="btn_mg btn_mg__tertiary close-modal width_btn_close" onClick={props.onCloseClick} ><img src="Imagenes/close.svg" alt="Cerrar"></img> </button>
                 </div>
             </div>
         </div>

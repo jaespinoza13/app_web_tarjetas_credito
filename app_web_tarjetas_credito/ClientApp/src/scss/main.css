@@ -1538,7 +1538,9 @@ img:hover {
     opacity: 1;
 }
 
-
+.width_btn_close {
+    width: 3rem;
+}
 
 
 @media screen and (max-width: 600px) {
