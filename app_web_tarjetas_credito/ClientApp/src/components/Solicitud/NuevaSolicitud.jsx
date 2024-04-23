@@ -38,7 +38,7 @@ const NuevaSolicitud = (props) => {
     const [datosUsuario, setDatosUsuario] = useState([]);
 
     const [lstValidaciones, setLstValidaciones] = useState([]);
-    const [tipoGestion, setTipoGestion] = useState("solicitud");
+    const [gestion, setGestion] = useState("solicitud");
     const [score, setScore] = useState("");
 
     //Global
@@ -61,7 +61,6 @@ const NuevaSolicitud = (props) => {
 
     const [montoSolicitado, setMontoSolicitado] = useState(0);
     const [isBtnDisabled, setIsBtnDisabled] = useState(false);
-    const [gestion, setGestion] = useState("propspeccion");
 
     //Errores
     const [mensajeErrorScore, setMensajeErrorScore] = useState("");
@@ -69,6 +68,7 @@ const NuevaSolicitud = (props) => {
 
     //Boton siguiente
     const [estadoBotonSiguiente, setEstadoBotonSiguiente] = useState(true);
+    const [estadoBotonProspecto, setEstadoBtonProspecto] = useState(true);
 
     //Score
     const [autorizacionOk, setAutorizacionOk] = useState(false);
@@ -117,7 +117,6 @@ const NuevaSolicitud = (props) => {
             setEstadoBotonSiguiente(false);
         }
         else {
-            //
             setEstadoBotonSiguiente(true);
         }
     }, [montoSolicitado, nombreSocio, apellidosSocio, correoSocio, celularSocio]);
@@ -142,6 +141,14 @@ const NuevaSolicitud = (props) => {
             setAutorizacionOk(false);
             setSubirAutorizacion(false);
         }
+        if (validacionesErr.length === 10) {
+            setEstadoBotonSiguiente(true);
+            setEstadoBtonProspecto(true);
+        }
+        if (validacionesErr.length === 0) {
+            setEstadoBotonSiguiente(true);
+            setEstadoBtonProspecto(false);
+        }
     }, [validacionesErr]);
 
     useEffect(() => {
@@ -152,6 +159,16 @@ const NuevaSolicitud = (props) => {
             setGestion("prospeccion");
         }
     }, [validacionesOk]);
+
+    useEffect(() => {
+        if (gestion === "prospeccion") {
+            const index = validacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" && validacion.str_estado_alerta);
+            if (index) {
+                setEstadoBotonSiguiente(true);
+                setEstadoBtonProspecto(false)
+            }
+        }
+    }, [gestion]);
 
     useEffect(() => {
         if (infoSocio.str_nombres === "") {
@@ -165,6 +182,11 @@ const NuevaSolicitud = (props) => {
         }
         if (step === 2 && showAutorizacion) {
             setTextoSiguiente("Continuar solicitud")
+        }
+        if (step === 2) {
+            if (validacionesErr.length === 10) {
+                setEstadoBotonSiguiente(true);
+            }
         }
         if (step === 2 && !showAutorizacion) {
             setTextoSiguiente("Continuar")
@@ -192,7 +214,7 @@ const NuevaSolicitud = (props) => {
     }
 
     const nextProspeccionHandler = async () => {
-        setTipoGestion("prospeccion");
+        setGestion("prospeccion");
         await nextHandler();
     }
 
@@ -222,7 +244,6 @@ const NuevaSolicitud = (props) => {
                     "lst_validaciones_err": [...data.lst_datos_alerta_false]
                 }
                 handleLists(objValidaciones);
-                const index = arrValidacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" && validacion.str_estado_alerta);
             }, dispatch);
         }
         if (step === 1) {
@@ -249,15 +270,13 @@ const NuevaSolicitud = (props) => {
                             const arrValidacionesOk = [...data.lst_datos_alerta_true];
                             const arrValidacionesErr = [...data.lst_datos_alerta_false];
                             setValidacionesOk(arrValidacionesOk);
-                            setValidacionesErr(arrValidacionesErr);                            
                             const objValidaciones = {
                                 "lst_validaciones_ok": [...data.lst_datos_alerta_true],
                                 "lst_validaciones_err": [...data.lst_datos_alerta_false]
                             }
                             handleLists(objValidaciones);
                             setAutorizacionOk(false);
-                            setEstadoBotonSiguiente(false);
-                            const index = arrValidacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" && validacion.str_estado_alerta);
+                            setValidacionesErr(arrValidacionesErr);                            
                         }, dispatch);
                     }
                 }, dispatch);
@@ -276,10 +295,10 @@ const NuevaSolicitud = (props) => {
             return;
         }
         
-        if (step === 3 && tipoGestion === "solicitud") {
+        if (step === 3 && gestion === "solicitud") {
             setStep(4);
         }
-        if (step === 3 && tipoGestion === "prospeccion") {
+        if (step === 3 && gestion === "prospeccion") {
             fetchAddProspecto(cedulaSocio, enteSocio, nombreSocio, apellidosSocio, cedulaSocio, correoSocio, montoSolicitado, comentario, comentarioAdic, props.token, (data) => {
                 if (data.str_res_codigo === "000") {
                     setStep(-1);
@@ -362,10 +381,10 @@ const NuevaSolicitud = (props) => {
         setDireccionEntrega(data);
     }
 
-    const handleAutorizacion = (data) => {
-        console.log(data);
-        setIsUploadingAthorization(data);
-    }
+    //const handleAutorizacion = (data) => {
+    //    console.log(data);
+    //    setIsUploadingAthorization(data);
+    //}
 
     const [comentario, setComentario] = useState("");
     const [comentarioAdic, setComentarioAdic] = useState("");
@@ -380,9 +399,9 @@ const NuevaSolicitud = (props) => {
 
     const [showAutorizacion, setShowAutorizacion] = useState(false);
 
-    const showAutorizacionHandler = (data) => {
-        setShowAutorizacion(data);
-    }
+    //const showAutorizacionHandler = (data) => {
+    //    setShowAutorizacion(data);
+    //}
 
     return (
         <div className="f-row" >
@@ -412,12 +431,10 @@ const NuevaSolicitud = (props) => {
                         <ValidacionesGenerales token={props.token}
                             lst_validaciones={lstValidaciones}
                             onFileUpload={getFileHandler}
-                            onAddAutorizacion={handleAutorizacion}
                             onShowAutorizacion={showAutorizacion}
                             infoSocio={infoSocio}
                             datosUsuario={datosUsuario}
                             cedula={cedulaSocio}
-                            onSetShowAutorizacion={showAutorizacionHandler}
                         ></ValidacionesGenerales>
                     }
                     {(step === 3) &&
@@ -427,7 +444,7 @@ const NuevaSolicitud = (props) => {
                             score={score}
                             token={props.token}
                             onAgregarComentario={agregarComentarioHandler}
-                            tipoGestion={gestion}
+                            gestion={gestion}
                             onInfoSocio={getIfoSocioHandler}
                             onComentario={handleComentario}
                             onComentarioAdic={handleComentarioAdic}
@@ -448,7 +465,7 @@ const NuevaSolicitud = (props) => {
                     {step == 5 }
 
                     {step === -1 &&
-                        <FinProceso gestion={tipoGestion}
+                        <FinProceso gestion={gestion}
                             nombres={`${nombreSocio} ${apellidosSocio}`}
                             cedula={cedulaSocio}
                             telefono={celularSocio}
@@ -459,7 +476,7 @@ const NuevaSolicitud = (props) => {
                     <Item xs={2} sm={2} md={2} lg={2} xl={2} className=""></Item>
                     <Item xs={8} sm={8} md={8} lg={8} xl={8} className="f-row justify-content-space-evenly">
                         <Button className={["btn_mg btn_mg__primary mt-2"]} disabled={estadoBotonSiguiente} onClick={nextHandler}>{textoSiguiente}</Button>
-                        {((step === 2 && !autorizacionOk) && (step === 2 && !showAutorizacion)) && <Button className={["btn_mg btn_mg__secondary mt-2"]} disabled={false} onClick={nextProspeccionHandler}>Continuar como prospecto</Button>}
+                        {((step === 2 && !autorizacionOk) && (step === 2 && !showAutorizacion)) && <Button className={["btn_mg btn_mg__secondary mt-2"]} disabled={estadoBotonProspecto} onClick={nextProspeccionHandler}>Continuar como prospecto</Button>}
                     </Item>
                     
                 </div>

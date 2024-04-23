@@ -66,22 +66,22 @@ function Sidebar(props) {
                             <NavLink tag={Link} className="text-dark" to="/orden">Ordenes</NavLink>
                         </NavItem>
                     </div>
-                    <div className="sidebar_menu__item">
-                        <a className="item__master">Reportes</a>
-                        <div className="item_slaves">
-                            <a className="item__slave">
-                                Reportes
-                            </a>
-                            <a className="item__slave">Reportes</a>
-                        </div>
-                    </div>
-                    <div className="sidebar_menu__item">
-                        <a className="item__master">Reportes</a>
-                        <div className="item_slaves">
-                            <a className="item__slave">Reportes</a>
-                            <a className="item__slave">Reportes</a>
-                        </div>
-                    </div>
+                    {/*<div className="sidebar_menu__item">*/}
+                    {/*    <a className="item__master">Reportes</a>*/}
+                    {/*    <div className="item_slaves">*/}
+                    {/*        <a className="item__slave">*/}
+                    {/*            Reportes*/}
+                    {/*        </a>*/}
+                    {/*        <a className="item__slave">Reportes</a>*/}
+                    {/*    </div>*/}
+                    {/*</div>*/}
+                    {/*<div className="sidebar_menu__item">*/}
+                    {/*    <a className="item__master">Reportes</a>*/}
+                    {/*    <div className="item_slaves">*/}
+                    {/*        <a className="item__slave">Reportes</a>*/}
+                    {/*        <a className="item__slave">Reportes</a>*/}
+                    {/*    </div>*/}
+                    {/*</div>*/}
                 </div>
             </div>            
         </div>

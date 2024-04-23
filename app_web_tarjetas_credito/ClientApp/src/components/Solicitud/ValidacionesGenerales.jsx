@@ -14,11 +14,11 @@ const ValidacionesGenerales = (props) => {
 
     useEffect(() => { console.log(props) },[]);
 
-    useEffect(() => {
-        if (isGenerandoAutorizacion) {
-            props.onAddAutorizacion(true);
-        }
-    }, [isGenerandoAutorizacion]);
+    //useEffect(() => {
+    //    if (isGenerandoAutorizacion) {
+    //        props.onAddAutorizacion(true);
+    //    }
+    //}, [isGenerandoAutorizacion]);
 
     useEffect(() => {
         if (!props.onShowAutorizacion) {
