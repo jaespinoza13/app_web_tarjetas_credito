@@ -20,6 +20,7 @@ import Solicitud from './components/Solicitud/Solicitud';
 import NuevaSolicitud from './components/Solicitud/NuevaSolicitud';
 import Orden from './components/Ordenes/Orden';
 import OrdenInnominada from './components/Ordenes/OrdenInnominada';
+import VerSolicitud from './components/Solicitud/VerSolicitud';
 
 
 const mapStateToProps = (state) => {
@@ -156,6 +157,7 @@ class App extends Component {
                             <>
                                 <Route exact path='/solicitud' component={Solicitud} />
                                 <Route path='/solicitud/nueva' component={NuevaSolicitud} />
+                                <Route path='/solicitud/ver' component={VerSolicitud} />
                             </>
                         ) : (
                             <Route render={() => <Redirect to="/auth" />} />

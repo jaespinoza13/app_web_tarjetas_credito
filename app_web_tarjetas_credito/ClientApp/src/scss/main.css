@@ -553,6 +553,13 @@ input, select {
         background-color: #F8F8F8;
     }
 
+textarea.no_valido {
+    box-shadow: 0px 0px 6px #FB7373;
+    border: 1px solid #FB7373;
+    padding-right: 1.5em;
+    position: relative;
+}
+
 .card {
     border-radius: 10px;
     border: 1px solid rgba(9, 57, 208, 0.2);
@@ -1322,6 +1329,93 @@ input:checked + .slider::before {
     text-align: left;
 }
 
+.sin-height {
+    height: auto !important; /* Sobrescribe la altura definida anteriormente */
+}
+
+.center_text_items {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.table-container {
+    overflow-y: visible;
+}
+
+.responsive-table {
+    width: 90%;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+}
+
+    .responsive-table th,
+    .responsive-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+
+/* CARD IMAGES*/
+.card_image {
+    position: relative;
+    max-width: 300px;
+    overflow: hidden;
+    /* padding-bottom: 10px; */
+    border-radius: 10px;
+    border: 1px solid rgba(9, 57, 208, 0.2);
+    flex-direction: column;
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.0588235294);
+    background-color: #fff;
+    min-width: 15rem;
+}
+
+.card-footer {
+    padding: 4%;
+}
+
+    .card-footer .card_image {
+        margin: 0 auto;
+    }
+
+.image-wrapper {
+    width: 300px;
+    /*height: 200px;*/
+    height: auto;
+    overflow: hidden;
+    display: flex;
+    justify-content: center; /* Centrado horizontal */
+    align-items: center; /* Centrado vertical */
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+    img:hover {
+        transform: scale3d(1.2, 1.2, 1);
+        transition: all 1s linear;
+    }
+
+.text-box-wrapper {
+    padding: 20px;
+}
+
+/* FIN CARD IMAGES*/
+@media screen and (max-width: 600px) {
+    .responsive-table {
+        overflow-x: auto;
+    }
+
+        .responsive-table th,
+        .responsive-table td {
+            white-space: nowrap;
+        }
+}
+
 @keyframes modal-up {
     from {
         bottom: -5rem;
@@ -1425,4 +1519,3 @@ input:checked + .slider::before {
         transform: rotate(359deg);
     }
 }
-/*# sourceMappingURL=main.css.map */

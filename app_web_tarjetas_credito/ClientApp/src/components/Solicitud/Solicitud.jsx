@@ -18,6 +18,7 @@ import RateReviewSharpIcon from '@mui/icons-material/RateReviewSharp';
 import { IconButton } from '@mui/material';
 import TableWithTextArea from '../Common/UI/TableWithTextArea';
 import ModalDinamico from '../Common/Modal/ModalDinamico';
+import { setSolicitudStateAction } from '../../redux/Solicitud/actions';
 
 
 const mapStateToProps = (state) => {
@@ -128,6 +129,13 @@ function Solicitud(props) {
         setisModalComentarios(false);
     }
 
+    const moveToSolicitud = (solId) => {
+        const solicituSeleccionada = lstSolicitudes.find((solicitud) => { return solicitud.int_id === solId });
+        console.log(solicituSeleccionada);
+        dispatch(setSolicitudStateAction({ solicitud: solicituSeleccionada.int_id, cedulaSocio: solicituSeleccionada.str_identificacion }))
+        navigate.push('/solicitud/ver');
+    }
+
     return (<div className="f-row">
         <Sidebar></Sidebar>
         <div className="container_mg">
@@ -153,7 +161,7 @@ function Solicitud(props) {
                         {lstSolicitudes.map((solicitud) => {
                             return (
                                 <tr key={solicitud.int_id}>
-                                    <td>{solicitud.str_identificacion}</td>
+                                    <td onClick={() => { moveToSolicitud(solicitud.int_id)}}>{solicitud.str_identificacion}</td>
                                     <td>{solicitud.int_ente}</td>
                                     <td>{solicitud.str_nombres}</td>
                                     <td><Chip type="black">Black</Chip></td>

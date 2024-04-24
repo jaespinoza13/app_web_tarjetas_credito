@@ -104,6 +104,7 @@ export const getSolicitudes = "GET_SOLICITUDES_TC"
 export const addSolicitud = "ADD_SOLICITUD_TC"
 export const getInfoFinan = "GET_SITUACION_FINANCIERA"
 export const addProspecto = "ADD_PROSPECTO_TC"
+export const getComentarios = "GET_COMENTARIOS_ASESOR"
 
 /**
  * Obtener la Url de un servicio de acuerdo a su nombre de Proceso Unico
@@ -214,6 +215,9 @@ export function ServiceUrl(request, params = []) {
             break;
         case addProspecto:
             pathOut = "tc/addProspecto"
+            break;
+        case getComentarios:
+            pathOut = "tc/getComentarios"
             break;
         default:
             return null;
@@ -452,7 +456,8 @@ function pathRewrite(path) {
         "tc/getSolic": '/tarjetacredito/getSolicitudes',
         "tc/addSolic": '/tarjetacredito/addSolicitud',
         "tc/getInfoFin": '/tarjetacredito/getInfoFinan',
-        "tc/addProspecto": '/tarjetacredito/addProspecto'
+        "tc/addProspecto": '/tarjetacredito/addProspecto',
+        "tc/getComentarios": '/tarjetacredito/getComentarios'
     };
     if (path) {
         var p = context[path];

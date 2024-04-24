@@ -3,6 +3,7 @@ using Domain.Common.Interfaces;
 using Domain.Models.TarjetaCredito.AddAutorizacion;
 using Domain.Models.TarjetaCredito.AddProspeccion;
 using Domain.Models.TarjetaCredito.AddSolicitud;
+using Domain.Models.TarjetaCredito.GetComentarios;
 using Domain.Models.TarjetaCredito.GetContrato;
 using Domain.Models.TarjetaCredito.GetContratos;
 using Domain.Models.TarjetaCredito.GetInfoEconomica;
@@ -140,6 +141,15 @@ namespace plantilla_app_web.Controllers
         public ResCrypt Post(ReqAddProspeccion req)
         {
             ResAddProspeccion res = tarjetaCreditoDat.addProspeccion(req);
+            return Utiles.crypt(res, Request.Headers);
+        }
+
+        [Route("getComentarios")]
+        [ServiceFilter(typeof(CryptoFilter))]
+        [HttpPost]
+        public ResCrypt Post(ReqGetComentarios req)
+        {
+            ResGetComentarios res = tarjetaCreditoDat.getComentarios(req);
             return Utiles.crypt(res, Request.Headers);
         }
     }

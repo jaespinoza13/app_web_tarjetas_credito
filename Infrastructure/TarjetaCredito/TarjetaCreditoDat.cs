@@ -2,6 +2,7 @@
 using Domain.Models.TarjetaCredito.AddAutorizacion;
 using Domain.Models.TarjetaCredito.AddProspeccion;
 using Domain.Models.TarjetaCredito.AddSolicitud;
+using Domain.Models.TarjetaCredito.GetComentarios;
 using Domain.Models.TarjetaCredito.GetContrato;
 using Domain.Models.TarjetaCredito.GetContratos;
 using Domain.Models.TarjetaCredito.GetInfoEconomica;
@@ -366,6 +367,41 @@ namespace Infrastructure.TarjetaCredito
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
                     res = JsonSerializer.Deserialize<ResAddProspeccion>(response.Content!)!;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            return res;
+        }
+
+        public ResGetComentarios getComentarios(ReqGetComentarios req)
+        {
+            ResGetComentarios res = new ResGetComentarios();
+            try
+            {
+                req.llenarDatosConfig(_settings);
+                req.str_id_servicio = "REQ_" + _settings.service_get_comentarios;
+                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_comentarios)
+                {
+                    ThrowOnAnyError = true,
+                    MaxTimeout = _settings.time_out
+                };
+
+                var client = new RestClient(options);
+                var request = new RestRequest();
+                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                request.AddHeader("Content-Type", "application/json");
+                request.AddParameter("application/json", req, ParameterType.RequestBody);
+                request.Method = Method.Post;
+
+                var response = new RestResponse();
+                response = client.Post(request);
+
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    res = JsonSerializer.Deserialize<ResGetComentarios>(response.Content!)!;
                 }
             }
             catch (Exception ex)
