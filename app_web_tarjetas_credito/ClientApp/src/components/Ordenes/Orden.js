@@ -29,35 +29,34 @@ function Orden(props) {
     const ordenPageHandler = (accion, numOrden) => {
 
         if (accion === "editar") {
-            //TODO: ANALIZAR SI DESDE AQUI ENVIAR OBJETO A EDITAR
             navigate.push('/orden/editar', { numOrdenEditar: numOrden });
             console.log("editar ", numOrden)
         }
         else if (accion === "crear"){
             navigate.push('/orden/nueva', { numOrdenEditar: -1 }); 
-            console.log("crear ", numOrden)
+            //console.log("crear ", numOrden)
         }
     }
 
 
     const headersOrdenesActivas = [
-        { nombre: "Nro. Orden", key: "nrOrden" }, { nombre: "Estado", key: "estado" }, { nombre: "Cantidad", key: "cantidad" },
+        { nombre: "Nro. Orden", key: "nrOrden" }, { nombre: "Estado", key: "estado" }, { nombre: "Agencia solicita", key: "agencia_solicita" }, { nombre: "Cantidad", key: "cantidad" },
         { nombre: "Creada por", key: "usuario_crea" }, { nombre: "Fecha creación", key: "fecha_creación" }, { nombre: "Fecha Solicita Encargado", key: "fecha_solicita" },
         { nombre: "Fecha Recibe Encargado", key: "fecha_recepcion" }, { nombre: "Fecha Distribución", key: "fecha_distribucion" }, { nombre: "Fecha Cierre Orden", key: "fecha_cierre_orden" },{ nombre: "Acciones", key: "acciones" }
     ]
 
     /*OBJETOS QUE SE DEVOLVERIA DESDE EL BACK*/ 
-    const [lstOrdenesActivas, setLstOrdenesActivas] = useState(
+    const lstOrdenesActivas =
         [
-            { nrOrden: 126, estado: "Anulada", cantidad: 10, usuario_crea: "Ericka Rios", fecha_creación: "18/01/2024 2:10:56 PM", fecha_solicita: "", fecha_recepcion: "", fecha_distribucion: "", fecha_cierre_orden: "" },
-            { nrOrden: 127, estado: "Entregada/Cerrada", cantidad: 30, usuario_crea: "Ericka Rios", fecha_creación: "18/02/2024 4:00:07 PM", fecha_solicita: "19/02/2024 8:35:07 PM", fecha_recepcion: "01/03/2024 5:05:35 AM", fecha_distribucion: "02/03/2024 8:40:00 AM" , fecha_cierre_orden: "03/03/2024 5:04:15 PM" },
-            { nrOrden: 128, estado: "Enviada", cantidad: 60, usuario_crea: "Ericka Rios", fecha_creación: "25/03/2024 4:00:07 PM", fecha_solicita: "25/03/2024 5:10:07 PM", fecha_recepcion: "03/04/2024 09:30:00 AM", fecha_distribucion: "03/04/2024 11:45:00 AM", fecha_cierre_orden: "" },
-            { nrOrden: 130, estado: "Receptada", cantidad: 80, usuario_crea: "Ericka Rios", fecha_creación: "18/04/2024 4:15:07 PM", fecha_solicita: "18/04/2024 4:20:40 PM", fecha_recepcion: "25/04/2024 8:50:00 PM", fecha_distribucion: "",  fecha_cierre_orden: "" },
+            { nrOrden: 126, estado: "Anulada", cantidad: 10, usuario_crea: "Ericka Rios", fecha_creación: "18/01/2024 2:10:56 PM", fecha_solicita: "", fecha_recepcion: "", fecha_distribucion: "", fecha_cierre_orden: "", agencia_solicita: "MATRIZ" },
+            { nrOrden: 127, estado: "Entregada/Cerrada", cantidad: 30, usuario_crea: "Ericka Rios", fecha_creación: "18/02/2024 4:00:07 PM", fecha_solicita: "19/02/2024 8:35:07 PM", fecha_recepcion: "01/03/2024 5:05:35 AM", fecha_distribucion: "02/03/2024 8:40:00 AM", fecha_cierre_orden: "03/03/2024 5:04:15 PM", agencia_solicita: "CATAMAYO" },
+            { nrOrden: 128, estado: "Enviada", cantidad: 60, usuario_crea: "Ericka Rios", fecha_creación: "25/03/2024 4:00:07 PM", fecha_solicita: "25/03/2024 5:10:07 PM", fecha_recepcion: "03/04/2024 09:30:00 AM", fecha_distribucion: "03/04/2024 11:45:00 AM", fecha_cierre_orden: "", agencia_solicita: "SANTO DOMINGO" },
+            { nrOrden: 130, estado: "Receptada", cantidad: 80, usuario_crea: "Ericka Rios", fecha_creación: "18/04/2024 4:15:07 PM", fecha_solicita: "18/04/2024 4:20:40 PM", fecha_recepcion: "25/04/2024 8:50:00 PM", fecha_distribucion: "", fecha_cierre_orden: "", agencia_solicita: "SARAGURO" },
 
-            { nrOrden: 131, estado: "Solicitada", cantidad: 30, usuario_crea: "Ericka Rios", fecha_creación: "20/05/2024 4:45:07 PM", fecha_solicita: "21/05/2024 8:20:40 AM", fecha_recepcion: "",  fecha_distribucion: "", fecha_cierre_orden: "" },
-            { nrOrden: 135, estado: "Creada", cantidad: 20, usuario_crea: "Ericka Rios", fecha_creación: "30/04/2023 4:15:07 PM", fecha_solicita: "",  fecha_recepcion: "",fecha_distribucion: "", fecha_cierre_orden: "" },
-        ]
-    );
+            { nrOrden: 131, estado: "Solicitada", cantidad: 30, usuario_crea: "Ericka Rios", fecha_creación: "20/05/2024 4:45:07 PM", fecha_solicita: "21/05/2024 8:20:40 AM", fecha_recepcion: "", fecha_distribucion: "", fecha_cierre_orden: "", agencia_solicita: "MATRIZ" },
+            { nrOrden: 135, estado: "Creada", cantidad: 20, usuario_crea: "Ericka Rios", fecha_creación: "30/04/2023 4:15:07 PM", fecha_solicita: "", fecha_recepcion: "", fecha_distribucion: "", fecha_cierre_orden: "", agencia_solicita: "MATRIZ" }
+        ];
+    
 
 
     
@@ -272,15 +271,16 @@ function Orden(props) {
                         {lstOrdenes.map((orden, index) => {
                             return (
                                 <tr key={index}>
-                                    <td>{orden.nrOrden}</td>
+                                    <td style={{ width: "100px" }}>{orden.nrOrden}</td>
                                     <td>{orden.estado}</td>
+                                    <td style={{ width: "125px" }}>{orden.agencia_solicita}</td>
                                     <td>{orden.cantidad}</td>
                                     <td>{orden.usuario_crea}</td>
-                                    <td>{orden.fecha_creación}</td>
-                                    <td>{orden.fecha_solicita}</td>
-                                    <td>{orden.fecha_recepcion}</td>
-                                    <td>{orden.fecha_distribucion}</td>
-                                    <td>{orden.fecha_cierre_orden}</td>
+                                    <td style={{ width: "143px" }}>{orden.fecha_creación}</td>
+                                    <td style={{ width: "143px" }}>{orden.fecha_solicita}</td>
+                                    <td style={{ width: "143px" }}>{orden.fecha_recepcion}</td>
+                                    <td style={{ width: "143px" }}>{orden.fecha_distribucion}</td>
+                                    <td style={{ width: "143px" }}>{orden.fecha_cierre_orden}</td>
                                     <td>
                                         <AccionesOrden numOrden={orden.nrOrden} estadoOrden={orden.estado} />
                                     </td>
@@ -337,7 +337,7 @@ function Orden(props) {
                 {/*MODAL PARA ENVIO ORDEN TARJETAS POR VALIJA*/}
                 <ModalAccionesOrden
                     visibleModal={isModalEnvioValija}
-                    titulo={'Distribución de Orden de Tarjetas'}
+                    titulo={`Distribución de Orden de Tarjetas Número <strong>${numOrdenAccion}</strong>`}
                     type={"sm"}
                     closeClick={closeModalHandler}
                     nomBtnAccion={"SI"}
@@ -345,7 +345,7 @@ function Orden(props) {
                     nomBtnAccionInv={"NO"}
                     accionInversaHandler={closeModalHandler}
                 >
-                    <p style={{ fontSize: '20px' }}>¿Enviar tarjetas a responsables encargados para orden número <strong>{numOrdenAccion}</strong>?</p>
+                    <p style={{ fontSize: '20px' }}>¿Seleccione la Agencia donde realiza el envío de la orden:</p>
                 </ModalAccionesOrden>
 
                 {/*MODAL PARA RECEPCION ORDEN TARJETAS POR VALIJA*/}
