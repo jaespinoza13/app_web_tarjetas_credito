@@ -30,6 +30,7 @@ const VerSolicitud = (props) => {
     const [comentarioSolicitud, setComentarioSolicitud] = useState("");
     const [modalVisible, setModalVisible] = useState(false);
     const [faltaComentariosAsesor, setFaltaComentariosAsesor] = useState(true);
+    const [isBtnComentariosActivo, setIsBtnComentariosActivo] = useState(false)
 
 
     const headerTableComentarios = [
@@ -39,6 +40,7 @@ const VerSolicitud = (props) => {
     useEffect(() => {
         fetchGetComentarios(props.solicitud.solicitud, props.token, (data) => {
             setComentariosAsesor(data.lst_comn_ase_cre);
+            existeComentariosVacios(data.lst_comn_ase_cre);
         }, dispatch);
         fetchGetFlujoSolicitud(props.solicitud.solicitud, props.token, (data) => {
             setSolicitudTarjeta(...[data.flujo_solicitudes]);
@@ -47,10 +49,13 @@ const VerSolicitud = (props) => {
 
     const comentarioAdicionalHanlder = (data, event) => {
         const id = comentariosAsesor.findIndex((comentario) => { return comentario.int_id_parametro === event });
-        comentariosAsesor[id].str_detalle = data;
+        const comentarioActualizado = [...comentariosAsesor]
+        comentarioActualizado[id].str_detalle = data;
+        setComentariosAsesor(comentarioActualizado) 
+
+        existeComentariosVacios(comentarioActualizado);
         
     }
-
     const getComentarioSolicitudHandler = (data) => {
         setComentarioSolicitud(data);
     }
@@ -60,22 +65,37 @@ const VerSolicitud = (props) => {
     }
 
     const siguientePasoHandler = () => {
-        fetchAddComentarioAsesor(props.solicitud.solicitud, comentariosAsesor, props.token, (data) => {
-            if (data.str_res_codigo === "000") {
-                setFaltaComentariosAsesor(false);
-                setModalVisible(false);
-            }
-        }, dispatch);
+        if (!existeComentariosVacios(comentariosAsesor)) {
+            fetchAddComentarioAsesor(props.solicitud.solicitud, comentariosAsesor, props.token, (data) => {
+                if (data.str_res_codigo === "000") {
+                    setFaltaComentariosAsesor(false);
+                    setModalVisible(false);
+                }
+            }, dispatch);
+        } else {
+            setIsBtnComentariosActivo(false);
+        }
     }
 
     const closeModalHandler = () => {
-
+        setModalVisible(false);
     }
 
     const guardarComentario = () => {
         fetchAddComentarioSolicitud(props.solicitud.solicitud, comentarioSolicitud, props.token, (data) => {
             console.log(data);
         }, dispatch);
+    }
+
+    function existeComentariosVacios(arregloComentarios) {
+        if (arregloComentarios.find(comentario => comentario.str_detalle === "")) {
+            setIsBtnComentariosActivo(true) //Comentarios faltan rellenar
+            return true;
+        } else {
+            setIsBtnComentariosActivo(false) //Comentarios completos
+            return false;
+        }
+
     }
 
     return <div className="f-row">
@@ -160,7 +180,7 @@ const VerSolicitud = (props) => {
             titulo={`Ingrese los comentarios`}
             onNextClick={siguientePasoHandler}
             onCloseClick={closeModalHandler}
-            isBtnDisabled={false}
+            isBtnDisabled={isBtnComentariosActivo}
             type="lg"
         >
             {modalVisible && <div>
@@ -171,7 +191,7 @@ const VerSolicitud = (props) => {
                                 <tr key={comentario.int_id_parametro}>
                                     <td style={{ width: "20%" }}>{comentario.str_tipo}</td>
                                     <td style={{ width: "40%" }}>{comentario.str_descripcion}</td>
-                                    <td style={{ width: "40%" }}><Textarea placeholder="Ej. Texto de ejemplo" type="textarea" onChange={(event, key = comentario.int_id_parametro) => { comentarioAdicionalHanlder(event, key) }} esRequerido={false}>{comentario.str_detalle}</Textarea></td>
+                                    <td style={{ width: "40%" }}><Textarea placeholder="Ej. Texto de ejemplo" type="textarea" onChange={(event, key = comentario.int_id_parametro) => { comentarioAdicionalHanlder(event, key) }} esRequerido={false} value={comentario.str_detalle}></Textarea></td>
                                 </tr>
                             );
                         })
