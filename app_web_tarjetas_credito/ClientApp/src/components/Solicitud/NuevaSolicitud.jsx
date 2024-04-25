@@ -381,10 +381,10 @@ const NuevaSolicitud = (props) => {
         setDireccionEntrega(data);
     }
 
-    //const handleAutorizacion = (data) => {
-    //    console.log(data);
-    //    setIsUploadingAthorization(data);
-    //}
+    const handleAutorizacion = (data) => {
+        console.log(data);
+        setIsUploadingAthorization(data);
+    }
 
     const [comentario, setComentario] = useState("");
     const [comentarioAdic, setComentarioAdic] = useState("");
@@ -399,9 +399,9 @@ const NuevaSolicitud = (props) => {
 
     const [showAutorizacion, setShowAutorizacion] = useState(false);
 
-    //const showAutorizacionHandler = (data) => {
-    //    setShowAutorizacion(data);
-    //}
+    const showAutorizacionHandler = (data) => {
+        setShowAutorizacion(data);
+    }
 
     return (
         <div className="f-row" >
@@ -433,7 +433,9 @@ const NuevaSolicitud = (props) => {
                             onFileUpload={getFileHandler}
                             onShowAutorizacion={showAutorizacion}
                             infoSocio={infoSocio}
+                            onAddAutorizacion={handleAutorizacion}
                             datosUsuario={datosUsuario}
+                            onSetShowAutorizacion={showAutorizacionHandler}
                             cedula={cedulaSocio}
                         ></ValidacionesGenerales>
                     }

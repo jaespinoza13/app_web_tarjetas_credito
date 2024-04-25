@@ -244,7 +244,7 @@ hr.dashed {
 }
 
 .sidebar {
-    width: 25rem;
+    min-width: 20rem;
     height: calc(100vh - 4rem);
     display: flex;
     flex-direction: column;
@@ -260,40 +260,40 @@ hr.dashed {
     overflow-x: hidden;
 }
 
-    .sidebar.sidebar_min {
-        width: 4rem;
-        height: calc(100vh - 4rem);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        border: 1px solid #D4E7FF;
-        box-shadow: 0px 0px 6px rgba(7, 255, 214, 0.168627451);
-        position: sticky;
-        top: 4rem;
-        left: 0;
-        flex-direction: column;
-        background-color: #fff;
-        transition: 0.3s ease;
-    }
+.sidebar.sidebar_min {
+    min-width: 4rem;
+    height: calc(100vh - 4rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid #D4E7FF;
+    box-shadow: 0px 0px 6px rgba(7, 255, 214, 0.168627451);
+    position: sticky;
+    top: 4rem;
+    left: 0;
+    flex-direction: column;
+    background-color: #fff;
+    transition: 0.3s ease;
+}
 
-        .sidebar.sidebar_min > .sidebar_info {
-            border: none;
-        }
+.sidebar.sidebar_min > .sidebar_info {
+    border: none;
+}
 
-            .sidebar.sidebar_min > .sidebar_info > *:not(:first-child) {
-                display: none;
-            }
+.sidebar.sidebar_min > .sidebar_info > *:not(:first-child) {
+    display: none;
+}
 
-            .sidebar.sidebar_min > .sidebar_info > .sidebar_minimize {
-                position: absolute;
-                top: 0;
-                left: 50%;
-                transform: translateX(-100%);
-            }
+.sidebar.sidebar_min > .sidebar_info > .sidebar_minimize {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-100%);
+}
 
-        .sidebar.sidebar_min > .sidebar_menu {
-            display: none;
-        }
+.sidebar.sidebar_min > .sidebar_menu {
+    display: none;
+}
 
 .sidebar_info {
     height: 12rem;
@@ -878,7 +878,7 @@ button.close-modal {
 }
 
 .modal-content {
-    height: 50%;
+    height: 70%;
     display: block;
     bottom: 0;
     margin: 15% auto;
@@ -905,6 +905,7 @@ button.close-modal {
 
 .modal-body {
     height: 70%;
+    overflow-y: auto;
 }
 
 .modal-content-sm {
@@ -1422,7 +1423,7 @@ img {
     }
 
     to {
-        bottom: 0;
+        bottom: calc(100% - 90%);
     }
 }
 
@@ -1438,6 +1439,7 @@ img {
 
 .f-row {
     display: flex;
+    flex-direction: row;
 }
 
 .f-col {

@@ -112,7 +112,7 @@ const ValidacionesGenerales = (props) => {
                         </p>
                     </Card>
                     <div className="f-row mt-4 justify-content-space-evenly">
-                        <Button id="download-btn" className="btn_mg__toggler active" onClick={getContrato}><img src="Imagenes/download.svg"></img> Descargar archivo</Button>
+                        <Button className="btn_mg__toggler active" onClick={getContrato}><img src="Imagenes/download.svg"></img> Descargar archivo</Button>
                         <Uploader onClick={handleFileChange} onRemoveFile={removeFile}>Subir archivo</Uploader>
                     </div>
                 </Fragment>

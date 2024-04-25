@@ -1,11 +1,14 @@
 ﻿using Domain.Common;
 using Domain.Common.Interfaces;
 using Domain.Models.TarjetaCredito.AddAutorizacion;
+using Domain.Models.TarjetaCredito.AddComentarioAsesor;
+using Domain.Models.TarjetaCredito.AddComentarioSolicitud;
 using Domain.Models.TarjetaCredito.AddProspeccion;
 using Domain.Models.TarjetaCredito.AddSolicitud;
 using Domain.Models.TarjetaCredito.GetComentarios;
 using Domain.Models.TarjetaCredito.GetContrato;
 using Domain.Models.TarjetaCredito.GetContratos;
+using Domain.Models.TarjetaCredito.GetFlujoSolicitud;
 using Domain.Models.TarjetaCredito.GetInfoEconomica;
 using Domain.Models.TarjetaCredito.GetInfoFinanciera;
 using Domain.Models.TarjetaCredito.GetInfoSocio;
@@ -150,6 +153,33 @@ namespace plantilla_app_web.Controllers
         public ResCrypt Post(ReqGetComentarios req)
         {
             ResGetComentarios res = tarjetaCreditoDat.getComentarios(req);
+            return Utiles.crypt(res, Request.Headers);
+        }
+
+        [Route("getFlujoSolicitud")]
+        [ServiceFilter(typeof(CryptoFilter))]
+        [HttpPost]
+        public ResCrypt Post(ReqGetFlujoSolicitud req)
+        {
+            ResGetFlujoSolicitud res = tarjetaCreditoDat.getFlujoSolicitud(req);
+            return Utiles.crypt(res, Request.Headers);
+        }
+
+        [Route("addComentarioAsesor")]
+        [ServiceFilter(typeof(CryptoFilter))]
+        [HttpPost]
+        public ResCrypt Post(ReqAddComentarioAsesor req)
+        {
+            ResAddComentarioAsesor res = tarjetaCreditoDat.addComentarioAsesor(req);
+            return Utiles.crypt(res, Request.Headers);
+        }
+
+        [Route("addComentarioSolicitud")]
+        [ServiceFilter(typeof(CryptoFilter))]
+        [HttpPost]
+        public ResCrypt Post(ReqAddComentarioSolicitud req)
+        {
+            ResAddComentarioSolicitud res = tarjetaCreditoDat.addComentarioSolicitud(req);
             return Utiles.crypt(res, Request.Headers);
         }
     }

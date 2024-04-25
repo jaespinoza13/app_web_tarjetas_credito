@@ -177,7 +177,7 @@ const DatosSocio = (props) => {
     return (
         <div className="f-col w-100">
             <div id="montoSugerido" className="f-row w-100 ">
-                <img src="Imagenes/monetization_on.svg"></img>
+                <img src="Imagenes/Cupo sugerido.svg"></img>
                 <div className="ml-3 datosMonto">
                     <h3 className="blue">Cupo sugerido:</h3>
                     <h2 className="strong blue">{`${props.montoSugerido || Number('10000.00').toLocaleString('en-US')}`}</h2>
