@@ -26,8 +26,17 @@ function Orden(props) {
     const [lstOrdenes, setLstOrdenes] = useState([]);
 
 
-    const crearOrdenInnominadaHandler = () => {
-        navigate.push('/orden/innominada');
+    const ordenPageHandler = (accion, numOrden) => {
+
+        if (accion === "editar") {
+            //TODO: ANALIZAR SI DESDE AQUI ENVIAR OBJETO A EDITAR
+            navigate.push('/orden/editar', { numOrdenEditar: numOrden });
+            console.log("editar ", numOrden)
+        }
+        else if (accion === "crear"){
+            navigate.push('/orden/nueva', { numOrdenEditar: -1 }); 
+            console.log("crear ", numOrden)
+        }
     }
 
 
@@ -36,7 +45,8 @@ function Orden(props) {
         { nombre: "Creada por", key: "usuario_crea" }, { nombre: "Fecha creación", key: "fecha_creación" }, { nombre: "Fecha Solicita Encargado", key: "fecha_solicita" },
         { nombre: "Fecha Recibe Encargado", key: "fecha_recepcion" }, { nombre: "Fecha Distribución", key: "fecha_distribucion" }, { nombre: "Fecha Cierre Orden", key: "fecha_cierre_orden" },{ nombre: "Acciones", key: "acciones" }
     ]
-        
+
+    /*OBJETOS QUE SE DEVOLVERIA DESDE EL BACK*/ 
     const [lstOrdenesActivas, setLstOrdenesActivas] = useState(
         [
             { nrOrden: 126, estado: "Anulada", cantidad: 10, usuario_crea: "Ericka Rios", fecha_creación: "18/01/2024 2:10:56 PM", fecha_solicita: "", fecha_recepcion: "", fecha_distribucion: "", fecha_cierre_orden: "" },
@@ -56,6 +66,7 @@ function Orden(props) {
     const [isModalRecepcionOrden, setIsModalRecepcionOrden] = useState(false);
     const [isModalEnvioValija, setIsModalEnvioValija] = useState(false);
     const [isModalRecepTarjValija, setIsModalRecepTarjValija] = useState(false);
+    const [isModalEliminarOrden, setIsModalEliminarOrden] = useState(false);
     const [numOrdenAccion, setNumOrdenAccion] = useState();
     const [detalleRecepOrdenTarjetas, setDetalleRecepOrdenTarjetas] = useState();
 
@@ -81,6 +92,10 @@ function Orden(props) {
         setNumOrdenAccion(orden);
     }
 
+    const eliminarOrdenTarjetasModal = (orden) => {
+        setIsModalEliminarOrden(true);
+        setNumOrdenAccion(orden);
+    }
 
     //CERRAR MODAL
     const closeModalHandler = () => {
@@ -88,6 +103,7 @@ function Orden(props) {
         setIsModalRecepcionOrden(false);
         setIsModalEnvioValija(false);
         setIsModalRecepTarjValija(false);
+        setIsModalEliminarOrden(false)
     }
 
     //  SUBMIT Y ACCIONES CONTRARIAS DE MODALES
@@ -121,39 +137,54 @@ function Orden(props) {
         setIsModalRecepTarjValija(false);
     }
 
+    const submitEliminarOrdenTarjetas = () => {
+        window.alert(`ORDEN ELIMINADA`)
+        //TODO: PETICION ENVIO ORDEN
+        setIsModalEliminarOrden(false);
+    }
 
     //Detalle modal
     const changeDetalleModal = (e) => {
        setDetalleRecepOrdenTarjetas(e)
     } 
 
-    const AccionesOrden = ({ numOrden }) => {
-        
+    const AccionesOrden = ({ numOrden, estadoOrden }) => {
         return (
             <div>
-                <IconButton className="custom-icon-button" title="Enviar Orden al Proveedor" onClick={() => { envioOrdenProvModal(numOrden) } }>
-                    <EngineeringOutlined></EngineeringOutlined>
-                </IconButton>
-                <IconButton className="custom-icon-button" title="Recepción de Orden de Tarjetas" onClick={() => recepcionOrdenProvModal(numOrden)}>
-                    <InventoryOutlined></InventoryOutlined>
-                </IconButton>
-                <IconButton className="custom-icon-button" title="Envio por Valija" onClick={() => envioTarjetasValijaModal(numOrden)}>
-                    <LocalShippingOutlined></LocalShippingOutlined>
-                </IconButton>
-                <IconButton className="custom-icon-button" title="Tarjetas Receptadas(destino)" onClick={() => recepcionTarjetasValijaModal(numOrden)}>
-                    <ArchiveOutlined></ArchiveOutlined>
-                </IconButton>
+                {estadoOrden === 'Creada' && (
+                    <>
+                        <IconButton className="custom-icon-button" title="Enviar Orden al Proveedor" onClick={() => { envioOrdenProvModal(numOrden) } }>
+                            <EngineeringOutlined></EngineeringOutlined>
+                        </IconButton>                
+                        <IconButton className="custom-icon-button" title="Editar Orden" onClick={() => ordenPageHandler("editar", numOrden)}>
+                            <EditNoteOutlined></EditNoteOutlined>
+                        </IconButton>
+                        <IconButton className="custom-icon-button" title="Eliminar Orden" onClick={() => { eliminarOrdenTarjetasModal(numOrden) }}>
+                            <DeleteOutlineOutlined></DeleteOutlineOutlined>
+                            </IconButton>
+                    </>
+                )}
+
+                {estadoOrden === 'Solicitada' && ( 
+                    <IconButton className="custom-icon-button" title="Recepción de Orden de Tarjetas" onClick={() => recepcionOrdenProvModal(numOrden)}>
+                        <InventoryOutlined></InventoryOutlined>
+                    </IconButton>
+                )}
+                {estadoOrden === 'Receptada' && (
+                    <IconButton className="custom-icon-button" title="Envio por Valija" onClick={() => envioTarjetasValijaModal(numOrden)}>
+                        <LocalShippingOutlined></LocalShippingOutlined>
+                    </IconButton>
+                )}
+                {estadoOrden === 'Enviada' && (
+                    <IconButton className="custom-icon-button" title="Tarjetas Receptadas(destino)" onClick={() => recepcionTarjetasValijaModal(numOrden)}>
+                        <ArchiveOutlined></ArchiveOutlined>
+                    </IconButton>
+                )}                
                 <IconButton className="custom-icon-button" title="Visualizar Detalle de Orden" onClick={() => { console.log("CLICK") }}>
                     <ViewListOutlined></ViewListOutlined>
                 </IconButton>
                 <IconButton className="custom-icon-button" title="Descargar Reporte" onClick={() => { console.log("CLICK") }}>
                     <DownloadOutlined></DownloadOutlined>
-                </IconButton>
-                <IconButton className="custom-icon-button" title="Editar Orden" onClick={() => { console.log("CLICK") }}>
-                    <EditNoteOutlined></EditNoteOutlined>
-                </IconButton>
-                <IconButton className="custom-icon-button" title="Eliminar Orden" onClick={() => { console.log("CLICK") }}>
-                    <DeleteOutlineOutlined></DeleteOutlineOutlined>
                 </IconButton>
             </div>
         )
@@ -202,9 +233,9 @@ function Orden(props) {
                             <div className="m-2" style={{ display: "flex", flexDirection: "column", width: "25%", marginRight: "10px"}}>
                                 <Card >
                                     <img style={{ width: "15%" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg"></img>
-                                    <h4 className="mt-2">Crear Orden con información del Socio</h4>
+                                    <h4 className="mt-2">Crear Orden de tarjetas de crédito aprobadas</h4>
                                     <h5 className="mt-2">Tipo NOMINADA</h5>
-                                    <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={crearOrdenInnominadaHandler}>Crear</Button>
+                                    <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={() => ordenPageHandler("crear",-1)}>Crear</Button>
                                 </Card>
                             </div>
 
@@ -251,7 +282,7 @@ function Orden(props) {
                                     <td>{orden.fecha_distribucion}</td>
                                     <td>{orden.fecha_cierre_orden}</td>
                                     <td>
-                                        <AccionesOrden numOrden={orden.nrOrden } />
+                                        <AccionesOrden numOrden={orden.nrOrden} estadoOrden={orden.estado} />
                                     </td>
                                 </tr>
                             );
@@ -271,38 +302,11 @@ function Orden(props) {
                     nomBtnAccionInv={"Cancelar"}
                     accionInversaHandler={closeModalHandler}
                 >
-                    <p style={{ fontSize: '20px' }}>¿Estás seguro de realizar la solicitud para la Orden Número <strong>{numOrdenAccion}</strong>?</p>
+                    <p style={{ fontSize: '20px' }}>¿Estás seguro de realizar la solicitud de tarjetas para la orden número <strong>{numOrdenAccion}</strong>?</p>
                 </ModalAccionesOrden>
 
 
                 {/*MODAL PARA RECEPCION DE ORDEN*/}
-
-                {/*<ModalAccionesOrden*/}
-                {/*    visibleModal={isModalRecepcionOrden}*/}
-                {/*    titulo={'Recepción de Orden'}*/}
-                {/*    type={"sm"}*/}
-                {/*    closeClick={closeModalHandler}*/}
-                {/*    nomBtnAccion={"Recepción Exitosa"}*/}
-                {/*    accionHandler={submitRecepOrdenTarjetas }*/}
-                {/*    nomBtnAccionInv={"Recepción No Completa"}*/}
-                {/*    accionInversaHandler={submitConflictoRecepTarjetas}*/}
-                {/*>   */}
-                {/*    <div>*/}
-                {/*        <p style={{ fontSize: '20px' }}>¿La recepción de la Orden Número <strong>{numOrdenAccion}</strong> fue exitosa?</p>*/}
-                {/*        <br/>*/}
-                {/*        <Textarea*/}
-                {/*            rows={5}*/}
-                {/*            cols={30}*/}
-                {/*            placeholder="Ingrese un detalle"*/}
-                {/*            type="textarea"*/}
-                {/*            esRequerido={true}*/}
-                {/*            onChange={changeDetalleModal}*/}
-                {/*        ></Textarea>*/}
-                {/*        <br />*/}
-                {/*    </div>*/}
-                {/*</ModalAccionesOrden>*/}
-
-
                 <ModalDinamico
                     modalIsVisible={isModalRecepcionOrden}
                     titulo={'Recepción de Orden'}
@@ -310,7 +314,7 @@ function Orden(props) {
                     type="sm"
                 >
                     <div className="pbmg4 ptmg4">
-                        <p style={{ fontSize: '20px' }}>¿La recepción de la Orden Número <strong>{numOrdenAccion}</strong> fue exitosa?</p>
+                        <p style={{ fontSize: '20px' }}>¿La recepción de la orden número <strong>{numOrdenAccion}</strong> fue exitosa?</p>
                         <br />
                         <Textarea
                             rows={5}
@@ -341,7 +345,7 @@ function Orden(props) {
                     nomBtnAccionInv={"NO"}
                     accionInversaHandler={closeModalHandler}
                 >
-                    <p style={{ fontSize: '20px' }}>¿Enviar tarjetas a responsables encargados de Orden Número <strong>{numOrdenAccion}</strong>?</p>
+                    <p style={{ fontSize: '20px' }}>¿Enviar tarjetas a responsables encargados para orden número <strong>{numOrdenAccion}</strong>?</p>
                 </ModalAccionesOrden>
 
                 {/*MODAL PARA RECEPCION ORDEN TARJETAS POR VALIJA*/}
@@ -359,6 +363,19 @@ function Orden(props) {
                 </ModalAccionesOrden>
 
 
+                {/*MODAL PARA ELIMINAR ORDEN EN ESTADO CREADA*/}
+                <ModalAccionesOrden
+                    visibleModal={isModalEliminarOrden}
+                    titulo={'Eliminar Orden de Tarjetas'}
+                    type={"sm"}
+                    closeClick={closeModalHandler}
+                    nomBtnAccion={"SI"}
+                    accionHandler={submitEliminarOrdenTarjetas}
+                    nomBtnAccionInv={"NO"}
+                    accionInversaHandler={closeModalHandler}
+                >
+                    <p style={{ fontSize: '20px' }}>¿Desea eliminar la orden de tarjetas número <strong>{numOrdenAccion}</strong>?</p>
+                </ModalAccionesOrden>
 
             </div>
 

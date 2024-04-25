@@ -19,7 +19,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import Solicitud from './components/Solicitud/Solicitud';
 import NuevaSolicitud from './components/Solicitud/NuevaSolicitud';
 import Orden from './components/Ordenes/Orden';
-import OrdenInnominada from './components/Ordenes/OrdenInnominada';
+import OrdenNuevaEdicion from './components/Ordenes/OrdenNuevaEdicion';
 
 
 const mapStateToProps = (state) => {
@@ -164,7 +164,8 @@ class App extends Component {
                     <Route path='/orden'>
                         
                         <Route exact path='/orden' component={Orden} />
-                        <Route path='/orden/innominada' component={OrdenInnominada} />
+                        <Route path='/orden/nueva' component={OrdenNuevaEdicion} />
+                        <Route path='/orden/editar' component={OrdenNuevaEdicion} />
 
                     </Route>
                     {this.state.listaMenus.find(x => x.url === "/logs") ?
