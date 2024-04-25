@@ -179,6 +179,7 @@ function OrdenNuevaEdicion(props) {
         } else {
             console.log("IMPLEMENTAR GUARDADO,", e);
             window.alert("SE GUARDO CORRECTAMENTE LA ORDEN");
+            navigate.push('/orden');
         }
     };
 
@@ -283,7 +284,7 @@ function OrdenNuevaEdicion(props) {
 
                         <div className="center_text_items">
                             <button className="btn_mg btn_mg__primary" style={{ width: "200px" }} disabled={false} type="submit">
-                                Registrar</button>
+                                {accionBtn}</button>
                         </div>
                     </form>
 
