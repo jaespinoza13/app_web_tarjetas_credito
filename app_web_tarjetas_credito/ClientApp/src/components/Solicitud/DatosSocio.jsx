@@ -67,12 +67,19 @@ const DatosSocio = (props) => {
     const [contentReadyInfoEco, setContentReadyInfoEco] = useState(false);
 
     const [infoSocio, setInfoSocio] = useState([]);
-    const [infoEco, setInfoEco] = useState([]);
     const [dirDocimicilioSocio, setDirDomicilioSocio] = useState([]);
     const [dirTrabajoSocio, setDirTrabajoSocio] = useState([]);
 
     //ComentarioGestion
     const [deseaTarjeta, setDeseaTarjeta] = useState(false);
+    const [comentariosPositivos, setComentariosPositivos] = useState([{ image: "", textPrincipal: "Solicitará en otra IFI", textSecundario: "", key: 1 },
+        { image: "", textPrincipal: "Monto muy bajo", textSecundario: "", key: 2 },
+        { image: "", textPrincipal: "No desea por el momento", textSecundario: "", key: 3 },
+        { image: "", textPrincipal: "Regresará con la documentación", textSecundario: "", key: 4 }]);
+    const [comentariosNegativos, setComentariosNegativos] = useState([{ image: "", textPrincipal: "En trámite de ser socio", textSecundario: "", key: 1 },
+        { image: "", textPrincipal: "Lorem Ipsum", textSecundario: "", key: 2 },
+        { image: "", textPrincipal: "Lorem Ipsum", textSecundario: "", key: 3 },
+        { image: "", textPrincipal: "Regresará con la documentación", textSecundario: "", key: 4 }]);
     const [comentarioAdicional, setComentarioAdicional] = useState(false);
 
     //InfoEconomica
@@ -132,10 +139,13 @@ const DatosSocio = (props) => {
     }
 
     const seleccionComentarioAfirma = (value) => {
-        props.onComentario(value);
+        const comentarioSeleccionado = comentariosPositivos.find((element) => { return element.key === value });
+        console.log(comentarioSeleccionado);
+        props.onComentario(comentarioSeleccionado.textPrincipal);
     }
     const seleccionComentarioNega = (value) => {
-        props.onComentario(value);
+        const comentarioSeleccionado = comentariosNegativos.find((element) => { return element.key === value });
+        props.onComentario(comentarioSeleccionado.textPrincipal);
     }
 
     const getInfoMediosNotif = () => {
@@ -167,7 +177,7 @@ const DatosSocio = (props) => {
     return (
         <div className="f-col w-100">
             <div id="montoSugerido" className="f-row w-100 ">
-                <img src="Imagenes/monetization_on.svg"></img>
+                <img src="Imagenes/Cupo sugerido.svg"></img>
                 <div className="ml-3 datosMonto">
                     <h3 className="blue">Cupo sugerido:</h3>
                     <h2 className="strong blue">{`${props.montoSugerido || Number('10000.00').toLocaleString('en-US')}`}</h2>
@@ -221,7 +231,7 @@ const DatosSocio = (props) => {
                         </Item>
                     </div>
                 </Accordion>
-                {props.tipoGestion === 'solicitud' &&
+                {props.gestion === 'solicitud' &&
                     <Fragment>
                 <Accordion className="mt-3" title="Datos generales" rotate={estadoAccordionInfoSocio} loading={estadoLoadingInfoSocio} toggleAccordion={() => { getInfoSocioHandler(); } } contentReady={contentReadyInfoSocio}>
                     <div style={{ display: "flex", flexDirection: "column" }}>
@@ -454,30 +464,22 @@ const DatosSocio = (props) => {
                 <div className="tipoComentario mt-4 mb-4">
                 <Fragment>
                     <h3>Está interesado en adquirir la tarjeta de crédito</h3>
-                        {props.tipoGestion === 'prospeccion' && <Switch onChange={deseaTarjetaHandler} value={deseaTarjeta}></Switch>}
+                        {props.gestion === 'prospeccion' && <Switch onChange={deseaTarjetaHandler} value={deseaTarjeta}></Switch>}
                     
                 </Fragment>
                 </div>
-                {props.tipoGestion === "prospeccion" && <div>
+                {props.gestion === "prospeccion" && <div>
                     <h3 className="mb-2">Comentario de la gestión</h3>
                     {deseaTarjeta &&
                         <Toggler
                             selectedToggle={seleccionComentarioAfirma}
-                            toggles={[{ image: "", textPrincipal: "Solicitará en otra IFI", textSecundario: "", key: 1 },
-                                { image: "", textPrincipal: "Monto muy bajo", textSecundario: "", key: 2 },
-                                { image: "", textPrincipal: "No desea por el momento", textSecundario: "", key: 3 },
-                                { image: "", textPrincipal: "Regresará con la documentación", textSecundario: "", key: 4 }
-                            ]}>
+                            toggles={comentariosPositivos}>
                         </Toggler>
                     }
                     {deseaTarjeta ||
                         <Toggler
                             selectedToggle={seleccionComentarioNega}
-                            toggles={[{ image: "", textPrincipal: "En trámite de ser socio", textSecundario: "", key: 1 },
-                                { image: "", textPrincipal: "Lorem Ipsum", textSecundario: "", key: 2 },
-                                { image: "", textPrincipal: "Lorem Ipsum", textSecundario: "", key: 3 },
-                                { image: "", textPrincipal: "Regresará con la documentación", textSecundario: "", key: 4 },
-                            ]}>
+                            toggles={comentariosNegativos}>
                         </Toggler>
                     }
                 </div>}

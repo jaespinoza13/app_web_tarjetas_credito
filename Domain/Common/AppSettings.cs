@@ -91,6 +91,10 @@
         public string service_add_solicitud { get; set; } = String.Empty;
         public string service_get_info_finan { get; set; } = String.Empty;
         public string service_add_prospecto { get; set; } = String.Empty;
+        public string service_get_comentarios { get; set; } = String.Empty;
+        public string service_add_comentario_asesor { get; set; } = String.Empty;
+        public string service_add_comentario_solicitud { get; set; } = String.Empty;
+        public string service_get_flujo_solicitud { get; set; } = String.Empty;
         #endregion
     }
 }

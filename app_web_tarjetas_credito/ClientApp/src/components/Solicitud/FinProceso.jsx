@@ -3,12 +3,9 @@
 const FinProceso = (props) => {
     return <div className="f-col mb-4">
         {props.gestion === "solicitud"
-            ? <video style={{ objectFit: "cover" }} width="293px" height="27px" autoPlay>
-                <source src="Imagenes/transaccionExitosa1.mp4" type="video/mp4"></source>
-            </video>
-            : <video width="293px" height="27px" autoPlay >
-                <source src="Imagenes/transaccionExitosa1.mp4" type="video/mp4"></source>
-            </video>
+            ? <img style={{ width: "25rem" }} src="Imagenes/Solicitud-exitosa.gif" loop={false}></img>
+            : <img style={{ width: "25rem" }} src="Imagenes/Prospecto-exitoso.gif" loop={false}></img>
+            
         }
         <div>
             <p className="mb-4">Detalles: </p>

@@ -19,6 +19,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import Solicitud from './components/Solicitud/Solicitud';
 import NuevaSolicitud from './components/Solicitud/NuevaSolicitud';
 import Orden from './components/Ordenes/Orden';
+import VerSolicitud from './components/Solicitud/VerSolicitud';
 import OrdenNuevaEdicion from './components/Ordenes/OrdenNuevaEdicion';
 
 
@@ -156,6 +157,7 @@ class App extends Component {
                             <>
                                 <Route exact path='/solicitud' component={Solicitud} />
                                 <Route path='/solicitud/nueva' component={NuevaSolicitud} />
+                                <Route path='/solicitud/ver' component={VerSolicitud} />
                             </>
                         ) : (
                             <Route render={() => <Redirect to="/auth" />} />
