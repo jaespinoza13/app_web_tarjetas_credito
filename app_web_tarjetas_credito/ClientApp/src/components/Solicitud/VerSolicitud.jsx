@@ -1,5 +1,6 @@
 ﻿import { IsNullOrWhiteSpace } from "../../js/utiles";
 import { connect, useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { useEffect, useState } from "react";
 import { fetchGetComentarios, fetchGetFlujoSolicitud, fetchAddComentarioAsesor, fetchAddComentarioSolicitud } from "../../services/RestServices";
 import Sidebar from "../Common/Navs/Sidebar";
@@ -25,10 +26,12 @@ const mapStateToProps = (state) => {
 
 const VerSolicitud = (props) => {
     const dispatch = useDispatch();
+    const navigate = useHistory();
     const [comentariosAsesor, setComentariosAsesor] = useState([]);
     const [solicitudTarjeta, setSolicitudTarjeta] = useState([]);
     const [comentarioSolicitud, setComentarioSolicitud] = useState("");
     const [modalVisible, setModalVisible] = useState(false);
+    const [modalVisibleOk, setModalVisibleOk] = useState(false);
     const [faltaComentariosAsesor, setFaltaComentariosAsesor] = useState(true);
 
 
@@ -41,6 +44,7 @@ const VerSolicitud = (props) => {
             setComentariosAsesor(data.lst_comn_ase_cre);
         }, dispatch);
         fetchGetFlujoSolicitud(props.solicitud.solicitud, props.token, (data) => {
+            console.log(data);
             setSolicitudTarjeta(...[data.flujo_solicitudes]);
         }, dispatch);
     }, []);
@@ -69,13 +73,33 @@ const VerSolicitud = (props) => {
     }
 
     const closeModalHandler = () => {
-
+        setModalVisible(false);
     }
 
     const guardarComentario = () => {
-        fetchAddComentarioSolicitud(props.solicitud.solicitud, comentarioSolicitud, props.token, (data) => {
-            console.log(data);
+        fetchAddComentarioSolicitud(props.solicitud.solicitud, comentarioSolicitud, solicitudTarjeta[0]?.slw_estado, props.token, (data) => {
+            if (data.str_res_codigo === "000") {
+                setModalVisibleOk(true);
+            }
         }, dispatch);
+    }
+
+    const descargarReporte = () => {
+        const pdfUrl = "Imagenes/reporteavalhtml.pdf";
+        const link = document.createElement("a");
+        link.href = pdfUrl;
+        link.download = "document.pdf"; // specify the filename
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    const retornarSolicitud = () => {
+        navigate.push('/solicitud');
+    }
+
+    const closeModalHandlerOk = () => {
+
     }
 
     return <div className="f-row">
@@ -110,7 +134,7 @@ const VerSolicitud = (props) => {
                             </h5>
                         </div>
                         <div className="values  mb-3">
-                            <Button className="btn_mg__primary" type="">Descargar reporte</Button>
+                            <Button className={["btn_mg btn_mg__primary"]} disabled={false} onClick={descargarReporte}>Descargar reporte</Button>
                         </div>
                         <div className="values  mb-3">
                             <Button className="btn_mg__primary" type="" onClick={modalHandler}>Agregar comentarios</Button>
@@ -146,7 +170,7 @@ const VerSolicitud = (props) => {
                 </Card>
                 <div className="mt-4">
                     <h3>Comentario del Asesor</h3>
-                    <Textarea placeholder="Ingrese su comentario" onChange={getComentarioSolicitudHandler} value={comentarioSolicitud} esRequerido={true}></Textarea>
+                    <Textarea placeholder="Ingrese su comentario" onChange={getComentarioSolicitudHandler}  esRequerido={true}></Textarea>
                 </div>
             </div>
             <div className="f-row justify-content-center">
@@ -171,12 +195,24 @@ const VerSolicitud = (props) => {
                                 <tr key={comentario.int_id_parametro}>
                                     <td style={{ width: "20%" }}>{comentario.str_tipo}</td>
                                     <td style={{ width: "40%" }}>{comentario.str_descripcion}</td>
-                                    <td style={{ width: "40%" }}><Textarea placeholder="Ej. Texto de ejemplo" type="textarea" onChange={(event, key = comentario.int_id_parametro) => { comentarioAdicionalHanlder(event, key) }} esRequerido={false}>{comentario.str_detalle}</Textarea></td>
+                                    <td style={{ width: "40%" }}><Textarea placeholder="Ej. Texto de ejemplo" type="textarea" onChange={(event, key = comentario.int_id_parametro) => { comentarioAdicionalHanlder(event, key) }} esRequerido={false} value={comentario.str_detalle}></Textarea></td>
                                 </tr>
                             );
                         })
                     }
                 </Table>
+            </div>}
+        </Modal>
+        <Modal
+            modalIsVisible={modalVisibleOk}
+            titulo={`Aviso!`}
+            onNextClick={retornarSolicitud}
+            onCloseClick={closeModalHandlerOk}
+            isBtnDisabled={false}
+            type="sm"
+        >
+            {modalVisibleOk && <div>
+                <p>Su comentario se ha guardado correctamente</p>
             </div>}
         </Modal>
     </div>

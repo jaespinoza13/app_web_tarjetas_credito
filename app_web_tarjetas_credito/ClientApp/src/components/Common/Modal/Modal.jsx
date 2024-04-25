@@ -31,7 +31,7 @@ const Modal = (props) => {
                     {props.children}
                 </div>
                 <div className="modal-footer">
-                    <button className="btn_mg btn_mg__tertiary close-modal" onClick={props.onCloseClick} ><img src="Imagenes/close.svg"></img> </button>
+                    <button className="btn_mg btn_mg__tertiary btn_mg__auto close-modal" onClick={props.onCloseClick} ><img src="Imagenes/close.svg"></img> </button>
                     <button className="btn_mg btn_mg__primary" disabled={props.isBtnDisabled} onClick={props.onNextClick}>Siguiente</button>
                 </div>
             </div>

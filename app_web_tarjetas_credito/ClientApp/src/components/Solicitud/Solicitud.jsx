@@ -51,7 +51,7 @@ function Solicitud(props) {
 
     //Headers tablas Solicitudes y Prospectos
     const headerTableSolicitantes = [
-        { nombre: 'Identificación', key: 1 }, { nombre: 'Ente', key: 2 }, { nombre: 'Nombre solicitante', key: 3 },
+        { nombre: 'Nro. Solicitud', key: 0}, { nombre: 'Identificación', key: 1 }, { nombre: 'Ente', key: 2 }, { nombre: 'Nombre solicitante', key: 3 },
         { nombre: 'Producto TC', key: 4 }, { nombre: 'Monto', key: 5 }, { nombre: 'Calificación', key: 6 },
         { nombre: 'Estado', key: 7 }, { nombre: 'Oficina Crea', key: 8 }, { nombre: 'Oficial', key: 9 },
         { nombre: 'Usuario', key: 10 }, { nombre: 'Fecha modificación', key: 11 }, { nombre: 'Acciones', key: 12 },
@@ -161,13 +161,14 @@ function Solicitud(props) {
                         {lstSolicitudes.map((solicitud) => {
                             return (
                                 <tr key={solicitud.int_id}>
+                                    <td>{solicitud.int_id}</td>
                                     <td onClick={() => { moveToSolicitud(solicitud.int_id)}}>{solicitud.str_identificacion}</td>
                                     <td>{solicitud.int_ente}</td>
                                     <td>{solicitud.str_nombres}</td>
                                     <td><Chip type="black">Black</Chip></td>
                                     <td>{`$ ${Number(solicitud.dec_cupo_solicitado).toLocaleString('en-US')}`}</td>
                                     <td>{"AA"}</td>
-                                    <td>{solicitud.str_estado}</td>
+                                    <td>{`${solicitud.str_estado === '11188' ? "SOLICITUD CREADA" : "ANALISIS UAC"}`}</td>
                                     <td>{"Matriz"}</td>
                                     <td>{solicitud.str_usuario_crea}</td>
                                     <td>{solicitud.str_usuario_crea}</td>
