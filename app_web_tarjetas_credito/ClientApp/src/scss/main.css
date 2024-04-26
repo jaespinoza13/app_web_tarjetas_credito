@@ -910,6 +910,7 @@ button.close-modal {
 
 .modal-content-sm {
     width: 40%;
+    height: 50px
 }
 
 .modal-footer {

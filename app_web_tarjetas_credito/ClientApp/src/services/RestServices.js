@@ -1181,14 +1181,14 @@ export function fetchAddComentarioAsesor(idSolicitud, comentarios, token, onSucc
 * @param {(contenido:string, nroTotalRegistros: number) => void} onSuccess
 * @param {Function} dispatch
 */
-export function fetchAddComentarioSolicitud(idSolicitud, comentario, token, onSucces, dispatch) {
+export function fetchAddComentarioSolicitud(idSolicitud, comentario, estadoSolicitud, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
         int_id_solicitud: idSolicitud,
         bl_regresa_estado: false,
         str_comentario: comentario,
-        int_estado: 10812
+        int_estado: estadoSolicitud
     }
     ServicioPostExecute(addComentarioSolicitud, body, token, { dispatch: dispatch }).then((data) => {
         if (data) {
