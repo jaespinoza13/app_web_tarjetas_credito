@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom';
 import Table from '../Common/Table';
 import Chip from '../Common/UI/Chip'
 import { Input, FormGroup } from 'reactstrap';
-import { RadioGroup, Radio, FormControlLabel, Checkbox } from '@mui/material';
+import { RadioGroup, Radio, FormControlLabel, Checkbox, FormLabel } from '@mui/material';
 import { IsNullOrWhiteSpace } from '../../js/utiles';
 import { connect } from 'react-redux';
 
@@ -63,10 +63,10 @@ function OrdenNuevaEdicion(props) {
     const [agenciaSolicita, setAgenciaSolicita] = useState("-1");
     const [desactivarCheckEditar, setDesactivarCheckEditar] = useState();
 
-    const [nrOrnden, setNrOrden] = useState();
-    const [prefijo, setPrefijo] = useState(0);
-    const [costoEmision, setCostoEmision] = useState("no_cobro_emision");
-    const [descripcion, setDescripcion] = useState();
+    const [nrOrnden, setNrOrden] = useState("");
+    const [prefijo, setPrefijo] = useState("");
+    const [costoEmision, setCostoEmision] = useState("");
+    const [descripcion, setDescripcion] = useState("");
     const [enableCostoEmision, setEnableCostoEmision] = useState(false); //TODO: MODIFICAR EN CASO QUIERA PARAMETRIZACION
 
     const [tarjetasAprobadasCheckBox, setTarjetasAprobadasCheckBox] = useState([]);
@@ -213,10 +213,10 @@ function OrdenNuevaEdicion(props) {
                             <FormGroup>
 
                                 <div className="form_mg_row">
-                                    <label htmlFor="tipoTC" className="pbmg1 lbl-input label_horizontal">Número de orden</label>
+                                    <label htmlFor="numOrdenTarjetas" className="pbmg1 lbl-input label_horizontal">Número de orden</label>
                                     <div className="form_mg__item ptmg1">
 
-                                        <Input type="text" value={nrOrnden} placeholder="Número de orden" onChange={setNrOrdenHandler}></Input>
+                                        <Input id="numOrdenTarjetas" name="numOrdenTarjetas" required={true} type="text" value={nrOrnden} placeholder="Número de orden" onChange={setNrOrdenHandler} className={nrOrnden === "" ? "no_valido" : ""}></Input>
                                     </div>
                                 </div>
 
@@ -225,21 +225,20 @@ function OrdenNuevaEdicion(props) {
                             <FormGroup>
 
                                 <div className="form_mg_row">
-                                    <label htmlFor="tipoTC" className="pbmg1 lbl-input label_horizontal">Costo de emisión</label>
+                                    <FormLabel sx={{ fontFamily: `"Karbon", sans-serif`, fontSize: "1.1rem;", color: "#3D3D3D" }} component="label">Costo de emisión</FormLabel> 
                                     <div className="form_mg__item">
 
                                         <RadioGroup
                                             row
-                                            aria-labelledby="demo-row-radio-buttons-group-label"
+                                            aria-labelledby="label"
                                             name="row-radio-buttons-group"
                                             value={costoEmision}
                                             onChange={setCostoEmisionHandler}
                                         >
                                             <FormControlLabel value="cobro_emision" control={<Radio />} label="Si" disabled={enableCostoEmision} />
-                                            <FormControlLabel value="no_cobro_emision" control={<Radio />} label="No" disabled={enableCostoEmision} />
-
+                                            <FormControlLabel value="no_cobro_emision" control={<Radio required={true} />} label="No" disabled={enableCostoEmision} />
                                         </RadioGroup>
-
+                                        {costoEmision === "" && <div className='text_error_validacion'>Escoja una opción.</div>}
 
                                     </div>
                                 </div>
@@ -251,7 +250,7 @@ function OrdenNuevaEdicion(props) {
                                 <div className="form_mg_row">
                                     <label htmlFor="tipoTC" className="pbmg1 lbl-input label_horizontal">Prefijo</label>
                                     <div className="form_mg__item ptmg1">
-                                        <Input type="number" value={prefijo} onChange={setPrefijoHandler} min={0}></Input>
+                                        <Input id="prefijo" name="prefijo" type="number" value={prefijo} onChange={setPrefijoHandler} min={0} className={prefijo === "" ? "no_valido" : ""}></Input>
                                     </div>
                                 </div>
 
@@ -260,9 +259,9 @@ function OrdenNuevaEdicion(props) {
                             <FormGroup>
 
                                 <div className="form_mg_row">
-                                    <label htmlFor="tipoTC" className="pbmg1 lbl-input label_horizontal">Descripción de la orden</label>
+                                    <label htmlFor="descripcion" className="pbmg1 lbl-input label_horizontal">Descripción de la orden</label>
                                     <div className="form_mg__item ptmg1">
-                                        <Input type="text" value={descripcion} placeholder="Ingrese alguna descripción de la orden" onChange={setDescripcionHandler}></Input>
+                                        <Input id="descripcion" name="descripcion" type="text" value={descripcion} required={true} placeholder="Ingrese alguna descripción de la orden" onChange={setDescripcionHandler} className={descripcion === "" ? "no_valido" : ""}></Input>
                                     </div>
                                 </div>
 
@@ -271,10 +270,10 @@ function OrdenNuevaEdicion(props) {
                             <FormGroup>
 
                                 <div className="form_mg_row">
-                                    <label htmlFor="agencia" className="pbmg1 lbl-input label_horizontal">Seleccione la Agencia que solicita nueva orden de tarjetas:</label>
+                                    <label htmlFor="agencia_solicita" className="pbmg1 lbl-input label_horizontal">Seleccione la Agencia que solicita nueva orden de tarjetas:</label>
                                     <div className="form_mg__item ptmg1">
-                                        <select id="agencia_solicita" onChange={agenciaHadler} value={agenciaSolicita} disabled={desactivarCheckEditar }>
-                                            <option value="-1" selected="false" disabled="true">----- SELECCIONE UNA AGENCIA -----</option>
+                                        <select id="agencia_solicita" name="agencia_solicita" defaultValue={"-1"} onChange={agenciaHadler} value={agenciaSolicita} disabled={desactivarCheckEditar }>
+                                            <option value="-1" disabled={true}>----- SELECCIONE UNA AGENCIA -----</option>
                                             <option value="1">MATRIZ</option>
                                             <option value="2">SARAGURO</option>
                                             <option value="3">CATAMAYO</option>

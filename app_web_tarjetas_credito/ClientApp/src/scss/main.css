@@ -1482,6 +1482,13 @@ img {
     width: 3rem;
 }
 
+.text_error_validacion {
+    color: #FB7373;
+    font-size: 0.8rem;
+    font-family: "Karbon", sans-serif;
+}
+
+
 
 @keyframes ripple {
     to {

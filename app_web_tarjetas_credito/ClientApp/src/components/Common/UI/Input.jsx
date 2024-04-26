@@ -14,6 +14,7 @@ const Input = (props) => {
     return (
         <input
             className={`${inputClass} ${props.className || ''}`}
+            required={props.esRequerido === null ? false : props.esRequerido}
             type={props.type}
             tabIndex={props.tabIndex}
             placeholder={props.placeholder}
