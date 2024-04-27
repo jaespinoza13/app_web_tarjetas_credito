@@ -123,7 +123,7 @@ const VerSolicitud = (props) => {
     }
 
     return <div className="f-row">
-        <Sidebar></Sidebar>
+        <Sidebar enlace={props.location.pathname}></Sidebar>
         <Card className={["m-max w-100 justify-content-space-between align-content-center"]}>
             <div>
                 <h3 className="mb-3">Informacióin de la solicitud</h3>

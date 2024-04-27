@@ -199,7 +199,7 @@ function OrdenNuevaEdicion(props) {
 
     return (
         <div className="f-row">
-            <Sidebar></Sidebar>
+            <Sidebar enlace={props.location.pathname }></Sidebar>
             <div className="container_mg">
 
 

@@ -6,7 +6,7 @@ import {
 } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import '../../../scss/main.css';
-import { obtenerConexionesLocales } from '../../../js/utiles';
+import { obtenerConexionesLocales, extraerFuncionalPadre } from '../../../js/utiles';
 import { desencriptar, generate, get } from '../../../js/crypt';
 
 function Sidebar(props) {
@@ -16,11 +16,13 @@ function Sidebar(props) {
     const [nombreUsuario, setNombreUsuario] = useState("");
     const [url, setUrl] = useState("");
 
+    const [funcionalidadActiva, setFuncionalidadActiva] = useState("");
     function toggleSideBar() {
         setCollapsed(!collapsed);
     }
 
     useEffect(() => {
+        setFuncionalidadActiva(extraerFuncionalPadre(props.enlace));
         obtenerConexionesLocales(sessionStorage.getItem("COEXIONSELECTED")).then((data) => {
             setUrl(data);
         });
@@ -57,13 +59,13 @@ function Sidebar(props) {
             <div className="sidebar_menu">
                 <div className="sidebar_menu__items">
                     <div className="sidebar_menu__item">
-                         <NavItem>
-                                <NavLink tag={Link} className="text-dark" to="/solicitud">Solicitud</NavLink>
+                        <NavItem>
+                            <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'solicitud' || funcionalidadActiva === '') ? 'active' : ''}`} to="/solicitud">Solicitud</NavLink>
                          </NavItem>
                     </div>
                     <div className="sidebar_menu__item">
                         <NavItem>
-                            <NavLink tag={Link} className="text-dark" to="/orden">Ordenes</NavLink>
+                            <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'orden') ? 'active' : ''}`} to="/orden">Ordenes</NavLink>
                         </NavItem>
                     </div>
                     {/*<div className="sidebar_menu__item">*/}

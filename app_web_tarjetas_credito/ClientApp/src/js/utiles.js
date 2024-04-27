@@ -600,3 +600,14 @@ export function validaCedula (strCedula) {
 
     return resultado;
 }
+
+/**
+ * Obtener la lista de conexionde desuario desde el LocalStorage
+ * @param {string} enlace
+ * @returns {Promise<object> | null}
+ */
+export function extraerFuncionalPadre(enlace) {
+    var funcionalidad = enlace.split('/',2)[1];
+    return funcionalidad;
+
+}

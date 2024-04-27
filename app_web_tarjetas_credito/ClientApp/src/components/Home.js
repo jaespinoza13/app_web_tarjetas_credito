@@ -30,7 +30,7 @@ const mapStateToProps = (state) => {
 function Home(props) {
     return (
         <div className="f-row">
-            <Sidebar></Sidebar>
+            <Sidebar enlace={props.location.pathname }></Sidebar>
             <Container className="border-bottom text-center ">
                 <Container>
                     <h3 className="mb-3 blue">Bienvenido al sistema de </h3>

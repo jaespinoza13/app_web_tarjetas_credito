@@ -22,6 +22,7 @@ import { setSolicitudStateAction } from '../../redux/Solicitud/actions';
 
 
 const mapStateToProps = (state) => {
+    //console.log("state, ", state)
     var bd = state.GetWebService.data;
     if (IsNullOrWhiteSpace(bd) || Array.isArray(state.GetWebService.data)) {
         bd = sessionStorage.getItem("WSSELECTED");
@@ -34,6 +35,7 @@ const mapStateToProps = (state) => {
 };
 
 function Solicitud(props) {
+    //console.log("props, ",props)
     const navigate = useHistory();
     const dispatch = useDispatch();
 
@@ -137,7 +139,7 @@ function Solicitud(props) {
     }
 
     return (<div className="f-row">
-        <Sidebar></Sidebar>
+        <Sidebar enlace={props.location.pathname}></Sidebar>
         <div className="container_mg">
             <div className="consulta_buro">
                 <Item xs={2} sm={2} md={2} lg={2} xl={2}>
