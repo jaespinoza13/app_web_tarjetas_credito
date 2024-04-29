@@ -33,6 +33,7 @@ const VerSolicitud = (props) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [modalVisibleOk, setModalVisibleOk] = useState(false);
     const [faltaComentariosAsesor, setFaltaComentariosAsesor] = useState(true);
+    const [isBtnComentariosActivo, setIsBtnComentariosActivo] = useState(false)
 
 
     const headerTableComentarios = [
@@ -42,6 +43,7 @@ const VerSolicitud = (props) => {
     useEffect(() => {
         fetchGetComentarios(props.solicitud.solicitud, props.token, (data) => {
             setComentariosAsesor(data.lst_comn_ase_cre);
+            existeComentariosVacios(data.lst_comn_ase_cre);
         }, dispatch);
         fetchGetFlujoSolicitud(props.solicitud.solicitud, props.token, (data) => {
             console.log(data);
@@ -51,10 +53,13 @@ const VerSolicitud = (props) => {
 
     const comentarioAdicionalHanlder = (data, event) => {
         const id = comentariosAsesor.findIndex((comentario) => { return comentario.int_id_parametro === event });
-        comentariosAsesor[id].str_detalle = data;
+        const comentarioActualizado = [...comentariosAsesor]
+        comentarioActualizado[id].str_detalle = data;
+        setComentariosAsesor(comentarioActualizado) 
+
+        existeComentariosVacios(comentarioActualizado);
         
     }
-
     const getComentarioSolicitudHandler = (data) => {
         setComentarioSolicitud(data);
     }
@@ -64,12 +69,16 @@ const VerSolicitud = (props) => {
     }
 
     const siguientePasoHandler = () => {
-        fetchAddComentarioAsesor(props.solicitud.solicitud, comentariosAsesor, props.token, (data) => {
-            if (data.str_res_codigo === "000") {
-                setFaltaComentariosAsesor(false);
-                setModalVisible(false);
-            }
-        }, dispatch);
+        if (!existeComentariosVacios(comentariosAsesor)) {
+            fetchAddComentarioAsesor(props.solicitud.solicitud, comentariosAsesor, props.token, (data) => {
+                if (data.str_res_codigo === "000") {
+                    setFaltaComentariosAsesor(false);
+                    setModalVisible(false);
+                }
+            }, dispatch);
+        } else {
+            setIsBtnComentariosActivo(false);
+        }
     }
 
     const closeModalHandler = () => {
@@ -82,6 +91,17 @@ const VerSolicitud = (props) => {
                 setModalVisibleOk(true);
             }
         }, dispatch);
+    }
+
+    function existeComentariosVacios(arregloComentarios) {
+        if (arregloComentarios.find(comentario => comentario.str_detalle === "")) {
+            setIsBtnComentariosActivo(true) //Comentarios faltan rellenar
+            return true;
+        } else {
+            setIsBtnComentariosActivo(false) //Comentarios completos
+            return false;
+        }
+
     }
 
     const descargarReporte = () => {
@@ -103,7 +123,7 @@ const VerSolicitud = (props) => {
     }
 
     return <div className="f-row">
-        <Sidebar></Sidebar>
+        <Sidebar enlace={props.location.pathname}></Sidebar>
         <Card className={["m-max w-100 justify-content-space-between align-content-center"]}>
             <div>
                 <h3 className="mb-3">Informacióin de la solicitud</h3>
@@ -184,7 +204,7 @@ const VerSolicitud = (props) => {
             titulo={`Ingrese los comentarios`}
             onNextClick={siguientePasoHandler}
             onCloseClick={closeModalHandler}
-            isBtnDisabled={false}
+            isBtnDisabled={isBtnComentariosActivo}
             type="lg"
         >
             {modalVisible && <div>

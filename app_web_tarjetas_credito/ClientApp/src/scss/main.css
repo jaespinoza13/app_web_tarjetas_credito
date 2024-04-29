@@ -261,7 +261,7 @@ hr.dashed {
 }
 
     .sidebar.sidebar_min {
-        width: 4rem;
+        min-width: 4rem;
         height: calc(100vh - 4rem);
         display: flex;
         flex-direction: column;
@@ -1363,20 +1363,16 @@ input:checked + .slider::before {
         padding: 8px;
         text-align: left;
     }
-
 /* CARD IMAGES*/
 .card_image {
     position: relative;
     max-width: 300px;
+    border-radius: 8px;
     overflow: hidden;
     /* padding-bottom: 10px; */
-    border-radius: 10px;
-    border: 1px solid rgba(9, 57, 208, 0.2);
-    flex-direction: column;
-    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.0588235294);
-    background-color: #fff;
-    min-width: 15rem;
+    box-shadow: 1px 2px 8px rgba(100, 100, 100, 0.1);
 }
+
 
 .card-footer {
     padding: 4%;
@@ -1391,10 +1387,8 @@ input:checked + .slider::before {
     /*height: 200px;*/
     height: auto;
     overflow: hidden;
-    display: flex;
-    justify-content: center; /* Centrado horizontal */
-    align-items: center; /* Centrado vertical */
 }
+
 
 img {
     max-width: 100%;
@@ -1404,21 +1398,17 @@ img {
 }
 
     img:hover {
+        -webkit-transform: scale3d(1.2, 1.2, 1);
         transform: scale3d(1.2, 1.2, 1);
         transition: all 1s linear;
     }
+
 
 .text-box-wrapper {
     padding: 20px;
 }
 
 /* FIN CARD IMAGES*/
-.elements_two_column {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 40px;
-}
-
 @media screen and (max-width: 600px) {
     .responsive-table {
         overflow-x: auto;
@@ -1459,6 +1449,48 @@ img {
     display: flex;
     flex-direction: column;
 }
+
+
+.elements_two_column {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+/* Estilo del mensaje emergente */
+.custom-icon-button::after {
+    content: attr(title);
+    position: absolute;
+    bottom: -20px; /* Ajusta la posición vertical del mensaje emergente */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+/* Mostrar el mensaje emergente al pasar el cursor sobre el icono */
+.custom-icon-button:hover::after {
+    opacity: 1;
+}
+
+.width_btn_close {
+    width: 3rem;
+}
+
+.text_error_validacion {
+    color: #FB7373;
+    font-size: 0.8rem;
+    font-family: "Karbon", sans-serif;
+}
+
+
 
 @keyframes ripple {
     to {
@@ -1534,4 +1566,3 @@ img {
         transform: rotate(359deg);
     }
 }
-/*# sourceMappingURL=main.css.map */

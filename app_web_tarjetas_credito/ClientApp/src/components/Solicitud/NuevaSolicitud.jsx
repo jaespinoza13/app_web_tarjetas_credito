@@ -405,7 +405,7 @@ const NuevaSolicitud = (props) => {
 
     return (
         <div className="f-row" >
-            <Sidebar></Sidebar>
+            <Sidebar enlace={props.location.pathname}></Sidebar>
             <div className="stepper"></div>
             {showAutorizacion.toString()}
             <Card className={["m-max w-100 justify-content-space-between align-content-center"]}>

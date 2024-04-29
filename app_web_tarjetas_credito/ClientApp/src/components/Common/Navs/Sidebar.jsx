@@ -6,7 +6,7 @@ import {
 } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import '../../../scss/main.css';
-import { obtenerConexionesLocales } from '../../../js/utiles';
+import { obtenerConexionesLocales, extraerFuncionalPadre } from '../../../js/utiles';
 import { desencriptar, generate, get } from '../../../js/crypt';
 
 function Sidebar(props) {
@@ -16,11 +16,13 @@ function Sidebar(props) {
     const [nombreUsuario, setNombreUsuario] = useState("");
     const [url, setUrl] = useState("");
 
+    const [funcionalidadActiva, setFuncionalidadActiva] = useState("");
     function toggleSideBar() {
         setCollapsed(!collapsed);
     }
 
     useEffect(() => {
+        setFuncionalidadActiva(extraerFuncionalPadre(props.enlace));
         obtenerConexionesLocales(sessionStorage.getItem("COEXIONSELECTED")).then((data) => {
             setUrl(data);
         });
@@ -43,7 +45,7 @@ function Sidebar(props) {
         <div className={`sidebar ${collapsed && 'sidebar_min'}`} id="sidebar">
             <div className="sidebar_info">
                 <div className="sidebar_minimize">
-                    <button className="btn_mg btn_mg__tertiary btn_mg__auto" id="toggle-sidebar" onClick={toggleSideBar}>
+                    <button className="btn_mg btn_mg__tertiary width_btn_close" id="toggle-sidebar" onClick={toggleSideBar}>
                         <img src="Imagenes/menu.png" alt="icono_oculta_menu"></img>
                     </button>
                 </div>
@@ -57,13 +59,13 @@ function Sidebar(props) {
             <div className="sidebar_menu">
                 <div className="sidebar_menu__items">
                     <div className="sidebar_menu__item">
-                         <NavItem>
-                                <NavLink tag={Link} className="text-dark" to="/solicitud">Solicitud</NavLink>
+                        <NavItem>
+                            <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'solicitud' || funcionalidadActiva === '') ? 'active' : ''}`} to="/solicitud">Solicitud</NavLink>
                          </NavItem>
                     </div>
                     <div className="sidebar_menu__item">
                         <NavItem>
-                            <NavLink tag={Link} className="text-dark" to="/orden">Ordenes</NavLink>
+                            <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'orden') ? 'active' : ''}`} to="/orden">Ordenes</NavLink>
                         </NavItem>
                     </div>
                     {/*<div className="sidebar_menu__item">*/}

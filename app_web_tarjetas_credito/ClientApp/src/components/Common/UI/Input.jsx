@@ -14,6 +14,7 @@ const Input = (props) => {
     return (
         <input
             className={`${inputClass} ${props.className || ''}`}
+            required={props.esRequerido === null ? false : props.esRequerido}
             type={props.type}
             tabIndex={props.tabIndex}
             placeholder={props.placeholder}
@@ -22,6 +23,10 @@ const Input = (props) => {
             rounded={props.rounded}
             value={inputValue}
             onChange={changeHandler}
+            maxlength={props.maxlength}
+            min={props.min}
+            max={props.max}
+
             ></input>
     );
 }
