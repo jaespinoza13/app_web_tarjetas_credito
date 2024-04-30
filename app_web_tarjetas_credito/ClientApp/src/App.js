@@ -21,6 +21,8 @@ import NuevaSolicitud from './components/Solicitud/NuevaSolicitud';
 import Orden from './components/Ordenes/Orden';
 import VerSolicitud from './components/Solicitud/VerSolicitud';
 import OrdenNuevaEdicion from './components/Ordenes/OrdenNuevaEdicion';
+import OrdenGenerarArchivo from './components/Ordenes/OrdenGenerarArchivo';
+import VerOrden from './components/Ordenes/VerOrden';
 
 
 const mapStateToProps = (state) => {
@@ -168,6 +170,9 @@ class App extends Component {
                         <Route exact path='/orden' component={Orden} />
                         <Route path='/orden/nueva' component={OrdenNuevaEdicion} />
                         <Route path='/orden/editar' component={OrdenNuevaEdicion} />
+                        <Route path='/orden/generarArchivo' component={OrdenGenerarArchivo} />
+                        <Route path='/orden/verOrden' component={VerOrden} />
+
 
                     </Route>
                     {this.state.listaMenus.find(x => x.url === "/logs") ?
