@@ -1085,12 +1085,12 @@ export function fetchAddProspecto(str_num_documento, ente, nombres, apellidos, c
 * @param {(contenido:string, nroTotalRegistros: number) => void} onSuccess
 * @param {Function} dispatch
 */
-export function fetchGetComentarios(idSolicitud, token, onSucces, dispatch) {
+export function fetchGetComentarios(idSolicitud, idEstado, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
         int_id_sol: idSolicitud,
-        str_nem_par_inf: "TINFOTC_GESTOR_NEGOCIOS"
+        int_id_est_sol: Number(idEstado)
     }
     ServicioPostExecute(getComentarios, body, token, { dispatch: dispatch }).then((data) => {
         if (data) {
@@ -1148,12 +1148,13 @@ export function fetchGetFlujoSolicitud(idSolicitud, token, onSucces, dispatch) {
 * @param {(contenido:string, nroTotalRegistros: number) => void} onSuccess
 * @param {Function} dispatch
 */
-export function fetchAddComentarioAsesor(idSolicitud, comentarios, token, onSucces, dispatch) {
+export function fetchAddComentarioAsesor(idSolicitud, comentarios, estadoSolicitud, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
         int_id_sol: idSolicitud,
-        lst_cmnt_ase_cre: comentarios
+        lst_informe: comentarios,
+        int_id_est_sol: estadoSolicitud
     }
     console.log(body);
     ServicioPostExecute(addComentarioAsesor, body, token, { dispatch: dispatch }).then((data) => {
@@ -1190,6 +1191,7 @@ export function fetchAddComentarioSolicitud(idSolicitud, comentario, estadoSolic
         str_comentario: comentario,
         int_estado: estadoSolicitud
     }
+    console.log(body);
     ServicioPostExecute(addComentarioSolicitud, body, token, { dispatch: dispatch }).then((data) => {
         if (data) {
             if (data.error) {

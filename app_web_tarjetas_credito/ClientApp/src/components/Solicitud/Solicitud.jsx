@@ -19,6 +19,7 @@ import { IconButton } from '@mui/material';
 import TableWithTextArea from '../Common/UI/TableWithTextArea';
 import ModalDinamico from '../Common/Modal/ModalDinamico';
 import { setSolicitudStateAction } from '../../redux/Solicitud/actions';
+import { solicitud } from '../../redux/Solicitud/reducers';
 
 
 const mapStateToProps = (state) => {
@@ -134,7 +135,7 @@ function Solicitud(props) {
     const moveToSolicitud = (solId) => {
         const solicituSeleccionada = lstSolicitudes.find((solicitud) => { return solicitud.int_id === solId });
         console.log(solicituSeleccionada);
-        dispatch(setSolicitudStateAction({ solicitud: solicituSeleccionada.int_id, cedulaSocio: solicituSeleccionada.str_identificacion }))
+        dispatch(setSolicitudStateAction({ solicitud: solicituSeleccionada.int_id, cedulaSocio: solicituSeleccionada.str_identificacion, idSolicitud: solicituSeleccionada.str_estado }))
         navigate.push('/solicitud/ver');
     }
 

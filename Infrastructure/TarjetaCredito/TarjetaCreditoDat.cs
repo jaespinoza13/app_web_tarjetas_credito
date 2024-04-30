@@ -385,8 +385,8 @@ namespace Infrastructure.TarjetaCredito
             try
             {
                 req.llenarDatosConfig(_settings);
-                req.str_id_servicio = "REQ_" + _settings.service_get_comentarios;
-                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_comentarios)
+                req.str_id_servicio = "REQ_" + _settings.service_get_informe_tc;
+                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_informe_tc)
                 {
                     ThrowOnAnyError = true,
                     MaxTimeout = _settings.time_out
@@ -454,8 +454,8 @@ namespace Infrastructure.TarjetaCredito
             try
             {
                 req.llenarDatosConfig(_settings);
-                req.str_id_servicio = "REQ_" + _settings.service_add_comentario_asesor;
-                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_add_comentario_asesor)
+                req.str_id_servicio = "REQ_" + _settings.service_add_informe_tc;
+                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_add_informe_tc)
                 {
                     ThrowOnAnyError = true,
                     MaxTimeout = _settings.time_out

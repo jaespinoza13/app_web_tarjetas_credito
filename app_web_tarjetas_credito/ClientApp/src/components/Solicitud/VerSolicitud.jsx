@@ -12,6 +12,7 @@ import Button from "../Common/UI/Button";
 import Modal from "../Common/Modal/Modal";
 
 const mapStateToProps = (state) => {
+    console.log(state);
     var bd = state.GetWebService.data;
     if (IsNullOrWhiteSpace(bd) || Array.isArray(state.GetWebService.data)) {
         bd = sessionStorage.getItem("WSSELECTED");
@@ -41,13 +42,16 @@ const VerSolicitud = (props) => {
     ];
     
     useEffect(() => {
-        fetchGetComentarios(props.solicitud.solicitud, props.token, (data) => {
-            setComentariosAsesor(data.lst_comn_ase_cre);
-            existeComentariosVacios(data.lst_comn_ase_cre);
+        fetchGetComentarios(props.solicitud.solicitud, props.solicitud.idSolicitud, props.token, (data) => {
+            setComentariosAsesor(data.lst_informe);
+            existeComentariosVacios(data.lst_informe);
         }, dispatch);
         fetchGetFlujoSolicitud(props.solicitud.solicitud, props.token, (data) => {
-            console.log(data);
-            setSolicitudTarjeta(...[data.flujo_solicitudes]);
+            const maxSolicitudes = data.flujo_solicitudes.length - 1;
+            const datosSolicitud = data.flujo_solicitudes[maxSolicitudes];
+            console.log(maxSolicitudes);
+            console.log(datosSolicitud);
+            setSolicitudTarjeta(...[datosSolicitud]);
         }, dispatch);
     }, []);
 
@@ -70,7 +74,8 @@ const VerSolicitud = (props) => {
 
     const siguientePasoHandler = () => {
         if (!existeComentariosVacios(comentariosAsesor)) {
-            fetchAddComentarioAsesor(props.solicitud.solicitud, comentariosAsesor, props.token, (data) => {
+            console.log(comentariosAsesor);
+            fetchAddComentarioAsesor(props.solicitud.solicitud, comentariosAsesor, props.solicitud.idSolicitud, props.token, (data) => {
                 if (data.str_res_codigo === "000") {
                     setFaltaComentariosAsesor(false);
                     setModalVisible(false);
@@ -86,7 +91,7 @@ const VerSolicitud = (props) => {
     }
 
     const guardarComentario = () => {
-        fetchAddComentarioSolicitud(props.solicitud.solicitud, comentarioSolicitud, solicitudTarjeta[0]?.slw_estado, props.token, (data) => {
+        fetchAddComentarioSolicitud(props.solicitud.solicitud, comentarioSolicitud, props.solicitud.idSolicitud, props.token, (data) => {
             if (data.str_res_codigo === "000") {
                 setModalVisibleOk(true);
             }
@@ -126,7 +131,7 @@ const VerSolicitud = (props) => {
         <Sidebar enlace={props.location.pathname}></Sidebar>
         <Card className={["m-max w-100 justify-content-space-between align-content-center"]}>
             <div>
-                <h3 className="mb-3">Informacióin de la solicitud</h3>
+                <h3 className="mb-3 strong">Información de la solicitud</h3>
                 <Card className={["f-row"]}>
                     <Item xs={6} sm={6} md={6} lg={6} xl={6}>
                         <div className="values  mb-3">
@@ -150,7 +155,7 @@ const VerSolicitud = (props) => {
                         <div className="values  mb-3">
                             <h5>Oficial:</h5>
                             <h5 className="strong">
-                                {`${solicitudTarjeta[0]?.slw_usuario_proc}`}
+                                {`${solicitudTarjeta?.str_usuario_proc}`}
                             </h5>
                         </div>
                         <div className="values  mb-3">
@@ -165,19 +170,19 @@ const VerSolicitud = (props) => {
                         <div className="values  mb-3">
                             <h5>Estado de la solicitud:</h5>
                             <h5 className="strong">
-                                {`${solicitudTarjeta[0]?.str_estado}`}
+                                {`${solicitudTarjeta?.str_estado}`}
                             </h5>
                         </div>
                         <div className="values  mb-3">
                             <h5>Cupo solicitado:</h5>
                             <h5 className="strong">
-                                {`$ ${Number(solicitudTarjeta[0]?.slw_cupo_solicitado).toLocaleString("en-US") || Number('10000.00').toLocaleString("en-US")}`}
+                                {`$ ${Number(solicitudTarjeta?.str_cupo_solicitado).toLocaleString("en-US") || Number('10000.00').toLocaleString("en-US")}`}
                             </h5>
                         </div>
                         <div className="values  mb-3">
                             <h5>Cupo sugerido:</h5>
                             <h5 className="strong">
-                                {`$ ${Number(solicitudTarjeta[0]?.slw_cupo_sugerido).toLocaleString("en-US") || Number('10000.00').toLocaleString("en-US")}`}
+                                {`$ ${Number(solicitudTarjeta?.str_cupo_sugerido).toLocaleString("en-US") || Number('10000.00').toLocaleString("en-US")}`}
                             </h5>
                         </div>
                         <div className="values  mb-3">
@@ -189,7 +194,7 @@ const VerSolicitud = (props) => {
                     </Item>
                 </Card>
                 <div className="mt-4">
-                    <h3>Comentario del Asesor</h3>
+                    <h3 className="mb-3 strong">Comentario del Asesor</h3>
                     <Textarea placeholder="Ingrese su comentario" onChange={getComentarioSolicitudHandler}  esRequerido={true}></Textarea>
                 </div>
             </div>

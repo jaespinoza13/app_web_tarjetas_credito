@@ -107,7 +107,7 @@ export const addProspecto = "ADD_PROSPECTO_TC"
 export const getComentarios = "GET_COMENTARIOS_ASESOR"
 export const addComentarioSolicitud = "ADD_COMENTARIO_SOLICITUD"
 export const getFlujoSolicitud = "GET_FLUJO_SOLICITUD"
-export const addComentarioAsesor = "ADD_COMENTARIO_ASESOR"
+export const addComentarioAsesor = "ADD_INFORME_TC"
 
 /**
  * Obtener la Url de un servicio de acuerdo a su nombre de Proceso Unico

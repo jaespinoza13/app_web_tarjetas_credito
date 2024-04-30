@@ -10,7 +10,8 @@ namespace Domain.Models.TarjetaCredito.AddComentarioAsesor
     public class ReqAddComentarioAsesor : Header
     {
         public int int_id_sol {  get; set; }
-        public List<LstCmntAseCre>? lst_cmnt_ase_cre { get; set; }
+        public int int_id_est_sol { get; set; }
+        public List<LstCmntAseCre>? lst_informe { get; set; }
     }
 
     public class LstCmntAseCre

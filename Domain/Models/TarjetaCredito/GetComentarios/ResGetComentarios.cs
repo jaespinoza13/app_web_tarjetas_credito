@@ -9,7 +9,7 @@ namespace Domain.Models.TarjetaCredito.GetComentarios
 {
     public class ResGetComentarios : ResComun
     {
-        public List<ComentarioAsesor>? lst_comn_ase_cre {  get; set; }
+        public List<ComentarioAsesor>? lst_informe {  get; set; }
     }
 
     public class ComentarioAsesor
