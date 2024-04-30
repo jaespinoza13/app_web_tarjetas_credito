@@ -54,6 +54,7 @@ function Orden(props) {
             { nrOrden: 130, estado: "Receptada", cantidad: 80, usuario_crea: "Ericka Rios", fecha_creación: "18/04/2024 4:15:07 PM", fecha_solicita: "18/04/2024 4:20:40 PM", fecha_recepcion: "25/04/2024 8:50:00 PM", fecha_distribucion: "", fecha_cierre_orden: "", agencia_solicita: "SARAGURO" },
 
             { nrOrden: 131, estado: "Solicitada", cantidad: 30, usuario_crea: "Ericka Rios", fecha_creación: "20/05/2024 4:45:07 PM", fecha_solicita: "21/05/2024 8:20:40 AM", fecha_recepcion: "", fecha_distribucion: "", fecha_cierre_orden: "", agencia_solicita: "MATRIZ" },
+            { nrOrden: 134, estado: "Creada", cantidad: 10, usuario_crea: "Ericka Rios", fecha_creación: "30/04/2023 2:40:07 PM", fecha_solicita: "", fecha_recepcion: "", fecha_distribucion: "", fecha_cierre_orden: "", agencia_solicita: "CATAMAYO" },
             { nrOrden: 135, estado: "Creada", cantidad: 20, usuario_crea: "Ericka Rios", fecha_creación: "30/04/2023 4:15:07 PM", fecha_solicita: "", fecha_recepcion: "", fecha_distribucion: "", fecha_cierre_orden: "", agencia_solicita: "MATRIZ" }
         ];
     
@@ -67,13 +68,19 @@ function Orden(props) {
     const [isModalRecepTarjValija, setIsModalRecepTarjValija] = useState(false);
     const [isModalEliminarOrden, setIsModalEliminarOrden] = useState(false);
     const [numOrdenAccion, setNumOrdenAccion] = useState();
+    const [agenciaSolicita, setAgenciaSolicita] = useState();
     const [detalleRecepOrdenTarjetas, setDetalleRecepOrdenTarjetas] = useState();
 
     
     //ACCIONES PARA ABRIR MODALES
     const envioOrdenProvModal = (orden) => {
-        setIsModalEnviarOrden(true);
-        setNumOrdenAccion(orden);
+        //setIsModalEnviarOrden(true);
+        //setNumOrdenAccion(orden);
+        navigate.push('/orden/generarArchivo', { numOrden: orden })
+    }
+
+    const verOrdenPage = (orden) => {
+        navigate.push('/orden/verOrden', { numOrden: orden })
     }
 
     const recepcionOrdenProvModal = (orden) => {
@@ -81,9 +88,10 @@ function Orden(props) {
         setNumOrdenAccion(orden);
     }
 
-    const envioTarjetasValijaModal = (orden) => {
+    const envioTarjetasValijaModal = (orden, agencia) => {
         setIsModalEnvioValija(true);
         setNumOrdenAccion(orden);
+        setAgenciaSolicita(agencia);
     }
 
     const recepcionTarjetasValijaModal = (orden) => {
@@ -147,14 +155,14 @@ function Orden(props) {
        setDetalleRecepOrdenTarjetas(e)
     } 
 
-    const AccionesOrden = ({ numOrden, estadoOrden }) => {
+    const AccionesOrden = ({ numOrden, estadoOrden, agenciaSolicita }) => {   
         return (
             <div>
                 {estadoOrden === 'Creada' && (
                     <>
-                        <IconButton className="custom-icon-button" title="Enviar Orden al Proveedor" onClick={() => { envioOrdenProvModal(numOrden) } }>
+                        <IconButton className="custom-icon-button" title="Enviar Orden al Proveedor" onClick={() => { envioOrdenProvModal(numOrden) }}>
                             <EngineeringOutlined></EngineeringOutlined>
-                        </IconButton>                
+                        </IconButton>  
                         <IconButton className="custom-icon-button" title="Editar Orden" onClick={() => ordenPageHandler("editar", numOrden)}>
                             <EditNoteOutlined></EditNoteOutlined>
                         </IconButton>
@@ -170,7 +178,7 @@ function Orden(props) {
                     </IconButton>
                 )}
                 {estadoOrden === 'Receptada' && (
-                    <IconButton className="custom-icon-button" title="Envio por Valija" onClick={() => envioTarjetasValijaModal(numOrden)}>
+                    <IconButton className="custom-icon-button" title="Envio por Valija" onClick={() => envioTarjetasValijaModal(numOrden, agenciaSolicita)}>
                         <LocalShippingOutlined></LocalShippingOutlined>
                     </IconButton>
                 )}
@@ -179,7 +187,7 @@ function Orden(props) {
                         <ArchiveOutlined></ArchiveOutlined>
                     </IconButton>
                 )}                
-                <IconButton className="custom-icon-button" title="Visualizar Detalle de Orden" onClick={() => { console.log("CLICK") }}>
+                <IconButton className="custom-icon-button" title="Visualizar Detalle de Orden" onClick={() => verOrdenPage(numOrden)}>
                     <ViewListOutlined></ViewListOutlined>
                 </IconButton>
                 <IconButton className="custom-icon-button" title="Descargar Reporte" onClick={() => { console.log("CLICK") }}>
@@ -238,13 +246,22 @@ function Orden(props) {
                                 </Card>
                             </div>
 
+                            {/*<div className="m-2" style={{ display: "flex", flexDirection: "column", width: "25%", marginRight: "10px" }}>*/}
+
+                            {/*    <Card>*/}
+                            {/*        <img style={{ width: "15%" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg"></img>*/}
+                            {/*        <h4 className="mt-2">Crear Orden sin información del Socio</h4>*/}
+                            {/*        <h5 className="mt-2">Tipo IN-NOMINADA</h5>*/}
+                            {/*        <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} >Crear</Button>*/}
+                            {/*    </Card>*/}
+                            {/*</div>*/}
+
                             <div className="m-2" style={{ display: "flex", flexDirection: "column", width: "25%", marginRight: "10px" }}>
 
                                 <Card>
                                     <img style={{ width: "15%" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg"></img>
-                                    <h4 className="mt-2">Crear Orden sin información del Socio</h4>
-                                    <h5 className="mt-2">Tipo IN-NOMINADA</h5>
-                                    <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} >Crear</Button>
+                                    <h4 className="mt-2 mb-5">Revisar listado tarjetas de una orden</h4>
+                                    <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false}>Crear</Button>
                                 </Card>
                             </div>
 
@@ -252,7 +269,7 @@ function Orden(props) {
 
                                 <Card>
                                     <img style={{ width: "15%" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg"></img>
-                                    <h4 className="mt-2">Generar archivo Ordenes aprobadas</h4>
+                                    <h4 className="mt-2">Generar archivo Ordenes creadas</h4>
                                     <h5 className="mt-2">Tipo Batch</h5>
                                     <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false}>Crear</Button>
                                 </Card>
@@ -282,7 +299,7 @@ function Orden(props) {
                                     <td style={{ width: "143px" }}>{orden.fecha_distribucion}</td>
                                     <td style={{ width: "143px" }}>{orden.fecha_cierre_orden}</td>
                                     <td>
-                                        <AccionesOrden numOrden={orden.nrOrden} estadoOrden={orden.estado} />
+                                        <AccionesOrden numOrden={orden.nrOrden} estadoOrden={orden.estado} agenciaSolicita={orden.agencia_solicita } />
                                     </td>
                                 </tr>
                             );
@@ -337,7 +354,7 @@ function Orden(props) {
                 {/*MODAL PARA ENVIO ORDEN TARJETAS POR VALIJA*/}
                 <ModalAccionesOrden
                     visibleModal={isModalEnvioValija}
-                    titulo={`Distribución de Orden de Tarjetas Número <strong>${numOrdenAccion}</strong>`}
+                    titulo={`Distribución de Orden de Tarjetas`}
                     type={"sm"}
                     closeClick={closeModalHandler}
                     nomBtnAccion={"SI"}
@@ -345,7 +362,11 @@ function Orden(props) {
                     nomBtnAccionInv={"NO"}
                     accionInversaHandler={closeModalHandler}
                 >
-                    <p style={{ fontSize: '20px' }}>¿Seleccione la Agencia donde realiza el envío de la orden:</p>
+                    <div>
+                        <p style={{ fontSize: '16px' }}>¿Desea realizar el envío de la orden?</p> <br/>
+                        <p style={{ fontSize: '15px' }}>Número de orden: <strong>{numOrdenAccion}</strong></p>
+                        <p style={{ fontSize: '15px' }}>Agencia que hará el envio: <strong>{agenciaSolicita}</strong></p>
+                    </div>
                 </ModalAccionesOrden>
 
                 {/*MODAL PARA RECEPCION ORDEN TARJETAS POR VALIJA*/}
