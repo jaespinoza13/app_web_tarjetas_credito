@@ -14,7 +14,7 @@ import { renderToString } from "react-dom/server";
 
 
 
-export const generarPDF = (datos) => {
+export const generarPDF = (datosbody) => {
 
     var doc = new jsPDF('p', 'pt', 'a4')
     let fechaHoy = new Date();
@@ -33,17 +33,27 @@ export const generarPDF = (datos) => {
     
 
     // generate the above data table
-    let datos = [
+    /*let datos = [
         { str_tipo: "1", dt_fecha: "01/10/2021", dt_hora: "4:30:00 PM", int_referencia: "1", str_motivo: "PRUEBA", description: "DESCIPT", str_canal: "ATMS", dec_monto: 20, dec_disponible: 2153, dec_contable: 153 },
         { str_tipo: "2", dt_fecha: "01/10/2021", dt_hora: "4:30:00 PM", int_referencia: "1", str_motivo: "PRUEBA", description: "DESCIPT", str_canal: "ATMS", dec_monto: 20, dec_disponible: 2153, dec_contable: 156 },
 
-    ]
+    ]*/
     let dataCustom = '';
-    dataCustom = datos && datos.map(element => {
+    dataCustom = datosbody && datosbody.map(element => {
+
+        /*
+
+         <td>{tarjeta.cuenta}</td>
+                                    <td>{tarjeta.tipo_identificacion}</td>
+                                    <td>{tarjeta.identificacion}</td>
+                                    <td>{tarjeta.ente}</td>
+                                    <td>{tarjeta.nombre}</td>
+                                    <td>{tarjeta.nombre_impreso}</td>
+                                    <td><Chip type={conversionTipoTC(tarjeta.tipo)}>{tarjeta.tipo}</Chip></td>
+                                    <td>{`$ ${Number(tarjeta.cupo).toLocaleString('en-US')}`}</td>
 
 
-
-        /*return {
+        return {
             logo: element.str_tipo,
             date: element.dt_fecha,
             hour: element.dt_hora,
@@ -56,26 +66,36 @@ export const generarPDF = (datos) => {
             balance: element.dec_disponible,
             countableBalance: element.dec_contable,
         }*/
+
+        return {
+            cuenta: element.tipo_identificacion,
+            tipo_identificacion: element.identificacion,
+            ente: element.ente,
+            nombre: element.nombre,
+            nombre_impreso: element.nombre_impreso,
+            tipo: element.tipo,
+            cupo: element.cupo
+        }
     })
     const movemetsColumns = [
         {
-            title: 'Tipo',
-            field: 'logo',
-            name: '',
+            title: 'Cuenta',
+            field: 'cuenta',
+            name: 'Cuenta',
             width: 70,
             sortable: false
 
         }, {
-            title: 'Fecha',
-            field: 'date',
-            name: 'Fecha',
-            width: 110,
+            title: 'Tipo Identificación',
+            field: 'tipo_identificacion',
+            name: 'Tipo Identificación',
+            width: 100,
             type: 'date'
 
         }, {
-            title: 'Hora',
+            title: 'Ente',
             field: 'hour',
-            name: 'Hora',
+            name: 'Ente',
             width: 85
 
         }, {
