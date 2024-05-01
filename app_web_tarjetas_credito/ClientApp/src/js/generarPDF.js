@@ -14,7 +14,7 @@ import { renderToString } from "react-dom/server";
 
 
 
-//export const generarPDF = (datos) => {
+export const generarPDF = (datosbody) => {
 
 //    var doc = new jsPDF('p', 'pt', 'a4')
 //    let fechaHoy = new Date();
@@ -32,51 +32,71 @@ import { renderToString } from "react-dom/server";
 
     
 
-//    // generate the above data table
-//    let datos = [
-//        { str_tipo: "1", dt_fecha: "01/10/2021", dt_hora: "4:30:00 PM", int_referencia: "1", str_motivo: "PRUEBA", description: "DESCIPT", str_canal: "ATMS", dec_monto: 20, dec_disponible: 2153, dec_contable: 153 },
-//        { str_tipo: "2", dt_fecha: "01/10/2021", dt_hora: "4:30:00 PM", int_referencia: "1", str_motivo: "PRUEBA", description: "DESCIPT", str_canal: "ATMS", dec_monto: 20, dec_disponible: 2153, dec_contable: 156 },
+    // generate the above data table
+    /*let datos = [
+        { str_tipo: "1", dt_fecha: "01/10/2021", dt_hora: "4:30:00 PM", int_referencia: "1", str_motivo: "PRUEBA", description: "DESCIPT", str_canal: "ATMS", dec_monto: 20, dec_disponible: 2153, dec_contable: 153 },
+        { str_tipo: "2", dt_fecha: "01/10/2021", dt_hora: "4:30:00 PM", int_referencia: "1", str_motivo: "PRUEBA", description: "DESCIPT", str_canal: "ATMS", dec_monto: 20, dec_disponible: 2153, dec_contable: 156 },
 
-//    ]
-//    let dataCustom = '';
-//    dataCustom = datos && datos.map(element => {
+    ]*/
+    let dataCustom = '';
+    dataCustom = datosbody && datosbody.map(element => {
+
+        /*
+
+         <td>{tarjeta.cuenta}</td>
+                                    <td>{tarjeta.tipo_identificacion}</td>
+                                    <td>{tarjeta.identificacion}</td>
+                                    <td>{tarjeta.ente}</td>
+                                    <td>{tarjeta.nombre}</td>
+                                    <td>{tarjeta.nombre_impreso}</td>
+                                    <td><Chip type={conversionTipoTC(tarjeta.tipo)}>{tarjeta.tipo}</Chip></td>
+                                    <td>{`$ ${Number(tarjeta.cupo).toLocaleString('en-US')}`}</td>
 
 
+        return {
+            logo: element.str_tipo,
+            date: element.dt_fecha,
+            hour: element.dt_hora,
+            reference: element.int_referencia,
+            concept: `${element.str_motivo}` + `${element.str_motivo === ' ' ? '' : ' '}` + `${element.str_concepto}`,
+            description: element.str_motivo,
+            channel: element.str_canal,
+            loansCredits: Number(element.dec_monto),
+            //loansCredits: currencyFormatter.format(Number(element.dec_monto)),
+            balance: element.dec_disponible,
+            countableBalance: element.dec_contable,
+        }*/
 
-//        /*return {
-//            logo: element.str_tipo,
-//            date: element.dt_fecha,
-//            hour: element.dt_hora,
-//            reference: element.int_referencia,
-//            concept: `${element.str_motivo}` + `${element.str_motivo === ' ' ? '' : ' '}` + `${element.str_concepto}`,
-//            description: element.str_motivo,
-//            channel: element.str_canal,
-//            loansCredits: Number(element.dec_monto),
-//            //loansCredits: currencyFormatter.format(Number(element.dec_monto)),
-//            balance: element.dec_disponible,
-//            countableBalance: element.dec_contable,
-//        }*/
-//    })
-//    const movemetsColumns = [
-//        {
-//            title: 'Tipo',
-//            field: 'logo',
-//            name: '',
-//            width: 70,
-//            sortable: false
+        return {
+            cuenta: element.tipo_identificacion,
+            tipo_identificacion: element.identificacion,
+            ente: element.ente,
+            nombre: element.nombre,
+            nombre_impreso: element.nombre_impreso,
+            tipo: element.tipo,
+            cupo: element.cupo
+        }
+    })
+    const movemetsColumns = [
+        {
+            title: 'Cuenta',
+            field: 'cuenta',
+            name: 'Cuenta',
+            width: 70,
+            sortable: false
 
-//        }, {
-//            title: 'Fecha',
-//            field: 'date',
-//            name: 'Fecha',
-//            width: 110,
-//            type: 'date'
+        }, {
+            title: 'Tipo Identificación',
+            field: 'tipo_identificacion',
+            name: 'Tipo Identificación',
+            width: 100,
+            type: 'date'
 
-//        }, {
-//            title: 'Hora',
-//            field: 'hour',
-//            name: 'Hora',
-//            width: 85
+        }, {
+            title: 'Ente',
+            field: 'hour',
+            name: 'Ente',
+            width: 85
 
 //        }, {
 //            title: 'Referencia',
