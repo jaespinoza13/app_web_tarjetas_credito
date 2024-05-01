@@ -8,7 +8,7 @@ import { Input} from 'reactstrap';
 import { RadioGroup, Radio, FormControlLabel, FormLabel } from '@mui/material';
 import { connect } from 'react-redux';
 import Button from "../Common/UI/Button";
-import { generarPDF } from "../../js/generarPDF";
+//import { generarPDF } from "../../js/generarPDF";
 
 
 
@@ -95,7 +95,7 @@ function VerOrden(props) {
     const onDescargarReporte = (e) => {
         e.preventDefault();
         //window.alert("DESCARGAR ORDEN");
-        generarPDF(objetoEditacion[0].tarjetas_solicitadas);
+        //generarPDF(objetoEditacion[0].tarjetas_solicitadas);
     };
 
     return (
