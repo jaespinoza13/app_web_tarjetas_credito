@@ -2,7 +2,7 @@
 import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { useEffect, useState } from "react";
-import { fetchGetComentarios, fetchGetFlujoSolicitud, fetchAddComentarioAsesor, fetchAddComentarioSolicitud } from "../../services/RestServices";
+import { fetchGetComentarios, fetchGetFlujoSolicitud, fetchAddComentarioAsesor, fetchAddComentarioSolicitud, fetchGetResolucion } from "../../services/RestServices";
 import Sidebar from "../Common/Navs/Sidebar";
 import Card from "../Common/Card";
 import Table from "../Common/Table";
@@ -30,6 +30,7 @@ const VerSolicitud = (props) => {
     const navigate = useHistory();
     const [comentariosAsesor, setComentariosAsesor] = useState([]);
     const [solicitudTarjeta, setSolicitudTarjeta] = useState([]);
+    const [resolucion, setResolucion] = useState([]);
     const [comentarioSolicitud, setComentarioSolicitud] = useState("");
     const [modalVisible, setModalVisible] = useState(false);
     const [modalVisibleOk, setModalVisibleOk] = useState(false);
@@ -45,6 +46,9 @@ const VerSolicitud = (props) => {
         fetchGetComentarios(props.solicitud.solicitud, props.solicitud.idSolicitud, props.token, (data) => {
             setComentariosAsesor(data.lst_informe);
             existeComentariosVacios(data.lst_informe);
+        }, dispatch);
+        fetchGetResolucion(props.solicitud.solicitud, props.token, (data) => {
+            setResolucion(data.lst_resoluciones);
         }, dispatch);
         fetchGetFlujoSolicitud(props.solicitud.solicitud, props.token, (data) => {
             const maxSolicitudes = data.flujo_solicitudes.length - 1;
