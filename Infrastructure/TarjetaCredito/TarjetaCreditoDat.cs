@@ -240,7 +240,7 @@ namespace Infrastructure.TarjetaCredito
             }
             return res;
         }
-
+         
         public ResGetSolicitudes getSolicitudes(ReqGetSolicitudes req)
         {
             ResGetSolicitudes res = new ResGetSolicitudes();
