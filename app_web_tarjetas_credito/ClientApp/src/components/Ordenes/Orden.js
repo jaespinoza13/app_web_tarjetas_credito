@@ -2,9 +2,8 @@
 import Sidebar from '../Common/Navs/Sidebar';
 import { useHistory } from 'react-router-dom';
 import { useEffect } from 'react';
-
+import { connect, useDispatch } from 'react-redux';
 import Card from '../Common/Card';
-import Item from '../Common/UI/Item';
 import Button from '../Common/UI/Button';
 
 import Table from '../Common/Table';
@@ -13,6 +12,22 @@ import { EngineeringOutlined, InventoryOutlined, LocalShippingOutlined, ArchiveO
 import { IconButton } from '@mui/material';
 import ModalDinamico from '../Common/Modal/ModalDinamico';
 import Textarea from '../Common/UI/Textarea';
+import { fetchGetReporteOrden } from '../../services/RestServices';
+import { IsNullOrWhiteSpace, base64ToBlob, descargarArchivo, generarFechaHoy, verificarPdf } from '../../js/utiles';
+
+
+const mapStateToProps = (state) => {
+    var bd = state.GetWebService.data;
+    if (IsNullOrWhiteSpace(bd) || Array.isArray(state.GetWebService.data)) {
+        bd = sessionStorage.getItem("WSSELECTED");
+    }
+    return {
+        ws: bd,
+        listaFuncionalidades: state.GetListaFuncionalidades.data,
+        token: state.tokenActive.data,
+    };
+};
+
 
 function Orden(props) {
 
@@ -23,6 +38,7 @@ function Orden(props) {
     },[])
 
     const navigate = useHistory();
+    const dispatch = useDispatch();
     const [lstOrdenes, setLstOrdenes] = useState([]);
 
 
@@ -72,7 +88,7 @@ function Orden(props) {
     const [detalleRecepOrdenTarjetas, setDetalleRecepOrdenTarjetas] = useState();
 
     
-    //ACCIONES PARA ABRIR MODALES
+    
     const envioOrdenProvModal = (orden) => {
         //setIsModalEnviarOrden(true);
         //setNumOrdenAccion(orden);
@@ -83,6 +99,8 @@ function Orden(props) {
         navigate.push('/orden/verOrden', { numOrden: orden })
     }
 
+
+    //ACCIONES PARA ABRIR MODALES
     const recepcionOrdenProvModal = (orden) => {
         setIsModalRecepcionOrden(true);
         setNumOrdenAccion(orden);
@@ -150,6 +168,20 @@ function Orden(props) {
         setIsModalEliminarOrden(false);
     }
 
+    const descargarReporteOrden = (orden) => {
+        fetchGetReporteOrden(orden.toString(), props.token, (data) => {
+            if (data.str_res_codigo === "000" && verificarPdf(data.byt_reporte)) {
+                const blob = base64ToBlob(data.byt_reporte, 'application/pdf');
+                let fechaHoy = generarFechaHoy();
+                const nombreArchivo = `Orden${orden}_${(fechaHoy)}`;
+                descargarArchivo(blob, nombreArchivo);
+            }else {
+                window.alert("ERROR AL GENERAR EL REPORTE, COMUNIQUESE CON EL ADMINISTRADOR");
+            }
+        }, dispatch);
+    }
+
+
     //Detalle modal
     const changeDetalleModal = (e) => {
        setDetalleRecepOrdenTarjetas(e)
@@ -190,7 +222,7 @@ function Orden(props) {
                 <IconButton className="custom-icon-button" title="Visualizar Detalle de Orden" onClick={() => verOrdenPage(numOrden)}>
                     <ViewListOutlined></ViewListOutlined>
                 </IconButton>
-                <IconButton className="custom-icon-button" title="Descargar Reporte" onClick={() => { console.log("CLICK") }}>
+                <IconButton className="custom-icon-button" title="Descargar Reporte" onClick={() => { descargarReporteOrden(numOrden) }}>
                     <DownloadOutlined></DownloadOutlined>
                 </IconButton>
             </div>
@@ -406,4 +438,4 @@ function Orden(props) {
 
 }
 
-export default Orden;
+export default connect(mapStateToProps, {})(Orden);

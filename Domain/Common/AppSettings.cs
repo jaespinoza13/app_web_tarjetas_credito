@@ -95,6 +95,7 @@
         public string service_add_informe_tc { get; set; } = String.Empty;
         public string service_add_comentario_solicitud { get; set; } = String.Empty;
         public string service_get_flujo_solicitud { get; set; } = String.Empty;
+        public string service_get_reporte_orden { get; set; } = String.Empty;
         #endregion
     }
 }

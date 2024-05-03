@@ -611,3 +611,58 @@ export function extraerFuncionalPadre(enlace) {
     return funcionalidad;
 
 }
+
+
+/**
+ * FUNCIONES PARA VALIDAR CADENA DE BYTES PARA GENERAR REPORTE
+ */
+export function verificarPdf(pdf) {
+    if (pdf === null || pdf === undefined || pdf === '') {
+        return false;
+    }
+    return true;
+}
+export function base64ToBlob(base64, type = 'application/octet-stream') {
+    const binStr = atob(base64);
+    const len = binStr.length;
+    const arr = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+        arr[i] = binStr.charCodeAt(i);
+    }
+
+    return new Blob([arr], { type: type });
+}
+
+export function descargarArchivo(blob, nombreArchivo = "document", extensionArchivo) {
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = nombreArchivo;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+
+    export function generarFechaHoy(){
+        let fechaHoy = new Date();
+        let day = fechaHoy.getDate();
+        let month = fechaHoy.getMonth() + 1;
+        let year = fechaHoy.getFullYear();
+
+
+        if (day < 10 && month < 10) {
+            fechaHoy = `0${month}0${day}${year}`;
+        }
+        else if (day < 10) {
+            fechaHoy = `${ month }0${day}${ year }`;
+        }
+        else if (month < 10) {
+            fechaHoy = `0${month}${day}${year}`;
+        }
+        else {
+            fechaHoy = `${month}${day}${year}`;
+        }
+        return fechaHoy;
+    }

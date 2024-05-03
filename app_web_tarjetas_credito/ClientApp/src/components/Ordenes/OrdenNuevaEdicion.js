@@ -4,8 +4,7 @@ import Card from '../Common/Card';
 import { useHistory } from 'react-router-dom';
 import Table from '../Common/Table';
 import Chip from '../Common/UI/Chip'
-import { Input, FormGroup } from 'reactstrap';
-import { RadioGroup, Radio, FormControlLabel, Checkbox, FormLabel } from '@mui/material';
+import Input from '../Common/UI/Input'
 import { IsNullOrWhiteSpace } from '../../js/utiles';
 import { connect } from 'react-redux';
 
@@ -33,11 +32,11 @@ function OrdenNuevaEdicion(props) {
     /* LO QUE RETORNARIA DESDE EL BACK */
     const bodyTarjetasAprobadas = [
         { cuenta: "410010064540", tipo_identificacion: "C", identificacion: "1150214375", ente: "189610", nombre: "DANNY VASQUEZ", nombre_impreso: "DANNY VASQUEZ", tipo: "BLACK", cupo: "8000", key: 23, Agencia: { nombre: "MATRIZ",  id: "1"  } },
-        { cuenta: "410010026841", tipo_identificacion: "C", identificacion: "1105970717", ente: "515145", nombre: "ROBERTH TORRES", nombre_impreso: "ROBERTH TORRES", tipo: "GOLDEN", cupo: "15000", key: 28, Agencia: { nombre: "MATRIZ", id: "3" } },
-        { cuenta: "410010061199", tipo_identificacion: "R", identificacion: "1105970712001", ente: "515146", nombre: "JUAN TORRES", nombre_impreso: "JUAN TORRES", tipo: "GOLDEN", cupo: "15000", key: 38, Agencia: { nombre: "MATRIZ", id: "2" } }, 
-        { cuenta: "410010094684", tipo_identificacion: "P", identificacion: "PL970713", ente: "515147", nombre: "LUIS TORRES", nombre_impreso: "LUIS TORRES", tipo: "ESTÁNDAR", cupo: "15000", key: 48, Agencia: { nombre: "MATRIZ", id: "3" } }, 
-        { cuenta: "410010061514", tipo_identificacion: "R", identificacion: "1105970714001", ente: "515148", nombre: "ROBERTH TORRES", nombre_impreso: "ROBERTH TORRES", tipo: "ESTÁNDAR", cupo: "15000", key: 58, Agencia: { nombre: "MATRIZ", id: "2" } }, 
-        { cuenta: "410010064000", tipo_identificacion: "P", identificacion: "PZ970715", ente: "515149", nombre: "ROBERTH TORRES", nombre_impreso: "ROBERTH TORRES", tipo: "GOLDEN", cupo: "15000", key: 68, Agencia: { nombre: "MATRIZ", id: "3" } }
+        { cuenta: "410010026841", tipo_identificacion: "C", identificacion: "1105970717", ente: "515145", nombre: "ROBERTH TORRES", nombre_impreso: "ROBERTH TORRES", tipo: "GOLDEN", cupo: "15000", key: 28, Agencia: { nombre: "CATAMAYO", id: "3" } },
+        { cuenta: "410010061199", tipo_identificacion: "R", identificacion: "1105970712001", ente: "515146", nombre: "JUAN TORRES", nombre_impreso: "JUAN TORRES", tipo: "GOLDEN", cupo: "15000", key: 38, Agencia: { nombre: "MATRIZ", id: "1" } }, 
+        { cuenta: "410010094684", tipo_identificacion: "P", identificacion: "PL970713", ente: "515147", nombre: "LUIS TORRES", nombre_impreso: "LUIS TORRES", tipo: "ESTÁNDAR", cupo: "15000", key: 48, Agencia: { nombre: "CATAMAYO", id: "3" } }, 
+        { cuenta: "410010061514", tipo_identificacion: "R", identificacion: "1105970714001", ente: "515148", nombre: "ROBERTH TORRES", nombre_impreso: "ROBERTH TORRES", tipo: "ESTÁNDAR", cupo: "15000", key: 58, Agencia: { nombre: "MATRIZ", id: "1" } }, 
+        { cuenta: "410010064000", tipo_identificacion: "P", identificacion: "PZ970715", ente: "515149", nombre: "ROBERTH TORRES", nombre_impreso: "ROBERTH TORRES", tipo: "GOLDEN", cupo: "15000", key: 68}
     ]
 
     //OBJETO SIMULADO PARA EDITAR DATOS
@@ -45,7 +44,7 @@ function OrdenNuevaEdicion(props) {
         {
             orden: "164",
             prefijo_tarjeta: "53",
-            cost_emision: "cobro_emision",
+            cost_emision: "no_cobro_emision",
             descripcion: "TARJETAS SOLICITADAS PARA MES DE ABRIL",
             tarjetas_solicitadas: [
                 bodyTarjetasAprobadas[1],
@@ -102,19 +101,19 @@ function OrdenNuevaEdicion(props) {
     }
 
     const setNrOrdenHandler = (e) => {
-        setNrOrden(e.target.value);
+        setNrOrden(e);
     }
 
     const setCostoEmisionHandler = (e) => {
-        setCostoEmision(e.target.value);
+        setCostoEmision(e);
     }
 
     const setPrefijoHandler = (e) => {
-        setPrefijo(e.target.value);
+        setPrefijo(e);
     }
 
     const setDescripcionHandler = (e) => {
-        setDescripcion(e.target.value);
+        setDescripcion(e);
     }
 
     useEffect(() => {
@@ -210,64 +209,64 @@ function OrdenNuevaEdicion(props) {
 
                     <form className="form_mg" onSubmit={onSubmitOrden} autoComplete="off">
                         <section className="elements_two_column">
-                            <FormGroup>
+                            <div>
 
                                 <div className="form_mg_row">
                                     <label htmlFor="numOrdenTarjetas" className="pbmg1 lbl-input label_horizontal">Número de orden</label>
                                     <div className="form_mg__item ptmg1">
 
-                                        <Input id="numOrdenTarjetas" name="numOrdenTarjetas" required={true} type="text" value={nrOrnden} placeholder="Número de orden" onChange={setNrOrdenHandler} className={nrOrnden === "" ? "no_valido" : ""}></Input>
+                                        <Input id="numOrdenTarjetas" name="numOrdenTarjetas" esRequerido={true} type="text" value={nrOrnden} placeholder="Número de orden" setValueHandler={setNrOrdenHandler}></Input>
                                     </div>
                                 </div>
 
-                            </FormGroup>
+                            </div>
 
-                            <FormGroup>
+                            <div>
 
                                 <div className="form_mg_row">
-                                    <FormLabel sx={{ fontFamily: `"Karbon", sans-serif`, fontSize: "1.1rem;", color: "#3D3D3D" }} component="label">Costo de emisión</FormLabel> 
-                                    <div className="form_mg__item">
+                                    <label id="label">Costo de emisión</label>
+                                   <div className="form_mg__item">
 
-                                        <RadioGroup
-                                            row
-                                            aria-labelledby="label"
-                                            name="row-radio-buttons-group"
-                                            value={costoEmision}
-                                            onChange={setCostoEmisionHandler}
-                                        >
-                                            <FormControlLabel value="cobro_emision" control={<Radio />} label="Si" disabled={enableCostoEmision} />
-                                            <FormControlLabel value="no_cobro_emision" control={<Radio required={true} />} label="No" disabled={enableCostoEmision} />
-                                        </RadioGroup>
+                                        <div style={{ display: 'flex' }}>
+                                            <div className=''>
+                                                <input type="radio" id="cobro_emision" name="cobro_tarjeta" value="cobro_emision" checked={costoEmision === "cobro_emision"} onChange={() => setCostoEmisionHandler("cobro_emision")} disabled={enableCostoEmision} />
+                                                <label htmlFor="masculino" style={{ lineHeight: "1.5" }}>Masculino</label>
+                                            </div>
+                                            <div className=''>
+                                                <input type="radio" id="no_cobro_emision" name="cobro_tarjeta" value="no_cobro_emision" checked={costoEmision === "no_cobro_emision"} onChange={() => setCostoEmisionHandler("no_cobro_emision")} disabled={enableCostoEmision} required />
+                                                <label htmlFor="femenino">Femenino *</label>
+                                            </div>
+                                        </div>
                                         {costoEmision === "" && <div className='text_error_validacion'>Escoja una opción.</div>}
 
                                     </div>
                                 </div>
 
-                            </FormGroup>
+                            </div>
 
-                            <FormGroup>
+                            <div>
 
                                 <div className="form_mg_row">
                                     <label htmlFor="tipoTC" className="pbmg1 lbl-input label_horizontal">Prefijo</label>
                                     <div className="form_mg__item ptmg1">
-                                        <Input id="prefijo" name="prefijo" type="number" value={prefijo} onChange={setPrefijoHandler} min={0} className={prefijo === "" ? "no_valido" : ""}></Input>
+                                        <Input id="prefijo" name="prefijo" esRequerido={true} type="number" value={prefijo} min={0} setValueHandler={setPrefijoHandler}></Input>
                                     </div>
                                 </div>
 
-                            </FormGroup>
+                            </div>
 
-                            <FormGroup>
+                            <div>
 
                                 <div className="form_mg_row">
                                     <label htmlFor="descripcion" className="pbmg1 lbl-input label_horizontal">Descripción de la orden</label>
                                     <div className="form_mg__item ptmg1">
-                                        <Input id="descripcion" name="descripcion" type="text" value={descripcion} required={true} placeholder="Ingrese alguna descripción de la orden" onChange={setDescripcionHandler} className={descripcion === "" ? "no_valido" : ""}></Input>
+                                        <Input id="descripcion" name="descripcion" esRequerido={true} type="text" value={descripcion} placeholder="Ingrese alguna descripción de la orden" setValueHandler={setDescripcionHandler}></Input>
                                     </div>
                                 </div>
 
-                            </FormGroup>
+                            </div>
 
-                            <FormGroup>
+                            <div>
 
                                 <div className="form_mg_row">
                                     <label htmlFor="agencia_solicita" className="pbmg1 lbl-input label_horizontal">Seleccione la Agencia que solicita nueva orden de tarjetas:</label>
@@ -300,7 +299,7 @@ function OrdenNuevaEdicion(props) {
                                     </div>
                                 </div>
 
-                            </FormGroup>
+                            </div>
 
                         </section>
 
@@ -313,7 +312,8 @@ function OrdenNuevaEdicion(props) {
                                         return (
                                             <tr key={tarjeta.ente}>
                                                 <td>
-                                                    <Checkbox key={tarjeta.identificacion} disabled={desactivarCheckEditar } checked={tarjetasAprobadasCheckBox.includes(tarjeta.identificacion)} onChange={() => checkTarjeta(tarjeta.identificacion)} />
+                                                    <Input key={tarjeta.identificacion} disabled={desactivarCheckEditar} type="checkbox" checked={tarjetasAprobadasCheckBox.includes(tarjeta.identificacion)} setValueHandler={() => checkTarjeta(tarjeta.identificacion)}></Input>
+
                                                 </td>
                                                 <td>{tarjeta.cuenta}</td>
                                                 <td>{tarjeta.tipo_identificacion}</td>

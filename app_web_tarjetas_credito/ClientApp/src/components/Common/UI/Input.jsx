@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+﻿import { useEffect, useState } from "react";
 
 const Input = (props) => {
     const [inputValue, setInputValue] = useState('');
@@ -11,9 +11,16 @@ const Input = (props) => {
     if (props.rounded) {
         inputClass = 'squared';
     }
+
+    useEffect(() => {
+        if (props.value) {
+            setInputValue(props.value);
+        }
+    }, [props.value])
+
     return (
         <input
-            className={`${inputClass} ${props.className || ''}`}
+            className={`${inputClass} ${props.className || ''} ${props.value === '' ? 'no_valido' : ''}`}
             required={props.esRequerido === null ? false : props.esRequerido}
             type={props.type}
             tabIndex={props.tabIndex}
@@ -23,11 +30,14 @@ const Input = (props) => {
             rounded={props.rounded}
             value={inputValue}
             onChange={changeHandler}
+            checked={props.checked}
             maxlength={props.maxlength}
             min={props.min}
             max={props.max}
+            disabled={props.disabled}
+            key={props.key}
 
-            ></input>
+        ></input>
     );
 }
 

@@ -15,6 +15,7 @@ using Domain.Models.TarjetaCredito.GetInfoSocio;
 using Domain.Models.TarjetaCredito.GetScore;
 using Domain.Models.TarjetaCredito.GetSolicitudes;
 using Domain.Models.TarjetaCredito.GetValidaciones;
+using Domain.Models.TarjetaCredito.ObtenerOrdenReporte;
 using Infrastructure.Login;
 using Infrastructure.TarjetaCredito;
 using Microsoft.AspNetCore.Mvc;
@@ -182,5 +183,16 @@ namespace plantilla_app_web.Controllers
             ResAddComentarioSolicitud res = tarjetaCreditoDat.addComentarioSolicitud(req);
             return Utiles.crypt(res, Request.Headers);
         }
+
+
+        [Route("getReporteOrden")]
+        [ServiceFilter(typeof(CryptoFilter))]
+        [HttpPost]
+        public ResCrypt Post(ReqGetReporteOrden req)
+        {
+            ResGetReporteOrden res = tarjetaCreditoDat.getReporteOrden(req);
+            return Utiles.crypt(res, Request.Headers);
+        }
+
     }
 }

@@ -2,7 +2,7 @@
 import Sidebar from '../Common/Navs/Sidebar';
 import Card from '../Common/Card';
 import { useHistory } from 'react-router-dom';
-import { Input, FormGroup } from 'reactstrap';
+import Input from '../Common/UI/Input'
 
 export default function OrdenGenerarArchivo(props) {
 
@@ -49,9 +49,9 @@ export default function OrdenGenerarArchivo(props) {
             setFechaCreacion(objetoGenerarArchivo[0].fecha_creacion);
 
             setNumTarjetasTotal(objetoGenerarArchivo[0].tarjetas_solicitadas.length);
-            setNumTarjetasGolden(objetoGenerarArchivo[0].tarjetas_solicitadas.filter(tarjeta => tarjeta.tipo === "GOLDEN").length);
-            setNumTarjetasEstandar(objetoGenerarArchivo[0].tarjetas_solicitadas.filter(tarjeta => tarjeta.tipo === "ESTÁNDAR").length);
-            setNumTarjetasBlack(objetoGenerarArchivo[0].tarjetas_solicitadas.filter(tarjeta => tarjeta.tipo === "BLACK").length);
+            setNumTarjetasGolden(objetoGenerarArchivo[0].tarjetas_solicitadas.filter(tarjeta => tarjeta.tipo === "GOLDEN").length.toString());
+            setNumTarjetasEstandar(objetoGenerarArchivo[0].tarjetas_solicitadas.filter(tarjeta => tarjeta.tipo === "ESTÁNDAR").length.toString());
+            setNumTarjetasBlack(objetoGenerarArchivo[0].tarjetas_solicitadas.filter(tarjeta => tarjeta.tipo === "BLACK").length.toString());
 
 
         }

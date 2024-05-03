@@ -1,16 +1,27 @@
 ﻿import { useState, useEffect } from 'react';
+import { fetchGetReporteOrden } from "../../services/RestServices";
 import Sidebar from '../Common/Navs/Sidebar';
 import Card from '../Common/Card';
 import { useHistory } from 'react-router-dom';
 import Table from '../Common/Table';
 import Chip from '../Common/UI/Chip'
-import { Input} from 'reactstrap';
-import { RadioGroup, Radio, FormControlLabel, FormLabel } from '@mui/material';
-import { connect } from 'react-redux';
+import  Input  from '../Common/UI/Input';
+import { connect, useDispatch } from 'react-redux';
+import { IsNullOrWhiteSpace, base64ToBlob, verificarPdf, descargarArchivo, generarFechaHoy } from '../../js/utiles';
 import Button from "../Common/UI/Button";
-//import { generarPDF } from "../../js/generarPDF";
 
 
+const mapStateToProps = (state) => {
+    var bd = state.GetWebService.data;
+    if (IsNullOrWhiteSpace(bd) || Array.isArray(state.GetWebService.data)) {
+        bd = sessionStorage.getItem("WSSELECTED");
+    }
+    return {
+        ws: bd,
+        listaFuncionalidades: state.GetListaFuncionalidades.data,
+        token: state.tokenActive.data,
+    };
+};
 
 function VerOrden(props) {
 
@@ -41,6 +52,7 @@ function VerOrden(props) {
 
 
     const navigate = useHistory();
+    const dispatch = useDispatch();
     const [lstSolicitudes, setLstSolicitudes] = useState([]);
 
 
@@ -50,26 +62,26 @@ function VerOrden(props) {
     const [descripcion, setDescripcion] = useState("");
     const [agenciaSolicita, setAgenciaSolicita] = useState("");
 
-
+    const [reporteBytes, setReporteBytes] = useState([]);
 
     useEffect(() => {
 
-        /*if (props.location.pathname === '/orden/verOrden' && (props.location?.state?.numOrden === null || props.location?.state?.numOrden === undefined || props.location?.state?.numOrden)) {
+        console.log(props.location?.state?.numOrden);
+        if (props.location.pathname === '/orden/verOrden' && (props.location?.state?.numOrden === null || props.location?.state?.numOrden === undefined)) {
             navigate.push('/orden');
         }
-        else {*/
+        else {
 
-        /// TODO: traer data desde el back por peticion O VER SI DESDE LISTA ORDEN ENVIAR EL OBJETO YA A EDITAR
-        setLstSolicitudes(objetoEditacion[0].tarjetas_solicitadas);
-        setNrOrden(objetoEditacion[0].orden);
-        setCostoEmision(objetoEditacion[0].cost_emision);
-        setDescripcion(objetoEditacion[0].descripcion);
-        setPrefijo(objetoEditacion[0].prefijo_tarjeta);
-        setAgenciaSolicita(objetoEditacion[0].agencia_solicita.nombre);
+            /// TODO: traer data desde el back por peticion O VER SI DESDE LISTA ORDEN ENVIAR EL OBJETO YA A EDITAR
+            setLstSolicitudes(objetoEditacion[0].tarjetas_solicitadas);
+            setNrOrden(objetoEditacion[0].orden);
+            setCostoEmision(objetoEditacion[0].cost_emision);
+            setDescripcion(objetoEditacion[0].descripcion);
+            setPrefijo(objetoEditacion[0].prefijo_tarjeta);
+            setAgenciaSolicita(objetoEditacion[0].agencia_solicita.nombre);
 
-        console.log(objetoEditacion[0].tarjetas_solicitadas);
+        }
 
-        //}
     }, [])
 
 
@@ -92,11 +104,27 @@ function VerOrden(props) {
     }
 
     //columns, data, accountNumber, name, typeMovement
-    const onDescargarReporte = (e) => {
-        e.preventDefault();
-        //window.alert("DESCARGAR ORDEN");
-        //generarPDF(objetoEditacion[0].tarjetas_solicitadas);
+    const onDescargarReporte = () => {
+        console.log(nrOrnden, props.token)
+        fetchGetReporteOrden(nrOrnden, props.token, (data) => {
+            setReporteBytes(data.byt_reporte);
+        }, dispatch);
     };
+
+    useEffect(() => {
+        if (reporteBytes.length > 0) {
+            if (verificarPdf(reporteBytes)) {
+                const blob = base64ToBlob(reporteBytes, 'application/pdf');
+                let fechaHoy = generarFechaHoy();
+                const nombreArchivo = `Orden${nrOrnden}_${(fechaHoy)}`;
+                descargarArchivo(blob, nombreArchivo);
+
+            } else {
+                window.alert("ERROR AL GENERAR EL REPORTE, COMUNIQUESE CON EL ADMINISTRADOR");
+            }
+        }
+    }, [reporteBytes])
+
 
     return (
         <div className="f-row">
@@ -109,7 +137,7 @@ function VerOrden(props) {
                     <div style={{ display: "flex", position: "relative", paddingBottom: "70px" }}>
                         
                         <h2>VISUALIZAR DETALLE DE LA ORDEN</h2>
-                        <Button className={["btn_mg btn_mg__primary mr-2 close-modal"]} onClick={onDescargarReporte} disabled={false}>Descargar reporte</Button>
+                        <Button className={["btn_mg btn_mg__primary mr-2 close-modal"]} onClick={() => onDescargarReporte()} disabled={false}>Descargar reporte</Button>
                     </div>
                     
 
@@ -123,21 +151,24 @@ function VerOrden(props) {
                         </div>
 
                         <div className="form_mg_row">
-                            <FormLabel sx={{ fontFamily: `"Karbon", sans-serif`, fontSize: "1.1rem;", color: "#3D3D3D" }} component="label">Costo de emisión</FormLabel>
+                            <label id="label">Costo de emisión</label>
+                            
                             <div className="form_mg__item">
 
-                                <RadioGroup
-                                    row
-                                    aria-labelledby="label"
-                                    name="row-radio-buttons-group"
-                                    value={costoEmision}
-                                >
-                                    <FormControlLabel value="cobro_emision" control={<Radio />} label="Si" disabled={true} />
-                                    <FormControlLabel value="no_cobro_emision" control={<Radio />} label="No" disabled={true} />
-                                </RadioGroup>
+                                <div style={{ display: 'flex' }}>
+                                    <div className=''>
+                                        <input type="radio" id="cobro_emision" name="cobro_tarjeta" value="cobro_emision" checked={costoEmision === "cobro_emision"} disabled={true} />
+                                        <label htmlFor="cobro_emision">Si</label>
+                                    </div>
+                                    <div className=''>
+                                        <input type="radio" id="no_cobro_emision" name="cobro_tarjeta" value="no_cobro_emision" checked={costoEmision === "no_cobro_emision"} disabled={true} />
+                                        <label htmlFor="no_cobro_emision">No</label>
+                                    </div>
+                                </div>
                                 {costoEmision === "" && <div className='text_error_validacion'>Escoja una opción.</div>}
 
                             </div>
+
                         </div>
 
 
@@ -197,4 +228,4 @@ function VerOrden(props) {
 
 }
 
-export default VerOrden; 
+export default connect(mapStateToProps, {})(VerOrden); 

@@ -1494,6 +1494,17 @@ img {
     font-family: "Karbon", sans-serif;
 }
 
+input[type=radio] {
+    transform: scale(1.4);
+    margin: 11px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+input[type=radio]:checked {
+    background-color: #2A77FF;
+    border-color: #2A77FF;
+}
 
 
 @keyframes ripple {

@@ -108,6 +108,7 @@ export const getComentarios = "GET_COMENTARIOS_ASESOR"
 export const addComentarioSolicitud = "ADD_COMENTARIO_SOLICITUD"
 export const getFlujoSolicitud = "GET_FLUJO_SOLICITUD"
 export const addComentarioAsesor = "ADD_INFORME_TC"
+export const getReporteOrden = "GET_REPORTE_ORDEN"
 
 /**
  * Obtener la Url de un servicio de acuerdo a su nombre de Proceso Unico
@@ -230,6 +231,9 @@ export function ServiceUrl(request, params = []) {
             break;
         case addComentarioAsesor:
             pathOut = "tc/addComentarioAs"
+            break;
+        case getReporteOrden:
+            pathOut = "tc/getReporteOrden"
             break;
         default:
             return null;
@@ -370,7 +374,7 @@ export async function ServicioPostExecute(request, body, token, { encryptS = tru
                 },
                 body: encryptS ? JSON.stringify({ data: await encriptar(key, strBody) }) : strBody
             };
-            
+
             const response = await fetch(ServiceUrl(request, params), requestOptions);
             if (response.ok) {
                 localStorage.setItem("Acept", ts);
@@ -472,7 +476,8 @@ function pathRewrite(path) {
         "tc/getComentarios": '/tarjetacredito/getComentarios',
         "tc/addComentarioSol": '/tarjetacredito/addComentarioSolicitud',
         "tc/getFlujoSol": '/tarjetacredito/getFlujoSolicitud',
-        "tc/addComentarioAs": '/tarjetacredito/addComentarioAsesor'
+        "tc/addComentarioAs": '/tarjetacredito/addComentarioAsesor',
+        "tc/getReporteOrden": '/tarjetacredito/getReporteOrden'
     };
     if (path) {
         var p = context[path];
