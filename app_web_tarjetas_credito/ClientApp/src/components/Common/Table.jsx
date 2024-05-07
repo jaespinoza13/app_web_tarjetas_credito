@@ -4,7 +4,7 @@ const Table = (props) => {
    
     return (
         <table>
-            <THead headers={props.headers} multipleOpcion={props.multipleOpcion} onChangeCheckBox={props.onChangeCheckBox} isSelectAll={props.isSelectAll}
+            <THead headers={props.headers} multipleOpcion={props.multipleOpcion} onChangeCheckBox={props.onChangeCheckBox} isSelectAll={props.isSelectAll} indexCheckbox={props.indexCheckbox}
                 desactivarCheckEditar={props.desactivarCheckEditar }></THead>
             <tbody>
                 {props.children}
@@ -13,13 +13,13 @@ const Table = (props) => {
     )
 }
 
-const THead = ({ headers, multipleOpcion, onChangeCheckBox, isSelectAll, desactivarCheckEditar }) => {
+const THead = ({ headers, multipleOpcion, onChangeCheckBox, isSelectAll, desactivarCheckEditar, indexCheckbox }) => {
     return ( 
         <thead>
             <tr>
                 {multipleOpcion && 
                     headers.map((header, index) => (
-                        index === 0 ?
+                        index === indexCheckbox ?
                             <th key={header.key}>{header.nombre} <br /> <Checkbox checked={isSelectAll} disabled={desactivarCheckEditar} onChange={(e) => onChangeCheckBox(e)} /> </th> 
                             : <th key={header.key}>{header.nombre}</th>
                         

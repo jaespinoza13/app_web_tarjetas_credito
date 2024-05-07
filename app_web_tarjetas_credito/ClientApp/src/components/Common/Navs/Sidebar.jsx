@@ -68,6 +68,11 @@ function Sidebar(props) {
                             <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'orden') ? 'active' : ''}`} to="/orden">Ordenes</NavLink>
                         </NavItem>
                     </div>
+                    <div className="sidebar_menu__item">
+                        <NavItem>
+                            <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'confirmar_recepcion') ? 'active' : ''}`} to="/confirmar_recepcion">Confirmar Recepci&#243;n Tarjetas</NavLink>
+                        </NavItem>
+                    </div>
                     {/*<div className="sidebar_menu__item">*/}
                     {/*    <a className="item__master">Reportes</a>*/}
                     {/*    <div className="item_slaves">*/}

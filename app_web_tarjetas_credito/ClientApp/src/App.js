@@ -23,6 +23,7 @@ import VerSolicitud from './components/Solicitud/VerSolicitud';
 import OrdenNuevaEdicion from './components/Ordenes/OrdenNuevaEdicion';
 import OrdenGenerarArchivo from './components/Ordenes/OrdenGenerarArchivo';
 import VerOrden from './components/Ordenes/VerOrden';
+import RecepcionTarjeta from './components/Recepcion_tarjetas/RecepcionTarjeta';
 
 
 const mapStateToProps = (state) => {
@@ -166,15 +167,23 @@ class App extends Component {
                         )}
                     </Route>
                     <Route path='/orden'>
-                        
-                        <Route exact path='/orden' component={Orden} />
-                        <Route path='/orden/nueva' component={OrdenNuevaEdicion} />
-                        <Route path='/orden/editar' component={OrdenNuevaEdicion} />
-                        <Route path='/orden/generarArchivo' component={OrdenGenerarArchivo} />
-                        <Route path='/orden/verOrden' component={VerOrden} />
-
-
+                        {this.state.isAuthenticated ? (
+                            <>
+                                <Route exact path='/orden' component={Orden} />
+                                <Route path='/orden/nueva' component={OrdenNuevaEdicion} />
+                                <Route path='/orden/editar' component={OrdenNuevaEdicion} />
+                                <Route path='/orden/generarArchivo' component={OrdenGenerarArchivo} />
+                                <Route path='/orden/verOrden' component={VerOrden} />
+                            </>
+                        ) : (
+                            <Route render={() => <Redirect to="/auth" />} />
+                        )}
                     </Route>
+
+                    <Route path='/confirmar_recepcion' component={!this.state.isAuthenticated ? Login : RecepcionTarjeta} />
+
+
+
                     {this.state.listaMenus.find(x => x.url === "/logs") ?
                         <Route exact path='/logs' component={!this.state.isAuthenticated ? Login : HomeLogs} />
                         : ""}

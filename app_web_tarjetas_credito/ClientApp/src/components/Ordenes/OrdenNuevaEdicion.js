@@ -230,11 +230,11 @@ function OrdenNuevaEdicion(props) {
                                         <div style={{ display: 'flex' }}>
                                             <div className=''>
                                                 <input type="radio" id="cobro_emision" name="cobro_tarjeta" value="cobro_emision" checked={costoEmision === "cobro_emision"} onChange={() => setCostoEmisionHandler("cobro_emision")} disabled={enableCostoEmision} />
-                                                <label htmlFor="masculino" style={{ lineHeight: "1.5" }}>Masculino</label>
+                                                <label htmlFor="cobro_emision" style={{ lineHeight: "1.5" }}>Si</label>
                                             </div>
                                             <div className=''>
                                                 <input type="radio" id="no_cobro_emision" name="cobro_tarjeta" value="no_cobro_emision" checked={costoEmision === "no_cobro_emision"} onChange={() => setCostoEmisionHandler("no_cobro_emision")} disabled={enableCostoEmision} required />
-                                                <label htmlFor="femenino">Femenino *</label>
+                                                <label htmlFor="no_cobro_emision">No *</label>
                                             </div>
                                         </div>
                                         {costoEmision === "" && <div className='text_error_validacion'>Escoja una opción.</div>}
@@ -305,7 +305,7 @@ function OrdenNuevaEdicion(props) {
 
                         {lstOrdenTarjetas.length > 0 &&
                             <div id="listado_ordenes" className="mt-3">
-                                <Table headers={headersTarjetasAprobadas} multipleOpcion={true} onChangeCheckBox={seleccionMultiple} isSelectAll={isSelectAll}
+                                <Table headers={headersTarjetasAprobadas} multipleOpcion={true} onChangeCheckBox={seleccionMultiple} isSelectAll={isSelectAll} indexCheckbox={0}
                                     desactivarCheckEditar={desactivarCheckEditar}>
                                     {/*BODY*/}
                                     {lstOrdenTarjetas.map((tarjeta, index) => {
