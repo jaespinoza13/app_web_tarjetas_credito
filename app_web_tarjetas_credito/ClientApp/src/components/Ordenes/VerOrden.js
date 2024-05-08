@@ -66,7 +66,6 @@ function VerOrden(props) {
 
     useEffect(() => {
 
-        console.log(props.location?.state?.numOrden);
         if (props.location.pathname === '/orden/verOrden' && (props.location?.state?.numOrden === null || props.location?.state?.numOrden === undefined)) {
             navigate.push('/orden');
         }
@@ -105,7 +104,6 @@ function VerOrden(props) {
 
     //columns, data, accountNumber, name, typeMovement
     const onDescargarReporte = () => {
-        console.log(nrOrnden, props.token)
         fetchGetReporteOrden(nrOrnden, props.token, (data) => {
             setReporteBytes(data.byt_reporte);
         }, dispatch);

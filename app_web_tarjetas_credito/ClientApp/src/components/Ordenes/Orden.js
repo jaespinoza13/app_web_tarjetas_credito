@@ -170,7 +170,7 @@ function Orden(props) {
 
     const descargarReporteOrden = (orden) => {
         fetchGetReporteOrden(orden.toString(), props.token, (data) => {
-            if (data.str_res_codigo === "000" && verificarPdf(data.byt_reporte)) {
+            if (/*data.str_res_codigo === "000" &&*/ verificarPdf(data.byt_reporte)) { /*TODO DESCOMENTAR CUANDO SE COMPLETE DESARROLLO*/ 
                 const blob = base64ToBlob(data.byt_reporte, 'application/pdf');
                 let fechaHoy = generarFechaHoy();
                 const nombreArchivo = `Orden${orden}_${(fechaHoy)}`;
