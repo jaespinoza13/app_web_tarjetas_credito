@@ -62,6 +62,7 @@ function Login(props) {
                 const ts = Number(localStorage.getItem('aceptar'));
                 let key = generate(navigator.userAgent, ts, get(remitente), data.datosUsuario.login);
                 if (data.codigo === "000") {
+                    console.log(data);
                     data.datosUsuario.str_sesion = data.datosUsuario.id_usuario + "" + data.datosUsuario.id_perfil + "" + ts + "" + data.datosUsuario.id_persona;
                     localStorage.setItem('sender', set(data.datosUsuario.login));
                     localStorage.setItem('office', set(data.datosUsuario.id_oficina));

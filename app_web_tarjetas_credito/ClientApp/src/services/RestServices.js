@@ -1189,7 +1189,8 @@ export function fetchAddComentarioSolicitud(idSolicitud, comentario, estadoSolic
         int_id_solicitud: idSolicitud,
         bl_regresa_estado: false,
         str_comentario: comentario,
-        int_estado: estadoSolicitud
+        int_estado: estadoSolicitud,
+        str_decision_sol: "APROBADO"
     }
     console.log(body);
     ServicioPostExecute(addComentarioSolicitud, body, token, { dispatch: dispatch }).then((data) => {
@@ -1221,7 +1222,7 @@ export function fetchGetResolucion(idSolicitud, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
-        int_id_solicitud: idSolicitud
+        int_id_sol: idSolicitud
     }
     console.log(body);
     ServicioPostExecute(getResolucion, body, token, { dispatch: dispatch }).then((data) => {

@@ -153,7 +153,6 @@ const DatosSocio = (props) => {
     }
 
     const getInfoEco = () => {
-        setEstadoLoadingInfoEco(true);
         fetchInfoEconomica(props.informacionSocio.str_ente, props.token, (data) => {
             setInfoEconomica(data)
             setIngresos([...data.lst_ingresos_socio]);
@@ -161,7 +160,6 @@ const DatosSocio = (props) => {
             setEstadoAccordionInfoEco(true);
             setContentReadyInfoEco(true);
         }, dispatch);
-        setEstadoLoadingInfoEco(false);
     }
 
     const descargarReporte = () => {

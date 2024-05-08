@@ -30,16 +30,48 @@ const VerSolicitud = (props) => {
     const navigate = useHistory();
     const [comentariosAsesor, setComentariosAsesor] = useState([]);
     const [solicitudTarjeta, setSolicitudTarjeta] = useState([]);
-    const [resolucion, setResolucion] = useState([]);
+    const [resoluciones, setResoluciones] = useState([]);
     const [comentarioSolicitud, setComentarioSolicitud] = useState("");
     const [modalVisible, setModalVisible] = useState(false);
     const [modalVisibleOk, setModalVisibleOk] = useState(false);
     const [faltaComentariosAsesor, setFaltaComentariosAsesor] = useState(true);
     const [isBtnComentariosActivo, setIsBtnComentariosActivo] = useState(false)
 
+    //Se debe implementar con parametros
+    const [imprimeFormInclu, setImprimeFormInclu] = useState([]);
+    const [regresaSolicitud, setRegresaSolicitud] = useState([]);
+    const [estadosSiguientes, setEstadosSiguientes] = useState([]);
+    const [estadosSiguientesAll, setEstadosSiguientesAll] = useState([]);
+    const estadosSol = [
+        {
+            prm_id: "11188", prm_valor_ini: "SOLICITUD CREADA"
+        },
+        {
+            prm_id: "11189", prm_valor_ini: "ANALISIS UAC"
+        },
+        {
+            prm_id: "11190", prm_valor_ini: "ANALISIS JEFE UAC"
+        },
+        {
+            prm_id: "11191", prm_valor_ini: "ANALISIS COMITE"
+        },
+        {
+            prm_id: "11192", prm_valor_ini: "APROBADA COMITE"
+        },
+        {
+            prm_id: "11193", prm_valor_ini: "Solicitud anulada"
+        },
+        {
+            prm_id: "11194", prm_valor_ini: "Solicitud entregada"
+        },
+    ]
 
     const headerTableComentarios = [
         { nombre: 'Tipo', key: 1 }, { nombre: 'Descripción', key: 2 }, { nombre: 'Comentario', key: 3 }
+    ];
+
+    const headerTableResoluciones = [
+        { nombre: 'Cupo solic.', key: 1 }, { nombre: 'Cupo sugerido', key: 2 }, { nombre: 'Usuario', key: 3 }, {nombre: 'Fecha actualización', key: 4}, { nombre: 'Decisión', key: 5 }, { nombre: "Comentario", key: 6}
     ];
     
     useEffect(() => {
@@ -48,16 +80,52 @@ const VerSolicitud = (props) => {
             existeComentariosVacios(data.lst_informe);
         }, dispatch);
         fetchGetResolucion(props.solicitud.solicitud, props.token, (data) => {
-            setResolucion(data.lst_resoluciones);
+            setResoluciones(data.lst_resoluciones);
         }, dispatch);
         fetchGetFlujoSolicitud(props.solicitud.solicitud, props.token, (data) => {
             const maxSolicitudes = data.flujo_solicitudes.length - 1;
             const datosSolicitud = data.flujo_solicitudes[maxSolicitudes];
-            console.log(maxSolicitudes);
-            console.log(datosSolicitud);
             setSolicitudTarjeta(...[datosSolicitud]);
         }, dispatch);
+        setImprimeFormInclu([
+            {
+                prm_id: "11190"
+            }, {
+                prm_id: "11191"
+            }
+        ]);
+        setRegresaSolicitud([
+            {
+                prm_id: "11189"
+            }, {
+                prm_id: "11190"
+            }, {
+                prm_id: "11191"
+            }
+        ]);
+        setEstadosSiguientesAll([
+            {
+                prm_id: "11188", estados: "11189"
+            },
+            {
+                prm_id: "11189", estados: "11190"
+            },
+            {
+                prm_id: "11190", estados: "11193|11192"
+            }
+        ]);
     }, []);
+
+    useEffect(() => {        
+        const arrEstados = estadosSiguientesAll?.find((values) => values.prm_id === props.solicitud.idSolicitud);
+        if (arrEstados) {
+            const estadosSiguientes = arrEstados.estados.split('|');
+            setEstadosSiguientes(estadosSiguientes);
+        } else {
+            // Handle the case when arrEstados is not found
+        }
+
+    }, [estadosSiguientesAll]);
 
     const comentarioAdicionalHanlder = (data, event) => {
         const id = comentariosAsesor.findIndex((comentario) => { return comentario.int_id_parametro === event });
@@ -214,20 +282,42 @@ const VerSolicitud = (props) => {
             <Card className={["m-max w-100 justify-content-space-between align-content-center"]}>
                 <div>
                     <h3 className="mb-3 strong">Análisis y aprobación de crédito</h3>
-                    <Card className={["f-row"]}>
-                        <Table headers={headerTableComentarios}>
+                    <Card className={["f-col"]}>
+                        <div className={["f-row"] }>
+                            <Button className="btn_mg__primary" onClick={modalHandler}>Agregar comentario</Button>
+                            {regresaSolicitud?.find((id) => { return id.prm_id === props.solicitud.idSolicitud }) &&
+                                <Button className="btn_mg__primary ml-2">Regresar solicitud</Button>
+                            }
+                            {imprimeFormInclu?.find((id) => { return id.prm_id === props.solicitud.idSolicitud }) &&
+                                <Button className="btn_mg__primary ml-2">Imprimir formulario</Button>
+                            }
+                        </div>
+                        <Table headers={headerTableResoluciones}>
                             {
-                                comentariosAsesor.map((comentario) => {
+                                resoluciones.map((resolucion) => {
                                     return (
-                                        <tr key={comentario.int_id_parametro}>
-                                            <td style={{ width: "20%" }}>{comentario.str_tipo}</td>
-                                            <td style={{ width: "40%" }}>{comentario.str_descripcion}</td>
-                                            <td style={{ width: "40%" }}><Textarea placeholder="Ej. Texto de ejemplo" type="textarea" onChange={(event, key = comentario.int_id_parametro) => { comentarioAdicionalHanlder(event, key) }} esRequerido={false} value={comentario.str_detalle}></Textarea></td>
+                                        <tr key={resolucion.int_rss_id}>
+                                            <td>{resolucion.dec_cupo_solicitado}</td>
+                                            <td>{resolucion.dec_cupo_sugerido}</td>
+                                            <td>{resolucion.str_usuario_proc}</td>
+                                            <td> {resolucion.dtt_fecha_actualizacion}</td>
+                                            <td> {resolucion.str_decision_solicitud}</td>
+                                            <td> {resolucion.str_comentario_proceso}</td>
                                         </tr>
                                     );
                                 })
                             }
                         </Table>
+                        <Card>
+                            <h3>Decisión</h3>
+                            <select>
+                                {estadosSiguientes?.map((estados) => {
+                                    return <option value={estados}>
+                                        {`Estado ${estados}`}
+                                    </option>
+                                })}
+                            </select>
+                        </Card>
                     </Card>
                     <div className="mt-4">
                         <h3 className="mb-3 strong">Comentario del Asesor</h3>

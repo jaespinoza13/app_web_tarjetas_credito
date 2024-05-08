@@ -2,8 +2,8 @@
 import { useHistory } from 'react-router-dom';
 import '../../scss/main.css';
 import '../../scss/components/solicitud.css';
-import { useState, useEffect, useReducer } from "react";
-import { fetchValidacionSocio, fetchScore, fetchInfoSocio, fetchInfoEconomica, fetchAddAutorizacion, fetchGetSolicitudes, fetchAddSolicitud } from "../../services/RestServices";
+import { useState, useEffect} from "react";
+import { fetchGetSolicitudes} from "../../services/RestServices";
 import { IsNullOrWhiteSpace } from '../../js/utiles';
 import Modal from '../Common/Modal/Modal';
 import Sidebar from '../Common/Navs/Sidebar';
@@ -19,7 +19,6 @@ import { IconButton } from '@mui/material';
 import TableWithTextArea from '../Common/UI/TableWithTextArea';
 import ModalDinamico from '../Common/Modal/ModalDinamico';
 import { setSolicitudStateAction } from '../../redux/Solicitud/actions';
-import { solicitud } from '../../redux/Solicitud/reducers';
 
 
 const mapStateToProps = (state) => {
@@ -54,6 +53,7 @@ function Solicitud(props) {
             { image: "", textPrincipal: `Prospectos`, textSecundario: "", key: 2 }
         ]);
     const [modalVisible, setModalVisible] = useState(false);
+    const [permisoNuevaSol, setPermisoNuevaSol] = useState(false);
 
  
 
@@ -122,9 +122,30 @@ function Solicitud(props) {
         console.log(strRol);
         setRol(strRol);
         setDatosUsuario([{ strCargo: strRol, strOficial: strOficial }]);
-        
     }, []);
-    
+
+    useEffect(() => {
+        if (rol) {
+            validaPermiso("CREAR SOLICITUD");
+        }
+    }, [rol]);
+
+    const validaPermiso = (strNombrePermiso) => {
+        console.log(rol);
+        if (rol) {
+            var permisosUusuario = [];
+            if (rol === "ASESOR DE CRÉDITO") {
+                permisosUusuario = ["CREAR SOLICITUD"];
+            }
+
+            var permis = permisosUusuario.includes(strNombrePermiso);
+            console.log(permis);
+            if (permis) {
+                setPermisoNuevaSol(permis);
+            }
+        }
+    }
+
     const handleSelectedToggle = (index) => {
         const lstSeleccionada = accionesSolicitud.find((acciones) => acciones.key === index);
         if (lstSeleccionada.textPrincipal === "Solicitudes") {
@@ -169,8 +190,9 @@ function Solicitud(props) {
 
     return (<div className="f-row">
         <Sidebar enlace={props.location.pathname}></Sidebar>
-        <div className="container_mg">
-            <div className="consulta_buro">
+        
+        <div className="container_mg mb-4">
+            {permisoNuevaSol && 
                 <Item xs={2} sm={2} md={2} lg={2} xl={2}>
                     <Card>
                         <img style={{ width: "15%" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg"></img>
@@ -178,13 +200,12 @@ function Solicitud(props) {
                         <h5 className="mt-2">Genera una nueva solicitud o prospección de tarjeta de crédito</h5>
                         <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={irNuevaSolicitud}>Siguiente</Button>
                     </Card>
-
                 </Item>
-            </div>
+            }
+            
             <Toggler className="mt-2" toggles={accionesSolicitud}
                 selectedToggle={handleSelectedToggle}>
             </Toggler>
-
             {isLstSolicitudes &&
                 <div id="listado_solicitudes" className="mt-3">
                     <Table headers={headerTableSolicitantes}>
