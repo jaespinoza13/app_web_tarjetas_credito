@@ -1307,7 +1307,7 @@ export function fetchUpdResolucion(idSolicitud, token, onSucces, dispatch) {
         }
     });
 }
-}
+
 
 
 export function fetchGetReporteOrden(numOrden, token, onSucces, dispatch) {
