@@ -40,6 +40,9 @@ const context =  [
     "/tarjetacredito/getFlujoSolicitud",
     "/tarjetacredito/addComentarioAsesor",
     "/tarjetacredito/addComentarioSolicitud",
+    '/tarjetacredito/getResoluciones',
+    '/tarjetacredito/addResolucion',
+    '/tarjetacredito/updResolucion',
     "/tarjetacredito/getReporteOrden"
 ];
 

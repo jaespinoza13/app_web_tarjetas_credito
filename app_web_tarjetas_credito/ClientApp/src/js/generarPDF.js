@@ -16,18 +16,18 @@ import { renderToString } from "react-dom/server";
 
 export const generarPDF = (datosbody) => {
 
-    var doc = new jsPDF('p', 'pt', 'a4')
-    let fechaHoy = new Date();
-    let day = fechaHoy.getDate()
-    let month = fechaHoy.getMonth() + 1
-    let year = fechaHoy.getFullYear()
+//    var doc = new jsPDF('p', 'pt', 'a4')
+//    let fechaHoy = new Date();
+//    let day = fechaHoy.getDate()
+//    let month = fechaHoy.getMonth() + 1
+//    let year = fechaHoy.getFullYear()
     
-    fechaHoy = month < 10 ? `0${month}/${day}/${year}` : `${month}/${day}/${year}`;
+//    fechaHoy = month < 10 ? `0${month}/${day}/${year}` : `${month}/${day}/${year}`;
 
-    const fecha = `Fecha: ${fechaHoy}`
-    const orden = "No. Orden: 153";
-    const totalTarjetas = "Total de tarjetas de agencia: 30 de 30";
-    const agencia = "Agencia: MATRIZ";
+//    const fecha = `Fecha: ${fechaHoy}`
+//    const orden = "No. Orden: 153";
+//    const totalTarjetas = "Total de tarjetas de agencia: 30 de 30";
+//    const agencia = "Agencia: MATRIZ";
 
 
     
@@ -98,110 +98,110 @@ export const generarPDF = (datosbody) => {
             name: 'Ente',
             width: 85
 
-        }, {
-            title: 'Referencia',
-            field: 'reference', IconButton,
-            name: 'Referencia'
-            // width: 100,
+//        }, {
+//            title: 'Referencia',
+//            field: 'reference', IconButton,
+//            name: 'Referencia'
+//            // width: 100,
 
-        }, {
-            title: 'Concepto',
-            field: 'concept',
-            name: 'Concepto ',
-            flex: 1
+//        }, {
+//            title: 'Concepto',
+//            field: 'concept',
+//            name: 'Concepto ',
+//            flex: 1
 
-        }, {
-            title: 'Canal',
-            field: 'channel',
-            name: 'Canal ',
-            width: 122
+//        }, {
+//            title: 'Canal',
+//            field: 'channel',
+//            name: 'Canal ',
+//            width: 122
 
-        }, {
-            title: 'Valor',
-            field: 'loansCredits',
-            name: 'Débitos (-) Créditos '
+//        }, {
+//            title: 'Valor',
+//            field: 'loansCredits',
+//            name: 'Débitos (-) Créditos '
 
-        }, {
-            title: 'Saldo disponible',
-            field: 'balance',
-            name: 'Saldo disponible '
+//        }, {
+//            title: 'Saldo disponible',
+//            field: 'balance',
+//            name: 'Saldo disponible '
 
-        },
-        {
-            title: 'Saldo contable',
-            field: 'countableBalance',
-            name: 'Saldo contable '
+//        },
+//        {
+//            title: 'Saldo contable',
+//            field: 'countableBalance',
+//            name: 'Saldo contable '
 
-        },
-        {
-            field: 'donwload',
-            name: '',
-            title: '',
-            width: 5,
-            disableColumnMenu: true
+//        },
+//        {
+//            field: 'donwload',
+//            name: '',
+//            title: '',
+//            width: 5,
+//            disableColumnMenu: true
 
-        },
-    ];
+//        },
+//    ];
 
    
 
  
-    //var image1 = "/images/HeaderPrint.png"; /// URL de la imagen
-    //doc.addImage(image1, 'PNG', 150, 20)
+//    //var image1 = "/images/HeaderPrint.png"; /// URL de la imagen
+//    //doc.addImage(image1, 'PNG', 150, 20)
 
 
 
-    doc.addFont('karbon', 'medium')
-    doc.setLineWidth(2);
-    doc.text(250, 40, "COOPMEGO");
-    doc.setFontSize(13);
-    doc.setLineWidth(6);
-    doc.text(40, 80, fecha);
-    doc.text(40, 95, orden);
-    doc.text(40, 110, agencia);
-    doc.text(40, 125, totalTarjetas);
+//    doc.addFont('karbon', 'medium')
+//    doc.setLineWidth(2);
+//    doc.text(250, 40, "COOPMEGO");
+//    doc.setFontSize(13);
+//    doc.setLineWidth(6);
+//    doc.text(40, 80, fecha);
+//    doc.text(40, 95, orden);
+//    doc.text(40, 110, agencia);
+//    doc.text(40, 125, totalTarjetas);
 
-    doc.autoTable({
-        margin: { top: 180 },
-        theme: "striped",
-        columns: movemetsColumns.map(col => ({ ...col, dataKey: col.field })),
-        body: dataCustom
+//    doc.autoTable({
+//        margin: { top: 180 },
+//        theme: "striped",
+//        columns: movemetsColumns.map(col => ({ ...col, dataKey: col.field })),
+//        body: dataCustom
 
-        /* 
-        body: body,
-         startY: 70,
-         head: [['SL.No', 'Product Name', 'Price', 'Model']],
-         headStyles: {
-             lineWidth: 1, fillColor: [30, 212, 145], textColor: [255, 255, 255],
-         },
-         theme: 'grid',
-         columnStyles: {
-             0: {
-                 halign: 'right',
-                 cellWidth: 50,
-                 fillColor: [232, 252, 245],
-             },
-             1: {
-                 halign: 'left',
-                 cellWidth: 380,
-                 fillColor: [232, 252, 245],
-             },
-             2: {
-                 halign: 'right',
-                 cellWidth: 50,
-                 fillColor: [232, 252, 245],
-             },
-             3: {
-                 halign: 'right',
-                 cellWidth: 50,
-                 fillColor: [232, 252, 245],
-             }
-         },
-         */
-    })
-    const name_file = `${agencia}_${orden}_${(fechaHoy)}.pdf`
-    console.log(name_file);
-    doc.save(name_file);
+//        /* 
+//        body: body,
+//         startY: 70,
+//         head: [['SL.No', 'Product Name', 'Price', 'Model']],
+//         headStyles: {
+//             lineWidth: 1, fillColor: [30, 212, 145], textColor: [255, 255, 255],
+//         },
+//         theme: 'grid',
+//         columnStyles: {
+//             0: {
+//                 halign: 'right',
+//                 cellWidth: 50,
+//                 fillColor: [232, 252, 245],
+//             },
+//             1: {
+//                 halign: 'left',
+//                 cellWidth: 380,
+//                 fillColor: [232, 252, 245],
+//             },
+//             2: {
+//                 halign: 'right',
+//                 cellWidth: 50,
+//                 fillColor: [232, 252, 245],
+//             },
+//             3: {
+//                 halign: 'right',
+//                 cellWidth: 50,
+//                 fillColor: [232, 252, 245],
+//             }
+//         },
+//         */
+//    })
+//    const name_file = `${agencia}_${orden}_${(fechaHoy)}.pdf`
+//    console.log(name_file);
+//    doc.save(name_file);
 
 
-}
+//}

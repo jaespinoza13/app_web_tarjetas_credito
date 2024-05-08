@@ -2,7 +2,7 @@
 import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { useEffect, useState } from "react";
-import { fetchGetComentarios, fetchGetFlujoSolicitud, fetchAddComentarioAsesor, fetchAddComentarioSolicitud } from "../../services/RestServices";
+import { fetchGetComentarios, fetchGetFlujoSolicitud, fetchAddComentarioAsesor, fetchAddComentarioSolicitud, fetchGetResolucion } from "../../services/RestServices";
 import Sidebar from "../Common/Navs/Sidebar";
 import Card from "../Common/Card";
 import Table from "../Common/Table";
@@ -30,6 +30,7 @@ const VerSolicitud = (props) => {
     const navigate = useHistory();
     const [comentariosAsesor, setComentariosAsesor] = useState([]);
     const [solicitudTarjeta, setSolicitudTarjeta] = useState([]);
+    const [resolucion, setResolucion] = useState([]);
     const [comentarioSolicitud, setComentarioSolicitud] = useState("");
     const [modalVisible, setModalVisible] = useState(false);
     const [modalVisibleOk, setModalVisibleOk] = useState(false);
@@ -45,6 +46,9 @@ const VerSolicitud = (props) => {
         fetchGetComentarios(props.solicitud.solicitud, props.solicitud.idSolicitud, props.token, (data) => {
             setComentariosAsesor(data.lst_informe);
             existeComentariosVacios(data.lst_informe);
+        }, dispatch);
+        fetchGetResolucion(props.solicitud.solicitud, props.token, (data) => {
+            setResolucion(data.lst_resoluciones);
         }, dispatch);
         fetchGetFlujoSolicitud(props.solicitud.solicitud, props.token, (data) => {
             const maxSolicitudes = data.flujo_solicitudes.length - 1;
@@ -129,81 +133,114 @@ const VerSolicitud = (props) => {
 
     return <div className="f-row">
         <Sidebar enlace={props.location.pathname}></Sidebar>
-        <Card className={["m-max w-100 justify-content-space-between align-content-center"]}>
-            <div>
-                <h3 className="mb-3 strong">Información de la solicitud</h3>
-                <Card className={["f-row"]}>
-                    <Item xs={6} sm={6} md={6} lg={6} xl={6}>
-                        <div className="values  mb-3">
-                            <h5>Socio:</h5>
-                            <h5 className="strong">
-                                {`$ ${props.montoSugerido || Number('10000.00').toLocaleString("en-US")}`}
-                            </h5>
-                        </div>
-                        <div className="values  mb-3">
-                            <h5>Tipo Documento:</h5>
-                            <h5 className="strong">
-                                {`Cédula`}
-                            </h5>
-                        </div>
-                        <div className="values  mb-3">
-                            <h5>Oficina:</h5>
-                            <h5 className="strong">
-                                {`EL VALLE`}
-                            </h5>
-                        </div>
-                        <div className="values  mb-3">
-                            <h5>Oficial:</h5>
-                            <h5 className="strong">
-                                {`${solicitudTarjeta?.str_usuario_proc}`}
-                            </h5>
-                        </div>
-                        <div className="values  mb-3">
-                            <Button className={["btn_mg btn_mg__primary"]} disabled={false} onClick={descargarReporte}>Descargar reporte</Button>
-                        </div>
-                        <div className="values  mb-3">
-                            <Button className="btn_mg__primary" type="" onClick={modalHandler}>Agregar comentarios</Button>
-                        </div>
-                    </Item>
+        {props.solicitud.idSolicitud === "11188"
+            ?
+            <Card className={["m-max w-100 justify-content-space-between align-content-center"]}>
+                <div>
+                    <h3 className="mb-3 strong">Información de la solicitud</h3>
+                    <Card className={["f-row"]}>
+                        <Item xs={6} sm={6} md={6} lg={6} xl={6}>
+                            <div className="values  mb-3">
+                                <h5>Socio:</h5>
+                                <h5 className="strong">
+                                    {`$ ${props.montoSugerido || Number('10000.00').toLocaleString("en-US")}`}
+                                </h5>
+                            </div>
+                            <div className="values  mb-3">
+                                <h5>Tipo Documento:</h5>
+                                <h5 className="strong">
+                                    {`Cédula`}
+                                </h5>
+                            </div>
+                            <div className="values  mb-3">
+                                <h5>Oficina:</h5>
+                                <h5 className="strong">
+                                    {`EL VALLE`}
+                                </h5>
+                            </div>
+                            <div className="values  mb-3">
+                                <h5>Oficial:</h5>
+                                <h5 className="strong">
+                                    {`${solicitudTarjeta?.str_usuario_proc}`}
+                                </h5>
+                            </div>
+                            <div className="values  mb-3">
+                                <Button className={["btn_mg btn_mg__primary"]} disabled={false} onClick={descargarReporte}>Descargar reporte</Button>
+                            </div>
+                            <div className="values  mb-3">
+                                <Button className="btn_mg__primary" type="" onClick={modalHandler}>Agregar comentarios</Button>
+                            </div>
+                        </Item>
 
-                    <Item xs={6} sm={6} md={6} lg={6} xl={6}>
-                        <div className="values  mb-3">
-                            <h5>Estado de la solicitud:</h5>
-                            <h5 className="strong">
-                                {`${solicitudTarjeta?.str_estado}`}
-                            </h5>
-                        </div>
-                        <div className="values  mb-3">
-                            <h5>Cupo solicitado:</h5>
-                            <h5 className="strong">
-                                {`$ ${Number(solicitudTarjeta?.str_cupo_solicitado).toLocaleString("en-US") || Number('10000.00').toLocaleString("en-US")}`}
-                            </h5>
-                        </div>
-                        <div className="values  mb-3">
-                            <h5>Cupo sugerido:</h5>
-                            <h5 className="strong">
-                                {`$ ${Number(solicitudTarjeta?.str_cupo_sugerido).toLocaleString("en-US") || Number('10000.00').toLocaleString("en-US")}`}
-                            </h5>
-                        </div>
-                        <div className="values  mb-3">
-                            <h5>Solicitud Nro:</h5>
-                            <h5 className="strong">
-                                {`${props.solicitud.solicitud || Number('10000.00').toLocaleString("en-US")}`}
-                            </h5>
-                        </div>
-                    </Item>
-                </Card>
-                <div className="mt-4">
-                    <h3 className="mb-3 strong">Comentario del Asesor</h3>
-                    <Textarea placeholder="Ingrese su comentario" onChange={getComentarioSolicitudHandler}  esRequerido={true}></Textarea>
+                        <Item xs={6} sm={6} md={6} lg={6} xl={6}>
+                            <div className="values  mb-3">
+                                <h5>Estado de la solicitud:</h5>
+                                <h5 className="strong">
+                                    {`${solicitudTarjeta?.str_estado}`}
+                                </h5>
+                            </div>
+                            <div className="values  mb-3">
+                                <h5>Cupo solicitado:</h5>
+                                <h5 className="strong">
+                                    {`$ ${Number(solicitudTarjeta?.str_cupo_solicitado).toLocaleString("en-US") || Number('10000.00').toLocaleString("en-US")}`}
+                                </h5>
+                            </div>
+                            <div className="values  mb-3">
+                                <h5>Cupo sugerido:</h5>
+                                <h5 className="strong">
+                                    {`$ ${Number(solicitudTarjeta?.str_cupo_sugerido).toLocaleString("en-US") || Number('10000.00').toLocaleString("en-US")}`}
+                                </h5>
+                            </div>
+                            <div className="values  mb-3">
+                                <h5>Solicitud Nro:</h5>
+                                <h5 className="strong">
+                                    {`${props.solicitud.solicitud || Number('10000.00').toLocaleString("en-US")}`}
+                                </h5>
+                            </div>
+                        </Item>
+                    </Card>
+                    <div className="mt-4">
+                        <h3 className="mb-3 strong">Comentario del Asesor</h3>
+                        <Textarea placeholder="Ingrese su comentario" onChange={getComentarioSolicitudHandler}  esRequerido={true}></Textarea>
+                    </div>
                 </div>
-            </div>
-            <div className="f-row justify-content-center">
-                <Button className="btn_mg__primary" disabled={faltaComentariosAsesor} onClick={guardarComentario}>Guardar</Button>
-            </div>
+                <div className="f-row justify-content-center">
+                    <Button className="btn_mg__primary" disabled={faltaComentariosAsesor} onClick={guardarComentario}>Guardar</Button>
+                </div>
 
 
-        </Card>
+            </Card>
+            :
+            <Card className={["m-max w-100 justify-content-space-between align-content-center"]}>
+                <div>
+                    <h3 className="mb-3 strong">Análisis y aprobación de crédito</h3>
+                    <Card className={["f-row"]}>
+                        <Table headers={headerTableComentarios}>
+                            {
+                                comentariosAsesor.map((comentario) => {
+                                    return (
+                                        <tr key={comentario.int_id_parametro}>
+                                            <td style={{ width: "20%" }}>{comentario.str_tipo}</td>
+                                            <td style={{ width: "40%" }}>{comentario.str_descripcion}</td>
+                                            <td style={{ width: "40%" }}><Textarea placeholder="Ej. Texto de ejemplo" type="textarea" onChange={(event, key = comentario.int_id_parametro) => { comentarioAdicionalHanlder(event, key) }} esRequerido={false} value={comentario.str_detalle}></Textarea></td>
+                                        </tr>
+                                    );
+                                })
+                            }
+                        </Table>
+                    </Card>
+                    <div className="mt-4">
+                        <h3 className="mb-3 strong">Comentario del Asesor</h3>
+                        <Textarea placeholder="Ingrese su comentario" onChange={getComentarioSolicitudHandler} esRequerido={true}></Textarea>
+                    </div>
+                </div>
+                <div className="f-row justify-content-center">
+                    <Button className="btn_mg__primary" disabled={faltaComentariosAsesor} onClick={guardarComentario}>Guardar</Button>
+                </div>
+
+
+            </Card>
+        }
         <Modal
             modalIsVisible={modalVisible}
             titulo={`Ingrese los comentarios`}

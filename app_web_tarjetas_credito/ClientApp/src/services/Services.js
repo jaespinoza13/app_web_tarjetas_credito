@@ -108,6 +108,9 @@ export const getComentarios = "GET_COMENTARIOS_ASESOR"
 export const addComentarioSolicitud = "ADD_COMENTARIO_SOLICITUD"
 export const getFlujoSolicitud = "GET_FLUJO_SOLICITUD"
 export const addComentarioAsesor = "ADD_INFORME_TC"
+export const getResolucion = "GET_RESOLUCION"
+export const addResolucion = "ADD_RESOLUCION"
+export const updResolucion = "UPD_RESOLUCION"
 export const getReporteOrden = "GET_REPORTE_ORDEN"
 
 /**
@@ -231,6 +234,15 @@ export function ServiceUrl(request, params = []) {
             break;
         case addComentarioAsesor:
             pathOut = "tc/addComentarioAs"
+            break;
+        case getResolucion:
+            pathOut = "tc/getResolucion"
+            break;
+        case addResolucion:
+            pathOut = "tc/addResolucion"
+            break;
+        case updResolucion:
+            pathOut = "tc/updResolucion"
             break;
         case getReporteOrden:
             pathOut = "tc/getReporteOrden"
@@ -374,7 +386,7 @@ export async function ServicioPostExecute(request, body, token, { encryptS = tru
                 },
                 body: encryptS ? JSON.stringify({ data: await encriptar(key, strBody) }) : strBody
             };
-
+            
             const response = await fetch(ServiceUrl(request, params), requestOptions);
             if (response.ok) {
                 localStorage.setItem("Acept", ts);
@@ -477,6 +489,9 @@ function pathRewrite(path) {
         "tc/addComentarioSol": '/tarjetacredito/addComentarioSolicitud',
         "tc/getFlujoSol": '/tarjetacredito/getFlujoSolicitud',
         "tc/addComentarioAs": '/tarjetacredito/addComentarioAsesor',
+        "tc/getResolucion": '/tarjetacredito/getResoluciones',
+        "tc/addResolucion": '/tarjetacredito/addResolucion',
+        "tc/updResolucion": '/tarjetacredito/updResolucion',
         "tc/getReporteOrden": '/tarjetacredito/getReporteOrden'
     };
     if (path) {

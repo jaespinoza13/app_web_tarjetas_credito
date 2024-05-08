@@ -4,6 +4,7 @@ using Domain.Models.TarjetaCredito.AddAutorizacion;
 using Domain.Models.TarjetaCredito.AddComentarioAsesor;
 using Domain.Models.TarjetaCredito.AddComentarioSolicitud;
 using Domain.Models.TarjetaCredito.AddProspeccion;
+using Domain.Models.TarjetaCredito.AddResolucion;
 using Domain.Models.TarjetaCredito.AddSolicitud;
 using Domain.Models.TarjetaCredito.GetComentarios;
 using Domain.Models.TarjetaCredito.GetContrato;
@@ -12,9 +13,11 @@ using Domain.Models.TarjetaCredito.GetFlujoSolicitud;
 using Domain.Models.TarjetaCredito.GetInfoEconomica;
 using Domain.Models.TarjetaCredito.GetInfoFinanciera;
 using Domain.Models.TarjetaCredito.GetInfoSocio;
+using Domain.Models.TarjetaCredito.GetResoluciones;
 using Domain.Models.TarjetaCredito.GetScore;
 using Domain.Models.TarjetaCredito.GetSolicitudes;
 using Domain.Models.TarjetaCredito.GetValidaciones;
+using Domain.Models.TarjetaCredito.UpdResoluciones;
 using Domain.Models.TarjetaCredito.ObtenerOrdenReporte;
 using Infrastructure.Login;
 using Infrastructure.TarjetaCredito;
@@ -181,6 +184,33 @@ namespace plantilla_app_web.Controllers
         public ResCrypt Post(ReqAddComentarioSolicitud req)
         {
             ResAddComentarioSolicitud res = tarjetaCreditoDat.addComentarioSolicitud(req);
+            return Utiles.crypt(res, Request.Headers);
+        }
+
+        [Route("getResoluciones")]
+        [ServiceFilter(typeof(CryptoFilter))]
+        [HttpPost]
+        public ResCrypt Post(ReqGetResolucion req)
+        {
+            ResGetResolucion res = tarjetaCreditoDat.addGetResoluciones(req);
+            return Utiles.crypt(res, Request.Headers);
+        }
+
+        [Route("addResolucion")]
+        [ServiceFilter(typeof(CryptoFilter))]
+        [HttpPost]
+        public ResCrypt Post(ReqAddResolucion req)
+        {
+            ResAddResolucion res = tarjetaCreditoDat.addResolucion(req);
+            return Utiles.crypt(res, Request.Headers);
+        }
+
+        [Route("updResolucion")]
+        [ServiceFilter(typeof(CryptoFilter))]
+        [HttpPost]
+        public ResCrypt Post(ReqUpdResolucion req)
+        {
+            ResUpdResolucion res = tarjetaCreditoDat.addUpdResolucion(req);
             return Utiles.crypt(res, Request.Headers);
         }
 

@@ -23,7 +23,7 @@ import { solicitud } from '../../redux/Solicitud/reducers';
 
 
 const mapStateToProps = (state) => {
-    //console.log("state, ", state)
+    console.log("state, ", state)
     var bd = state.GetWebService.data;
     if (IsNullOrWhiteSpace(bd) || Array.isArray(state.GetWebService.data)) {
         bd = sessionStorage.getItem("WSSELECTED");
@@ -41,6 +41,10 @@ function Solicitud(props) {
     const dispatch = useDispatch();
 
     //Inicio
+    const [usuario, setUsuario] = useState("");
+    const [rol, setRol] = useState("");
+    const [datosUsuario, setDatosUsuario] = useState([]);
+
     const [isLstSolicitudes, setIsLstSolicitudes] = useState(true);
     const [isLstProspecciones, setIsLstProspecciones] = useState(false);
     const [isModalComentarios, setisModalComentarios] = useState(false);
@@ -49,6 +53,7 @@ function Solicitud(props) {
             { image: "", textPrincipal: `Solicitudes`, textSecundario: "", key: 1 },
             { image: "", textPrincipal: `Prospectos`, textSecundario: "", key: 2 }
         ]);
+    const [modalVisible, setModalVisible] = useState(false);
 
  
 
@@ -111,6 +116,13 @@ function Solicitud(props) {
             stLstProspectos(data.prospectos);
             stLstSolicitudes(data.solicitudes);
         }, dispatch)
+        const strOficial = get(localStorage.getItem("sender_name"));
+        setUsuario(strOficial);
+        const strRol = get(localStorage.getItem("role"));
+        console.log(strRol);
+        setRol(strRol);
+        setDatosUsuario([{ strCargo: strRol, strOficial: strOficial }]);
+        
     }, []);
     
     const handleSelectedToggle = (index) => {
@@ -133,10 +145,26 @@ function Solicitud(props) {
     }
 
     const moveToSolicitud = (solId) => {
-        const solicituSeleccionada = lstSolicitudes.find((solicitud) => { return solicitud.int_id === solId });
-        console.log(solicituSeleccionada);
-        dispatch(setSolicitudStateAction({ solicitud: solicituSeleccionada.int_id, cedulaSocio: solicituSeleccionada.str_identificacion, idSolicitud: solicituSeleccionada.str_estado }))
-        navigate.push('/solicitud/ver');
+        const solicitudSeleccionada = lstSolicitudes.find((solicitud) => { return solicitud.int_id === solId });
+        if (solicitudSeleccionada.str_estado === '11188' && rol === "ASESOR DE CRÉDITO") {
+            dispatch(setSolicitudStateAction({ solicitud: solicitudSeleccionada.int_id, cedulaSocio: solicitudSeleccionada.str_identificacion, idSolicitud: solicitudSeleccionada.str_estado, rol: rol }))
+            navigate.push('/solicitud/ver');
+        }
+        else if ((rol === "ANALISTA CREDITO" || rol === "JEFE UAC") && solicitudSeleccionada.str_estado === '11189') {
+            dispatch(setSolicitudStateAction({ solicitud: solicitudSeleccionada.int_id, cedulaSocio: solicitudSeleccionada.str_identificacion, idSolicitud: solicitudSeleccionada.str_estado, rol: rol }))
+            navigate.push('/solicitud/ver');
+        }
+        else {
+            setModalVisible(true);
+        }
+    }
+
+    const siguientePasoHandler = () => {
+        setModalVisible(false);
+    }
+
+    const closeModalHandlerMsg = () => {
+        setModalVisible(false);
     }
 
     return (<div className="f-row">
@@ -230,6 +258,19 @@ function Solicitud(props) {
             </TableWithTextArea>
 
         </ModalDinamico>
+
+        <Modal
+            modalIsVisible={modalVisible}
+            titulo={`Aviso`}
+            onNextClick={siguientePasoHandler}
+            onCloseClick={closeModalHandlerMsg}
+            isBtnDisabled={false}
+            type="sm"
+        >
+            {modalVisible && <div>
+                <p>No tiene permiso para acceder a esta solicitud</p>
+            </div>}
+        </Modal>
 
 
        
