@@ -1182,12 +1182,12 @@ export function fetchAddComentarioAsesor(idSolicitud, comentarios, estadoSolicit
 * @param {(contenido:string, nroTotalRegistros: number) => void} onSuccess
 * @param {Function} dispatch
 */
-export function fetchAddComentarioSolicitud(idSolicitud, comentario, estadoSolicitud, token, onSucces, dispatch) {
+export function fetchAddComentarioSolicitud(idSolicitud, comentario, estadoSolicitud, regresaSolicitud, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
         int_id_solicitud: idSolicitud,
-        bl_regresa_estado: false,
+        bl_regresa_estado: regresaSolicitud,
         str_comentario: comentario,
         int_estado: estadoSolicitud,
         str_decision_sol: "APROBADO"

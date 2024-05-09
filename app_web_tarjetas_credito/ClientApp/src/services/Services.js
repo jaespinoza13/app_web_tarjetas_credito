@@ -368,6 +368,7 @@ export async function ServicioPostExecute(request, body, token, { encryptS = tru
             body.str_id_oficina = datosUsuario ? datosUsuario.id_oficina + "" : "";
             body.str_id_perfil = datosUsuario ? datosUsuario.id_perfil + "" : "";
             var strBody = JSON.stringify(body);
+            console.log(strBody);
             const requestOptions = {
                 method: 'POST',
                 headers: {

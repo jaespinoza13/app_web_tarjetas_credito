@@ -61,8 +61,7 @@ function Solicitud(props) {
     const headerTableSolicitantes = [
         { nombre: 'Nro. Solicitud', key: 0}, { nombre: 'Identificación', key: 1 }, { nombre: 'Ente', key: 2 }, { nombre: 'Nombre solicitante', key: 3 },
         { nombre: 'Producto TC', key: 4 }, { nombre: 'Monto', key: 5 }, { nombre: 'Calificación', key: 6 },
-        { nombre: 'Estado', key: 7 }, { nombre: 'Oficina Crea', key: 8 }, { nombre: 'Oficial', key: 9 },
-        { nombre: 'Usuario', key: 10 }, { nombre: 'Fecha modificación', key: 11 }, { nombre: 'Acciones', key: 12 },
+        { nombre: 'Estado', key: 7 }, { nombre: 'Oficina Crea', key: 8 }, { nombre: 'Acciones', key: 9 },
     ];
 
     const headerTableProspectos = [
@@ -77,6 +76,21 @@ function Solicitud(props) {
         { nombre: "Descripción", key: 2 },
         { nombre: "Detalle", key: 3 }
     ]
+
+    const parametros = [
+        { prm_id: "11188", prm_valor_ini: "SOLICITUD CREADA" },
+        { prm_id: "11189", prm_valor_ini: "ANALISIS UAC" },
+        { prm_id: "11190", prm_valor_ini: "ANALISIS JEFE UAC" },
+        { prm_id: "11191", prm_valor_ini: "ANALISIS COMITE" },
+        { prm_id: "11192", prm_valor_ini: "APROBADA COMITE" },
+        { prm_id: "11193", prm_valor_ini: "Solicitud anulada" },
+        { prm_id: "11194", prm_valor_ini: "Solicitud entregada" }
+    ]
+
+    const validaNombreParam = (id) => {
+        const parametro = parametros.find((param) => { return param.prm_id === id });
+        return parametro.prm_valor_ini;
+    }
 
     const bodyTable_with_Text_Area = [
         { tipo: "DESCRIPCION GENERAL DEL SOCIO", descripcion: "Descripción general socio", detalle: "Socio se desempeña como Cbo. Primero...", key: 98 },
@@ -171,7 +185,7 @@ function Solicitud(props) {
             dispatch(setSolicitudStateAction({ solicitud: solicitudSeleccionada.int_id, cedulaSocio: solicitudSeleccionada.str_identificacion, idSolicitud: solicitudSeleccionada.str_estado, rol: rol }))
             navigate.push('/solicitud/ver');
         }
-        else if ((rol === "ANALISTA CREDITO" || rol === "JEFE UAC") && solicitudSeleccionada.str_estado === '11189') {
+        else if ((rol === "ANALISTA CREDITO" || rol === "JEFE DE UAC" || rol === "DIRECTOR DE NEGOCIOS") && solicitudSeleccionada.str_estado !== '11188') {
             dispatch(setSolicitudStateAction({ solicitud: solicitudSeleccionada.int_id, cedulaSocio: solicitudSeleccionada.str_identificacion, idSolicitud: solicitudSeleccionada.str_estado, rol: rol }))
             navigate.push('/solicitud/ver');
         }
@@ -220,11 +234,8 @@ function Solicitud(props) {
                                     <td><Chip type="black">Black</Chip></td>
                                     <td>{`$ ${Number(solicitud.dec_cupo_solicitado).toLocaleString('en-US')}`}</td>
                                     <td>{"AA"}</td>
-                                    <td>{`${solicitud.str_estado === '11188' ? "SOLICITUD CREADA" : "ANALISIS UAC"}`}</td>
+                                    <td>{validaNombreParam(solicitud.str_estado)}</td>
                                     <td>{"Matriz"}</td>
-                                    <td>{solicitud.str_usuario_crea}</td>
-                                    <td>{solicitud.str_usuario_crea}</td>
-                                    <td>{solicitud.dtt_fecha_solicitud}</td>
                                     <td>
                                         <IconButton onClick={() => { setisModalComentarios(!isModalComentarios) }}>
                                             <RateReviewSharpIcon></RateReviewSharpIcon>

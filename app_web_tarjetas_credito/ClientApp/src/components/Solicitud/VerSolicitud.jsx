@@ -10,6 +10,7 @@ import Textarea from "../Common/UI/Textarea";
 import Item from "../Common/UI/Item";
 import Button from "../Common/UI/Button";
 import Modal from "../Common/Modal/Modal";
+import Input from "../Common/UI/Input";
 
 const mapStateToProps = (state) => {
     console.log(state);
@@ -34,14 +35,19 @@ const VerSolicitud = (props) => {
     const [comentarioSolicitud, setComentarioSolicitud] = useState("");
     const [modalVisible, setModalVisible] = useState(false);
     const [modalVisibleOk, setModalVisibleOk] = useState(false);
+    const [modalArchivos, setModalArchivos] = useState(false);
     const [faltaComentariosAsesor, setFaltaComentariosAsesor] = useState(true);
     const [isBtnComentariosActivo, setIsBtnComentariosActivo] = useState(false)
+    const [textoModal, setTextoModal] = useState("");
+    const [isDesicionHanilitada, setIsDesicionHanilitada] = useState(false);
+    const [isMontoDiferente, setIsMontodiferente] = useState(false);
 
     //Se debe implementar con parametros
-    const [imprimeFormInclu, setImprimeFormInclu] = useState([]);
+    const [imprimeMedio, setImprimeMedio] = useState([]);
     const [regresaSolicitud, setRegresaSolicitud] = useState([]);
     const [estadosSiguientes, setEstadosSiguientes] = useState([]);
     const [estadosSiguientesAll, setEstadosSiguientesAll] = useState([]);
+    const [archivoMostrado, setArchivoMostrado] = useState("FRMSYS-020.pdf")
     const estadosSol = [
         {
             prm_id: "11188", prm_valor_ini: "SOLICITUD CREADA"
@@ -87,7 +93,7 @@ const VerSolicitud = (props) => {
             const datosSolicitud = data.flujo_solicitudes[maxSolicitudes];
             setSolicitudTarjeta(...[datosSolicitud]);
         }, dispatch);
-        setImprimeFormInclu([
+        setImprimeMedio([
             {
                 prm_id: "11190"
             }, {
@@ -105,16 +111,36 @@ const VerSolicitud = (props) => {
         ]);
         setEstadosSiguientesAll([
             {
-                prm_id: "11188", estados: "11189"
+                prm_id: "11188", estados: "11195"
             },
             {
-                prm_id: "11189", estados: "11190"
+                prm_id: "11189", estados: "11195"
             },
             {
-                prm_id: "11190", estados: "11193|11192"
+                prm_id: "11190", estados: "11198|11196|11197"
+            },
+            {
+                prm_id: "11191", estados: "11192|11196|11197"
             }
         ]);
     }, []);
+
+    const parametros = [
+        { prm_id: "11198", prm_valor_ini: "EVALUADO" },
+        { prm_id: "11195", prm_valor_ini: "APROBADO" },
+        { prm_id: "11192", prm_valor_ini: "APROBADA COMITE" },
+        { prm_id: "11196", prm_valor_ini: "RECHAZADA" },
+        { prm_id: "11197", prm_valor_ini: "APROBADA MONTO MENOR" }
+    ]
+
+    const validaNombreParam = (id) => {
+        const parametro = parametros.find((param) => { return param.prm_id === id });
+        return parametro.prm_valor_ini;
+    }
+
+    const setArchivo = (event) => {
+        setArchivoMostrado(event.target.value);
+    }
 
     useEffect(() => {        
         const arrEstados = estadosSiguientesAll?.find((values) => values.prm_id === props.solicitud.idSolicitud);
@@ -126,6 +152,12 @@ const VerSolicitud = (props) => {
         }
 
     }, [estadosSiguientesAll]);
+
+    useEffect(() => {
+        if (estadosSiguientes.length === 1) {
+            setIsDesicionHanilitada(true);
+        }
+    }, [estadosSiguientes]);
 
     const comentarioAdicionalHanlder = (data, event) => {
         const id = comentariosAsesor.findIndex((comentario) => { return comentario.int_id_parametro === event });
@@ -142,6 +174,14 @@ const VerSolicitud = (props) => {
 
     const modalHandler = () => {
         setModalVisible(true);
+    }
+
+    const modalArchivosHandler = () => {
+        setModalArchivos(true);
+    }
+
+    const closeModalArchivosHandler = () => {
+        setModalArchivos(false);
     }
 
     const siguientePasoHandler = () => {
@@ -162,12 +202,28 @@ const VerSolicitud = (props) => {
         setModalVisible(false);
     }
 
-    const guardarComentario = () => {
-        fetchAddComentarioSolicitud(props.solicitud.solicitud, comentarioSolicitud, props.solicitud.idSolicitud, props.token, (data) => {
+    const guardarComentarioSiguiente = () => {
+        fetchAddComentarioSolicitud(props.solicitud.solicitud, comentarioSolicitud, props.solicitud.idSolicitud, false, props.token, (data) => {
             if (data.str_res_codigo === "000") {
                 setModalVisibleOk(true);
+                setTextoModal("Su comentario se ha guardado correctamente");
             }
         }, dispatch);
+    }
+
+    const guardarComentarioAtras = () => {
+        if (comentarioSolicitud) {
+            fetchAddComentarioSolicitud(props.solicitud.solicitud, comentarioSolicitud, props.solicitud.idSolicitud, true, props.token, (data) => {
+                if (data.str_res_codigo === "000") {
+                    setModalVisibleOk(true);
+                    setTextoModal("Su comentario se ha guardado correctamente");
+                }
+            }, dispatch);
+        }
+        else {
+            setModalVisibleOk(true);
+            setTextoModal("Debe ingresar un comentario para poder regresar la solicitud");
+        }
     }
 
     function existeComentariosVacios(arregloComentarios) {
@@ -191,12 +247,31 @@ const VerSolicitud = (props) => {
         document.body.removeChild(link);
     }
 
+    const descargarMedio = () => {
+        const pdfUrl = "Imagenes/Medio de aprobación-Tarjeta de crédito.pdf";
+        const link = document.createElement("a");
+        link.href = pdfUrl;
+        link.download = "document.pdf"; // specify the filename
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
     const retornarSolicitud = () => {
         navigate.push('/solicitud');
     }
 
     const closeModalHandlerOk = () => {
+        setModalVisibleOk(false);
 
+    }
+    const getDesicion = (event) => {
+        if (event.target.value === "11197") {
+            setIsMontodiferente(true);
+        }
+        else {
+            setIsMontodiferente(false);
+        }
     }
 
     return <div className="f-row">
@@ -273,7 +348,7 @@ const VerSolicitud = (props) => {
                     </div>
                 </div>
                 <div className="f-row justify-content-center">
-                    <Button className="btn_mg__primary" disabled={faltaComentariosAsesor} onClick={guardarComentario}>Guardar</Button>
+                    <Button className="btn_mg__primary" disabled={faltaComentariosAsesor} onClick={guardarComentarioSiguiente}>Guardar</Button>
                 </div>
 
 
@@ -285,10 +360,11 @@ const VerSolicitud = (props) => {
                     <Card className={["f-col"]}>
                         <div className={["f-row"] }>
                             <Button className="btn_mg__primary" onClick={modalHandler}>Agregar comentario</Button>
+                            <Button className="btn_mg__primary" onClick={modalArchivosHandler}>Ver documentos</Button>
                             {regresaSolicitud?.find((id) => { return id.prm_id === props.solicitud.idSolicitud }) &&
-                                <Button className="btn_mg__primary ml-2">Regresar solicitud</Button>
+                                <Button className="btn_mg__primary ml-2" onClick={guardarComentarioAtras}>Regresar solicitud</Button>
                             }
-                            {imprimeFormInclu?.find((id) => { return id.prm_id === props.solicitud.idSolicitud }) &&
+                            {imprimeMedio?.find((id) => { return id.prm_id === props.solicitud.idSolicitud }) &&
                                 <Button className="btn_mg__primary ml-2">Imprimir formulario</Button>
                             }
                         </div>
@@ -310,14 +386,21 @@ const VerSolicitud = (props) => {
                         </Table>
                         <Card>
                             <h3>Decisión</h3>
-                            <select>
+                            <select disabled={isDesicionHanilitada} onChange={getDesicion}>
                                 {estadosSiguientes?.map((estados) => {
                                     return <option value={estados}>
-                                        {`Estado ${estados}`}
+                                        {validaNombreParam(estados)}
                                     </option>
                                 })}
                             </select>
                         </Card>
+                        {isMontoDiferente &&
+                            <Card className={["mt-2"] }>
+                                <h3>Ingrese nuevo monto de aprobado</h3>
+                                <Input type="number" placeholder="Ej. 1000">
+                                </Input>
+                            </Card>
+                        }
                     </Card>
                     <div className="mt-4">
                         <h3 className="mb-3 strong">Comentario del Asesor</h3>
@@ -325,12 +408,32 @@ const VerSolicitud = (props) => {
                     </div>
                 </div>
                 <div className="f-row justify-content-center">
-                    <Button className="btn_mg__primary" disabled={faltaComentariosAsesor} onClick={guardarComentario}>Guardar</Button>
+                    <Button className="btn_mg__primary" disabled={faltaComentariosAsesor} onClick={guardarComentarioSiguiente}>Guardar</Button>
                 </div>
 
 
             </Card>
         }
+        <Modal
+            modalIsVisible={modalArchivos}
+            titulo={`Visualización de archivos`}
+            onNextClick={closeModalArchivosHandler}
+            onCloseClick={closeModalArchivosHandler}
+            isBtnDisabled={isBtnComentariosActivo}
+            type="lg"
+        >
+            {modalArchivos && <div>
+                <select className="mt-2 mb-2" onChange={setArchivo}>
+                    <option value={"FRMSYS-020.pdf"}>Cédula de ciudadania</option>
+                    <option value={"archivo.pdf"}>Autorizacion de consulta al buró</option>
+                </select>
+                <div>
+                    <embed src={`/Imagenes/${archivoMostrado}`} type="application/pdf" width="100%" height="600px" />
+                </div>
+            </div>}
+        </Modal>
+
+
         <Modal
             modalIsVisible={modalVisible}
             titulo={`Ingrese los comentarios`}
@@ -364,7 +467,7 @@ const VerSolicitud = (props) => {
             type="sm"
         >
             {modalVisibleOk && <div>
-                <p>Su comentario se ha guardado correctamente</p>
+                <p>{textoModal}</p>
             </div>}
         </Modal>
     </div>
