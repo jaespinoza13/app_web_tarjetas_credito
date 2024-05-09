@@ -20,7 +20,7 @@ const Input = (props) => {
 
     return (
         <input
-            className={`${inputClass} ${props.className || ''} ${props.value === '' ? 'no_valido' : ''}`}
+            className={`${inputClass} ${props.className || ''} ${(props.value === '' && props.esRequerido === true) ? 'no_valido' : ''}`}
             required={props.esRequerido === null ? false : props.esRequerido}
             type={props.type}
             tabIndex={props.tabIndex}

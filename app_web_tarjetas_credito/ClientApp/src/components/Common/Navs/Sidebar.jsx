@@ -70,6 +70,11 @@ function Sidebar(props) {
                     </div>
                     <div className="sidebar_menu__item">
                         <NavItem>
+                            <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'recibir_orden_proveedor') ? 'active' : ''}`} to="/recibir_orden_proveedor">Recibir env&#237;o del Proveedor</NavLink>
+                        </NavItem>
+                    </div>
+                    <div className="sidebar_menu__item">
+                        <NavItem>
                             <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'confirmar_recepcion') ? 'active' : ''}`} to="/confirmar_recepcion">Confirmar Recepci&#243;n Tarjetas</NavLink>
                         </NavItem>
                     </div>

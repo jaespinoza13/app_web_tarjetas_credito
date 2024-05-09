@@ -202,10 +202,9 @@ function OrdenNuevaEdicion(props) {
             <div className="container_mg">
 
 
-                <Card className={["m-max justify-content-space-between align-content-center"]}>
-                    <br />
-                    <h2>{accion}</h2>
-                    <br />
+                <Card className={["m-max justify-content-space-between align-content-center"]}> 
+                    <h2 className="mt-1 mb-5">{accion}</h2>
+
 
                     <form className="form_mg" onSubmit={onSubmitOrden} autoComplete="off">
                         <section className="elements_two_column">

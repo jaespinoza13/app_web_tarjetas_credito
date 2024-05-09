@@ -259,9 +259,8 @@ function Orden(props) {
         <div className="f-row">
             <Sidebar enlace={props.location.pathname }></Sidebar>
             <div className="container_mg">
-                <br />
-                <h2 className="">Órdenes</h2>
-                <br />
+         
+                <h2 className="mt-5 mb-3">Órdenes</h2>
 
                 <div className='row w-100'>
 

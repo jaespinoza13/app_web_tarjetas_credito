@@ -665,4 +665,23 @@ export function descargarArchivo(blob, nombreArchivo = "document", extensionArch
             fechaHoy = `${month}${day}${year}`;
         }
         return fechaHoy;
+}
+
+
+export function conversionTipoTC (tipo){
+    let chipType = '';
+    switch (tipo) {
+        case 'BLACK':
+            chipType = 'black'
+            break;
+        case 'GOLDEN':
+            chipType = 'gold'
+            break;
+        case 'ESTÁNDAR':
+            chipType = 'standar'
+            break;
+        default:
+            break;
     }
+    return chipType;
+}

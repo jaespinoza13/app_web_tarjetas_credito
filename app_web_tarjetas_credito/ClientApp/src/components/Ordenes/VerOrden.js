@@ -135,7 +135,10 @@ function VerOrden(props) {
                     <div style={{ display: "flex", position: "relative", paddingBottom: "70px" }}>
                         
                         <h2>VISUALIZAR DETALLE DE LA ORDEN</h2>
-                        <Button className={["btn_mg btn_mg__primary mr-2 close-modal"]} onClick={() => onDescargarReporte()} disabled={false}>Descargar reporte</Button>
+                        <div className="btns-in-margin-rigth">
+                            <Button className={["btn_mg btn_mg__primary mr-2"]} onClick={() => onDescargarReporte()} disabled={false}>Descargar reporte</Button>
+                        </div>
+                        
                     </div>
                     
 

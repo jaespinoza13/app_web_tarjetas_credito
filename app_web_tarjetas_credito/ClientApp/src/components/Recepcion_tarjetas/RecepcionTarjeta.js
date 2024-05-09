@@ -8,6 +8,8 @@ import Input from '../Common/UI/Input'
 import { IsNullOrWhiteSpace } from '../../js/utiles';
 import { connect } from 'react-redux';
 import Textarea from '../Common/UI/Textarea';
+import Button from '../Common/UI/Button';
+import { filtrarOrdenes } from '../../js/filtros';
 
 const mapStateToProps = (state) => {
     var bd = state.GetWebService.data;
@@ -41,9 +43,9 @@ function RecepcionTarjeta(props) {
             oficina_envia: "MATRIZ",
             oficina_recepta: "EL VALLE",
             tarjetas_receptadas: [
-                { numero_tarjeta: "2500 XXXX XXXX 5646", cuenta: "410010064540", tipo_identificacion: "C", identificacion: "1150214375", ente: "189610", nombre: "DANNY VASQUEZ", nombre_impreso: "DANNY VASQUEZ", tipo: "BLACK", cupo: "8000", key: 23, Agencia: { nombre: "EL VALLE", id: "18" } },
-                { numero_tarjeta: "2500 XXXX XXXX 3636", cuenta: "410010026841", tipo_identificacion: "C", identificacion: "1105970717", ente: "515145", nombre: "ROBERTH TORRES", nombre_impreso: "ROBERTH TORRES", tipo: "GOLDEN", cupo: "15000", key: 28, Agencia: { nombre: "EL VALLE", id: "18" } },
-                { numero_tarjeta: "2500 XXXX XXXX 0101", cuenta: "410010061199", tipo_identificacion: "R", identificacion: "1105970712001", ente: "515146", nombre: "JUAN TORRES", nombre_impreso: "JUAN TORRES", tipo: "GOLDEN", cupo: "15000", key: 38, Agencia: { nombre: "EL VALLE", id: "18" } },
+                { numero_tarjeta: "2500 XXXX XXXX 5646", cuenta: "410010064540", tipo_identificacion: "C", identificacion: "1150214375", ente: "189610", nombre: "DANNY VASQUEZ", nombre_impreso: "DANNY VASQUEZ", tipo: "BLACK", orden_pertenece: "164", key: 23, Agencia: { nombre: "EL VALLE", id: "18" } },
+                { numero_tarjeta: "2500 XXXX XXXX 3636", cuenta: "410010026841", tipo_identificacion: "C", identificacion: "1105970717", ente: "515145", nombre: "ROBERTH TORRES", nombre_impreso: "ROBERTH TORRES", tipo: "GOLDEN", orden_pertenece: "164", key: 28, Agencia: { nombre: "EL VALLE", id: "18" } },
+                { numero_tarjeta: "2500 XXXX XXXX 0101", cuenta: "410010061199", tipo_identificacion: "R", identificacion: "1150214375", ente: "515146", nombre: "JUAN TORRES", nombre_impreso: "JUAN TORRES", tipo: "GOLDEN", orden_pertenece: "164", key: 38, Agencia: { nombre: "EL VALLE", id: "18" } },
                             ]
 
         },
@@ -55,8 +57,8 @@ function RecepcionTarjeta(props) {
             oficina_envia: "MATRIZ",
             oficina_recepta: "EL VALLE",
             tarjetas_receptadas: [
-                { numero_tarjeta: "2500 XXXX XXXX 0214", cuenta: "410010094684", tipo_identificacion: "P", identificacion: "PL970713", ente: "515147", nombre: "LUIS TORRES", nombre_impreso: "LUIS TORRES", tipo: "ESTÁNDAR", cupo: "15000", key: 48, Agencia: { nombre: "EL VALLE", id: "18" } },
-                { numero_tarjeta: "2500 XXXX XXXX 1818", cuenta: "410010061514", tipo_identificacion: "R", identificacion: "1105970714001", ente: "515148", nombre: "ROBERTH TORRES", nombre_impreso: "ROBERTH TORRES", tipo: "ESTÁNDAR", cupo: "15000", key: 58, Agencia: { nombre: "EL VALLE", id: "18" } }
+                { numero_tarjeta: "2500 XXXX XXXX 0214", cuenta: "410010094684", tipo_identificacion: "P", identificacion: "PL970713", ente: "515147", nombre: "LUIS TORRES", nombre_impreso: "LUIS TORRES", tipo: "ESTÁNDAR", orden_pertenece: "165",  key: 48, Agencia: { nombre: "EL VALLE", id: "18" } },
+                { numero_tarjeta: "2500 XXXX XXXX 1818", cuenta: "410010061514", tipo_identificacion: "R", identificacion: "1105970714001", ente: "515148", nombre: "ROBERTH TORRES", nombre_impreso: "ROBERTH TORRES", tipo: "ESTÁNDAR", orden_pertenece: "165", key: 58, Agencia: { nombre: "EL VALLE", id: "18" } }
             ]
 
         }
@@ -65,9 +67,11 @@ function RecepcionTarjeta(props) {
 
     const navigate = useHistory();
     const [lstOrdenPorConfirmar, setLstOrdenPorConfirmar] = useState([]);
-
+    const [lstOrdenesRespaldo, setLstOrdenesRespaldo] = useState([]);
 
     const [totalTarjetasReceptar, setTotalTarjetasReceptar] = useState(0);
+    const [filtroOpcion, setFiltroOpcion] = useState("-1");
+    const [filtroInputValor, setFiltroInputValor] = useState("");
     const [observacion, setObservacion] = useState("");
     const [tarjetasReceptadasCheckBox, setTarjetasReceptadasCheckBox] = useState([]);
     const [isSelectAll, setIsSelectAll] = useState(false);
@@ -82,26 +86,23 @@ function RecepcionTarjeta(props) {
         setIsSelectAll(!isSelectAll);
         if (!isSelectAll) {
             const resultado = lstOrdenPorConfirmar.map((orden, indexOrden) => {
-                return orden.tarjetas_receptadas.map((tarjeta, indexTarjeta) => {
-                    return tarjeta.identificacion;
-                });
+                return orden.tarjetas_receptadas
             }).flat();
+
+
             setTarjetasReceptadasCheckBox(resultado);
         } else {
             setTarjetasReceptadasCheckBox([]);
         }
     };
 
+    const checkTarjeta = (ordenTarjetaCheck) => {
 
-    const checkTarjeta = (identificacion) => {
-        if (tarjetasReceptadasCheckBox.includes(identificacion)) {
-            setTarjetasReceptadasCheckBox(tarjetasReceptadasCheckBox.filter(tarjeta_identificacion => tarjeta_identificacion !== identificacion));
+        if (tarjetasReceptadasCheckBox.includes(ordenTarjetaCheck)) {
+            setTarjetasReceptadasCheckBox(tarjetasReceptadasCheckBox.filter(tarjeta_identificacion => tarjeta_identificacion !== ordenTarjetaCheck));
         } else {
-            setTarjetasReceptadasCheckBox([...tarjetasReceptadasCheckBox, identificacion]);
+            setTarjetasReceptadasCheckBox([...tarjetasReceptadasCheckBox, ordenTarjetaCheck]);
         }
-
-       
-
         //Deseleccionar todas las opciones
         if (isSelectAll && tarjetasReceptadasCheckBox.length !== totalTarjetasReceptar) {
             setIsSelectAll(false);
@@ -109,20 +110,16 @@ function RecepcionTarjeta(props) {
     }
 
     useEffect(() => {
-        console.log(tarjetasReceptadasCheckBox.length, totalTarjetasReceptar)
-
         setIsSelectAll(tarjetasReceptadasCheckBox.length === totalTarjetasReceptar && tarjetasReceptadasCheckBox.length !== 0);
     }, [tarjetasReceptadasCheckBox]);
 
 
+    const filtrarOrdenesHandler = () => {
 
+        const resultSearch = filtrarOrdenes(filtroOpcion, filtroInputValor, lstOrdenesRespaldo) 
+        setLstOrdenPorConfirmar(resultSearch);
 
-  
-
-    const setObservacionHandler = (e) => {
-        setObservacion(e);
     }
-
 
     useEffect(() => {
         if (props.location.pathname !== '/confirmar_recepcion') {
@@ -133,6 +130,8 @@ function RecepcionTarjeta(props) {
         const conteoTarjetas = tarjetasPendientesConfirmar.reduce((acumulador, orden) => acumulador + orden.tarjetas_receptadas.length, 0);
         setTotalTarjetasReceptar(conteoTarjetas);
 
+        //Respaldo de toda la consulta(Se usara para filtro opcion "TODOS"")
+        setLstOrdenesRespaldo(tarjetasPendientesConfirmar)
         
     }, [])
 
@@ -161,9 +160,10 @@ function RecepcionTarjeta(props) {
         if (tarjetasReceptadasCheckBox.length === 0) {
             window.alert("SELECCIONE ALMENOS UN TARJETA PARA REGISTRAR LA RECEPCION");
         } else {
-            console.log("IMPLEMENTAR GUARDADO,", e);
             window.alert("SE GUARDO CORRECTAMENTE LA RECEPCION DE TARJETAS");
+            console.log(tarjetasReceptadasCheckBox)
             //navigate.push('/orden');
+
         }
     };
 
@@ -174,20 +174,26 @@ function RecepcionTarjeta(props) {
 
 
                 <Card className={["m-max justify-content-space-between align-content-center"]}>
-                    <br />
-                    <h2>CONFIRMAR RECEPCION DE TARJETAS</h2>
-                    <br />
+                   
+                    <h2 className="mt-1 mb-5">CONFIRMAR RECEPCIÓN DE TARJETAS</h2>
+            
+                    <div>
+                        <p style={{ fontSize: " 1.1rem" }}>Filtrar: </p>
+                        <div style={{ display: "flex", paddingTop: "5px" }}>
+                            <select defaultValue="-1" onChange={(e) => setFiltroOpcion(e.target.value)} value={filtroOpcion}>
+                                <option disabled="true" value="-1" >Seleccione alguna opción</option>
+                                <option value="filtroTodos" >Todo</option>
+                                <option value="filtroOrden" >Orden</option>
+                                <option value="filtroIdentificacion" >Identificación</option>
+                                <option value="filtroNombre" >Nombre</option>
+                                <option value="filtroTarjeta" >Tarjeta</option>
+                            </select>
 
-                    <section className="elements_two_column">
-                        <h3>Número total de tarjetas pendientes a confirmar: {totalTarjetasReceptar}</h3>
-                    </section>
+                            <Input className="w-20 ml-1" id="filtradoTarjetas" type="text" value={filtroInputValor} setValueHandler={(valor) => setFiltroInputValor(valor)} disabled={false}></Input>
+                            <Button className="btn_mg__primary ml-1" autoWidth="w-25" onClick={filtrarOrdenesHandler}>Buscar</Button>
+                        </div>
 
-                    <br />
-
-                    <div className="form_mg__item ptmg1">
-                        <Input id="filtradoTarjetas" type="text" value={""} disabled={true}></Input>
                     </div>
-
 
                     <form className="form_mg" onSubmit={onSubmitConfirmacionRecepcion} autoComplete="off">
                         {lstOrdenPorConfirmar.length > 0 &&
@@ -207,7 +213,7 @@ function RecepcionTarjeta(props) {
                                                     <td>{item.oficina_envia}</td>
                                                     <td>{item.oficina_recepta}</td>
                                                     <td>
-                                                        <Input key={tarjeta_receptar.identificacion} disabled={false} type="checkbox" checked={tarjetasReceptadasCheckBox.includes(tarjeta_receptar.identificacion)} setValueHandler={() => checkTarjeta(tarjeta_receptar.identificacion)}></Input>
+                                                        <Input key={tarjeta_receptar.identificacion} disabled={false} type="checkbox" checked={tarjetasReceptadasCheckBox.includes(tarjeta_receptar)} setValueHandler={() => checkTarjeta(tarjeta_receptar)}></Input>
 
                                                     </td>
                                                 </tr>
@@ -222,7 +228,7 @@ function RecepcionTarjeta(props) {
                         }
 
                         {lstOrdenPorConfirmar.length === 0 &&
-                            <p style={{ fontSize: '18px' }}> <strong> No existe tarjetas por confirmar recepción. </strong> </p>
+                            <p style={{ fontSize: '18px', paddingTop: "5px" }}> <strong> No existe tarjetas por confirmar recepción. </strong> </p>
                         }
 
 
@@ -237,7 +243,7 @@ function RecepcionTarjeta(props) {
                                         placeholder="Ingrese alguna observación"
                                         type="textarea"
                                         esRequerido={false}
-                                        onChange={setObservacionHandler}
+                                        onChange={(e) => setObservacion(e)}
                                     ></Textarea>
 
                                     
@@ -252,6 +258,15 @@ function RecepcionTarjeta(props) {
                                 Confirmar recepción</button>
                         </div>
                     </form>
+
+
+                    <br />
+                    <br />
+
+                    <div>
+                        <h3 className={"strong"}>Número total de tarjetas pendientes a confirmar: {totalTarjetasReceptar}</h3>
+                        <h3 className={"strong"}>Número de tarjetas seleccionadas: {tarjetasReceptadasCheckBox.length}</h3>
+                    </div>
 
                 </Card>
 

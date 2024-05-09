@@ -67,12 +67,12 @@ export default function OrdenGenerarArchivo(props) {
 
 
                 <Card className={["m-max justify-content-space-between align-content-center"]}>
-                    <br />
-                    <h2>Generar Archivo</h2>
-                    <br />
+                
+                    <h2 className="mt-1 mb-4" >Generar Archivo</h2>
+                   
 
-                    <h3 style={{ textDecoration: "underline" }}>Orden:</h3>
-                    <br />
+                    <h3 className="mt-2 mb-3" style={{ textDecoration: "underline" }}>Orden:</h3>
+              
 
                     <section className="elements_two_column">
                         <div className="form_mg_row">
@@ -106,10 +106,9 @@ export default function OrdenGenerarArchivo(props) {
                         </div>
 
                     </section>
-                    <br />
-                    <h3 style={{ textDecoration: "underline"} }>Tarjetas:</h3>
-                    <br />
-                   
+
+                    <h3 className="mt-2 mb-3" style={{ textDecoration: "underline" }}>Tarjetas:</h3>
+                    
                     <section style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "10px" }}>
 
                         <div className="form_mg_row">

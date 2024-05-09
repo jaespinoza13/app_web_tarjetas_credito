@@ -187,6 +187,10 @@ hr.dashed {
     margin-top: 1.2rem;
 }
 
+.mt-5 {
+    margin-top: 1.6rem;
+}
+
 .mb-1 {
     margin-bottom: 0.3rem;
 }
@@ -1506,6 +1510,11 @@ input[type=radio]:checked {
     border-color: #2A77FF;
 }
 
+
+.btns-in-margin-rigth {
+    position: absolute;
+    right: 1rem;
+}
 
 @keyframes ripple {
     to {
