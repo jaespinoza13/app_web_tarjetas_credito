@@ -36,7 +36,7 @@ const VerSolicitud = (props) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [modalVisibleOk, setModalVisibleOk] = useState(false);
     const [modalArchivos, setModalArchivos] = useState(false);
-    const [faltaComentariosAsesor, setFaltaComentariosAsesor] = useState(true);
+    const [faltaComentariosAsesor, setFaltaComentariosAsesor] = useState(false);
     const [isBtnComentariosActivo, setIsBtnComentariosActivo] = useState(false)
     const [textoModal, setTextoModal] = useState("");
     const [isDesicionHanilitada, setIsDesicionHanilitada] = useState(false);
