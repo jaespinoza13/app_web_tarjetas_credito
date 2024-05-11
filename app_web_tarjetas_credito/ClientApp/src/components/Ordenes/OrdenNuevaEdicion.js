@@ -7,6 +7,7 @@ import Chip from '../Common/UI/Chip'
 import Input from '../Common/UI/Input'
 import { IsNullOrWhiteSpace } from '../../js/utiles';
 import { connect } from 'react-redux';
+import { ObjTarjSolicAprobMock, objConfirmacionRecepcionTarjetas } from './ObjetosMock';
 
 const mapStateToProps = (state) => {
     var bd = state.GetWebService.data;
@@ -24,39 +25,15 @@ const mapStateToProps = (state) => {
 function OrdenNuevaEdicion(props) {
 
     const headersTarjetasAprobadas = [
-        { nombre: 'Seleccionar', key: 0 }, { nombre: 'Cuenta', key: 1 }, { nombre: 'Tipo Identificacion', key: 2 },
-        { nombre: 'Identificación', key: 3 }, { nombre: 'Ente', key: 4 }, { nombre: 'Nombre', key: 5 },
-        { nombre: 'Nombre impreso', key: 6 }, { nombre: 'Producto TC.', key: 7 }, { nombre: 'Cupo solicitado', key: 8 }, 
+        { nombre: 'Seleccionar', key: 0 }, { nombre: 'Oficina Recepta', key: 1 }, { nombre: 'Cuenta', key: 2 },
+        { nombre: 'Identificación', key: 3 }, { nombre: 'Ente', key: 4 }, { nombre: 'Nombre impreso', key: 5 },
+        { nombre: 'Producto TC.', key: 6 }, { nombre: 'Cupo solicitado', key: 7 }, 
     ]
 
-    /* LO QUE RETORNARIA DESDE EL BACK */
-    const bodyTarjetasAprobadas = [
-        { cuenta: "410010064540", tipo_identificacion: "C", identificacion: "1150214375", ente: "189610", nombre: "DANNY VASQUEZ", nombre_impreso: "DANNY VASQUEZ", tipo: "BLACK", cupo: "8000", key: 23, Agencia: { nombre: "MATRIZ",  id: "1"  } },
-        { cuenta: "410010026841", tipo_identificacion: "C", identificacion: "1105970717", ente: "515145", nombre: "ROBERTH TORRES", nombre_impreso: "ROBERTH TORRES", tipo: "GOLDEN", cupo: "15000", key: 28, Agencia: { nombre: "CATAMAYO", id: "3" } },
-        { cuenta: "410010061199", tipo_identificacion: "R", identificacion: "1105970712001", ente: "515146", nombre: "JUAN TORRES", nombre_impreso: "JUAN TORRES", tipo: "GOLDEN", cupo: "15000", key: 38, Agencia: { nombre: "MATRIZ", id: "1" } }, 
-        { cuenta: "410010094684", tipo_identificacion: "P", identificacion: "PL970713", ente: "515147", nombre: "LUIS TORRES", nombre_impreso: "LUIS TORRES", tipo: "ESTÁNDAR", cupo: "15000", key: 48, Agencia: { nombre: "CATAMAYO", id: "3" } }, 
-        { cuenta: "410010061514", tipo_identificacion: "R", identificacion: "1105970714001", ente: "515148", nombre: "ROBERTH TORRES", nombre_impreso: "ROBERTH TORRES", tipo: "ESTÁNDAR", cupo: "15000", key: 58, Agencia: { nombre: "MATRIZ", id: "1" } }, 
-        { cuenta: "410010064000", tipo_identificacion: "P", identificacion: "PZ970715", ente: "515149", nombre: "ROBERTH TORRES", nombre_impreso: "ROBERTH TORRES", tipo: "GOLDEN", cupo: "15000", key: 68}
-    ]
 
-    //OBJETO SIMULADO PARA EDITAR DATOS
-    const objetoEditacion = [
-        {
-            orden: "164",
-            prefijo_tarjeta: "53",
-            cost_emision: "no_cobro_emision",
-            descripcion: "TARJETAS SOLICITADAS PARA MES DE ABRIL",
-            tarjetas_solicitadas: [
-                bodyTarjetasAprobadas[1],
-                bodyTarjetasAprobadas[3]
-            ]
-
-        }
-    ]
-
+    const [lstOrdenTarjetas, setLstOrdenTarjetas] = useState([]);
     
     const navigate = useHistory();
-    const [lstOrdenTarjetas, setLstOrdenTarjetas] = useState([]);
     const [accion, setAccion] = useState();
     const [accionBtn, setAccionBtn] = useState();
     const [agenciaSolicita, setAgenciaSolicita] = useState("-1");
@@ -130,7 +107,7 @@ function OrdenNuevaEdicion(props) {
             //Estado de check table
             setDesactivarCheckEditar(false);
 
-            
+         
         }
         else {
             //Control para evitar saltarse al editar, sin tener el numero de Orden
@@ -138,31 +115,35 @@ function OrdenNuevaEdicion(props) {
                 navigate.push('/orden');
             }
             else {
-                setAccion("Editar Orden")
-                setAccionBtn("Modificar orden")
+                
+                setAccion("Editar Orden");
+                setAccionBtn("Modificar orden");
 
+                //LlAMAR METODO API
                 /// TODO: traer data desde el back por peticion O VER SI DESDE LISTA ORDEN ENVIAR EL OBJETO YA A EDITAR
-                setLstOrdenTarjetas(objetoEditacion[0].tarjetas_solicitadas);
-                setNrOrden(objetoEditacion[0].orden);
-                setCostoEmision(objetoEditacion[0].cost_emision);
-                setDescripcion(objetoEditacion[0].descripcion);
-                setPrefijo(objetoEditacion[0].prefijo_tarjeta);
-                setTarjetasAprobadasCheckBox(objetoEditacion[0].tarjetas_solicitadas.map(tarjeta => tarjeta.identificacion));
+                setLstOrdenTarjetas(objConfirmacionRecepcionTarjetas[1].orden_tarjetaDet);
+                setNrOrden(objConfirmacionRecepcionTarjetas[1].orden);
+                setCostoEmision(objConfirmacionRecepcionTarjetas[1].cost_emision);
+                setDescripcion(objConfirmacionRecepcionTarjetas[1].descripcion);
+                setPrefijo(objConfirmacionRecepcionTarjetas[1].prefijo_tarjeta);
+                setTarjetasAprobadasCheckBox(objConfirmacionRecepcionTarjetas[1].orden_tarjetaDet.map(tarjeta => tarjeta.identificacion));
 
                 //Estado para select de agencia
-                setAgenciaSolicita(objetoEditacion[0]?.tarjetas_solicitadas[0]?.Agencia?.id);
+                setAgenciaSolicita(objConfirmacionRecepcionTarjetas[1].oficina_solicita);
                 //Estado de check para editar
                 setDesactivarCheckEditar(true);
-
+                
             }
         }
     }, [])
 
     const agenciaHadler = (e) => {
-        setAgenciaSolicita(e.target.value)
+        setAgenciaSolicita(e.target.value);
+        setTarjetasAprobadasCheckBox([]);
+        setIsSelectAll(false);
         // TODO: llamado a back para todas las tarjetas
         // llamar al fetch correspondiente
-        const tarjetasDisponibles = bodyTarjetasAprobadas.filter(tarjeta => tarjeta?.Agencia?.id === e.target.value)
+        const tarjetasDisponibles = ObjTarjSolicAprobMock.filter(tarjetaSolicitud => tarjetaSolicitud.oficina_recepta === e.target.value)
         setLstOrdenTarjetas(tarjetasDisponibles);
     }
 
@@ -190,7 +171,6 @@ function OrdenNuevaEdicion(props) {
         if (tarjetasAprobadasCheckBox.length === 0) {
             window.alert("SELECCIONE ALMENOS UNA TARJETA PARA CREAR LA ORDEN");
         } else {
-            console.log("IMPLEMENTAR GUARDADO,", e);
             window.alert("SE GUARDO CORRECTAMENTE LA ORDEN");
             navigate.push('/orden');
         }
@@ -268,32 +248,32 @@ function OrdenNuevaEdicion(props) {
                             <div>
 
                                 <div className="form_mg_row">
-                                    <label htmlFor="agencia_solicita" className="pbmg1 lbl-input label_horizontal">Seleccione la Agencia que solicita nueva orden de tarjetas:</label>
+                                    <label htmlFor="oficina_solicita" className="pbmg1 lbl-input label_horizontal">Seleccione la Agencia que solicita nueva orden de tarjetas:</label>
                                     <div className="form_mg__item ptmg1">
-                                        <select id="agencia_solicita" name="agencia_solicita" defaultValue={"-1"} onChange={agenciaHadler} value={agenciaSolicita} disabled={desactivarCheckEditar }>
+                                        <select id="oficina_solicita" name="oficina_solicita" defaultValue={"-1"} onChange={agenciaHadler} value={agenciaSolicita} disabled={desactivarCheckEditar }>
                                             <option value="-1" disabled={true}>----- SELECCIONE UNA AGENCIA -----</option>
-                                            <option value="1">MATRIZ</option>
-                                            <option value="2">SARAGURO</option>
-                                            <option value="3">CATAMAYO</option>
-                                            <option value="4">CARIAMANGA</option>
-                                            <option value="5">ALAMOR</option>
-                                            <option value="6">ZAMORA</option>
-                                            <option value="7">CUENCA</option>
-                                            <option value="8">AGENCIA NORTE</option>
-                                            <option value="9">MACARA</option>
-                                            <option value="10">AGENCIA SUR</option>
-                                            <option value="11">AGENCIA YANTZAZA</option>
-                                            <option value="12">BALSAS</option>
-                                            <option value="13">CATACOCHA</option>
-                                            <option value="14">SANTA ROSA</option>
-                                            <option value="15">AGENCIA GUALAQUIZA</option>
-                                            <option value="16">AGENCIA CUARTO CENTENARIO</option>
-                                            <option value="17">AGENCIA ZUMBA</option>
-                                            <option value="18">AGENCIA EL VALLE</option>
-                                            <option value="19">AGENCIA MACHALA</option>
-                                            <option value="20">AGENCIA EL EJIDO</option>
-                                            <option value="21">AGENCIA LATACUNGA</option>
-                                            <option value="22">AGENCIA SANTO DOMINGO</option>
+                                            <option value="MATRIZ">MATRIZ</option>
+                                            <option value="SARAGURO">SARAGURO</option>
+                                            <option value="CATAMAYO">CATAMAYO</option>
+                                            <option value="CARIAMANGA">CARIAMANGA</option>
+                                            <option value="ALAMOR">ALAMOR</option>
+                                            <option value="ZAMORA">ZAMORA</option>
+                                            <option value="CUENCA">CUENCA</option>
+                                            <option value="AGENCIA NORTE">AGENCIA NORTE</option>
+                                            <option value="MACARA">MACARA</option>
+                                            <option value="AGENCIA SUR">AGENCIA SUR</option>
+                                            <option value="AGENCIA YANTZAZA">AGENCIA YANTZAZA</option>
+                                            <option value="BALSAS">BALSAS</option>
+                                            <option value="CATACOCHA">CATACOCHA</option>
+                                            <option value="SANTA ROSA">SANTA ROSA</option>
+                                            <option value="AGENCIA GUALAQUIZA">AGENCIA GUALAQUIZA</option>
+                                            <option value="AGENCIA CUARTO CENTENARIO">AGENCIA CUARTO CENTENARIO</option>
+                                            <option value="AGENCIA ZUMBA">AGENCIA ZUMBA</option>
+                                            <option value="AGENCIA EL VALLE">AGENCIA EL VALLE</option>
+                                            <option value="AGENCIA MACHALA">AGENCIA MACHALA</option>
+                                            <option value="AGENCIA EL EJIDO">AGENCIA EL EJIDO</option>
+                                            <option value="AGENCIA LATACUNGA">AGENCIA LATACUNGA</option>
+                                            <option value="AGENCIA SANTO DOMINGO">AGENCIA SANTO DOMINGO</option>
                                         </select>
                                     </div>
                                 </div>
@@ -314,12 +294,11 @@ function OrdenNuevaEdicion(props) {
                                                     <Input key={tarjeta.identificacion} disabled={desactivarCheckEditar} type="checkbox" checked={tarjetasAprobadasCheckBox.includes(tarjeta.identificacion)} setValueHandler={() => checkTarjeta(tarjeta.identificacion)}></Input>
 
                                                 </td>
+                                                <td>{tarjeta.oficina_recepta}</td>
                                                 <td>{tarjeta.cuenta}</td>
-                                                <td>{tarjeta.tipo_identificacion}</td>
                                                 <td>{tarjeta.identificacion}</td>
                                                 <td>{tarjeta.ente}</td>
                                                 <td>{tarjeta.nombre}</td>
-                                                <td>{tarjeta.nombre_impreso}</td>
                                                 <td><Chip type={conversionTipoTC(tarjeta.tipo)}>{tarjeta.tipo}</Chip></td>
                                                 <td>{`$ ${Number(tarjeta.cupo).toLocaleString('en-US')}`}</td>
 

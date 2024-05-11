@@ -23,7 +23,7 @@ import VerSolicitud from './components/Solicitud/VerSolicitud';
 import OrdenNuevaEdicion from './components/Ordenes/OrdenNuevaEdicion';
 import OrdenGenerarArchivo from './components/Ordenes/OrdenGenerarArchivo';
 import VerOrden from './components/Ordenes/VerOrden';
-import RecepcionTarjeta from './components/Recepcion_tarjetas/RecepcionTarjeta';
+import RecepcionTarjetaAgencias from './components/Ordenes/RecepcionTarjetaAgencias';
 import OrdenRecibirProveedor from './components/Ordenes/OrdenRecibirProveedor';
 
 
@@ -182,7 +182,7 @@ class App extends Component {
                     </Route>
 
                     <Route path='/recibir_orden_proveedor' component={!this.state.isAuthenticated ? Login : OrdenRecibirProveedor} />
-                    <Route path='/confirmar_recepcion' component={!this.state.isAuthenticated ? Login : RecepcionTarjeta} />
+                    <Route path='/confirmar_recepcion' component={!this.state.isAuthenticated ? Login : RecepcionTarjetaAgencias} />
 
 
 

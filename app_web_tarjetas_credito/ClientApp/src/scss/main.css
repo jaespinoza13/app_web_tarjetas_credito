@@ -1465,6 +1465,22 @@ img {
     gap: 20px;
 }
 
+.btn_mg_icons {
+    border: none;
+    border-radius: 25px;
+    color: #004CAC;
+    letter-spacing: 0px;
+    width: 1.7rem;
+    display: flex;
+    align-items: center;
+    background-color: #F8F8F8;
+    justify-content: center;
+}
+
+.img-icons-acciones {
+    width: 30px;
+}
+
 /* Estilo del mensaje emergente */
 .custom-icon-button::after {
     content: attr(title);

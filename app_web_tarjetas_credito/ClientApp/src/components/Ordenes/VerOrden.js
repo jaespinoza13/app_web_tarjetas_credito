@@ -9,6 +9,7 @@ import  Input  from '../Common/UI/Input';
 import { connect, useDispatch } from 'react-redux';
 import { IsNullOrWhiteSpace, base64ToBlob, verificarPdf, descargarArchivo, generarFechaHoy } from '../../js/utiles';
 import Button from "../Common/UI/Button";
+import { objConfirmacionRecepcionTarjetas } from "./ObjetosMock";
 
 
 const mapStateToProps = (state) => {
@@ -26,36 +27,16 @@ const mapStateToProps = (state) => {
 function VerOrden(props) {
 
     const headersTarjetasAprobadas = [
-        { nombre: 'Cuenta', key: 0 }, { nombre: 'Tipo Identificacion', key: 1 },
-        { nombre: 'Identificación', key: 2 }, { nombre: 'Ente', key: 3 }, { nombre: 'Nombre', key: 4 },
-        { nombre: 'Nombre impreso', key: 5 }, { nombre: 'Producto TC.', key: 6 }, { nombre: 'Cupo solicitado', key: 7 }
+        { nombre: 'Oficina recepta', key: 0 }, { nombre: 'Cuenta', key: 1 },
+        { nombre: 'Identificación', key: 2 }, { nombre: 'Ente', key: 3 }, { nombre: 'Nombre impreso', key: 4 },
+        { nombre: 'Producto TC.', key: 5 }, { nombre: 'Cupo solicitado', key: 7 }
     ]
-
-
-    //OBJETO SIMULADO PARA TRAER INFORMACION DE LA ORDEN 
-    const objetoEditacion = [
-        {
-            orden: "164",
-            prefijo_tarjeta: "53",
-            cost_emision: "cobro_emision",
-            descripcion: "TARJETAS SOLICITADAS PARA MES DE ABRIL",
-            agencia_solicita: { nombre: "MATRIZ", id: "1" },
-            tarjetas_solicitadas: [
-                { cuenta: "410010064540", tipo_identificacion: "C", identificacion: "1150214375", ente: "189610", nombre: "DANNY VASQUEZ", nombre_impreso: "DANNY VASQUEZ", tipo: "BLACK", cupo: "8000", key: 23, Agencia: { nombre: "MATRIZ", id: "1" } },
-                { cuenta: "410010061199", tipo_identificacion: "R", identificacion: "1105970712001", ente: "515146", nombre: "JUAN TORRES", nombre_impreso: "JUAN TORRES", tipo: "GOLDEN", cupo: "15000", key: 38, Agencia: { nombre: "MATRIZ", id: "1" } },
-                { cuenta: "410010061514", tipo_identificacion: "R", identificacion: "1105970714001", ente: "515148", nombre: "ROBERTH TORRES", nombre_impreso: "ROBERTH TORRES", tipo: "ESTÁNDAR", cupo: "15000", key: 58, Agencia: { nombre: "MATRIZ", id: "1" } },
-                { cuenta: "410010064000", tipo_identificacion: "P", identificacion: "PZ970715", ente: "515149", nombre: "ROBERTH TORRES", nombre_impreso: "ROBERTH TORRES", tipo: "GOLDEN", cupo: "15000", key: 68, Agencia: { nombre: "MATRIZ", id: "1" } }
-            ]
-
-        }
-    ]
-
 
     const navigate = useHistory();
     const dispatch = useDispatch();
-    const [lstSolicitudes, setLstSolicitudes] = useState([]);
+    const [lstOrdenTarjetas, setlstOrdenTarjetas] = useState([]);
 
-
+    
     const [nrOrnden, setNrOrden] = useState("");
     const [prefijo, setPrefijo] = useState("");
     const [costoEmision, setCostoEmision] = useState("");
@@ -72,12 +53,12 @@ function VerOrden(props) {
         else {
 
             /// TODO: traer data desde el back por peticion O VER SI DESDE LISTA ORDEN ENVIAR EL OBJETO YA A EDITAR
-            setLstSolicitudes(objetoEditacion[0].tarjetas_solicitadas);
-            setNrOrden(objetoEditacion[0].orden);
-            setCostoEmision(objetoEditacion[0].cost_emision);
-            setDescripcion(objetoEditacion[0].descripcion);
-            setPrefijo(objetoEditacion[0].prefijo_tarjeta);
-            setAgenciaSolicita(objetoEditacion[0].agencia_solicita.nombre);
+            setlstOrdenTarjetas(objConfirmacionRecepcionTarjetas[1].orden_tarjetaDet);
+            setNrOrden(objConfirmacionRecepcionTarjetas[1].orden);
+            setCostoEmision(objConfirmacionRecepcionTarjetas[1].cost_emision);
+            setDescripcion(objConfirmacionRecepcionTarjetas[1].descripcion);
+            setPrefijo(objConfirmacionRecepcionTarjetas[1].prefijo_tarjeta);
+            setAgenciaSolicita(objConfirmacionRecepcionTarjetas[1].oficina_solicita);
 
         }
 
@@ -191,9 +172,9 @@ function VerOrden(props) {
 
 
                         <div className="form_mg_row">
-                            <label htmlFor="agencia_solicita" className="pbmg1 lbl-input label_horizontal">Agencia que solicito</label>
+                            <label htmlFor="oficina_solicita" className="pbmg1 lbl-input label_horizontal">Agencia que solicito</label>
                             <div className="form_mg__item ptmg1">
-                                <Input id="agencia_solicita" name="agencia_solicita" type="text" value={agenciaSolicita} disabled={true}></Input>
+                                <Input id="oficina_solicita" name="oficina_solicita" type="text" value={agenciaSolicita} disabled={true}></Input>
                             </div>
                         </div>
 
@@ -202,15 +183,14 @@ function VerOrden(props) {
 
                     <div id="listado_ordenes" className="mt-3">
                         <Table headers={headersTarjetasAprobadas}>
-                            {lstSolicitudes.map((tarjeta) => {
+                            {lstOrdenTarjetas.map((tarjeta) => {
                                 return (
                                 <tr key={tarjeta.ente}>
+                                    <td>{tarjeta.oficina_recepta}</td>
                                     <td>{tarjeta.cuenta}</td>
-                                    <td>{tarjeta.tipo_identificacion}</td>
                                     <td>{tarjeta.identificacion}</td>
                                     <td>{tarjeta.ente}</td>
                                     <td>{tarjeta.nombre}</td>
-                                    <td>{tarjeta.nombre_impreso}</td>
                                     <td><Chip type={conversionTipoTC(tarjeta.tipo)}>{tarjeta.tipo}</Chip></td>
                                     <td>{`$ ${Number(tarjeta.cupo).toLocaleString('en-US')}`}</td>
                                     </tr>

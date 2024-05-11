@@ -3,6 +3,7 @@ import Sidebar from '../Common/Navs/Sidebar';
 import Card from '../Common/Card';
 import { useHistory } from 'react-router-dom';
 import Input from '../Common/UI/Input'
+import { objConfirmacionRecepcionTarjetas } from './ObjetosMock';
 
 export default function OrdenGenerarArchivo(props) {
 
@@ -17,22 +18,6 @@ export default function OrdenGenerarArchivo(props) {
     const [numTarjetasEstandar, setNumTarjetasEstandar] = useState(0);
     const [numTarjetasBlack, setNumTarjetasBlack] = useState(0);
 
-    const objetoGenerarArchivo = [
-        {
-            orden: "164",
-            fecha_creacion: "30/04/2023 4:15:07 PM",
-            agencia: "CATAMAYO",
-            descripcion: "TARJETAS SOLICITADAS PARA MES DE ABRIL",
-            tarjetas_solicitadas: [
-                { cuenta: "410010026841", tipo_identificacion: "C", identificacion: "1105970717", ente: "515145", nombre: "ROBERTH TORRES", nombre_impreso: "ROBERTH TORRES", tipo: "GOLDEN", cupo: "15000", key: 28, Agencia: { nombre: "CATAMAYO", id: "3" } },
-                { cuenta: "410010094684", tipo_identificacion: "P", identificacion: "PL970713", ente: "515147", nombre: "LUIS TORRES", nombre_impreso: "LUIS TORRES", tipo: "ESTÁNDAR", cupo: "15000", key: 48, Agencia: { nombre: "CATAMAYO", id: "3" } },
-                { cuenta: "410010094684", tipo_identificacion: "P", identificacion: "PL970713", ente: "515100", nombre: "JORGE MARTINEZ", nombre_impreso: "JORGE MARTINEZ", tipo: "GOLDEN", cupo: "15000", key: 20, Agencia: { nombre: "CATAMAYO", id: "3" } }
-            ]
-
-        }
-    ]
-
-
     useEffect(() => {
 
 
@@ -43,15 +28,15 @@ export default function OrdenGenerarArchivo(props) {
         else {
 
             /// TODO: traer data desde el back (llamar con props.location?.state?.numOrden)
-            setNrOrden(objetoGenerarArchivo[0].orden);
-            setAgencia(objetoGenerarArchivo[0].agencia);
-            setDescripcion(objetoGenerarArchivo[0].descripcion);
-            setFechaCreacion(objetoGenerarArchivo[0].fecha_creacion);
+            setNrOrden(objConfirmacionRecepcionTarjetas[1].orden);
+            setAgencia(objConfirmacionRecepcionTarjetas[1].oficina_solicita);
+            setDescripcion(objConfirmacionRecepcionTarjetas[1].descripcion);
+            setFechaCreacion(objConfirmacionRecepcionTarjetas[1].fecha_creacion);
 
-            setNumTarjetasTotal(objetoGenerarArchivo[0].tarjetas_solicitadas.length);
-            setNumTarjetasGolden(objetoGenerarArchivo[0].tarjetas_solicitadas.filter(tarjeta => tarjeta.tipo === "GOLDEN").length.toString());
-            setNumTarjetasEstandar(objetoGenerarArchivo[0].tarjetas_solicitadas.filter(tarjeta => tarjeta.tipo === "ESTÁNDAR").length.toString());
-            setNumTarjetasBlack(objetoGenerarArchivo[0].tarjetas_solicitadas.filter(tarjeta => tarjeta.tipo === "BLACK").length.toString());
+            setNumTarjetasTotal(objConfirmacionRecepcionTarjetas[1].orden_tarjetaDet.length);
+            setNumTarjetasGolden(objConfirmacionRecepcionTarjetas[1].orden_tarjetaDet.filter(tarjeta => tarjeta.tipo === "GOLDEN").length.toString());
+            setNumTarjetasEstandar(objConfirmacionRecepcionTarjetas[1].orden_tarjetaDet.filter(tarjeta => tarjeta.tipo === "ESTÁNDAR").length.toString());
+            setNumTarjetasBlack(objConfirmacionRecepcionTarjetas[1].orden_tarjetaDet.filter(tarjeta => tarjeta.tipo === "BLACK").length.toString());
 
 
         }
@@ -90,10 +75,10 @@ export default function OrdenGenerarArchivo(props) {
                         </div>
 
                         <div className="form_mg_row">
-                            <label htmlFor="agencia_solicitante" className="pbmg1 lbl-input label_horizontal">Agencia</label>
+                            <label htmlFor="oficina_solicitante" className="pbmg1 lbl-input label_horizontal">Agencia</label>
                             <div className="form_mg__item ptmg1">
 
-                                <Input id="agencia_solicitante" name="agencia_solicitante" type="text" value={agencia}  disabled={true}></Input>
+                                <Input id="oficina_solicitante" name="oficina_solicitante" type="text" value={agencia}  disabled={true}></Input>
                             </div>
                         </div>
 

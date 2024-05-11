@@ -10,7 +10,7 @@ import { IsNullOrWhiteSpace, conversionTipoTC } from '../../js/utiles';
 import { connect } from 'react-redux';
 import Button from '../Common/UI/Button';
 import { filtrarOrdenes } from '../../js/filtros';
-import { ordenRecibirProveedor } from './ObjetosMock'
+import { objConfirmacionRecepcionTarjetas } from './ObjetosMock'
 
 const mapStateToProps = (state) => {
     var bd = state.GetWebService.data;
@@ -28,14 +28,10 @@ const mapStateToProps = (state) => {
 function OrdenRecibirProveedor(props) {
 
     const headersTarjetasAprobadas = [
-        { nombre: 'Identificacion', key: 0 }, { nombre: 'Nombre solicitante', key: 1 }, { nombre: 'Producto TC', key: 2 },
-        { nombre: 'Estado', key: 3 }, { nombre: 'Oficina solicita', key: 4 }, { nombre: 'Fecha solicita usuario', key: 5 },
-        { nombre: 'Estado Tarjeta', key: 6 },
+        { nombre: 'Orden', key: 0 }, { nombre: 'Identificación', key: 1 }, { nombre: 'Nombre solicitante', key: 2 }, { nombre: 'Tarjeta', key: 3 },
+        { nombre: 'Producto TC', key: 4 }, { nombre: 'Oficina recepta', key: 5 }, { nombre: 'Oficina solicitante', key: 6 }, { nombre: 'Fecha solicita cliente', key: 7 },
+        { nombre: 'Estado Tarjeta', key: 8 },
     ]
-
-  
-
-
 
     const navigate = useHistory();
     const [lstTarjetasRecibirProveedor, setLstTarjetasRecibirProveedor] = useState([]);
@@ -83,7 +79,7 @@ function OrdenRecibirProveedor(props) {
     const filtrarOrdenesHandler = () => {
 
         const resultSearch = filtrarOrdenes(filtroOpcion, filtroInputValor, lstTarjetasRespaldo)
-        //setLstTarjetasRecibirProveedor(resultSearch);
+        setLstTarjetasRecibirProveedor(resultSearch);
 
     }
 
@@ -93,14 +89,14 @@ function OrdenRecibirProveedor(props) {
         }
 
         //OBJETO MOCK TRAER CONSULTA A LA BASE
-        setLstTarjetasRecibirProveedor(ordenRecibirProveedor);
+        setLstTarjetasRecibirProveedor(objConfirmacionRecepcionTarjetas);
 
-        
+
         //const conteoTarjetas = tarjetasSolicitadasProveedor.reduce((acumulador, orden) => acumulador + orden.tarjetas_receptadas.length, 0);
         //setTotalTarjetasReceptar(conteoTarjetas);
 
         //Respaldo de toda la consulta(Se usara para filtro opcion "TODOS"")
-        setLstTarjetasRespaldo(ordenRecibirProveedor)
+        setLstTarjetasRespaldo(objConfirmacionRecepcionTarjetas)
 
     }, [])
 
@@ -145,29 +141,36 @@ function OrdenRecibirProveedor(props) {
                         </div>
 
                     </div>
-
+                    {/*   multipleOpcion={true} onChangeCheckBox={seleccionMultiple} isSelectAll={isSelectAll} indexCheckbox={8}*/}
                     <form className="form_mg" onSubmit={onSubmitConfirmacionRecepcion} autoComplete="off">
                         {lstTarjetasRecibirProveedor.length > 0 &&
                             <div id="listado_ordenes" className="mt-3">
-                                <Table headers={headersTarjetasAprobadas} multipleOpcion={true} onChangeCheckBox={seleccionMultiple} isSelectAll={isSelectAll} desactivarCheckEditar={false}
-                                    indexCheckbox={6}>
+                                <Table headers={headersTarjetasAprobadas}
+                                    desactivarCheckEditar={false}>
+
                                     {lstTarjetasRecibirProveedor.map((item, index) => (
-                                        
-                                        <tr key={item}>
-                                            <td>{item.identificacion}</td>
-                                            <td>{item.nombre}</td>
-                                            <td><Chip type={conversionTipoTC(item.tipo)}>{item.tipo}</Chip></td>
-                                            <td>{item.estado}</td>
-                                            <td>{item.oficina_solicita}</td>
-                                            <td>{item.fecha_solicita}</td>
-                                            <td>
-                                                <Input key={item.identificacion} disabled={false} type="checkbox" checked={tarjetasReceptadasCheckBox.includes(item)} setValueHandler={() => checkTarjeta(item)}></Input>
+                                        <>
+                                            {item.orden_tarjetaDet.map((tarjeta_receptar, tarjetaIndex) => (
 
-                                            </td>
-                                        </tr>
-                                  
+                                                <tr key={tarjeta_receptar.id_tarjeta}>
+                                                    <td>{item.orden}</td>
+                                                    <td>{tarjeta_receptar.identificacion}</td>
+                                                    <td>{tarjeta_receptar.nombre}</td>
+                                                    <td>{tarjeta_receptar.numero_tarjeta}</td>
+                                                    <td><Chip type={conversionTipoTC(tarjeta_receptar.tipo)}>{tarjeta_receptar.tipo}</Chip></td>
+                                                    <td>{item.oficina_envia}</td>
+                                                    <td>{item.oficina_solicita}</td>
+                                                    <td>{item.fecha_creacion}</td>
+                                                    <td>
+                                                        <Input key={tarjeta_receptar.identificacion} disabled={false} type="checkbox" checked={tarjetasReceptadasCheckBox.includes(tarjeta_receptar)} setValueHandler={() => checkTarjeta(tarjeta_receptar)}></Input>
+                                                     
+
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </>
+
                                     ))}
-
                                 </Table>
                             </div>
 

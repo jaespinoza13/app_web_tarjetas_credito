@@ -10,6 +10,7 @@ import { connect } from 'react-redux';
 import Textarea from '../Common/UI/Textarea';
 import Button from '../Common/UI/Button';
 import { filtrarOrdenes } from '../../js/filtros';
+import { objConfirmacionRecepcionTarjetas } from "./ObjetosMock";
 
 const mapStateToProps = (state) => {
     var bd = state.GetWebService.data;
@@ -24,46 +25,13 @@ const mapStateToProps = (state) => {
 };
 
 
-function RecepcionTarjeta(props) {
+function RecepcionTarjetaAgencias(props) {
 
     const headersTarjetasAprobadas = [
         { nombre: 'Orden', key: 0 }, { nombre: 'Identificacion', key: 1 },
         { nombre: 'Nombre', key: 2 }, { nombre: 'Tarjeta', key: 3 }, { nombre: 'Producto TC.', key: 4 }, { nombre: 'Oficina envia', key: 5 },
-        { nombre: 'Oficina recepta', key: 6 }, { nombre: 'Recibido', key: 7 },
+        { nombre: 'Oficina recepta', key: 6 }, { nombre: 'Fecha cliente solicita', key: 7 },{ nombre: 'Recibido', key: 8 },
     ]
-
-
-    //OBJETO SIMULADO PARA EDITAR DATOS
-    const tarjetasPendientesConfirmar = [
-        {
-            orden: "164",
-            prefijo_tarjeta: "53",
-            cost_emision: "no_cobro_emision",
-            descripcion: "TARJETAS SOLICITADAS PARA MES DE ABRIL",
-            oficina_envia: "MATRIZ",
-            oficina_recepta: "EL VALLE",
-            tarjetas_receptadas: [
-                { numero_tarjeta: "2500 XXXX XXXX 5646", cuenta: "410010064540", tipo_identificacion: "C", identificacion: "1150214375", ente: "189610", nombre: "DANNY VASQUEZ", nombre_impreso: "DANNY VASQUEZ", tipo: "BLACK", orden_pertenece: "164", key: 23, Agencia: { nombre: "EL VALLE", id: "18" } },
-                { numero_tarjeta: "2500 XXXX XXXX 3636", cuenta: "410010026841", tipo_identificacion: "C", identificacion: "1105970717", ente: "515145", nombre: "ROBERTH TORRES", nombre_impreso: "ROBERTH TORRES", tipo: "GOLDEN", orden_pertenece: "164", key: 28, Agencia: { nombre: "EL VALLE", id: "18" } },
-                { numero_tarjeta: "2500 XXXX XXXX 0101", cuenta: "410010061199", tipo_identificacion: "R", identificacion: "1150214375", ente: "515146", nombre: "JUAN TORRES", nombre_impreso: "JUAN TORRES", tipo: "GOLDEN", orden_pertenece: "164", key: 38, Agencia: { nombre: "EL VALLE", id: "18" } },
-                            ]
-
-        },
-        {
-            orden: "165",
-            prefijo_tarjeta: "54",
-            cost_emision: "cobro_emision",
-            descripcion: "TARJETAS SOLICITADAS PARA MES DE MAYO",
-            oficina_envia: "MATRIZ",
-            oficina_recepta: "EL VALLE",
-            tarjetas_receptadas: [
-                { numero_tarjeta: "2500 XXXX XXXX 0214", cuenta: "410010094684", tipo_identificacion: "P", identificacion: "PL970713", ente: "515147", nombre: "LUIS TORRES", nombre_impreso: "LUIS TORRES", tipo: "ESTÁNDAR", orden_pertenece: "165",  key: 48, Agencia: { nombre: "EL VALLE", id: "18" } },
-                { numero_tarjeta: "2500 XXXX XXXX 1818", cuenta: "410010061514", tipo_identificacion: "R", identificacion: "1105970714001", ente: "515148", nombre: "ROBERTH TORRES", nombre_impreso: "ROBERTH TORRES", tipo: "ESTÁNDAR", orden_pertenece: "165", key: 58, Agencia: { nombre: "EL VALLE", id: "18" } }
-            ]
-
-        }
-    ]
-
 
     const navigate = useHistory();
     const [lstOrdenPorConfirmar, setLstOrdenPorConfirmar] = useState([]);
@@ -86,7 +54,7 @@ function RecepcionTarjeta(props) {
         setIsSelectAll(!isSelectAll);
         if (!isSelectAll) {
             const resultado = lstOrdenPorConfirmar.map((orden, indexOrden) => {
-                return orden.tarjetas_receptadas
+                return orden.orden_tarjetaDet
             }).flat();
 
 
@@ -126,12 +94,12 @@ function RecepcionTarjeta(props) {
             navigate.push('/orden');
         }
 
-        setLstOrdenPorConfirmar(tarjetasPendientesConfirmar);
-        const conteoTarjetas = tarjetasPendientesConfirmar.reduce((acumulador, orden) => acumulador + orden.tarjetas_receptadas.length, 0);
+        setLstOrdenPorConfirmar([objConfirmacionRecepcionTarjetas[1]]);
+        const conteoTarjetas = [objConfirmacionRecepcionTarjetas[1]].reduce((acumulador, orden) => acumulador + orden.orden_tarjetaDet.length, 0);
         setTotalTarjetasReceptar(conteoTarjetas);
 
         //Respaldo de toda la consulta(Se usara para filtro opcion "TODOS"")
-        setLstOrdenesRespaldo(tarjetasPendientesConfirmar)
+        setLstOrdenesRespaldo([objConfirmacionRecepcionTarjetas[1]])
         
     }, [])
 
@@ -197,21 +165,22 @@ function RecepcionTarjeta(props) {
 
                     <form className="form_mg" onSubmit={onSubmitConfirmacionRecepcion} autoComplete="off">
                         {lstOrdenPorConfirmar.length > 0 &&
-                            <div id="listado_ordenes" className="mt-3">
+                            <div id="listado_ordenes2" className="mt-3">
                                 <Table headers={headersTarjetasAprobadas} multipleOpcion={true} onChangeCheckBox={seleccionMultiple} isSelectAll={isSelectAll} desactivarCheckEditar={false}
-                                    indexCheckbox={7}>
+                                    indexCheckbox={8}>
                                     {lstOrdenPorConfirmar.map((item, index) => (
                                         <>
-                                            {item.tarjetas_receptadas.map((tarjeta_receptar, tarjetaIndex) => (
+                                            {item.orden_tarjetaDet.map((tarjeta_receptar, tarjetaIndex) => (
 
-                                                <tr key={tarjetaIndex}>
+                                                <tr key={`${index}${tarjetaIndex}`}>
                                                     <td>{item.orden}</td>
                                                     <td>{tarjeta_receptar.identificacion}</td>
                                                     <td>{tarjeta_receptar.nombre}</td>
                                                     <td>{tarjeta_receptar.numero_tarjeta}</td>
                                                     <td><Chip type={conversionTipoTC(tarjeta_receptar.tipo)}>{tarjeta_receptar.tipo}</Chip></td>
                                                     <td>{item.oficina_envia}</td>
-                                                    <td>{item.oficina_recepta}</td>
+                                                    <td>{item.oficina_solicita}</td>
+                                                    <td>{tarjeta_receptar.fecha_cliente_solicita}</td>
                                                     <td>
                                                         <Input key={tarjeta_receptar.identificacion} disabled={false} type="checkbox" checked={tarjetasReceptadasCheckBox.includes(tarjeta_receptar)} setValueHandler={() => checkTarjeta(tarjeta_receptar)}></Input>
 
@@ -281,4 +250,4 @@ function RecepcionTarjeta(props) {
 }
 
 
-export default connect(mapStateToProps, {})(RecepcionTarjeta);
+export default connect(mapStateToProps, {})(RecepcionTarjetaAgencias);
