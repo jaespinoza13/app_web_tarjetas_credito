@@ -42,13 +42,14 @@ function Orden(props) {
     const [isModalEnvioValija, setIsModalEnvioValija] = useState(false);
     const [isModalEliminarOrden, setIsModalEliminarOrden] = useState(false);
     const [numOrdenAccion, setNumOrdenAccion] = useState();
-    const [agenciaSolicita, setAgenciaSolicita] = useState();
+   // const [agenciaSolicita, setAgenciaSolicita] = useState();
 
 
     const headersOrdenesActivas = [
-        { nombre: "Nro. Orden", key: "orden" }, { nombre: "Estado", key: "estado" }, { nombre: "Agencia solicita", key: "oficina_solicita" }, { nombre: "Cantidad", key: "cantidad" },
-        { nombre: "Creada por", key: "usuario_crea" }, { nombre: "Fecha creación", key: "fecha_creación" }, { nombre: "Fecha Solicita Encargado", key: "fecha_solicita" },
-        { nombre: "Fecha Recibe Encargado", key: "fecha_recepcion" }, { nombre: "Fecha Distribución", key: "fecha_distribucion" }, { nombre: "Fecha Cierre Orden", key: "fecha_cierre_orden" },{ nombre: "Acciones", key: "acciones" }
+        { nombre: "Nro. Orden", key: "orden" }, { nombre: "Estado", key: "estado" },
+        { nombre: "Creada por", key: "usuario_crea" }, { nombre: "Tipo TC.", key: "tipo_producto" }, { nombre: "Cantidad Solicitada", key: "cant_tarjetas" }, { nombre: "Cantidad Disponible", key: "cant_disponibles" },
+         { nombre: "Fecha creación", key: "fecha_creación" },{ nombre: "Fecha solicita", key: "fecha_solicita" },
+        { nombre: "Fecha recibe", key: "fecha_recepcion" },{ nombre: "Fecha Cierre Orden", key: "fecha_cierre_orden" },{ nombre: "Acciones", key: "acciones" }
     ]
 
 
@@ -60,6 +61,9 @@ function Orden(props) {
         }
         else if (accion === "crear") {
             navigate.push('/orden/nueva', { numOrdenEditar: -1 });
+        }
+        else if (accion === "crearOrdenPedido") {
+            navigate.push('/ordenPedido/nueva');
         }
     }
     
@@ -74,10 +78,13 @@ function Orden(props) {
 
 
     //ACCIONES PARA ABRIR MODALES
-    const envioTarjetasValijaModal = (orden, agencia) => {
-        setIsModalEnvioValija(true);
+    const envioTarjetasValijaModal = (orden) => {
+        //setIsModalEnvioValija(true);
         setNumOrdenAccion(orden);
-        setAgenciaSolicita(agencia);
+        //setAgenciaSolicita(agencia);
+
+
+
     }
 
     const eliminarOrdenTarjetasModal = (orden) => {
@@ -126,7 +133,7 @@ function Orden(props) {
         }, dispatch);
     }
 
-    const AccionesOrden = ({ numOrden, estadoOrden, agenciaSolicita }) => {   
+    const AccionesOrden = ({ numOrden, estadoOrden }) => {   
         return (
             <div className="f-row" style={{ gap: "6px", justifyContent: "center"}}>
                 {estadoOrden === 'Creada' && (
@@ -145,8 +152,8 @@ function Orden(props) {
                     </>
                 )}
 
-                {estadoOrden === 'Receptada' && (
-                    <button className="btn_mg_icons custom-icon-button" onClick={() => envioTarjetasValijaModal(numOrden, agenciaSolicita)} title="Enviar por Valija">
+                {estadoOrden === 'Pendiente Distribución' && (
+                    <button className="btn_mg_icons custom-icon-button" onClick={() => ordenPageHandler("crear_suborden", numOrden)} title="Enviar por Valija">
                         <img className="img-icons-acciones" src="Imagenes/icon_orden/shipping_24dp.svg" alt="Enviar por Valija"></img>
                     </button>
 
@@ -222,10 +229,16 @@ function Orden(props) {
 
                             <div className="m-2" style={{ display: "flex", flexDirection: "column", width: "25%", marginRight: "10px" }}>
 
+                                {/*<Card>*/}
+                                {/*    <img style={{ width: "15%" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg"></img>*/}
+                                {/*    <h4 className="mt-2 mb-5">Revisar listado tarjetas de una orden</h4>*/}
+                                {/*    <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false}>Crear</Button>*/}
+                                {/*</Card>*/}
                                 <Card>
                                     <img style={{ width: "15%" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg"></img>
-                                    <h4 className="mt-2 mb-5">Revisar listado tarjetas de una orden</h4>
-                                    <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false}>Crear</Button>
+                                    <h4 className="mt-2">Crear Orden de Entrega</h4>
+                                    <h5 className="mt-2">Para envío hacia Agencia/Matriz</h5>
+                                    <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={() => ordenPageHandler("crearOrdenPedido", "")}>Crear</Button>
                                 </Card>
                             </div>
 
@@ -254,16 +267,16 @@ function Orden(props) {
                                 <tr key={index}>
                                     <td style={{ width: "100px" }}>{orden.orden}</td>
                                     <td>{orden.estado}</td>
-                                    <td style={{ width: "125px" }}>{orden.oficina_solicita}</td>
-                                    <td>{orden.cant_tarjetas}</td>
                                     <td>{orden.usuario_crea}</td>
+                                    <td>{orden.tipo_producto}</td>
+                                    <td>{orden.cant_tarjetas}</td>
+                                    <td>{orden.cant_disponible}</td>
                                     <td style={{ width: "143px" }}>{orden.fecha_creacion}</td>
                                     <td style={{ width: "143px" }}>{orden.fecha_solicita}</td>
                                     <td style={{ width: "143px" }}>{orden.fecha_recepcion}</td>
-                                    <td style={{ width: "143px" }}>{orden.fecha_distribucion}</td>
                                     <td style={{ width: "143px" }}>{orden.fecha_cierre_orden}</td>
                                     <td>
-                                        <AccionesOrden numOrden={orden.orden} estadoOrden={orden.estado} agenciaSolicita={orden.oficina_solicita } />
+                                        <AccionesOrden numOrden={orden.orden} estadoOrden={orden.estado} />
                                     </td>
                                 </tr>
                             );
@@ -288,22 +301,22 @@ function Orden(props) {
 
 
                 {/*MODAL PARA ENVIO ORDEN TARJETAS POR VALIJA*/}
-                <ModalAccionesOrden
-                    visibleModal={isModalEnvioValija}
-                    titulo={`Distribución de Orden de Tarjetas`}
-                    type={"sm"}
-                    closeClick={closeModalHandler}
-                    nomBtnAccion={"SI"}
-                    accionHandler={submitEnvioTarjetasResponsables}
-                    nomBtnAccionInv={"NO"}
-                    accionInversaHandler={closeModalHandler}
-                >
-                    <div>
-                        <p style={{ fontSize: '16px' }}>¿Desea realizar el envío de la orden?</p> <br/>
-                        <p style={{ fontSize: '15px' }}>Número de orden: <strong>{numOrdenAccion}</strong></p>
-                        <p style={{ fontSize: '15px' }}>Agencia que hará el envio: <strong>{agenciaSolicita}</strong></p>
-                    </div>
-                </ModalAccionesOrden>
+                {/*<ModalAccionesOrden*/}
+                {/*    visibleModal={isModalEnvioValija}*/}
+                {/*    titulo={`Distribución de Orden de Tarjetas`}*/}
+                {/*    type={"sm"}*/}
+                {/*    closeClick={closeModalHandler}*/}
+                {/*    nomBtnAccion={"SI"}*/}
+                {/*    accionHandler={submitEnvioTarjetasResponsables}*/}
+                {/*    nomBtnAccionInv={"NO"}*/}
+                {/*    accionInversaHandler={closeModalHandler}*/}
+                {/*>*/}
+                {/*    <div>*/}
+                {/*        <p style={{ fontSize: '16px' }}>¿Desea realizar el envío de la orden?</p> <br/>*/}
+                {/*        <p style={{ fontSize: '15px' }}>Número de orden: <strong>{numOrdenAccion}</strong></p>*/}
+                {/*        <p style={{ fontSize: '15px' }}>Agencia que hará el envio: <strong>{agenciaSolicita}</strong></p>*/}
+                {/*    </div>*/}
+                {/*</ModalAccionesOrden>*/}
 
                 {/*MODAL PARA ELIMINAR ORDEN EN ESTADO CREADA*/}
                 <ModalAccionesOrden

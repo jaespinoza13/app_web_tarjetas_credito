@@ -25,6 +25,7 @@ import OrdenGenerarArchivo from './components/Ordenes/OrdenGenerarArchivo';
 import VerOrden from './components/Ordenes/VerOrden';
 import RecepcionTarjetaAgencias from './components/Ordenes/RecepcionTarjetaAgencias';
 import OrdenRecibirProveedor from './components/Ordenes/OrdenRecibirProveedor';
+import OrdenPedidoNueva from './components/Ordenes/OrdenPedidoNueva';
 
 
 const mapStateToProps = (state) => {
@@ -175,6 +176,16 @@ class App extends Component {
                                 <Route path='/orden/editar' component={OrdenNuevaEdicion} />
                                 <Route path='/orden/generarArchivo' component={OrdenGenerarArchivo} />
                                 <Route path='/orden/verOrden' component={VerOrden} />
+                            </>
+                        ) : (
+                            <Route render={() => <Redirect to="/auth" />} />
+                        )}
+                    </Route>
+
+                    <Route path='/ordenPedido'>
+                        {this.state.isAuthenticated ? (
+                            <>
+                               <Route path='/ordenPedido/nueva' component={OrdenPedidoNueva} />
                             </>
                         ) : (
                             <Route render={() => <Redirect to="/auth" />} />

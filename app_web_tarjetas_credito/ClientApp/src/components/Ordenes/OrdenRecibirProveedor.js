@@ -52,7 +52,11 @@ function OrdenRecibirProveedor(props) {
     const toggleSelectAll = () => {
         setIsSelectAll(!isSelectAll);
         if (!isSelectAll) {
-            setTarjetasReceptadasCheckBox(lstTarjetasRespaldo);
+
+            const resultado = lstTarjetasRecibirProveedor.map((orden, indexOrden) => {
+                return orden.orden_tarjetaDet
+            }).flat();
+            setTarjetasReceptadasCheckBox(resultado);
         } else {
             setTarjetasReceptadasCheckBox([]);
         }
@@ -72,7 +76,7 @@ function OrdenRecibirProveedor(props) {
     }
 
     useEffect(() => {
-        //setIsSelectAll(tarjetasReceptadasCheckBox.length === totalTarjetasReceptar && tarjetasReceptadasCheckBox.length !== 0);
+        setIsSelectAll(tarjetasReceptadasCheckBox.length === totalTarjetasReceptar && tarjetasReceptadasCheckBox.length !== 0);
     }, [tarjetasReceptadasCheckBox]);
 
 
@@ -92,8 +96,8 @@ function OrdenRecibirProveedor(props) {
         setLstTarjetasRecibirProveedor(objConfirmacionRecepcionTarjetas);
 
 
-        //const conteoTarjetas = tarjetasSolicitadasProveedor.reduce((acumulador, orden) => acumulador + orden.tarjetas_receptadas.length, 0);
-        //setTotalTarjetasReceptar(conteoTarjetas);
+        const conteoTarjetas = objConfirmacionRecepcionTarjetas.reduce((acumulador, orden) => acumulador + orden.orden_tarjetaDet.length, 0);
+        setTotalTarjetasReceptar(conteoTarjetas);
 
         //Respaldo de toda la consulta(Se usara para filtro opcion "TODOS"")
         setLstTarjetasRespaldo(objConfirmacionRecepcionTarjetas)
@@ -141,11 +145,11 @@ function OrdenRecibirProveedor(props) {
                         </div>
 
                     </div>
-                    {/*   multipleOpcion={true} onChangeCheckBox={seleccionMultiple} isSelectAll={isSelectAll} indexCheckbox={8}*/}
+                    {/*   */}
                     <form className="form_mg" onSubmit={onSubmitConfirmacionRecepcion} autoComplete="off">
                         {lstTarjetasRecibirProveedor.length > 0 &&
                             <div id="listado_ordenes" className="mt-3">
-                                <Table headers={headersTarjetasAprobadas}
+                                <Table headers={headersTarjetasAprobadas} multipleOpcion={true} onChangeCheckBox={seleccionMultiple} isSelectAll={isSelectAll} indexCheckbox={8}
                                     desactivarCheckEditar={false}>
 
                                     {lstTarjetasRecibirProveedor.map((item, index) => (
@@ -163,7 +167,7 @@ function OrdenRecibirProveedor(props) {
                                                     <td>{item.fecha_creacion}</td>
                                                     <td>
                                                         <Input key={tarjeta_receptar.identificacion} disabled={false} type="checkbox" checked={tarjetasReceptadasCheckBox.includes(tarjeta_receptar)} setValueHandler={() => checkTarjeta(tarjeta_receptar)}></Input>
-                                                     
+
 
                                                     </td>
                                                 </tr>

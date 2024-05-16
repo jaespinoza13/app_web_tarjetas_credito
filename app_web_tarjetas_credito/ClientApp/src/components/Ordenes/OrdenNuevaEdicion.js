@@ -7,7 +7,7 @@ import Chip from '../Common/UI/Chip'
 import Input from '../Common/UI/Input'
 import { IsNullOrWhiteSpace } from '../../js/utiles';
 import { connect } from 'react-redux';
-import { ObjTarjSolicAprobMock, objConfirmacionRecepcionTarjetas } from './ObjetosMock';
+import { ObjSolicitudesAprob, objConfirmacionRecepcionTarjetas } from './ObjetosMock';
 
 const mapStateToProps = (state) => {
     var bd = state.GetWebService.data;
@@ -143,7 +143,7 @@ function OrdenNuevaEdicion(props) {
         setIsSelectAll(false);
         // TODO: llamado a back para todas las tarjetas
         // llamar al fetch correspondiente
-        const tarjetasDisponibles = ObjTarjSolicAprobMock.filter(tarjetaSolicitud => tarjetaSolicitud.oficina_recepta === e.target.value)
+        const tarjetasDisponibles = ObjSolicitudesAprob.filter(tarjetaSolicitud => tarjetaSolicitud.oficina_recepta === e.target.value)
         setLstOrdenTarjetas(tarjetasDisponibles);
     }
 

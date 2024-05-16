@@ -31,11 +31,11 @@ const Input = (props) => {
             value={inputValue}
             onChange={changeHandler}
             checked={props.checked}
-            maxlength={props.maxlength}
+            maxLength={props.maxlength}
             min={props.min}
             max={props.max}
             disabled={props.disabled}
-            key={props.key}
+        /*  key={props.key} */
 
         ></input>
     );
