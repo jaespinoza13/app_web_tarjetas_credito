@@ -1413,6 +1413,47 @@ img {
 }
 
 /* FIN CARD IMAGES*/
+
+td {
+    position: relative;
+}
+
+.tooltip {
+    position: absolute;
+    left: 0.3rem;
+    display: inline-block;
+    height: 1rem;
+    width: 1rem;
+}
+
+.tooltip-info {
+    visibility: hidden;
+    min-width: 15rem;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+    /* Position the tooltip text - see examples below! */
+    position: absolute;
+    z-index: 100;
+}
+
+.tooltip:hover > span.tooltip-info {
+    visibility: visible;
+}
+
+span.tooltip-info {
+    width: auto;
+    padding: 0.5rem 1rem;
+}
+
+.see-more {
+    color: #004CAC;
+    cursor: pointer;
+}
+
+
 @media screen and (max-width: 600px) {
     .responsive-table {
         overflow-x: auto;

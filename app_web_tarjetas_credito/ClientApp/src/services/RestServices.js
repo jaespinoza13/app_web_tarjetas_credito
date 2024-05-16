@@ -1124,6 +1124,7 @@ export function fetchGetFlujoSolicitud(idSolicitud, token, onSucces, dispatch) {
         int_id_solicitud: idSolicitud,
     }
     ServicioPostExecute(getFlujoSolicitud, body, token, { dispatch: dispatch }).then((data) => {
+                    console.log(data);
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
@@ -1195,7 +1196,7 @@ export function fetchAddComentarioSolicitud(idSolicitud, comentario, estadoSolic
     console.log(body);
     ServicioPostExecute(addComentarioSolicitud, body, token, { dispatch: dispatch }).then((data) => {
         if (data) {
-            if (data.error) {
+            if (data.str_res_codigo != "000") {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
             } else {
                 if (data.str_res_estado_transaccion === "OK") {
@@ -1286,6 +1287,39 @@ export function fetchAddResolucion(idSolicitud, comentario, estadoSolicitud, tok
 * @param {Function} dispatch
 */
 export function fetchUpdResolucion(idSolicitud, token, onSucces, dispatch) {
+    if (dispatch) dispatch(setErrorRedirigir(""));
+
+    let body = {
+        int_id_solicitud: idSolicitud
+    }
+    console.log(body);
+    ServicioPostExecute(updResolucion, body, token, { dispatch: dispatch }).then((data) => {
+        if (data) {
+            if (data.error) {
+                if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
+            } else {
+                if (data.str_res_estado_transaccion === "OK") {
+                    onSucces(data);
+                } else {
+                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                }
+            }
+        } else {
+            if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
+        }
+    });
+}
+
+
+/**
+* Agregar p
+* @author retorres
+* @version 1.0
+* @param {string} strEnte
+* @param {(contenido:string, nroTotalRegistros: number) => void} onSuccess
+* @param {Function} dispatch
+*/
+export function fetchAddProcEspecifico(idSolicitud, cupo, estado, comentario, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {

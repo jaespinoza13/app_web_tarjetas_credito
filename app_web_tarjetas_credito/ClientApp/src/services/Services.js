@@ -111,6 +111,8 @@ export const addComentarioAsesor = "ADD_INFORME_TC"
 export const getResolucion = "GET_RESOLUCION"
 export const addResolucion = "ADD_RESOLUCION"
 export const updResolucion = "UPD_RESOLUCION"
+export const addProcEspecifico = "ADD_PROCESO_ESPECIFICO"
+export const updSolicitud = "UPD_SOLICITUD_TC"
 
 /**
  * Obtener la Url de un servicio de acuerdo a su nombre de Proceso Unico
@@ -242,6 +244,12 @@ export function ServiceUrl(request, params = []) {
             break;
         case updResolucion:
             pathOut = "tc/updResolucion"
+            break;
+        case addProcEspecifico:
+            pathOut = "tc/addProcEspec"
+            break;
+        case updSolicitud:
+            pathOut = "tc/updSol"
             break;
         default:
             return null;
@@ -488,7 +496,9 @@ function pathRewrite(path) {
         "tc/addComentarioAs": '/tarjetacredito/addComentarioAsesor',
         "tc/getResolucion": '/tarjetacredito/getResoluciones',
         "tc/addResolucion": '/tarjetacredito/addResolucion',
-        "tc/updResolucion": '/tarjetacredito/updResolucion'
+        "tc/updResolucion": '/tarjetacredito/updResolucion',
+        "tc/addProcEspec": '/tarjetacredito/addProcEspecifico',
+        "tc/updSol": '/tarjetacredito/updSolicitud'
     };
     if (path) {
         var p = context[path];

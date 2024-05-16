@@ -114,6 +114,7 @@ export const fetchGetListaParametros = () => {
             .then(data => {
                 dispatch(setStateLoad(false));
                 if (data.codigo === "0000") {
+                    console.log(data);
                     remitente = localStorage.getItem('remitente');
                     aceptar = localStorage.getItem('aceptar');
                     if (!getAuthenticated() || IsNullOrWhiteSpace(remitente) || IsNullOrWhiteSpace(aceptar)) {

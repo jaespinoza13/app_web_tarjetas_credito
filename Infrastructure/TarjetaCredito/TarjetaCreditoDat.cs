@@ -2,6 +2,7 @@
 using Domain.Models.TarjetaCredito.AddAutorizacion;
 using Domain.Models.TarjetaCredito.AddComentarioAsesor;
 using Domain.Models.TarjetaCredito.AddComentarioSolicitud;
+using Domain.Models.TarjetaCredito.AddProcesoEspecifico;
 using Domain.Models.TarjetaCredito.AddProspeccion;
 using Domain.Models.TarjetaCredito.AddResolucion;
 using Domain.Models.TarjetaCredito.AddSolicitud;
@@ -17,6 +18,7 @@ using Domain.Models.TarjetaCredito.GetScore;
 using Domain.Models.TarjetaCredito.GetSolicitudes;
 using Domain.Models.TarjetaCredito.GetValidaciones;
 using Domain.Models.TarjetaCredito.UpdResoluciones;
+using Domain.Models.TarjetaCredito.UpdSolicitud;
 using RestSharp;
 using System;
 using System.Collections.Generic;
@@ -273,6 +275,7 @@ namespace Infrastructure.TarjetaCredito
             }
             catch (Exception ex)
             {
+                res.str_res_codigo = "500";
                 Console.WriteLine(ex.ToString());
             }
             return res;
@@ -617,6 +620,76 @@ namespace Infrastructure.TarjetaCredito
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
                     res = JsonSerializer.Deserialize<ResUpdResolucion>(response.Content!)!;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            return res;
+        }
+
+        public ResAddProcesoEspecifico addProcesoEspecifico(ReqAddProcesoEspecifico req)
+        {
+            ResAddProcesoEspecifico res = new ResAddProcesoEspecifico();
+            try
+            {
+                req.llenarDatosConfig(_settings);
+                req.str_id_servicio = "REQ_" + _settings.service_add_proc_espec;
+                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_add_proc_espec)
+                {
+                    ThrowOnAnyError = true,
+                    MaxTimeout = _settings.time_out
+                };
+
+                var client = new RestClient(options);
+                var request = new RestRequest();
+                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                request.AddHeader("Content-Type", "application/json");
+                request.AddParameter("application/json", req, ParameterType.RequestBody);
+                request.Method = Method.Post;
+
+                var response = new RestResponse();
+                response = client.Post(request);
+
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    res = JsonSerializer.Deserialize<ResAddProcesoEspecifico>(response.Content!)!;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            return res;
+        }
+
+        public ResUpdSolicitud updSolicitud(ReqUpdSolicitud req)
+        {
+            ResUpdSolicitud res = new ResUpdSolicitud();
+            try
+            {
+                req.llenarDatosConfig(_settings);
+                req.str_id_servicio = "REQ_" + _settings.service_upd_solicitud;
+                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_upd_solicitud)
+                {
+                    ThrowOnAnyError = true,
+                    MaxTimeout = _settings.time_out
+                };
+
+                var client = new RestClient(options);
+                var request = new RestRequest();
+                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                request.AddHeader("Content-Type", "application/json");
+                request.AddParameter("application/json", req, ParameterType.RequestBody);
+                request.Method = Method.Post;
+
+                var response = new RestResponse();
+                response = client.Post(request);
+
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    res = JsonSerializer.Deserialize<ResUpdSolicitud>(response.Content!)!;
                 }
             }
             catch (Exception ex)

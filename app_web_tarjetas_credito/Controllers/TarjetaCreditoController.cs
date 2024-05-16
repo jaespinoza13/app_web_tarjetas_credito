@@ -3,6 +3,7 @@ using Domain.Common.Interfaces;
 using Domain.Models.TarjetaCredito.AddAutorizacion;
 using Domain.Models.TarjetaCredito.AddComentarioAsesor;
 using Domain.Models.TarjetaCredito.AddComentarioSolicitud;
+using Domain.Models.TarjetaCredito.AddProcesoEspecifico;
 using Domain.Models.TarjetaCredito.AddProspeccion;
 using Domain.Models.TarjetaCredito.AddResolucion;
 using Domain.Models.TarjetaCredito.AddSolicitud;
@@ -18,6 +19,7 @@ using Domain.Models.TarjetaCredito.GetScore;
 using Domain.Models.TarjetaCredito.GetSolicitudes;
 using Domain.Models.TarjetaCredito.GetValidaciones;
 using Domain.Models.TarjetaCredito.UpdResoluciones;
+using Domain.Models.TarjetaCredito.UpdSolicitud;
 using Infrastructure.Login;
 using Infrastructure.TarjetaCredito;
 using Microsoft.AspNetCore.Mvc;
@@ -210,6 +212,24 @@ namespace plantilla_app_web.Controllers
         public ResCrypt Post(ReqUpdResolucion req)
         {
             ResUpdResolucion res = tarjetaCreditoDat.addUpdResolucion(req);
+            return Utiles.crypt(res, Request.Headers);
+        }
+
+        [Route("addProcEspecifico")]
+        [ServiceFilter(typeof(CryptoFilter))]
+        [HttpPost]
+        public ResCrypt Post(ReqAddProcesoEspecifico req)
+        {
+            ResAddProcesoEspecifico res = tarjetaCreditoDat.addProcesoEspecifico(req);
+            return Utiles.crypt(res, Request.Headers);
+        }
+
+        [Route("updSolicitud")]
+        [ServiceFilter(typeof(CryptoFilter))]
+        [HttpPost]
+        public ResCrypt Post(ReqUpdSolicitud req)
+        {
+            ResUpdSolicitud res = tarjetaCreditoDat.updSolicitud(req);
             return Utiles.crypt(res, Request.Headers);
         }
     }

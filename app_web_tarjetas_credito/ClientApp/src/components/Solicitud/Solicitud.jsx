@@ -60,7 +60,7 @@ function Solicitud(props) {
     //Headers tablas Solicitudes y Prospectos
     const headerTableSolicitantes = [
         { nombre: 'Nro. Solicitud', key: 0}, { nombre: 'Identificación', key: 1 }, { nombre: 'Ente', key: 2 }, { nombre: 'Nombre solicitante', key: 3 },
-        { nombre: 'Producto TC', key: 4 }, { nombre: 'Monto', key: 5 }, { nombre: 'Calificación', key: 6 },
+        { nombre: 'Monto', key: 5 }, { nombre: 'Calificación', key: 6 },
         { nombre: 'Estado', key: 7 }, { nombre: 'Oficina Crea', key: 8 }, { nombre: 'Acciones', key: 9 },
     ];
 
@@ -78,16 +78,18 @@ function Solicitud(props) {
     ]
 
     const parametros = [
-        { prm_id: "11188", prm_valor_ini: "SOLICITUD CREADA" },
-        { prm_id: "11189", prm_valor_ini: "ANALISIS UAC" },
-        { prm_id: "11190", prm_valor_ini: "ANALISIS JEFE UAC" },
-        { prm_id: "11191", prm_valor_ini: "ANALISIS COMITE" },
-        { prm_id: "11192", prm_valor_ini: "APROBADA COMITE" },
-        { prm_id: "11193", prm_valor_ini: "Solicitud anulada" },
-        { prm_id: "11194", prm_valor_ini: "Solicitud entregada" }
+        { prm_id: "11035", prm_valor_ini: "SOLICITUD CREADA" },
+        { prm_id: "11036", prm_valor_ini: "ANALISIS UAC" },
+        { prm_id: "11037", prm_valor_ini: "ANALISIS JEFE UAC" },
+        { prm_id: "11038", prm_valor_ini: "ANALISIS COMITE" },
+        { prm_id: "11039", prm_valor_ini: "APROBADA COMITE" },
+        { prm_id: "11040", prm_valor_ini: "NEGADA" },
+        { prm_id: "11041", prm_valor_ini: "ANULADA" },
+        { prm_id: "11042", prm_valor_ini: "ENTREGADA" }
     ]
 
     const validaNombreParam = (id) => {
+        console.log(id);
         const parametro = parametros.find((param) => { return param.prm_id === id });
         return parametro.prm_valor_ini;
     }
@@ -127,6 +129,7 @@ function Solicitud(props) {
     //Carga de solicitudes
     useEffect(() => {
         fetchGetSolicitudes(props.token, (data) => {
+            console.log(data);
             stLstProspectos(data.prospectos);
             stLstSolicitudes(data.solicitudes);
         }, dispatch)
@@ -181,11 +184,11 @@ function Solicitud(props) {
 
     const moveToSolicitud = (solId) => {
         const solicitudSeleccionada = lstSolicitudes.find((solicitud) => { return solicitud.int_id === solId });
-        if (solicitudSeleccionada.str_estado === '11188' && rol === "ASESOR DE CRÉDITO") {
+        if (solicitudSeleccionada.str_estado === '11035' || solicitudSeleccionada.str_estado === "11039" && rol === "ASESOR DE CRÉDITO") {
             dispatch(setSolicitudStateAction({ solicitud: solicitudSeleccionada.int_id, cedulaSocio: solicitudSeleccionada.str_identificacion, idSolicitud: solicitudSeleccionada.str_estado, rol: rol }))
             navigate.push('/solicitud/ver');
         }
-        else if ((rol === "ANALISTA CREDITO" || rol === "JEFE DE UAC" || rol === "DIRECTOR DE NEGOCIOS") && solicitudSeleccionada.str_estado !== '11188') {
+        else if ((rol === "ANALISTA CREDITO" || rol === "JEFE DE UAC" || rol === "DIRECTOR DE NEGOCIOS") && solicitudSeleccionada.str_estado !== '11035') {
             dispatch(setSolicitudStateAction({ solicitud: solicitudSeleccionada.int_id, cedulaSocio: solicitudSeleccionada.str_identificacion, idSolicitud: solicitudSeleccionada.str_estado, rol: rol }))
             navigate.push('/solicitud/ver');
         }
@@ -224,14 +227,13 @@ function Solicitud(props) {
                 <div id="listado_solicitudes" className="mt-3">
                     <Table headers={headerTableSolicitantes}>
                         {/*BODY*/}
-                        {lstSolicitudes.map((solicitud) => {
+                        {lstSolicitudes && lstSolicitudes.map((solicitud) => {
                             return (
-                                <tr key={solicitud.int_id}>
+                                <tr key={solicitud.int_id} onClick={() => { moveToSolicitud(solicitud.int_id) }}>
                                     <td>{solicitud.int_id}</td>
-                                    <td onClick={() => { moveToSolicitud(solicitud.int_id)}}>{solicitud.str_identificacion}</td>
+                                    <td>{solicitud.str_identificacion}</td>
                                     <td>{solicitud.int_ente}</td>
                                     <td>{solicitud.str_nombres}</td>
-                                    <td><Chip type="black">Black</Chip></td>
                                     <td>{`$ ${Number(solicitud.dec_cupo_solicitado).toLocaleString('en-US')}`}</td>
                                     <td>{"AA"}</td>
                                     <td>{validaNombreParam(solicitud.str_estado)}</td>
@@ -253,7 +255,7 @@ function Solicitud(props) {
                 <div id="listado_solicitudes">
                     <Table headers={headerTableProspectos}>
                         {/*BODY*/}
-                        {lstProstectos.map((prospecto) => {
+                        {lstProstectos && lstProstectos.map((prospecto) => {
                             return (
                                 <tr key={prospecto.pro_id}>
                                     <td>{prospecto.pro_id}</td>
