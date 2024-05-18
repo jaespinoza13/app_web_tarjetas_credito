@@ -289,7 +289,7 @@ export const ObjSolicitudesAprob = [
         ente: "515147",
         nombre: "LUIS TORRES",
         nombre_impreso: "LUIS TORRES",
-        tipo: "ESTÁNDAR",
+        tipo: "ESTANDAR",
         cupo: "15000",
         key: 48,
         oficina_recepta: "CATAMAYO"
@@ -302,7 +302,7 @@ export const ObjSolicitudesAprob = [
         ente: "515148",
         nombre: "MIGUEL ROMAN",
         nombre_impreso: "MIGUEL ROMAN",
-        tipo: "ESTÁNDAR",
+        tipo: "ESTANDAR",
         cupo: "15000",
         key: 58,
         oficina_recepta: "SARAGURO"
@@ -315,7 +315,7 @@ export const ObjSolicitudesAprob = [
         ente: "100168",
         nombre: "NICOLE SANMARTIN",
         nombre_impreso: "NICOLE SANMARTIN",
-        tipo: "ESTÁNDAR", cupo: "11000",
+        tipo: "ESTANDAR", cupo: "11000",
         key: 68,
         oficina_recepta: "MATRIZ"
     }

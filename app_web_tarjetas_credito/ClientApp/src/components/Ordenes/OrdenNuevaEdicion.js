@@ -36,7 +36,7 @@ function OrdenNuevaEdicion(props) {
     const navigate = useHistory();
     const [accion, setAccion] = useState();
     const [accionBtn, setAccionBtn] = useState();
-    const [agenciaSolicita, setAgenciaSolicita] = useState("-1");
+    const [tipoProducto, setTipoProducto] = useState("-1");
     const [desactivarCheckEditar, setDesactivarCheckEditar] = useState();
 
     const [nrOrnden, setNrOrden] = useState("");
@@ -129,7 +129,7 @@ function OrdenNuevaEdicion(props) {
                 setTarjetasAprobadasCheckBox(objConfirmacionRecepcionTarjetas[1].orden_tarjetaDet.map(tarjeta => tarjeta.identificacion));
 
                 //Estado para select de agencia
-                setAgenciaSolicita(objConfirmacionRecepcionTarjetas[1].oficina_solicita);
+                setTipoProducto(objConfirmacionRecepcionTarjetas[1].oficina_solicita);
                 //Estado de check para editar
                 setDesactivarCheckEditar(true);
                 
@@ -137,13 +137,13 @@ function OrdenNuevaEdicion(props) {
         }
     }, [])
 
-    const agenciaHadler = (e) => {
-        setAgenciaSolicita(e.target.value);
+    const tipoProductoHandler = (e) => {
+        setTipoProducto(e.target.value);
         setTarjetasAprobadasCheckBox([]);
         setIsSelectAll(false);
         // TODO: llamado a back para todas las tarjetas
         // llamar al fetch correspondiente
-        const tarjetasDisponibles = ObjSolicitudesAprob.filter(tarjetaSolicitud => tarjetaSolicitud.oficina_recepta === e.target.value)
+        const tarjetasDisponibles = ObjSolicitudesAprob.filter(tarjetaSolicitud => tarjetaSolicitud.tipo === e.target.value)
         setLstOrdenTarjetas(tarjetasDisponibles);
     }
 
@@ -248,32 +248,13 @@ function OrdenNuevaEdicion(props) {
                             <div>
 
                                 <div className="form_mg_row">
-                                    <label htmlFor="oficina_solicita" className="pbmg1 lbl-input label_horizontal">Seleccione la Agencia que solicita nueva orden de tarjetas:</label>
+                                    <label htmlFor="oficina_solicita" className="pbmg1 lbl-input label_horizontal">Seleccione el tipo de producto</label>
                                     <div className="form_mg__item ptmg1">
-                                        <select id="oficina_solicita" name="oficina_solicita" defaultValue={"-1"} onChange={agenciaHadler} value={agenciaSolicita} disabled={desactivarCheckEditar }>
-                                            <option value="-1" disabled={true}>----- SELECCIONE UNA AGENCIA -----</option>
-                                            <option value="MATRIZ">MATRIZ</option>
-                                            <option value="SARAGURO">SARAGURO</option>
-                                            <option value="CATAMAYO">CATAMAYO</option>
-                                            <option value="CARIAMANGA">CARIAMANGA</option>
-                                            <option value="ALAMOR">ALAMOR</option>
-                                            <option value="ZAMORA">ZAMORA</option>
-                                            <option value="CUENCA">CUENCA</option>
-                                            <option value="AGENCIA NORTE">AGENCIA NORTE</option>
-                                            <option value="MACARA">MACARA</option>
-                                            <option value="AGENCIA SUR">AGENCIA SUR</option>
-                                            <option value="AGENCIA YANTZAZA">AGENCIA YANTZAZA</option>
-                                            <option value="BALSAS">BALSAS</option>
-                                            <option value="CATACOCHA">CATACOCHA</option>
-                                            <option value="SANTA ROSA">SANTA ROSA</option>
-                                            <option value="AGENCIA GUALAQUIZA">AGENCIA GUALAQUIZA</option>
-                                            <option value="AGENCIA CUARTO CENTENARIO">AGENCIA CUARTO CENTENARIO</option>
-                                            <option value="AGENCIA ZUMBA">AGENCIA ZUMBA</option>
-                                            <option value="AGENCIA EL VALLE">AGENCIA EL VALLE</option>
-                                            <option value="AGENCIA MACHALA">AGENCIA MACHALA</option>
-                                            <option value="AGENCIA EL EJIDO">AGENCIA EL EJIDO</option>
-                                            <option value="AGENCIA LATACUNGA">AGENCIA LATACUNGA</option>
-                                            <option value="AGENCIA SANTO DOMINGO">AGENCIA SANTO DOMINGO</option>
+                                        <select id="oficina_solicita" name="oficina_solicita" defaultValue={"-1"} onChange={tipoProductoHandler} value={tipoProducto} disabled={desactivarCheckEditar }>
+                                            <option value="-1" disabled={true}>----- SELECCIONE UN PRODUCTO -----</option>
+                                            <option value="BLACK">BLACK</option>
+                                            <option value="GOLDEN">GOLDEN</option>
+                                            <option value="ESTANDAR">ESTANDAR</option>
                                         </select>
                                     </div>
                                 </div>
@@ -311,7 +292,7 @@ function OrdenNuevaEdicion(props) {
                         }
 
                         {lstOrdenTarjetas.length === 0 &&
-                            <p style={{ fontSize: '18px' }}> <strong> No existe tarjetas aprobadas de la agencia seleccionada </strong> </p> 
+                            <p style={{ fontSize: '18px' }}> <strong> No existe tarjetas aprobadas con ese tipo de producto. </strong> </p> 
                         }
 
                         <div className="center_text_items">
