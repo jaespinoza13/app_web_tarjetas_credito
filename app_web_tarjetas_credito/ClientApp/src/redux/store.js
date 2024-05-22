@@ -13,6 +13,7 @@ import { loadding } from "./Loadding/reducers"
 import { alertText } from "./Alert/reducers"
 import { tokenActive } from "./Token/reducers"
 import { solicitud } from "./Solicitud/reducers"
+import { GetParametrosSistema } from "./ParametrosSistema/reducers"
 
 const Reducers = combineReducers({
     GetParametros,
@@ -25,7 +26,8 @@ const Reducers = combineReducers({
     alertText,
     tokenActive,
     ListaBasesMongoDb,
-    solicitud
+    solicitud,
+    GetParametrosSistema
 });
 
 export const store = createStore(

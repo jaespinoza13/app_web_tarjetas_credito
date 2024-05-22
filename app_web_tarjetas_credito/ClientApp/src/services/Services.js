@@ -113,6 +113,7 @@ export const addResolucion = "ADD_RESOLUCION"
 export const updResolucion = "UPD_RESOLUCION"
 export const addProcEspecifico = "ADD_PROCESO_ESPECIFICO"
 export const updSolicitud = "UPD_SOLICITUD_TC"
+export const getParametros = "GET_PARAMETROS"
 
 /**
  * Obtener la Url de un servicio de acuerdo a su nombre de Proceso Unico
@@ -251,6 +252,9 @@ export function ServiceUrl(request, params = []) {
         case updSolicitud:
             pathOut = "tc/updSol"
             break;
+        case getParametros:
+            pathOut = "tc/getParams"
+            break;
         default:
             return null;
     }
@@ -334,7 +338,7 @@ export async function ServicioGetExecute(request, token, { encrypt = true, param
             return { error: "Ocurrió un error en la petición", reload: false };
         }
     } else {
-        return { error: "Se presentó un inconveniente, por favor intente nuevamente más tarde\n" + ServiceUrl(request, params), reload: false };
+        return { error: "Se presentó un inconveniente, por favor intente nuevamente más tardes\n" + ServiceUrl(request, params), reload: false };
     }
 };
 
@@ -351,7 +355,7 @@ export async function ServicioPostExecute(request, body, token, { encryptS = tru
     if (dispatch && !background) dispatch(setStateLoad(true));
     const sender = localStorage.getItem('sender');
     if (exProcess) localStorage.setItem("sender", set("Param"));
-    
+    console.log("token: " + token);
     if (!IsNullOrWhiteSpace(token) && validateToken(token)) {
         if (IsNullOrWhiteSpace("sender")) {
             localStorage.removeItem("sender");
@@ -446,7 +450,7 @@ export async function ServicioPostExecute(request, body, token, { encryptS = tru
         }
     } else {
         if (dispatch) dispatch(setStateLoad(false));
-        return { error: "Se presentó un inconveniente, por favor intente nuevamente más tarde\n" + ServiceUrl(request, params), reload: false };
+        return { error: "Se presentó un inconveniente, por favor intente nuevamente más tarde amigo\n" + ServiceUrl(request, params), reload: false };
     }
 };
 
@@ -498,7 +502,8 @@ function pathRewrite(path) {
         "tc/addResolucion": '/tarjetacredito/addResolucion',
         "tc/updResolucion": '/tarjetacredito/updResolucion',
         "tc/addProcEspec": '/tarjetacredito/addProcEspecifico',
-        "tc/updSol": '/tarjetacredito/updSolicitud'
+        "tc/updSol": '/tarjetacredito/updSolicitud',
+        "tc/getParams": '/tarjetacredito/getParametros'
     };
     if (path) {
         var p = context[path];

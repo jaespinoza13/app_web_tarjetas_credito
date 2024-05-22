@@ -132,15 +132,15 @@ export const fetchGetListaParametros = () => {
                     parametros["nroPreg"] = set(data.nro_preguntas + "");
                     parametros["parametros"] = [];
 
-                    if (data.parametros && data.parametros.length > 0) {
-                        for (let i = 0; i < data.parametros.length; i++) {
+                    if (data.parametros_estados_solicitudes && data.parametros_estados_solicitudes.length > 0) {
+                        for (let i = 0; i < data.parametros_estados_solicitudes.length; i++) {
                             parametros["parametros"].push({
-                                int_id: set(String(data.parametros[i].int_id)),
-                                str_nombre: set(data.parametros[i].str_nombre),
-                                str_nemonico: set(data.parametros[i].str_nemonico),
-                                str_valor_ini: set(data.parametros[i].str_valor_ini),
-                                str_valor_fin: set(data.parametros[i].str_valor_fin),
-                                str_descripcion: set(data.parametros[i].str_descripcion),
+                                int_id: set(String(data.parametros_estados_solicitudes[i].int_id)),
+                                str_nombre: set(data.parametros_estados_solicitudes[i].str_nombre),
+                                str_nemonico: set(data.parametros_estados_solicitudes[i].str_nemonico),
+                                str_valor_ini: set(data.parametros_estados_solicitudes[i].str_valor_ini),
+                                str_valor_fin: set(data.parametros_estados_solicitudes[i].str_valor_fin),
+                                str_descripcion: set(data.parametros_estados_solicitudes[i].str_descripcion),
                             });
                         }
                     }

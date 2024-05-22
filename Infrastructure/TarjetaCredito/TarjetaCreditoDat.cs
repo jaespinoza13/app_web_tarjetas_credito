@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Domain.Models.Config.GetParametros;
 using Domain.Models.TarjetaCredito.AddAutorizacion;
 using Domain.Models.TarjetaCredito.AddComentarioAsesor;
 using Domain.Models.TarjetaCredito.AddComentarioSolicitud;
@@ -13,6 +14,7 @@ using Domain.Models.TarjetaCredito.GetFlujoSolicitud;
 using Domain.Models.TarjetaCredito.GetInfoEconomica;
 using Domain.Models.TarjetaCredito.GetInfoFinanciera;
 using Domain.Models.TarjetaCredito.GetInfoSocio;
+using Domain.Models.TarjetaCredito.GetParamatrosSistema;
 using Domain.Models.TarjetaCredito.GetResoluciones;
 using Domain.Models.TarjetaCredito.GetScore;
 using Domain.Models.TarjetaCredito.GetSolicitudes;
@@ -690,6 +692,41 @@ namespace Infrastructure.TarjetaCredito
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
                     res = JsonSerializer.Deserialize<ResUpdSolicitud>(response.Content!)!;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            return res;
+        }
+
+        public ResGetParametrosSistema getParametros(ReqGetParametrosSistema req)
+        {
+            ResGetParametrosSistema res = new ResGetParametrosSistema();
+            try
+            {
+                req.llenarDatosConfig(_settings);
+                req.str_id_servicio = "REQ_" + _settings.service_get_parametros_sistema;
+                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_parametros_sistema)
+                {
+                    ThrowOnAnyError = true,
+                    MaxTimeout = _settings.time_out
+                };
+
+                var client = new RestClient(options);
+                var request = new RestRequest();
+                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                request.AddHeader("Content-Type", "application/json");
+                request.AddParameter("application/json", req, ParameterType.RequestBody);
+                request.Method = Method.Post;
+
+                var response = new RestResponse();
+                response = client.Post(request);
+
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    res = JsonSerializer.Deserialize<ResGetParametrosSistema>(response.Content!)!;
                 }
             }
             catch (Exception ex)

@@ -78,13 +78,13 @@ function Solicitud(props) {
     ]
 
     const parametros = [
-        { prm_id: "11035", prm_valor_ini: "SOLICITUD CREADA" },
-        { prm_id: "11036", prm_valor_ini: "ANALISIS UAC" },
-        { prm_id: "11037", prm_valor_ini: "ANALISIS JEFE UAC" },
-        { prm_id: "11038", prm_valor_ini: "ANALISIS COMITE" },
-        { prm_id: "11039", prm_valor_ini: "APROBADA COMITE" },
-        { prm_id: "11040", prm_valor_ini: "NEGADA" },
-        { prm_id: "11041", prm_valor_ini: "ANULADA" },
+        { prm_id: "11163", prm_valor_ini: "SOLICITUD CREADA" },
+        { prm_id: "11164", prm_valor_ini: "ANALISIS UAC" },
+        { prm_id: "11165", prm_valor_ini: "ANALISIS JEFE UAC" },
+        { prm_id: "11166", prm_valor_ini: "ANALISIS COMITE" },
+        { prm_id: "11166", prm_valor_ini: "APROBADA COMITE" },
+        { prm_id: "11169", prm_valor_ini: "NEGADA" },
+        { prm_id: "11168", prm_valor_ini: "ANULADA" },
         { prm_id: "11042", prm_valor_ini: "ENTREGADA" }
     ]
 
@@ -184,11 +184,11 @@ function Solicitud(props) {
 
     const moveToSolicitud = (solId) => {
         const solicitudSeleccionada = lstSolicitudes.find((solicitud) => { return solicitud.int_id === solId });
-        if (solicitudSeleccionada.str_estado === '11035' || solicitudSeleccionada.str_estado === "11039" && rol === "ASESOR DE CRÉDITO") {
+        if (solicitudSeleccionada.str_estado === '11167' || solicitudSeleccionada.str_estado === "11163" && rol === "ASESOR DE CRÉDITO") {
             dispatch(setSolicitudStateAction({ solicitud: solicitudSeleccionada.int_id, cedulaSocio: solicitudSeleccionada.str_identificacion, idSolicitud: solicitudSeleccionada.str_estado, rol: rol }))
             navigate.push('/solicitud/ver');
         }
-        else if ((rol === "ANALISTA CREDITO" || rol === "JEFE DE UAC" || rol === "DIRECTOR DE NEGOCIOS") && solicitudSeleccionada.str_estado !== '11035') {
+        else if ((rol === "ANALISTA CREDITO" || rol === "JEFE DE UAC" || rol === "DIRECTOR DE NEGOCIOS") && solicitudSeleccionada.str_estado !== '11163') {
             dispatch(setSolicitudStateAction({ solicitud: solicitudSeleccionada.int_id, cedulaSocio: solicitudSeleccionada.str_identificacion, idSolicitud: solicitudSeleccionada.str_estado, rol: rol }))
             navigate.push('/solicitud/ver');
         }

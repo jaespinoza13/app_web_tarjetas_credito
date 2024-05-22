@@ -67,6 +67,66 @@ public class ParametersInMemory : IParametersInMemory {
         return res;
     }
 
+    public List<Parametros> LoadParametersSistema()
+    {
+        List<Parametros> res = new List<Parametros>();
+        try
+        {
+            for (int i = 0; i < _settings.lst_ids_sistemas.Count; i++)
+            {
+                var options = new RestClientOptions(_settings.gw_logs + _settings.service_get_parametros + "/" + _settings.lst_ids_sistemas[i] + "/" + _settings.lst_nemonicos_parametros[i])
+                {
+                    ThrowOnAnyError = true,
+                    MaxTimeout = _settings.time_out
+                };
+                var client = new RestClient(options);
+
+                string auth_basic = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(_settings.auth_user_gw_logs + ":" + _settings.auth_pass_gw_logs));
+
+                var request = new RestRequest()
+                    .AddHeader("Authorization-Gateway", "Auth-Gateway " + auth_basic)
+                    .AddHeader("Content-Type", "application/json");
+
+                request.Method = Method.Get;
+                var response = new RestResponse();
+                response = client.Get(request);
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    List<ParametroDTO> resGet = JsonSerializer.Deserialize<List<ParametroDTO>>(response.Content!)!;
+                    if (resGet.Count > 0)
+                    {
+                        if (res.Find(x => x.lista == "Parametros") != null)
+                        {
+                            res.Find(x => x.lista == "Parametros")!.parametros.AddRange(resGet.FindAll(x => x.nombre != "CODIGOS_ERROR"));
+                            _memoryCache.Set("Parametros", res.Find(x => x.lista == "Parametros")!.parametros);
+                        }
+                        else
+                        {
+                            res.Add(new Parametros("Parametros", resGet.FindAll(x => x.nombre != "CODIGOS_ERROR")));
+                            _memoryCache.Set("Parametros", resGet.FindAll(x => x.nombre != "CODIGOS_ERROR"));
+                        }
+                        if (res.Find(x => x.lista == "CodigosError") != null)
+                        {
+                            res.Find(x => x.lista == "CodigosError")!.parametros.AddRange(resGet.FindAll(x => x.nombre == "CODIGOS_ERROR"));
+                            _memoryCache.Set("CodigosError", res.Find(x => x.lista == "CodigosError")!.parametros);
+                        }
+                        else
+                        {
+                            res.Add(new Parametros("CodigosError", resGet.FindAll(x => x.nombre == "CODIGOS_ERROR")));
+                            _memoryCache.Set("CodigosError", resGet.FindAll(x => x.nombre == "CODIGOS_ERROR"));
+                        }
+                        dt_fecha_codigos = DateTime.Now.Date;
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new ArgumentException("Sin parametros. ", ex.Message);
+        }
+        return res;
+    }
+
     public void ValidaParametros() {
         if(DateTime.Compare(DateTime.Now, dt_fecha_codigos.AddDays(1)) > 0) {
             LoadParameters();

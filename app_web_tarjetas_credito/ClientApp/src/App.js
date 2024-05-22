@@ -13,7 +13,7 @@ import SeguimientoTransaccion from './components/Logs/SeguimientoTran';
 import { IsNullOrWhiteSpace, validateToken } from './js/utiles';
 import './scss/main.css'
 import { desencriptar, generate, get, set } from './js/crypt';
-import { fetchMenuPrincipal } from './services/RestServices';
+import { fetchMenuPrincipal, fetchGetParametrosSistema } from './services/RestServices';
 import { connect, useDispatch } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import Solicitud from './components/Solicitud/Solicitud';

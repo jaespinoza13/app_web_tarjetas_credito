@@ -14,6 +14,7 @@ using Domain.Models.TarjetaCredito.GetFlujoSolicitud;
 using Domain.Models.TarjetaCredito.GetInfoEconomica;
 using Domain.Models.TarjetaCredito.GetInfoFinanciera;
 using Domain.Models.TarjetaCredito.GetInfoSocio;
+using Domain.Models.TarjetaCredito.GetParamatrosSistema;
 using Domain.Models.TarjetaCredito.GetResoluciones;
 using Domain.Models.TarjetaCredito.GetScore;
 using Domain.Models.TarjetaCredito.GetSolicitudes;
@@ -230,6 +231,15 @@ namespace plantilla_app_web.Controllers
         public ResCrypt Post(ReqUpdSolicitud req)
         {
             ResUpdSolicitud res = tarjetaCreditoDat.updSolicitud(req);
+            return Utiles.crypt(res, Request.Headers);
+        }
+
+        [Route("getParametros")]
+        [ServiceFilter(typeof(CryptoFilter))]
+        [HttpPost]
+        public ResCrypt Post(ReqGetParametrosSistema req)
+        {
+            ResGetParametrosSistema res = tarjetaCreditoDat.getParametros(req);
             return Utiles.crypt(res, Request.Headers);
         }
     }

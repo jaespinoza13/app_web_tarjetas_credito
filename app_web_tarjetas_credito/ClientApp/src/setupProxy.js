@@ -42,7 +42,10 @@ const context =  [
     "/tarjetacredito/addComentarioSolicitud",
     '/tarjetacredito/getResoluciones',
     '/tarjetacredito/addResolucion',
-    '/tarjetacredito/updResolucion'
+    '/tarjetacredito/updResolucion',
+    '/tarjetacredito/addProcEspecifico',
+    '/tarjetacredito/updSolicitud',
+    '/tarjetacredito/getParametros'
 ];
 
 module.exports = function(app) {

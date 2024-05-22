@@ -100,6 +100,7 @@
         public string service_upd_resolucion { get; set; } = String.Empty;
         public string service_add_proc_espec { get; set; } = String.Empty;
         public string service_upd_solicitud { get; set; } = String.Empty;
+        public string service_get_parametros_sistema { get; set; } = String.Empty;
         #endregion
     }
 }
