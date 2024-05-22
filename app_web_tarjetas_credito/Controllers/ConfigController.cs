@@ -20,6 +20,7 @@ namespace plantilla_app_web.Controllers {
         private readonly ILogger<ConfigController> _logger;
         private readonly IParametersInMemory _parametros;
 
+    
         public ConfigController( ILogger<ConfigController> logger, IOptionsMonitor<AppSettings> settings, IParametersInMemory parametros ) {
             _logger = logger;
             _settings = settings.CurrentValue;
