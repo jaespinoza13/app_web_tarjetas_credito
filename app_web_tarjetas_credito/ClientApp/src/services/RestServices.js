@@ -1,4 +1,4 @@
-import { ServicioGetExecute, getMenuPrincipal, getPreguntaUsuario, ServicioPostExecute, getValidarPreguntaUsuario, setResetPassword, getLogin, getLoginPerfil, getPreguntas, setPreguntas, setPassword, setPasswordPrimeraVez, getListaBases, getListaConexiones, setConexion, addConexion, getListaSeguimiento, getListaDocumentos, getListaColecciones, getDescargarLogsTexto, getLogsTexto, getContenidoLogsTexto, getValidaciones, getScore, getInfoSocio, getInfoEco, addAutorizacion, getSolicitudes, addSolicitud, getContrato, getInfoFinan, addProspecto, getComentarios, getFlujoSolicitud, addComentarioAsesor, addComentarioSolicitud, updResolucion, addResolucion, getResolucion, addProcEspecifico, getParametros } from './Services';
+import { ServicioGetExecute, getMenuPrincipal, getPreguntaUsuario, ServicioPostExecute, getValidarPreguntaUsuario, setResetPassword, getLogin, getLoginPerfil, getPreguntas, setPreguntas, setPassword, setPasswordPrimeraVez, getListaBases, getListaConexiones, setConexion, addConexion, getListaSeguimiento, getListaDocumentos, getListaColecciones, getDescargarLogsTexto, getLogsTexto, getContenidoLogsTexto, getValidaciones, getScore, getInfoSocio, getInfoEco, addAutorizacion, getSolicitudes, addSolicitud, getContrato, getInfoFinan, addProspecto, getInforme, getFlujoSolicitud, addComentarioAsesor, addComentarioSolicitud, updResolucion, addResolucion, getResolucion, addProcEspecifico, updSolicitud, getParametros } from './Services';
 import { setAlertText, setErrorRedirigir } from "../redux/Alert/actions";
 import hex_md5 from '../js/md5';
 import { desencriptar, generate, get, set } from '../js/crypt';
@@ -1085,14 +1085,15 @@ export function fetchAddProspecto(str_num_documento, ente, nombres, apellidos, c
 * @param {(contenido:string, nroTotalRegistros: number) => void} onSuccess
 * @param {Function} dispatch
 */
-export function fetchGetComentarios(idSolicitud, idEstado, token, onSucces, dispatch) {
+export function fetchGetInforme(idSolicitud, idEstado, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
         int_id_sol: idSolicitud,
         int_id_est_sol: Number(idEstado)
     }
-    ServicioPostExecute(getComentarios, body, token, { dispatch: dispatch }).then((data) => {
+    ServicioPostExecute(getInforme, body, token, { dispatch: dispatch }).then((data) => {
+        console.log("FLUJO,", data);
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
@@ -1124,7 +1125,7 @@ export function fetchGetFlujoSolicitud(idSolicitud, token, onSucces, dispatch) {
         int_id_solicitud: idSolicitud,
     }
     ServicioPostExecute(getFlujoSolicitud, body, token, { dispatch: dispatch }).then((data) => {
-                    console.log(data);
+                  //  console.log("FLUJO,", data);
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
@@ -1323,10 +1324,14 @@ export function fetchAddProcEspecifico(idSolicitud, cupo, estado, comentario, to
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
-        int_id_solicitud: idSolicitud
-    }
-    console.log(body);
+        int_id_solicitud: Number(idSolicitud),
+        str_comentario: comentario,
+        str_estado: estado,
+        dcc_cupo_aprobado: parseFloat(cupo),
+    }; 
+    console.log("BODY,", body);
     ServicioPostExecute(addProcEspecifico, body, token, { dispatch: dispatch }).then((data) => {
+        console.log("RETORNO ", data);
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
@@ -1370,6 +1375,45 @@ export function fetchGetParametrosSistema(token, onSucces, dispatch) {
                     if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
                 }
             }
+        } else {
+            if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
+        }
+    });
+}
+
+
+
+/**
+* Agregar p
+* @author retorres
+* @version 1.0
+* @param {string} strEnte
+* @param {(contenido:string, nroTotalRegistros: number) => void} onSuccess
+* @param {Function} dispatch
+*/
+export function fetchUpdateCupoSolicitud(idSolicitud, idFlujoSol, estadoSol, decMonto, token, onSucces, dispatch) {
+    if (dispatch) dispatch(setErrorRedirigir(""));
+
+    let body = {
+        int_id_solicitud: idSolicitud,
+        int_id_flujo_sol: idFlujoSol,
+        int_estado: Number(estadoSol),
+        dec_cupo_solicitado: parseFloat(decMonto)
+    }
+
+    console.log(body);
+    ServicioPostExecute(updSolicitud, body, token, { dispatch: dispatch }).then((data) => {
+        if (data) {
+            if (data.error) {
+                if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
+            } else {
+                if (data.str_res_estado_transaccion === "OK") {
+                    onSucces(data);
+                } else {
+                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                }
+            }
+             console.log("RUSEL, ", data)
         } else {
             if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
         }

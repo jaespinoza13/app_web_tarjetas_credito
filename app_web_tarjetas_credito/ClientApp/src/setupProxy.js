@@ -36,7 +36,7 @@ const context =  [
     "/tarjetacredito/addSolicitud",
     "/tarjetacredito/getInfoFinan",
     "/tarjetacredito/addProspecto",
-    "/tarjetacredito/getComentarios",
+    "/tarjetacredito/getInforme",
     "/tarjetacredito/getFlujoSolicitud",
     "/tarjetacredito/addComentarioAsesor",
     "/tarjetacredito/addComentarioSolicitud",

@@ -104,7 +104,7 @@ export const getSolicitudes = "GET_SOLICITUDES_TC"
 export const addSolicitud = "ADD_SOLICITUD_TC"
 export const getInfoFinan = "GET_SITUACION_FINANCIERA"
 export const addProspecto = "ADD_PROSPECTO_TC"
-export const getComentarios = "GET_COMENTARIOS_ASESOR"
+export const getInforme = "GET_INFORME_TC"
 export const addComentarioSolicitud = "ADD_COMENTARIO_SOLICITUD"
 export const getFlujoSolicitud = "GET_FLUJO_SOLICITUD"
 export const addComentarioAsesor = "ADD_INFORME_TC"
@@ -225,8 +225,8 @@ export function ServiceUrl(request, params = []) {
         case addProspecto:
             pathOut = "tc/addProspecto"
             break;
-        case getComentarios:
-            pathOut = "tc/getComentarios"
+        case getInforme:
+            pathOut = "tc/getInforme"
             break;
         case addComentarioSolicitud:
             pathOut = "tc/addComentarioSol"
@@ -355,7 +355,7 @@ export async function ServicioPostExecute(request, body, token, { encryptS = tru
     if (dispatch && !background) dispatch(setStateLoad(true));
     const sender = localStorage.getItem('sender');
     if (exProcess) localStorage.setItem("sender", set("Param"));
-    console.log("token: " + token);
+    //console.log("token: " + token);
     if (!IsNullOrWhiteSpace(token) && validateToken(token)) {
         if (IsNullOrWhiteSpace("sender")) {
             localStorage.removeItem("sender");
@@ -494,7 +494,7 @@ function pathRewrite(path) {
         "tc/addSolic": '/tarjetacredito/addSolicitud',
         "tc/getInfoFin": '/tarjetacredito/getInfoFinan',
         "tc/addProspecto": '/tarjetacredito/addProspecto',
-        "tc/getComentarios": '/tarjetacredito/getComentarios',
+        "tc/getInforme": '/tarjetacredito/getInforme',
         "tc/addComentarioSol": '/tarjetacredito/addComentarioSolicitud',
         "tc/getFlujoSol": '/tarjetacredito/getFlujoSolicitud',
         "tc/addComentarioAs": '/tarjetacredito/addComentarioAsesor',

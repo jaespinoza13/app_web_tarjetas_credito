@@ -15,6 +15,7 @@ namespace Domain.Models.TarjetaCredito.GetFlujoSolicitud
     public class FlujoSolicitude
     {
         public int int_estado { get; set; }
+        public int slw_id { get; set; }
         public string str_estado { get; set; } = String.Empty;
         public decimal dec_cupo_solicitado { get; set; } 
         public decimal dec_cupo_sugerido { get; set; } 

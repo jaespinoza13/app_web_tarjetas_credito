@@ -153,7 +153,7 @@ namespace plantilla_app_web.Controllers
             return Utiles.crypt(res, Request.Headers);
         }
 
-        [Route("getComentarios")]
+        [Route("getInforme")]
         [ServiceFilter(typeof(CryptoFilter))]
         [HttpPost]
         public ResCrypt Post(ReqGetComentarios req)

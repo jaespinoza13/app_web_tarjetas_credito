@@ -76,7 +76,7 @@ export const fetchGetListaParametros = () => {
         fetch(ServiceUrl(getListaParametrosRequest), requestOptions)
             .then(async (response) => {
                 try {
-                    console.log(response);
+                    //console.log(response);
                     var secret = extractSecret(response.headers.get("secret"));
                     if (response.ok) {
                         var token = response.headers.get("Grand-Tok");

@@ -2,7 +2,7 @@
 import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { useEffect, useState } from "react";
-import { fetchGetComentarios, fetchGetFlujoSolicitud, fetchAddComentarioAsesor, fetchAddComentarioSolicitud, fetchGetResolucion, fetchAddProcEspecifico } from "../../services/RestServices";
+import { fetchGetInforme, fetchGetFlujoSolicitud, fetchAddComentarioAsesor, fetchAddComentarioSolicitud, fetchGetResolucion, fetchAddProcEspecifico, fetchUpdateCupoSolicitud } from "../../services/RestServices";
 import Sidebar from "../Common/Navs/Sidebar";
 import Card from "../Common/Card";
 import Table from "../Common/Table";
@@ -14,7 +14,7 @@ import Input from "../Common/UI/Input";
 import Toggler from "../Common/UI/Toggler";
 
 const mapStateToProps = (state) => {
-    console.log(state);
+    //console.log(state);
     var bd = state.GetWebService.data;
     if (IsNullOrWhiteSpace(bd) || Array.isArray(state.GetWebService.data)) {
         bd = sessionStorage.getItem("WSSELECTED");
@@ -38,6 +38,7 @@ const VerSolicitud = (props) => {
     const [modalVisibleOk, setModalVisibleOk] = useState(false);
     const [modalMonto, setModalMonto] = useState(false);
     const [modalRechazo, setModalRechazo] = useState(false);
+    const [modalCambioBandeja, setModalCambioBandeja] = useState(false);
     const [modalRegresa, setModalRegresa] = useState(false);
     const [faltaComentariosAsesor, setFaltaComentariosAsesor] = useState(false);
     const [isBtnComentariosActivo, setIsBtnComentariosActivo] = useState(false)
@@ -46,8 +47,15 @@ const VerSolicitud = (props) => {
     const [isMontoDiferente, setIsMontodiferente] = useState(false);
     const [accionesSolicitud, setAccionesSolicitud] = useState([{ image: "", textPrincipal: "Información de solicitud", textSecundario: "", key: 1 },
         { image: "", textPrincipal: "Documentos", textSecundario: "", key: 2 }]);
-    const [accionSeleccionada, setAccionSeleccionada] = useState(0);
+    const [accionSeleccionada, setAccionSeleccionada] = useState(1);
     const [nuevoMonto, setNuevoMonto] = useState(0);
+    const [cambioEstadoSol, setCambioEstadoSol] = useState("-1");
+    const [flujoSolId, setFlujoSolId] = useState(0);
+    const [nuevoMontoAprobado, setNuevoMontoAprobado] = useState(0);
+
+    const [comentarioCambioEstado, setComentarioCambioEstado] = useState("");
+    const [valorDecisionSelect, setValorDecisionSelect] = useState("-1");
+    const [isActivoBtnDecision, setIsActivoBtnDecision] = useState(true);
 
     //Se debe implementar con parametros
     const [imprimeMedio, setImprimeMedio] = useState([]);
@@ -79,23 +87,23 @@ const VerSolicitud = (props) => {
         },
     ];
     const parametros = [
-        { prm_id: "11035", prm_valor_ini: "SOLICITUD CREADA" },
-        { prm_id: "11036", prm_valor_ini: "ANALISIS UAC" },
-        { prm_id: "11037", prm_valor_ini: "ANALISIS JEFE UAC" },
-        { prm_id: "11038", prm_valor_ini: "ANALISIS COMITE" },
-        { prm_id: "11039", prm_valor_ini: "APROBADA COMITE" },
-        { prm_id: "11040", prm_valor_ini: "NEGADA" },
-        { prm_id: "11041", prm_valor_ini: "ANULADA" },
+        { prm_id: "11163", prm_valor_ini: "SOLICITUD CREADA" },
+        { prm_id: "11164", prm_valor_ini: "ANALISIS UAC" },
+        { prm_id: "11165", prm_valor_ini: "ANALISIS JEFE UAC" },
+        { prm_id: "11166", prm_valor_ini: "ANALISIS COMITE" },
+        { prm_id: "11167", prm_valor_ini: "APROBADA COMITE" },
+        { prm_id: "11169", prm_valor_ini: "NEGADA" },
+        { prm_id: "11168", prm_valor_ini: "ANULADA" },
         { prm_id: "11042", prm_valor_ini: "ENTREGADA" }
     ];
     const seleccionAccionSolicitud = (value) => {
         const accionSelecciona = accionesSolicitud.find((element) => { return element.key === value });
-        console.log(accionSelecciona);
+        //console.log(accionSelecciona);
         setAccionSeleccionada(accionSelecciona.key);
     }
 
     const headerTableComentarios = [
-        { nombre: 'Tipo', key: 1 }, { nombre: 'Descripción', key: 2 }, { nombre: 'Comentario', key: 3 }
+        { nombre: 'Tipo', key: 1 }, { nombre: 'Comentario', key: 2 }
     ];
 
     const headerTableResoluciones = [
@@ -103,54 +111,55 @@ const VerSolicitud = (props) => {
     ];
     
     useEffect(() => {
-        fetchGetComentarios(props.solicitud.solicitud, props.solicitud.idSolicitud, props.token, (data) => {
+        fetchGetInforme(props.solicitud.solicitud, props.solicitud.idSolicitud, props.token, (data) => {
             setComentariosAsesor(data.lst_informe);
-            existeComentariosVacios(data.lst_informe);
+            existeComentariosVacios(data.lst_informe);  
+            console.log("INFORME",data.lst_informe);
+
         }, dispatch);
         fetchGetResolucion(props.solicitud.solicitud, props.token, (data) => {
             setResoluciones(data.lst_resoluciones);
         }, dispatch);
         fetchGetFlujoSolicitud(props.solicitud.solicitud, props.token, (data) => {
-            const maxSolicitudes = data.flujo_solicitudes.reduce((maxIndex, current, currentIndex, array) => {
-                if (current.slw_cupo_solicitado > array[maxIndex].slw_cupo_solicitado) {
-                    return currentIndex;
-                } else {
-                    return maxIndex;
-                }
-            }, 0);
-            const datosSolicitud = data.flujo_solicitudes[maxSolicitudes];
-            console.log(datosSolicitud);
-            setSolicitudTarjeta(...[datosSolicitud]);
+            const arrayDeValores = data.flujo_solicitudes.map(objeto => objeto.slw_id);
+            const valorMaximo = Math.max(...arrayDeValores);
+            const datosSolicitud = data.flujo_solicitudes.find(solFlujo => solFlujo.slw_id === valorMaximo);
+            setFlujoSolId(datosSolicitud.slw_id);
+            setSolicitudTarjeta(...[datosSolicitud])
+
+
         }, dispatch);
         setImprimeMedio([
             {
-                prm_id: "11036"
+                prm_id: "11164"
             }, {
-                prm_id: "11037"
+                prm_id: "11165"
             }, {
-                prm_id: "11038"
+                prm_id: "11166"
             }
         ]);
         setRegresaSolicitud([
             {
                 prm_id: "11189"
             }, {
-                prm_id: "11037"
+                prm_id: "11165"
             }, {
-                prm_id: "11038"
+                prm_id: "11166"
             }
         ]);
         setEstadosSiguientesAll([
             {
-                prm_id: "11191", estados: "11039|11040"
+                prm_id: "11166", estados: "11167|11169"
             }
         ]);
     }, []);
 
 
-    const validaNombreParam = (id) => {
-        const parametro = parametros.find((param) => { return param.prm_id === id });
-        return parametro.prm_valor_ini;
+    const validaNombreParam = (id) => {        
+        if (estadosSiguientesAll.length > 0) {
+            const parametro = parametros.find(param => param.prm_id === id);
+            return parametro;
+        }      
     }
 
     const setArchivo = (event) => {
@@ -161,6 +170,7 @@ const VerSolicitud = (props) => {
         const arrEstados = estadosSiguientesAll?.find((values) => values.prm_id === props.solicitud.idSolicitud);
         if (arrEstados) {
             const estadosSiguientes = arrEstados.estados.split('|');
+            //console.log(estadosSiguientes)
             setEstadosSiguientes(estadosSiguientes);
         } else {
             // Handle the case when arrEstados is not found
@@ -198,13 +208,14 @@ const VerSolicitud = (props) => {
 
     const siguientePasoHandler = () => {
         if (!existeComentariosVacios(comentariosAsesor)) {
-            console.log(comentariosAsesor);
+            //console.log(comentariosAsesor);
             fetchAddComentarioAsesor(props.solicitud.solicitud, comentariosAsesor, props.solicitud.idSolicitud, props.token, (data) => {
                 if (data.str_res_codigo === "000") {
                     setFaltaComentariosAsesor(false);
                     setModalVisible(false);
                 }
             }, dispatch);
+
         } else {
             setIsBtnComentariosActivo(false);
         }
@@ -279,7 +290,8 @@ const VerSolicitud = (props) => {
 
     }
     const getDesicion = (event) => {
-        if (event.target.value === "11197") {
+        setValorDecisionSelect(event.target.value);
+        if (event.target.value === "11167") { //APROBADO
             setIsMontodiferente(true);
         }
         else {
@@ -301,7 +313,12 @@ const VerSolicitud = (props) => {
     }
 
     const actualizarMonto = () => {
-
+        // Solo se realiza el cambio para solicitud con estado Analista de Crédito
+        fetchUpdateCupoSolicitud(props.solicitud.solicitud, flujoSolId, props.solicitud.idSolicitud, nuevoMonto, props.token, (data) => {
+            if (data.str_res_codigo === "000") {
+                setModalMonto(false);
+            }
+        }, dispatch);
     }
 
     const nuevoMontoHandler = (value) => {
@@ -311,6 +328,28 @@ const VerSolicitud = (props) => {
 
     const guardarRechazo = () => {
         rechazaTarjeta();
+    }
+
+
+    const cambiarEstadoSolHandler = (e) => {
+        setCambioEstadoSol(e.target.value);
+    }
+
+    const cambioEstadoBandeja = () => {
+
+
+        //TODO CAMBIAR NUMERO 
+        fetchAddProcEspecifico(props.solicitud.solicitud, 0, cambioEstadoSol, comentarioCambioEstado, props.token, (data) => {
+            if (data.str_res_codigo === "000") {
+                //Ir a pagina anterior
+                setModalCambioBandeja(false);
+                console.log("SE GUARDA AL NUEVO ESTADO");
+            }
+            else {
+                console.log("No cuenta con permisos ", data);
+            }
+            
+        }, dispatch)
     }
 
     const openModalRechazo = () => {
@@ -335,6 +374,14 @@ const VerSolicitud = (props) => {
     const closeModalRechazo = () => {
         setModalRechazo(false);
     }
+
+    const closeModalambioBandeja = () => {
+        setModalCambioBandeja(false);
+    } 
+    const openModalCambiarBandeja = () => {
+        setModalCambioBandeja(true);
+    }
+
     const [trimed, setTrimed] = useState(false);
 
     const verMas = (index) => {
@@ -345,6 +392,46 @@ const VerSolicitud = (props) => {
             [index]: !prevState[index]
         }));
     }
+
+
+    const guardarDecisionComiteHandler = () => {
+        if (valorDecisionSelect === "11167") { //APROBADO
+            fetchAddProcEspecifico(props.solicitud.solicitud, nuevoMontoAprobado, "EST_APROBADA_COMITE", comentarioSolicitud, props.token, (data) => { //APROBADO 11167
+                if (data.str_res_codigo === "000") {
+                    console.log("SE APROBO SOLICITUD");
+                }
+                else {
+                    console.log("No cuenta con permisos ", data);
+                }
+            }, dispatch)
+
+        } else if (valorDecisionSelect === "11169") { // ANULADA
+            fetchAddProcEspecifico(props.solicitud.solicitud, 0, "EST_ANULADA_COMITE", "", props.token, (data) => { //ANULADA 11168
+                if (data.str_res_codigo === "000") {
+                    console.log("SE NEGO SOLICITUD");
+                }
+                else {
+                    console.log("No cuenta con permisos ", data);
+                }
+            }, dispatch)
+        }        
+    }
+
+
+    useEffect(() => {
+
+        if (valorDecisionSelect === "11169") {
+            setIsActivoBtnDecision(false);
+        }
+        else if (valorDecisionSelect !== "-1" && nuevoMontoAprobado !== 0 && comentarioSolicitud !== "") {
+            setIsActivoBtnDecision(false);
+        }
+        else {
+            setIsActivoBtnDecision(true);
+        }
+
+
+    }, [valorDecisionSelect, nuevoMontoAprobado, comentarioSolicitud])
 
     return <div className="f-row">
         <Sidebar enlace={props.location.pathname}></Sidebar>
@@ -358,7 +445,7 @@ const VerSolicitud = (props) => {
                 accionSeleccionada === 1 &&                 
                 <>
                     {
-                        (props.solicitud.idSolicitud === "11035" || props.solicitud.idSolicitud === "11039")
+                        (props.solicitud.idSolicitud === "11163" || props.solicitud.idSolicitud === "11167")
                     ?
                             <Card className={["w-100 justify-content-space-between align-content-center"]}>
                         <div>
@@ -390,7 +477,7 @@ const VerSolicitud = (props) => {
                                             {`${solicitudTarjeta?.str_usuario_proc}`}
                                         </h5>
                                             </div>
-                                            {props.solicitud.idSolicitud === "11035" 
+                                            {props.solicitud.idSolicitud === "11163" 
                                                 ? 
                                                 <>
                                                     <div className="values  mb-3">
@@ -417,12 +504,12 @@ const VerSolicitud = (props) => {
                                     <div className="values  mb-3">
                                         <h5>Cupo solicitado:</h5>
                                         <h5 className="strong f-row">
-                                                    {`$ ${Number(solicitudTarjeta?.dec_cupo_solicitado).toLocaleString("en-US") || Number('10000.00').toLocaleString("en-US")}`}
-                                                    {props.solicitud.idSolicitud === "11035" &&
+                                                    {`$ ${Number(solicitudTarjeta?.dec_cupo_solicitado).toLocaleString("en-US") || Number('1000.00').toLocaleString("en-US")}`}
+                                                    {props.solicitud.idSolicitud === "11163" &&
                                                         <Button className="btn_mg__auto ml-2" onClick={updateMonto}>
                                                             <img src="/Imagenes/edit.svg"></img>
                                                         </Button>
-                                                }
+                                                    }
                                                 </h5>
                                     </div>
                                     <div className="values  mb-3">
@@ -488,16 +575,22 @@ const VerSolicitud = (props) => {
                                             <div className="values  mb-3">
                                                 <h5>Cupo solicitado:</h5>
                                                 <h5 className="strong f-row">
-                                                    {`$ ${solicitudTarjeta?.dec_cupo_solicitado.toLocaleString("en-US") || Number('10000.00').toLocaleString("en-US")}`}
-                                                    <Button className="btn_mg__auto ml-2" onClick={updateMonto}>
-                                                        <img src="/Imagenes/edit.svg"></img>
-                                                    </Button>
+                                                   {/* {`$ ${solicitudTarjeta?.dec_cupo_solicitado.toLocaleString("en-US") || Number('10000.00').toLocaleString("en-US")}`}*/}
+                                                    {`$ ${solicitudTarjeta?.dec_cupo_solicitado || Number('10000.00').toLocaleString("en-US")}`}
+
+                                                    {props.solicitud.idSolicitud === "11163" &&
+
+                                                        <Button className="btn_mg__auto ml-2" onClick={updateMonto}>
+                                                            <img src="/Imagenes/edit.svg"></img>
+                                                        </Button>
+                                                    }
                                                 </h5>
                                             </div>
                                             <div className="values  mb-3">
                                                 <h5>Cupo sugerido:</h5>
                                                 <h5 className="strong">
-                                                    {`$ ${solicitudTarjeta?.dec_cupo_sugerido.toLocaleString("en-US") || Number('10000.00').toLocaleString("en-US")}`}
+                                                    {/*{`$ ${solicitudTarjeta?.dec_cupo_sugerido.toLocaleString("en-US") || Number('10000.00').toLocaleString("en-US")}`}*/}
+                                                    {`$ ${solicitudTarjeta?.dec_cupo_sugerido|| Number('10000.00').toLocaleString("en-US")}`}
                                                 </h5>
                                             </div>
                                             <div className="values  mb-3">
@@ -511,12 +604,18 @@ const VerSolicitud = (props) => {
                             <Card className={["f-col"]}>
                                 <div className={["f-row"]}>
                                     <Button className="btn_mg__primary" onClick={modalHandler}>Agregar comentario</Button>
-                                    {regresaSolicitud?.find((id) => { return id.prm_id === props.solicitud.idSolicitud }) &&
-                                        <Button className="btn_mg__primary ml-2" onClick={guardarComentarioAtras}>Regresar solicitud</Button>
-                                    }
+                                    {/*{regresaSolicitud?.find((id) => { return id.prm_id === props.solicitud.idSolicitud }) &&*/}
+                                    {/*    <Button className="btn_mg__primary ml-2" onClick={guardarComentarioAtras}>Regresar solicitud</Button>*/}
+                                    {/*}*/}
                                     {imprimeMedio?.find((id) => { return id.prm_id === props.solicitud.idSolicitud }) &&
                                         <Button className="btn_mg__primary ml-2">Imprimir formulario</Button>
                                     }
+
+                                            {props.solicitud.idSolicitud >= "11164" && props.solicitud.idSolicitud <= "11166" &&
+
+                                        <Button className="btn_mg__primary ml-2" onClick={openModalCambiarBandeja}>Retornar Solicitud</Button>
+                                    }
+
                                 </div>
                                 <Table headers={headerTableResoluciones}>
                                     {
@@ -546,40 +645,76 @@ const VerSolicitud = (props) => {
                                     }
                                 </Table>
                                         {
-                                            props.solicitud.idSolicitud === "11038" &&
+                                            props.solicitud.idSolicitud === "11166" &&
                                             <Card>
-                                                <h3>Decisión</h3>
-                                                <select disabled={isDesicionHanilitada} onChange={getDesicion}>
-                                                    {estadosSiguientes?.map((estados) => {
-                                                        return <option value={estados}>
-                                                            {validaNombreParam(estados)}
-                                                        </option>
+                                                    <h3>Decisión</h3>
+                                                    <select disabled={isDesicionHanilitada} onChange={getDesicion} defaultValue={"-1"} value={valorDecisionSelect}>
+                                                        {estadosSiguientes?.map((estados, index) => {
+                                                            const resultado = validaNombreParam(estados);
+                                                            if (index === 0) {
+                                                                return (
+                                                                    <>
+                                                                        <option disabled={true} value={"-1"}>Seleccione una opción</option>
+                                                                        <option value={resultado.prm_id}> {resultado.prm_valor_ini}</option>
+                                                                    </>
+                                                                )
+                                                            }
+                                                            else {
+                                                                return (
+                                                                    <option value={resultado.prm_id}> {resultado.prm_valor_ini}</option>
+                                                                )
+                                                            }                                                        
                                                     })}
-                                                </select>
+                                                    </select>
+                                                    <br/>                                                     
                                             </Card>
                                         }
                                 {isMontoDiferente &&
-                                    <Card className={["mt-2"]}>
-                                        <h3>Ingrese nuevo monto de aprobado</h3>
-                                        <Input type="number" placeholder="Ej. 1000">
-                                        </Input>
-                                    </Card>
+                                    <>
+                                        <Card className={["mt-2"]}>
+                                            <h3>Ingrese nuevo monto de aprobado</h3>
+                                            <Input type="number" placeholder="Ej. 1000" setValueHandler={(e) => setNuevoMontoAprobado(e)} value={nuevoMontoAprobado}></Input>
+                                        </Card>
+
+                                        <Card className={["mt-2"]}>
+                                            <h3>Comentario</h3>
+                                            <Textarea placeholder="Ingrese su comentario" onChange={getComentarioSolicitudHandler} esRequerido={true}></Textarea>
+                                        </Card>                                   
+                                    </>
+                                    
+                                    
+
+
                                 }
-                            </Card>
-                            <div className="mt-4">
-                                <h3 className="mb-3 strong">Comentario del Asesor</h3>
-                                <Textarea placeholder="Ingrese su comentario" onChange={getComentarioSolicitudHandler} esRequerido={true}></Textarea>
-                            </div>
+                                    </Card>
+
+                                {props.solicitud.idSolicitud !== "11166" &&
+                                    <div className="mt-4">
+                                        <h3 className="mb-3 strong">Comentario del Asesor</h3>
+                                        <Textarea placeholder="Ingrese su comentario" onChange={getComentarioSolicitudHandler} esRequerido={true}></Textarea>
+                                    </div>
+                                }
+
+
+                            
                         </div>
-                        <div className="f-row justify-content-center">
-                            <Button className="btn_mg__primary" disabled={faltaComentariosAsesor} onClick={guardarComentarioSiguiente}>Guardar</Button>
+
+                                <div className="mt-2 f-row justify-content-center">
+                                    {/*APROBADA O NEGADA*/}
+                                    {(props.solicitud.idSolicitud === "11166") && 
+                                        <Button className="btn_mg__primary" disabled={isActivoBtnDecision} onClick={guardarDecisionComiteHandler}>Guardar</Button>
+                                    }
+                                    {props.solicitud.idSolicitud !== "11166" &&
+                                        <Button className="btn_mg__primary" disabled={faltaComentariosAsesor} onClick={guardarComentarioSiguiente}>Guardar</Button>
+                                    }
+                                    
                         </div>
 
 
                     </Card>
                     }
                 </>
-                
+
             }
 
             {accionSeleccionada !== 1 && accionSeleccionada === 2 &&
@@ -597,10 +732,10 @@ const VerSolicitud = (props) => {
             }
 
 
-        
+
 
         </Card>
-        
+
 
 
         <Modal
@@ -621,38 +756,22 @@ const VerSolicitud = (props) => {
                                     <td style={{ width: "40%", justifyContent: "left" }}>
                                         <div className='f-row' style={{ paddingLeft: "1rem" }}>
                                             <div className='tooltip'>
-                                                <img className='tooltip-icon' src='/icons/info.svg'></img>
-                                                <span className='tooltip-info'>{comentario.descripcion}</span>
+                                                <img className='tooltip-icon' src='/Imagenes/info.svg'></img>
+                                                <span className='tooltip-info'>{comentario.str_descripcion}</span>
                                             </div>
-                                            {comentario.tipo}
+                                            {comentario.str_tipo}
                                         </div>
                                     </td>
-                                    {/*<td style={{ width: "20%" }}>{comentario.str_tipo}</td>*/}
-                                    {/*<td style={{ width: "40%" }}>{comentario.str_descripcion}</td>*/}
-                                    <td style={{ width: "60%", justifyContent: "left" }} id={index}>
-                                        <div style={{ display: "ruby" }}>
-                                            {trimed[index] ?
-                                                <div>
-                                                    {`${comentario.str_detalle}`}
-                                                </div>
-                                                :
-                                                <div>
-                                                    {`${comentario.str_detalle.substring(0, 40)}`}
-                                                </div>
-                                            }
-                                            {comentario.str_detalle.length > 40 && <a className='see-more' onClick={() => { verMas(index) }}>{trimed[index] ? " Ver menos..." : " Ver mas..."}</a>}
-                                        </div>
-                                    </td>
-                                    {/*<td style={{ width: "40%" }}><Textarea placeholder="Ej. Texto de ejemplo" type="textarea" onChange={(event, key = comentario.int_id_parametro) => { comentarioAdicionalHanlder(event, key) }} esRequerido={false} value={comentario.str_detalle}></Textarea></td>*/}
+                                    <td style={{ width: "40%" }}><Textarea placeholder="Ej. Texto de ejemplo" type="textarea" onChange={(event, key = comentario.int_id_parametro) => { comentarioAdicionalHanlder(event, key) }} esRequerido={false} value={comentario.str_detalle}></Textarea></td>
                                 </tr>
                             );
                         })
                     }
                 </Table>
-                <div className="mt-4">
-                    <h3 className="mb-3 strong">Comentario del Asesor</h3>
-                    <Textarea placeholder="Ingrese su comentario" onChange={getComentarioSolicitudHandler} esRequerido={true}></Textarea>
-                </div>
+                {/*<div className="mt-4">*/}
+                {/*    <h3 className="mb-3 strong">Comentario del Asesor</h3>*/}
+                {/*    <Textarea placeholder="Ingrese su comentario" onChange={getComentarioSolicitudHandler} esRequerido={true}></Textarea>*/}
+                {/*</div>*/}
             </div>}
         </Modal>
         <Modal
@@ -677,8 +796,8 @@ const VerSolicitud = (props) => {
             mainText="Guardar"
         >
             {modalMonto && <div>
-                <h3 className="mt-4 mb-1">Ingrese el nuevo monto:</h3>
-                <Input type="number" value={solicitudTarjeta?.dec_cupo_solicitado} placeholder="Ingrese el nuevo monto" setValueHandler={nuevoMontoHandler }></Input>
+                <h3 className="mt-4 mb-3">Ingrese el nuevo monto:</h3>
+                <Input className="mb-3 width-100" type="number" value={ solicitudTarjeta?.dec_cupo_solicitado} placeholder="Ingrese el nuevo monto" setValueHandler={nuevoMontoHandler}></Input>
             </div>}
         </Modal>
 
@@ -693,7 +812,7 @@ const VerSolicitud = (props) => {
         >
             {modalRegresa && <div>
                 <h3 className="mt-4 mb-1">Seleccione a qué estado desea regresar la solicitud:</h3>
-                
+
             </div>}
         </Modal>
 
@@ -711,6 +830,51 @@ const VerSolicitud = (props) => {
 
             </div>}
         </Modal>
+
+        <Modal
+            modalIsVisible={modalCambioBandeja}
+            titulo={`Cambiar bandeja`}
+            onNextClick={cambioEstadoBandeja}
+            onCloseClick={closeModalambioBandeja}
+            isBtnDisabled={false}
+            type="md"
+            mainText="Guardar"
+        >
+            {modalCambioBandeja && <div>
+                <h3 className="mt-4 mb-1">Seleccione a qué estado desea regresar la solicitud:</h3>
+                <select className='width-100' defaultValue={"-1"} onChange={cambiarEstadoSolHandler} value={cambioEstadoSol}>
+                    <option disabled={true} value="-1">Seleccione algún estado</option>
+
+                    {(solicitudTarjeta?.str_estado === "ANALISIS UAC") &&
+                        <option value="EST_SOL_CREADA">SOLICITUD CREADA</option>
+                    }
+                    {solicitudTarjeta?.str_estado === "ANALISIS JEFE UAC" &&
+                        <>
+                        <option value="EST_ANALISIS_UAC">ANALISIS UAC</option>
+                        </>
+                    }
+                    {solicitudTarjeta?.str_estado === "ANALISIS COMITE" &&
+                        <>                        
+                        <option value="EST_SOL_CREADA">SOLICITUD CREADA</option>
+                        <option value="EST_ANALISIS_UAC">ANALISIS UAC</option>
+                        <option value="EST_ANALISIS_JEFE_UAC">ANALISIS JEFE UAC</option>
+                        </>
+                    }
+
+                </select>
+                <br />
+
+                <div>
+                    <h3 className="mt-3 mb-2">Comentario:</h3>
+                    <Input className="width-100" type="text" value={comentarioCambioEstado} placeholder="Ingrese comentario" setValueHandler={setComentarioCambioEstado}></Input>
+                </div>
+
+                <br/>
+
+            </div>}
+        </Modal>
+
+
     </div>
 }
 
