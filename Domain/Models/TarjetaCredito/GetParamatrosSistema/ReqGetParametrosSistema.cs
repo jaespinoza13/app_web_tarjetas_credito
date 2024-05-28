@@ -9,5 +9,6 @@ namespace Domain.Models.TarjetaCredito.GetParamatrosSistema
 {
     public class ReqGetParametrosSistema : Header
     {
+        public int int_id_sis { get; set; }
     }
 }

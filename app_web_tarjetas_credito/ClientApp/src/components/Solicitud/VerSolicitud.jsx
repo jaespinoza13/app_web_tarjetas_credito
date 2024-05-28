@@ -56,6 +56,7 @@ const VerSolicitud = (props) => {
     const [comentarioCambioEstado, setComentarioCambioEstado] = useState("");
     const [valorDecisionSelect, setValorDecisionSelect] = useState("-1");
     const [isActivoBtnDecision, setIsActivoBtnDecision] = useState(true);
+    const [isBtnDisableCambioBandeja, setIsBtnDisableCambioBandeja] = useState(true);
 
     //Se debe implementar con parametros
     const [imprimeMedio, setImprimeMedio] = useState([]);
@@ -87,13 +88,13 @@ const VerSolicitud = (props) => {
         },
     ];
     const parametros = [
-        { prm_id: "11163", prm_valor_ini: "SOLICITUD CREADA" },
-        { prm_id: "11164", prm_valor_ini: "ANALISIS UAC" },
-        { prm_id: "11165", prm_valor_ini: "ANALISIS JEFE UAC" },
-        { prm_id: "11166", prm_valor_ini: "ANALISIS COMITE" },
-        { prm_id: "11167", prm_valor_ini: "APROBADA COMITE" },
-        { prm_id: "11169", prm_valor_ini: "NEGADA" },
-        { prm_id: "11168", prm_valor_ini: "ANULADA" },
+        { prm_id: "11134", prm_valor_ini: "SOLICITUD CREADA" },
+        { prm_id: "11135", prm_valor_ini: "ANALISIS UAC" },
+        { prm_id: "11136", prm_valor_ini: "ANALISIS JEFE UAC" },
+        { prm_id: "11137", prm_valor_ini: "ANALISIS COMITE" },
+        { prm_id: "11138", prm_valor_ini: "APROBADA COMITE" },
+        { prm_id: "11140", prm_valor_ini: "NEGADA" },
+        { prm_id: "11139", prm_valor_ini: "ANULADA COMITE" },
         { prm_id: "11042", prm_valor_ini: "ENTREGADA" }
     ];
     const seleccionAccionSolicitud = (value) => {
@@ -131,25 +132,25 @@ const VerSolicitud = (props) => {
         }, dispatch);
         setImprimeMedio([
             {
-                prm_id: "11164"
+                prm_id: "11135"
             }, {
-                prm_id: "11165"
+                prm_id: "11136"
             }, {
-                prm_id: "11166"
+                prm_id: "11137"
             }
         ]);
         setRegresaSolicitud([
             {
                 prm_id: "11189"
             }, {
-                prm_id: "11165"
+                prm_id: "11136"
             }, {
-                prm_id: "11166"
+                prm_id: "11137"
             }
         ]);
         setEstadosSiguientesAll([
             {
-                prm_id: "11166", estados: "11167|11169"
+                prm_id: "11137", estados: "11138|11140"
             }
         ]);
     }, []);
@@ -291,7 +292,7 @@ const VerSolicitud = (props) => {
     }
     const getDesicion = (event) => {
         setValorDecisionSelect(event.target.value);
-        if (event.target.value === "11167") { //APROBADO
+        if (event.target.value === "11138") { //APROBADO
             setIsMontodiferente(true);
         }
         else {
@@ -337,19 +338,32 @@ const VerSolicitud = (props) => {
 
     const cambioEstadoBandeja = () => {
 
+        //if (props.solicitud.idSolicitud === '11137') {
+            fetchAddProcEspecifico(props.solicitud.solicitud, 0, cambioEstadoSol, comentarioCambioEstado, props.token, (data) => {
+                if (data.str_res_codigo === "000") {
+                    //Ir a pagina anterior
+                    setModalCambioBandeja(false);
+                    console.log("SE GUARDA AL NUEVO ESTADO");
+                    navigate.push('/solicitud');
+                }
+                else {
+                    console.log("No cuenta con permisos ", data);
+                }
 
-        //TODO CAMBIAR NUMERO 
-        fetchAddProcEspecifico(props.solicitud.solicitud, 0, cambioEstadoSol, comentarioCambioEstado, props.token, (data) => {
-            if (data.str_res_codigo === "000") {
-                //Ir a pagina anterior
-                setModalCambioBandeja(false);
-                console.log("SE GUARDA AL NUEVO ESTADO");
-            }
-            else {
-                console.log("No cuenta con permisos ", data);
-            }
-            
-        }, dispatch)
+            }, dispatch)
+
+        /*} else {
+            //console.log("ENTRA CAMBIO HACIA ATRAS"); idSolicitud, comentario, estadoSolicitud, regresaSolicitud
+            fetchAddComentarioSolicitud(props.solicitud.solicitud, comentarioCambioEstado, props.solicitud.idSolicitud, true, props.token, (data) => {
+                if (data.str_res_codigo === "000") {
+                    setModalCambioBandeja(false);
+                    console.log("SE GUARDA AL NUEVO ESTADO");
+                    navigate.push('/solicitud');
+                }
+                console.log("ERROR HACIA ATRAS, ", data)
+            }, dispatch);
+        }*/
+        
     }
 
     const openModalRechazo = () => {
@@ -394,21 +408,31 @@ const VerSolicitud = (props) => {
     }
 
 
+    useEffect(() => {
+        if (comentarioCambioEstado !== "") {
+            setIsBtnDisableCambioBandeja(false);
+        } else {
+            setIsBtnDisableCambioBandeja(true);
+        }
+    }, [comentarioCambioEstado])
+
     const guardarDecisionComiteHandler = () => {
-        if (valorDecisionSelect === "11167") { //APROBADO
-            fetchAddProcEspecifico(props.solicitud.solicitud, nuevoMontoAprobado, "EST_APROBADA_COMITE", comentarioSolicitud, props.token, (data) => { //APROBADO 11167
+        if (valorDecisionSelect === "11138") { //APROBADO
+            fetchAddProcEspecifico(props.solicitud.solicitud, nuevoMontoAprobado, "EST_APROBADA_COMITE", comentarioSolicitud, props.token, (data) => { //APROBADO 11138
                 if (data.str_res_codigo === "000") {
                     console.log("SE APROBO SOLICITUD");
+                    navigate.push('/solicitud');
                 }
                 else {
                     console.log("No cuenta con permisos ", data);
                 }
             }, dispatch)
 
-        } else if (valorDecisionSelect === "11169") { // ANULADA
-            fetchAddProcEspecifico(props.solicitud.solicitud, 0, "EST_ANULADA_COMITE", "", props.token, (data) => { //ANULADA 11168
+        } else if (valorDecisionSelect === "11140") { // ANULADA
+            fetchAddProcEspecifico(props.solicitud.solicitud, 0, "EST_ANULADA_COMITE", "", props.token, (data) => { //ANULADA 11139
                 if (data.str_res_codigo === "000") {
                     console.log("SE NEGO SOLICITUD");
+                    navigate.push('/solicitud');
                 }
                 else {
                     console.log("No cuenta con permisos ", data);
@@ -420,7 +444,7 @@ const VerSolicitud = (props) => {
 
     useEffect(() => {
 
-        if (valorDecisionSelect === "11169") {
+        if (valorDecisionSelect === "11140") {
             setIsActivoBtnDecision(false);
         }
         else if (valorDecisionSelect !== "-1" && nuevoMontoAprobado !== 0 && comentarioSolicitud !== "") {
@@ -445,7 +469,7 @@ const VerSolicitud = (props) => {
                 accionSeleccionada === 1 &&                 
                 <>
                     {
-                        (props.solicitud.idSolicitud === "11163" || props.solicitud.idSolicitud === "11167")
+                        (props.solicitud.idSolicitud === "11134" || props.solicitud.idSolicitud === "11138")
                     ?
                             <Card className={["w-100 justify-content-space-between align-content-center"]}>
                         <div>
@@ -477,7 +501,7 @@ const VerSolicitud = (props) => {
                                             {`${solicitudTarjeta?.str_usuario_proc}`}
                                         </h5>
                                             </div>
-                                            {props.solicitud.idSolicitud === "11163" 
+                                            {props.solicitud.idSolicitud === "11134" 
                                                 ? 
                                                 <>
                                                     <div className="values  mb-3">
@@ -505,7 +529,7 @@ const VerSolicitud = (props) => {
                                         <h5>Cupo solicitado:</h5>
                                         <h5 className="strong f-row">
                                                     {`$ ${Number(solicitudTarjeta?.dec_cupo_solicitado).toLocaleString("en-US") || Number('1000.00').toLocaleString("en-US")}`}
-                                                    {props.solicitud.idSolicitud === "11163" &&
+                                                    {props.solicitud.idSolicitud === "11134" &&
                                                         <Button className="btn_mg__auto ml-2" onClick={updateMonto}>
                                                             <img src="/Imagenes/edit.svg"></img>
                                                         </Button>
@@ -578,7 +602,7 @@ const VerSolicitud = (props) => {
                                                    {/* {`$ ${solicitudTarjeta?.dec_cupo_solicitado.toLocaleString("en-US") || Number('10000.00').toLocaleString("en-US")}`}*/}
                                                     {`$ ${solicitudTarjeta?.dec_cupo_solicitado || Number('10000.00').toLocaleString("en-US")}`}
 
-                                                    {props.solicitud.idSolicitud === "11163" &&
+                                                    {props.solicitud.idSolicitud === "11134" &&
 
                                                         <Button className="btn_mg__auto ml-2" onClick={updateMonto}>
                                                             <img src="/Imagenes/edit.svg"></img>
@@ -611,7 +635,7 @@ const VerSolicitud = (props) => {
                                         <Button className="btn_mg__primary ml-2">Imprimir formulario</Button>
                                     }
 
-                                            {props.solicitud.idSolicitud >= "11164" && props.solicitud.idSolicitud <= "11166" &&
+                                            {props.solicitud.idSolicitud >= "11135" && props.solicitud.idSolicitud <= "11137" &&
 
                                         <Button className="btn_mg__primary ml-2" onClick={openModalCambiarBandeja}>Retornar Solicitud</Button>
                                     }
@@ -645,7 +669,7 @@ const VerSolicitud = (props) => {
                                     }
                                 </Table>
                                         {
-                                            props.solicitud.idSolicitud === "11166" &&
+                                            props.solicitud.idSolicitud === "11137" &&
                                             <Card>
                                                     <h3>Decisión</h3>
                                                     <select disabled={isDesicionHanilitada} onChange={getDesicion} defaultValue={"-1"} value={valorDecisionSelect}>
@@ -688,7 +712,7 @@ const VerSolicitud = (props) => {
                                 }
                                     </Card>
 
-                                {props.solicitud.idSolicitud !== "11166" &&
+                                {props.solicitud.idSolicitud !== "11137" &&
                                     <div className="mt-4">
                                         <h3 className="mb-3 strong">Comentario del Asesor</h3>
                                         <Textarea placeholder="Ingrese su comentario" onChange={getComentarioSolicitudHandler} esRequerido={true}></Textarea>
@@ -701,10 +725,10 @@ const VerSolicitud = (props) => {
 
                                 <div className="mt-2 f-row justify-content-center">
                                     {/*APROBADA O NEGADA*/}
-                                    {(props.solicitud.idSolicitud === "11166") && 
+                                    {(props.solicitud.idSolicitud === "11137") && 
                                         <Button className="btn_mg__primary" disabled={isActivoBtnDecision} onClick={guardarDecisionComiteHandler}>Guardar</Button>
                                     }
-                                    {props.solicitud.idSolicitud !== "11166" &&
+                                    {props.solicitud.idSolicitud !== "11137" &&
                                         <Button className="btn_mg__primary" disabled={faltaComentariosAsesor} onClick={guardarComentarioSiguiente}>Guardar</Button>
                                     }
                                     
@@ -836,36 +860,42 @@ const VerSolicitud = (props) => {
             titulo={`Cambiar bandeja`}
             onNextClick={cambioEstadoBandeja}
             onCloseClick={closeModalambioBandeja}
-            isBtnDisabled={false}
+            isBtnDisabled={isBtnDisableCambioBandeja}
             type="md"
             mainText="Guardar"
         >
             {modalCambioBandeja && <div>
-                <h3 className="mt-4 mb-1">Seleccione a qué estado desea regresar la solicitud:</h3>
-                <select className='width-100' defaultValue={"-1"} onChange={cambiarEstadoSolHandler} value={cambioEstadoSol}>
-                    <option disabled={true} value="-1">Seleccione algún estado</option>
 
-                    {(solicitudTarjeta?.str_estado === "ANALISIS UAC") &&
-                        <option value="EST_SOL_CREADA">SOLICITUD CREADA</option>
-                    }
-                    {solicitudTarjeta?.str_estado === "ANALISIS JEFE UAC" &&
-                        <>
-                        <option value="EST_ANALISIS_UAC">ANALISIS UAC</option>
-                        </>
-                    }
-                    {solicitudTarjeta?.str_estado === "ANALISIS COMITE" &&
-                        <>                        
-                        <option value="EST_SOL_CREADA">SOLICITUD CREADA</option>
-                        <option value="EST_ANALISIS_UAC">ANALISIS UAC</option>
-                        <option value="EST_ANALISIS_JEFE_UAC">ANALISIS JEFE UAC</option>
-                        </>
-                    }
 
-                </select>
+                {/*{props.solicitud.idSolicitud === "11137" && */}
+                {/*<>*/}
+                    <h3 className="mt-4 mb-1">Seleccione a qué estado desea regresar la solicitud:</h3>
+
+                    <select className='width-100' defaultValue={"-1"} onChange={cambiarEstadoSolHandler} value={cambioEstadoSol}>
+                        <option disabled={true} value="-1">Seleccione algún estado</option>
+
+                        {(solicitudTarjeta?.str_estado === "ANALISIS UAC") &&
+                            <option value="EST_SOL_CREADA">SOLICITUD CREADA</option>
+                        }
+                        {solicitudTarjeta?.str_estado === "ANALISIS JEFE UAC" &&
+                            <>
+                            <option value="EST_ANALISIS_UAC">ANALISIS UAC</option>
+                            </>
+                        }
+                        {solicitudTarjeta?.str_estado === "ANALISIS COMITE" &&
+                            <>                        
+                            <option value="EST_SOL_CREADA">SOLICITUD CREADA</option>
+                            <option value="EST_ANALISIS_UAC">ANALISIS UAC</option>
+                            <option value="EST_ANALISIS_JEFE_UAC">ANALISIS JEFE UAC</option>
+                            </>
+                        }
+                    </select>
+                {/*</>*/}
+                {/*}*/}
                 <br />
 
                 <div>
-                    <h3 className="mt-3 mb-2">Comentario:</h3>
+                    <h3 className="mt-2 mb-2">Comentario:</h3>
                     <Input className="width-100" type="text" value={comentarioCambioEstado} placeholder="Ingrese comentario" setValueHandler={setComentarioCambioEstado}></Input>
                 </div>
 

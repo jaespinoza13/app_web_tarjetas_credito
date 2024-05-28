@@ -1194,10 +1194,12 @@ export function fetchAddComentarioSolicitud(idSolicitud, comentario, estadoSolic
         int_estado: estadoSolicitud,
         str_decision_sol: "APROBADO"
     }
-    console.log(body);
+    //console.log(body);
     ServicioPostExecute(addComentarioSolicitud, body, token, { dispatch: dispatch }).then((data) => {
         if (data) {
-            if (data.str_res_codigo != "000") {
+            console.log(data)
+            //if (data.str_res_codigo != "000") {
+            if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
             } else {
                 if (data.str_res_estado_transaccion === "OK") {
