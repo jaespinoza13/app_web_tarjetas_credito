@@ -78,15 +78,15 @@ function Solicitud(props) {
     ]
 
     const parametros = [
-        { prm_id: "11163", prm_valor_ini: "SOLICITUD CREADA" },
-        { prm_id: "11164", prm_valor_ini: "ANALISIS UAC" },
-        { prm_id: "11165", prm_valor_ini: "ANALISIS JEFE UAC" },
-        { prm_id: "11166", prm_valor_ini: "ANALISIS COMITE" },
-        { prm_id: "11166", prm_valor_ini: "APROBADA COMITE" },
-        { prm_id: "11169", prm_valor_ini: "NEGADA" },
-        { prm_id: "11168", prm_valor_ini: "ANULADA" },
+        { prm_id: "11134", prm_valor_ini: "SOLICITUD CREADA" },
+        { prm_id: "11135", prm_valor_ini: "ANALISIS UAC" },
+        { prm_id: "11136", prm_valor_ini: "ANALISIS JEFE UAC" },
+        { prm_id: "11137", prm_valor_ini: "ANALISIS COMITE" },
+        { prm_id: "11138", prm_valor_ini: "APROBADA COMITE" },
+        { prm_id: "11140", prm_valor_ini: "NEGADA" },
+        { prm_id: "11139", prm_valor_ini: "ANULADA COMITE" },
         { prm_id: "11042", prm_valor_ini: "ENTREGADA" }
-    ]
+    ];
 
     const validaNombreParam = (id) => {
         console.log(id);
@@ -104,7 +104,7 @@ function Solicitud(props) {
     const [valoresTextArea, setvaloresTextArea] = useState(bodyTable_with_Text_Area)
 
     const textAreaHandler = (valor, index) => {
-        console.log("EL KEY ACTUALIZAR ES", index)
+        //console.log("EL KEY ACTUALIZAR ES", index)
         const newData = [...valoresTextArea];
         //newData[index].detalle = valor; // Cambiar propiedad detalle por el que se requiera
         newData.find(comentario => comentario.key === index ? comentario.detalle = valor : '')
@@ -128,7 +128,9 @@ function Solicitud(props) {
 
     //Carga de solicitudes
     useEffect(() => {
+        //console.log("TOKEN", props.token);
         fetchGetSolicitudes(props.token, (data) => {
+            console.log("ENTRA SOLICITUDES");
             console.log(data);
             stLstProspectos(data.prospectos);
             stLstSolicitudes(data.solicitudes);
@@ -136,7 +138,7 @@ function Solicitud(props) {
         const strOficial = get(localStorage.getItem("sender_name"));
         setUsuario(strOficial);
         const strRol = get(localStorage.getItem("role"));
-        console.log(strRol);
+        //console.log(strRol);
         setRol(strRol);
         setDatosUsuario([{ strCargo: strRol, strOficial: strOficial }]);
     }, []);
@@ -184,11 +186,11 @@ function Solicitud(props) {
 
     const moveToSolicitud = (solId) => {
         const solicitudSeleccionada = lstSolicitudes.find((solicitud) => { return solicitud.int_id === solId });
-        if (solicitudSeleccionada.str_estado === '11167' || solicitudSeleccionada.str_estado === "11163" && rol === "ASESOR DE CRÉDITO") {
+        if (solicitudSeleccionada.str_estado === '11138' || solicitudSeleccionada.str_estado === "11134" && rol === "ASESOR DE CRÉDITO") {
             dispatch(setSolicitudStateAction({ solicitud: solicitudSeleccionada.int_id, cedulaSocio: solicitudSeleccionada.str_identificacion, idSolicitud: solicitudSeleccionada.str_estado, rol: rol }))
             navigate.push('/solicitud/ver');
         }
-        else if ((rol === "ANALISTA CREDITO" || rol === "JEFE DE UAC" || rol === "DIRECTOR DE NEGOCIOS") && solicitudSeleccionada.str_estado !== '11163') {
+        else if ((rol === "ANALISTA CREDITO" || rol === "JEFE DE UAC" || rol === "DIRECTOR DE NEGOCIOS") && solicitudSeleccionada.str_estado !== '11134') {
             dispatch(setSolicitudStateAction({ solicitud: solicitudSeleccionada.int_id, cedulaSocio: solicitudSeleccionada.str_identificacion, idSolicitud: solicitudSeleccionada.str_estado, rol: rol }))
             navigate.push('/solicitud/ver');
         }
@@ -239,9 +241,9 @@ function Solicitud(props) {
                                     <td>{validaNombreParam(solicitud.str_estado)}</td>
                                     <td>{"Matriz"}</td>
                                     <td>
-                                        <IconButton onClick={() => { setisModalComentarios(!isModalComentarios) }}>
-                                            <RateReviewSharpIcon></RateReviewSharpIcon>
-                                        </IconButton>
+                                        {/*<IconButton onClick={() => { setisModalComentarios(!isModalComentarios) }}>*/}
+                                        {/*    <RateReviewSharpIcon></RateReviewSharpIcon>*/}
+                                        {/*</IconButton>*/}
                                         
                                     </td>
                                 </tr>

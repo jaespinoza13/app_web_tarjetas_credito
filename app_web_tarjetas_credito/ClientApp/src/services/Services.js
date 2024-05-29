@@ -104,13 +104,17 @@ export const getSolicitudes = "GET_SOLICITUDES_TC"
 export const addSolicitud = "ADD_SOLICITUD_TC"
 export const getInfoFinan = "GET_SITUACION_FINANCIERA"
 export const addProspecto = "ADD_PROSPECTO_TC"
-export const getComentarios = "GET_COMENTARIOS_ASESOR"
+export const getInforme = "GET_INFORME_TC"
 export const addComentarioSolicitud = "ADD_COMENTARIO_SOLICITUD"
 export const getFlujoSolicitud = "GET_FLUJO_SOLICITUD"
 export const addComentarioAsesor = "ADD_INFORME_TC"
 export const getResolucion = "GET_RESOLUCION"
 export const addResolucion = "ADD_RESOLUCION"
 export const updResolucion = "UPD_RESOLUCION"
+export const getReporteOrden = "GET_REPORTE_ORDEN"
+export const getOrdenes = "GET_ORDENES_TC"
+export const getTarjetasCredito = "GET_TARJETAS_CREDITO"
+export const getMedioAprobacion = "GET_MEDIO_APROBACION"
 export const addProcEspecifico = "ADD_PROCESO_ESPECIFICO"
 export const updSolicitud = "UPD_SOLICITUD_TC"
 export const getParametros = "GET_PARAMETROS"
@@ -225,8 +229,8 @@ export function ServiceUrl(request, params = []) {
         case addProspecto:
             pathOut = "tc/addProspecto"
             break;
-        case getComentarios:
-            pathOut = "tc/getComentarios"
+        case getInforme:
+            pathOut = "tc/getInforme"
             break;
         case addComentarioSolicitud:
             pathOut = "tc/addComentarioSol"
@@ -245,6 +249,18 @@ export function ServiceUrl(request, params = []) {
             break;
         case updResolucion:
             pathOut = "tc/updResolucion"
+            break;
+        case getReporteOrden:
+            pathOut = "tc/getReporteOrden"
+            break;
+        case getOrdenes:
+            pathOut = "tc/getOrdenes"
+            break;
+        case getTarjetasCredito:
+            pathOut = "tc/getTarjetasCredito"
+            break;
+        case getMedioAprobacion:
+            pathOut = "tc/getMedioAprobacion"
             break;
         case addProcEspecifico:
             pathOut = "tc/addProcEspec"
@@ -355,7 +371,7 @@ export async function ServicioPostExecute(request, body, token, { encryptS = tru
     if (dispatch && !background) dispatch(setStateLoad(true));
     const sender = localStorage.getItem('sender');
     if (exProcess) localStorage.setItem("sender", set("Param"));
-    console.log("token: " + token);
+    //console.log("token: " + token);
     if (!IsNullOrWhiteSpace(token) && validateToken(token)) {
         if (IsNullOrWhiteSpace("sender")) {
             localStorage.removeItem("sender");
@@ -494,13 +510,17 @@ function pathRewrite(path) {
         "tc/addSolic": '/tarjetacredito/addSolicitud',
         "tc/getInfoFin": '/tarjetacredito/getInfoFinan',
         "tc/addProspecto": '/tarjetacredito/addProspecto',
-        "tc/getComentarios": '/tarjetacredito/getComentarios',
+        "tc/getInforme": '/tarjetacredito/getInforme',
         "tc/addComentarioSol": '/tarjetacredito/addComentarioSolicitud',
         "tc/getFlujoSol": '/tarjetacredito/getFlujoSolicitud',
         "tc/addComentarioAs": '/tarjetacredito/addComentarioAsesor',
         "tc/getResolucion": '/tarjetacredito/getResoluciones',
         "tc/addResolucion": '/tarjetacredito/addResolucion',
         "tc/updResolucion": '/tarjetacredito/updResolucion',
+        "tc/getReporteOrden": '/tarjetacredito/getReporteOrden',
+        "tc/getOrdenes": '/tarjetacredito/getOrdenes',
+        "tc/getTarjetasCredito": '/tarjetacredito/getTarjetasCredito',
+        "tc/getMedioAprobacion": '/tarjetacredito/getMedioAprobacion',
         "tc/addProcEspec": '/tarjetacredito/addProcEspecifico',
         "tc/updSol": '/tarjetacredito/updSolicitud',
         "tc/getParams": '/tarjetacredito/getParametros'

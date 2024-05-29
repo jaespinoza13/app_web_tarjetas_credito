@@ -5,10 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Models.TarjetaCredito.GetParamatrosSistema
+namespace Domain.Models.TarjetaCredito.ObtenerOrdenReporte
 {
-    public class ReqGetParametrosSistema : Header
+    public class ResGetReporteOrden : ResComun
     {
-        public int int_id_sis { get; set; }
+        public byte[] byt_reporte { get; set; }
+
     }
 }

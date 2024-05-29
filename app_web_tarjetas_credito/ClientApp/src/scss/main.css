@@ -187,6 +187,10 @@ hr.dashed {
     margin-top: 1.2rem;
 }
 
+.mt-5 {
+    margin-top: 1.6rem;
+}
+
 .mb-1 {
     margin-bottom: 0.3rem;
 }
@@ -1502,6 +1506,22 @@ span.tooltip-info {
     gap: 20px;
 }
 
+.btn_mg_icons {
+    border: none;
+    border-radius: 25px;
+    color: #004CAC;
+    letter-spacing: 0px;
+    width: 1.7rem;
+    display: flex;
+    align-items: center;
+    background-color: #F8F8F8;
+    justify-content: center;
+}
+
+.img-icons-acciones {
+    width: 30px;
+}
+
 /* Estilo del mensaje emergente */
 .custom-icon-button::after {
     content: attr(title);
@@ -1529,13 +1549,33 @@ span.tooltip-info {
     width: 3rem;
 }
 
+.width-100 {
+    width: 100%
+}
+
 .text_error_validacion {
     color: #FB7373;
     font-size: 0.8rem;
     font-family: "Karbon", sans-serif;
 }
 
+input[type=radio] {
+    transform: scale(1.4);
+    margin: 11px;
+    border-radius: 50%;
+    cursor: pointer;
+}
 
+input[type=radio]:checked {
+    background-color: #2A77FF;
+    border-color: #2A77FF;
+}
+
+
+.btns-in-margin-rigth {
+    position: absolute;
+    right: 1rem;
+}
 
 @keyframes ripple {
     to {

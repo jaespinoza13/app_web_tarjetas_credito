@@ -20,6 +20,7 @@ using Domain.Models.TarjetaCredito.GetScore;
 using Domain.Models.TarjetaCredito.GetSolicitudes;
 using Domain.Models.TarjetaCredito.GetValidaciones;
 using Domain.Models.TarjetaCredito.UpdResoluciones;
+using Domain.Models.TarjetaCredito.ObtenerOrdenReporte;
 using Domain.Models.TarjetaCredito.UpdSolicitud;
 using Infrastructure.Login;
 using Infrastructure.TarjetaCredito;
@@ -27,6 +28,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using plantilla_app_web.Controllers.Common;
 using plantilla_app_web.Filters;
+using Domain.Models.TarjetaCredito.GetOrdenes;
+using Domain.Models.TarjetaCredito.GetTarjetasCredito;
+using Domain.Models.TarjetaCredito.GetMedioAprobacion;
 
 namespace plantilla_app_web.Controllers
 {
@@ -153,7 +157,7 @@ namespace plantilla_app_web.Controllers
             return Utiles.crypt(res, Request.Headers);
         }
 
-        [Route("getComentarios")]
+        [Route("getInforme")]
         [ServiceFilter(typeof(CryptoFilter))]
         [HttpPost]
         public ResCrypt Post(ReqGetComentarios req)
@@ -215,6 +219,45 @@ namespace plantilla_app_web.Controllers
             ResUpdResolucion res = tarjetaCreditoDat.addUpdResolucion(req);
             return Utiles.crypt(res, Request.Headers);
         }
+
+
+        [Route("getReporteOrden")]
+        [ServiceFilter(typeof(CryptoFilter))]
+        [HttpPost]
+        public ResCrypt Post(ReqGetReporteOrden req)
+        {
+            ResGetReporteOrden res = tarjetaCreditoDat.getReporteOrden(req);
+            return Utiles.crypt(res, Request.Headers);
+        }
+
+        [Route("getMedioAprobacion")]
+        [ServiceFilter(typeof(CryptoFilter))]
+        [HttpPost]
+        public ResCrypt Post(ReqGetMedAprob req)
+        {
+            ResGetMedAprob res = tarjetaCreditoDat.getMedioAprobacion(req);
+            return Utiles.crypt(res, Request.Headers);
+        }
+
+        [Route("getOrdenes")]
+        [ServiceFilter(typeof(CryptoFilter))]
+        [HttpPost]
+        public ResCrypt Post(ReqGetOrdenes req)
+        {
+            ResGetOrdenes res = tarjetaCreditoDat.getOrdenes(req);
+            return Utiles.crypt(res, Request.Headers);
+        }
+
+
+        [Route("getTarjetasCredito")]
+        [ServiceFilter(typeof(CryptoFilter))]
+        [HttpPost]
+        public ResCrypt Post(ReqGetTarjetasCredito req)
+        {
+            ResGetTarjetasCredito res = tarjetaCreditoDat.getTarjetasCredito(req);
+            return Utiles.crypt(res, Request.Headers);
+        }
+
 
         [Route("addProcEspecifico")]
         [ServiceFilter(typeof(CryptoFilter))]

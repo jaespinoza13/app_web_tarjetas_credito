@@ -98,6 +98,10 @@
         public string service_get_resolucion { get; set; } = String.Empty;
         public string service_add_resolucion { get; set; } = String.Empty;
         public string service_upd_resolucion { get; set; } = String.Empty;
+        public string service_get_reporte_orden { get; set; } = String.Empty;
+        public string service_get_ordenes { get; set; } = String.Empty;
+        public string service_get_tarjetas_credito { get; set; } = String.Empty;
+        public string service_get_medio_aprobacion { get; set; } = String.Empty;
         public string service_add_proc_espec { get; set; } = String.Empty;
         public string service_upd_solicitud { get; set; } = String.Empty;
         public string service_get_parametros_sistema { get; set; } = String.Empty;

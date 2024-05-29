@@ -12,7 +12,7 @@ import { fetchGetParametrosSistema } from '../services/RestServices';
 
 
 const mapStateToProps = (state) => {
-    console.log(state);
+    //console.log(state);
     var array = [...state.GetListaMejoras.data];
     for (let i = 0; i < array.length; i++) {
         array[i] = get(array[i]);
