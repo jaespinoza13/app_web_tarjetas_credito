@@ -115,7 +115,7 @@ const VerSolicitud = (props) => {
         fetchGetInforme(props.solicitud.solicitud, props.solicitud.idSolicitud, props.token, (data) => {
             setComentariosAsesor(data.lst_informe);
             existeComentariosVacios(data.lst_informe);  
-            console.log("INFORME",data.lst_informe);
+            //console.log("INFORME",data.lst_informe);
 
         }, dispatch);
         fetchGetResolucion(props.solicitud.solicitud, props.token, (data) => {
@@ -141,7 +141,7 @@ const VerSolicitud = (props) => {
         ]);
         setRegresaSolicitud([
             {
-                prm_id: "11189"
+                prm_id: "11189" //NO SE SABE A CUAL CORRESPONDE
             }, {
                 prm_id: "11136"
             }, {
@@ -154,7 +154,7 @@ const VerSolicitud = (props) => {
             }
         ]);
 
-        console.log("PROPS INFO", props)
+        //console.log("PROPS INFO", props)
 
     }, []);
 
@@ -424,6 +424,16 @@ const VerSolicitud = (props) => {
         }
     }, [comentarioCambioEstado])
 
+
+    useEffect(() => {
+        if (comentarioSolicitud !== "") {
+            setFaltaComentariosAsesor(false);
+        } else {
+            setFaltaComentariosAsesor(true);
+        }
+    }, [comentarioSolicitud])
+
+
     const guardarDecisionComiteHandler = () => {
         if (valorDecisionSelect === "11138") { //APROBADO
             fetchAddProcEspecifico(props.solicitud.solicitud, nuevoMontoAprobado, "EST_APROBADA_COMITE", comentarioSolicitud, props.token, (data) => { //APROBADO 11138
@@ -476,8 +486,7 @@ const VerSolicitud = (props) => {
             {
                 accionSeleccionada === 1 &&                 
                 <>
-                    {
-                        (props.solicitud.idSolicitud === "11134" || props.solicitud.idSolicitud === "11138")
+                    {props.solicitud.idSolicitud === "11138"
                     ?
                             <Card className={["w-100 justify-content-space-between align-content-center"]}>
                         <div>
@@ -559,9 +568,9 @@ const VerSolicitud = (props) => {
                                 </Item>
                             </Card>
                         </div>
-                        <div className="f-row justify-content-center">
-                            <Button className="btn_mg__primary" disabled={faltaComentariosAsesor} onClick={guardarComentarioSiguiente}>Guardar</Button>
-                        </div>
+                        {/*<div className="f-row justify-content-center">*/}
+                        {/*    <Button className="btn_mg__primary" disabled={faltaComentariosAsesor} onClick={guardarComentarioSiguiente}>Guardar</Button>*/}
+                        {/*</div>*/}
 
 
                     </Card>
@@ -724,7 +733,7 @@ const VerSolicitud = (props) => {
 
                                 {props.solicitud.idSolicitud !== "11137" &&
                                     <div className="mt-4">
-                                        <h3 className="mb-3 strong">Comentario del Asesor</h3>
+                                        <h3 className="mb-3 strong">Comentario de la Solicitud</h3>
                                         <Textarea placeholder="Ingrese su comentario" onChange={getComentarioSolicitudHandler} esRequerido={true}></Textarea>
                                     </div>
                                 }
@@ -740,7 +749,7 @@ const VerSolicitud = (props) => {
                                     }
                                     {props.solicitud.idSolicitud !== "11137" &&
                                         <Button className="btn_mg__primary" disabled={faltaComentariosAsesor} onClick={guardarComentarioSiguiente}>Guardar</Button>
-                                    }
+                                }
                                     
                         </div>
 
