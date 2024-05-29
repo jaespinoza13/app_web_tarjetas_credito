@@ -2,7 +2,7 @@
 export const ordenTarjetasCreadasMock = [
     {
         id_tarjeta: 23,
-        numero_tarjeta: "2500 XXXX XXXX 5646",
+        numero_tarjeta: "4891 XXXX XXXX 5646",
         codigo_referencia: "EST_5646",
         cuenta: "410010064540",
         identificacion: "1150214375",
@@ -27,7 +27,7 @@ export const ordenTarjetasCreadasMock = [
     },
     {
         id_tarjeta: 20,
-        numero_tarjeta: "2500 XXXX XXXX 3636",
+        numero_tarjeta: "4891 XXXX XXXX 3636",
         codigo_referencia: "BLK_3636",
         cuenta: "410010026841",
         identificacion: "1105970717",
@@ -51,16 +51,16 @@ export const ordenTarjetasCreadasMock = [
     },
     {
         id_tarjeta: 38,
-        numero_tarjeta: "2500 XXXX XXXX 0101",
+        numero_tarjeta: "4891 XXXX XXXX 0101",
         codigo_referencia: "GOL_0101",
         cuenta: "410010061199",
         identificacion: "115111371",
         ente: "515146",
         nombre: "LUIS VALDEZ",
-        tipo: "GOLDEN",
+        tipo: "BLACK",
         estado: "CREADA",
         fecha_creacion: "5/1/2024 7:38:11 PM",
-        cupo: "15000",
+        cupo: "20000",
 
         // TIENES QUE ESTAR EN OTRA BASE
         orden_pertenece: "164",
@@ -76,16 +76,16 @@ export const ordenTarjetasCreadasMock = [
     },
     {
         id_tarjeta: 48,
-        numero_tarjeta: "2500 XXXX XXXX 0214",
+        numero_tarjeta: "4891 XXXX XXXX 0214",
         codigo_referencia: "EST_0214",
         cuenta: "410010094684",
         identificacion: "PL970713",
         ente: "515147",
         nombre: "MARIO CRUZ",
-        tipo: "GOLDEN",
+        tipo: "ESTÁNDAR",
         estado: "CREADA",
         fecha_creacion: "5/1/2024 7:38:11 PM",
-        cupo: "15000",
+        cupo: "3000",
 
         // TIENES QUE ESTAR EN OTRA BASE
         orden_pertenece: "164",
@@ -102,7 +102,7 @@ export const ordenTarjetasCreadasMock = [
     {
 
         id_tarjeta: 58,
-        numero_tarjeta: "2500 XXXX XXXX 1818",
+        numero_tarjeta: "4891 XXXX XXXX 1818",
         codigo_referencia: "BLK_1818",
         cuenta: "410010061514",
         identificacion: "1105970714001",
@@ -111,7 +111,7 @@ export const ordenTarjetasCreadasMock = [
         tipo: "GOLDEN",
         estado: "CREADA",
         fecha_creacion: "5/1/2024 7:38:11 PM",
-        cupo: "15000",
+        cupo: "10000",
 
         // TIENES QUE ESTAR EN OTRA BASE
         orden_pertenece: "164",
@@ -289,7 +289,7 @@ export const ObjSolicitudesAprob = [
         ente: "515147",
         nombre: "LUIS TORRES",
         nombre_impreso: "LUIS TORRES",
-        tipo: "ESTANDAR",
+        tipo: "ESTÁNDAR",
         cupo: "15000",
         key: 48,
         oficina_recepta: "CATAMAYO"
@@ -302,7 +302,7 @@ export const ObjSolicitudesAprob = [
         ente: "515148",
         nombre: "MIGUEL ROMAN",
         nombre_impreso: "MIGUEL ROMAN",
-        tipo: "ESTANDAR",
+        tipo: "ESTÁNDAR",
         cupo: "15000",
         key: 58,
         oficina_recepta: "SARAGURO"
@@ -315,7 +315,7 @@ export const ObjSolicitudesAprob = [
         ente: "100168",
         nombre: "NICOLE SANMARTIN",
         nombre_impreso: "NICOLE SANMARTIN",
-        tipo: "ESTANDAR", cupo: "11000",
+        tipo: "ESTÁNDAR", cupo: "11000",
         key: 68,
         oficina_recepta: "MATRIZ"
     }
@@ -348,12 +348,12 @@ export const objConfirmacionRecepcionTarjetas = [
 
     },
     {
-        orden: "165",
+        orden: "1",
         prefijo_tarjeta: "53",
         cost_emision: "cobro_emision",
         descripcion: "TARJETAS SOLICITADAS PARA MES DE MAYO",
         oficina_envia: "MATRIZ",
-        oficina_solicita: "AGENCIA EL VALLE",
+        oficina_solicita: "",
         usuario_crea: "Ericka Rios",
         estado: "Creada",
         fecha_creacion: "30/04/2023 4:15:07 PM",
@@ -557,7 +557,7 @@ export const tarjetasInventario = [
     },
     {
         tarjeta_identifica_stock: 104,
-        producto: "ESTANDAR",
+        producto: "ESTÁNDAR",
         cantidad_disponible: 22,
         fecha_registro: "",
         estado_tarjeta_producto: "Activa",

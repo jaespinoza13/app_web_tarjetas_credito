@@ -7,9 +7,10 @@ import Card from '../Common/Card';
 import Button from '../Common/UI/Button';
 import Table from '../Common/Table';
 import ModalDinamico from '../Common/Modal/ModalDinamico';
-import { fetchGetReporteOrden } from '../../services/RestServices';
+import { fetchGetOrdenes, fetchGetReporteOrden } from '../../services/RestServices';
 import { IsNullOrWhiteSpace, base64ToBlob, descargarArchivo, generarFechaHoy, verificarPdf } from '../../js/utiles';
 import { lstOrdenesMock } from './ObjetosMock';
+import Toggler from '../Common/UI/Toggler';
 
 
 const mapStateToProps = (state) => {
@@ -27,16 +28,14 @@ const mapStateToProps = (state) => {
 
 function Orden(props) {
 
-    useEffect(() => {
-        console.log(lstOrdenesMock)
-        //PETICION API   /*OBJETOS QUE SE DEVOLVERIA DESDE EL BACK*/ 
-        setLstOrdenes(lstOrdenesMock);
-
-    },[])
-
     const navigate = useHistory();
     const dispatch = useDispatch();
-    const [lstOrdenes, setLstOrdenes] = useState([]);
+    const [lstOrdenesEntrada, setLstOrdenesEntrada] = useState([]);
+    const [lstOrdenesSalida, setLstOrdenesSalida] = useState([]);
+
+    const [isActiveOrdenesEntrada, setIsActiveOrdenesEntrada] = useState(true);
+    const [isActiveOrdenesSalida, setIsActiveOrdenesSalida] = useState(false);
+
 
     const [isModalEnviarOrden, setIsModalEnviarOrden] = useState(false);
     const [isModalEnvioValija, setIsModalEnvioValija] = useState(false);
@@ -45,11 +44,53 @@ function Orden(props) {
    // const [agenciaSolicita, setAgenciaSolicita] = useState();
 
 
-    const headersOrdenesActivas = [
-        { nombre: "Nro. Orden", key: "orden" }, { nombre: "Estado", key: "estado" },
-        { nombre: "Creada por", key: "usuario_crea" }, { nombre: "Tipo TC.", key: "tipo_producto" }, { nombre: "Cantidad Solicitada", key: "cant_tarjetas" }, { nombre: "Cantidad Disponible", key: "cant_disponibles" },
-         { nombre: "Fecha creación", key: "fecha_creación" },{ nombre: "Fecha solicita", key: "fecha_solicita" },
-        { nombre: "Fecha recibe", key: "fecha_recepcion" },{ nombre: "Fecha Cierre Orden", key: "fecha_cierre_orden" },{ nombre: "Acciones", key: "acciones" }
+
+    useEffect(() => {
+        //console.log(lstOrdenesMock)
+        //PETICION API   /*OBJETOS QUE SE DEVOLVERIA DESDE EL BACK*/ 
+       // setLstOrdenesEntrada(lstOrdenesMock);
+        setLstOrdenesSalida(lstOrdenesMock);
+
+
+        // TODO:TEMPORAL
+        const ordenesStorage = localStorage.getItem('ordenesStorage');
+        //console.log(ordenesStorage)
+        if (!ordenesStorage) {
+            fetchGetOrdenes('PEDIDO', props.token, (data) => {
+                //console.log(data.lst_ordenes)
+                setLstOrdenesEntrada(data.lst_ordenes)
+
+
+                const ordens = JSON.stringify(data.lst_ordenes);
+                //console.log(data.lst_ordenes);
+                //console.log(ordens.toString());
+
+                localStorage.setItem('ordenesStorage', ordens.toString());
+            }, dispatch)
+        } else {
+            const ordenesStorage = localStorage.getItem('ordenesStorage');
+            //console.log("DATOS GUARDADO LOCALSTORAGE, ", ordenesStorage)
+            setLstOrdenesEntrada(JSON.parse(ordenesStorage));
+        }
+//localStorage.removeItem('sender');
+
+
+        
+
+    }, [])
+
+
+    const headersOrdenesEntrada = [
+        { nombre: "Nro. Orden", key: "orden" }, { nombre: "Estado", key: "estado" }, { nombre: "Creada por", key: "usuario_crea" },
+        { nombre: "Cantidad Solicitada", key: "cant_tarjetas" }, 
+        { nombre: "Fecha creación", key: "fecha_creación" },{ nombre: "Fecha solicita", key: "fecha_solicita" }, 
+        { nombre: "Acciones", key: "acciones" }
+    ]
+
+    const headersOrdenesSalida = [
+        { nombre: "Nro. Orden", key: "orden" }, { nombre: "Estado", key: "estado" }, { nombre: "Creada por", key: "usuario_crea" },
+        { nombre: "Cantidad Enviada", key: "cant_tarjetas_enviadas" }, { nombre: "Destino", key: "destino_envio" }, { nombre: "Fecha creación", key: "fecha_creación" },
+        { nombre: "Fecha de envío", key: "fecha_envio" }, { nombre: "Fecha de recepción", key: "fecha_recepcion" }, { nombre: "Acciones", key: "acciones" }
     ]
 
 
@@ -69,7 +110,7 @@ function Orden(props) {
     
     
     const envioOrdenProvModal = (orden) => {
-        navigate.push('/orden/generarArchivo', { numOrden: orden })
+        navigate.push('/orden/generarArchivo')
     }
 
     const verOrdenPage = (orden) => {
@@ -126,7 +167,7 @@ function Orden(props) {
                 const blob = base64ToBlob(data.byt_reporte, 'application/pdf');
                 let fechaHoy = generarFechaHoy();
                 const nombreArchivo = `Orden${orden}_${(fechaHoy)}`;
-                descargarArchivo(blob, nombreArchivo);
+                descargarArchivo(blob, nombreArchivo,'pdf');
             }else {
                 window.alert("ERROR AL GENERAR EL REPORTE, COMUNIQUESE CON EL ADMINISTRADOR");
             }
@@ -135,11 +176,14 @@ function Orden(props) {
 
     const AccionesOrden = ({ numOrden, estadoOrden }) => {   
         return (
-            <div className="f-row" style={{ gap: "6px", justifyContent: "center"}}>
-                {estadoOrden === 'Creada' && (
+            <div className="f-row" style={{ gap: "6px", justifyContent: "center" }}>
+                
+
+
+                {estadoOrden === 'CREADA' && (
                     <>
-                        <button className="btn_mg_icons custom-icon-button" onClick={() => { envioOrdenProvModal(numOrden) }} title="Enviar Orden al Proveedor">
-                            <img className="img-icons-acciones" src="Imagenes/upload.svg" alt="Enviar Orden al Proveedor"></img>
+                        <button className="btn_mg_icons custom-icon-button" onClick={() => { envioOrdenProvModal(numOrden) }} title="Enviar Orden a CardTech">
+                            <img className="img-icons-acciones" src="Imagenes/upload.svg" alt="Enviar Orden a CardTech"></img>
                         </button>
 
                         <button className="btn_mg_icons custom-icon-button" onClick={() => ordenPageHandler("editar", numOrden)} title="Editar Orden">
@@ -152,12 +196,12 @@ function Orden(props) {
                     </>
                 )}
 
-                {estadoOrden === 'Pendiente Distribución' && (
-                    <button className="btn_mg_icons custom-icon-button" onClick={() => ordenPageHandler("crear_suborden", numOrden)} title="Enviar por Valija">
-                        <img className="img-icons-acciones" src="Imagenes/icon_orden/shipping_24dp.svg" alt="Enviar por Valija"></img>
-                    </button>
+                {/*{estadoOrden === 'Pendiente Distribución' && (*/}
+                {/*    <button className="btn_mg_icons custom-icon-button" onClick={() => ordenPageHandler("crear_suborden", numOrden)} title="Enviar por Valija">*/}
+                {/*        <img className="img-icons-acciones" src="Imagenes/icon_orden/shipping_24dp.svg" alt="Enviar por Valija"></img>*/}
+                {/*    </button>*/}
 
-                )}
+                {/*)}*/}
 
                 <button className="btn_mg_icons custom-icon-button" onClick={() => verOrdenPage(numOrden)} title="Visualizar Detalle de Orden">
                     <img className="img-icons-acciones" src="Imagenes/icon_orden/view_list_24dp.svg" alt="Visualizar Detalle de Orden"></img>
@@ -195,6 +239,24 @@ function Orden(props) {
         )
     }
 
+
+    const [togglesRegistros, setTogglesRegistros] = useState(
+        [
+            { image: "", textPrincipal: `Ordenes de Entrada`, textSecundario: "", key: 1 },
+            { image: "", textPrincipal: `Ordenes de Salida`, textSecundario: "", key: 2 }
+        ]);
+
+    const handleSelectedToggle = (index) => {
+        const lstSeleccionada = togglesRegistros.find((acciones) => acciones.key === index);
+        if (lstSeleccionada.textPrincipal === "Ordenes de Entrada") {
+            setIsActiveOrdenesEntrada(true);
+            setIsActiveOrdenesSalida(false);
+        } else {
+            setIsActiveOrdenesEntrada(false);
+            setIsActiveOrdenesSalida(true);
+        }
+    }
+
     return (
         <div className="f-row">
             <Sidebar enlace={props.location.pathname }></Sidebar>
@@ -211,8 +273,8 @@ function Orden(props) {
                             <div className="m-2" style={{ display: "flex", flexDirection: "column", width: "25%", marginRight: "10px"}}>
                                 <Card >
                                     <img style={{ width: "15%" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg"></img>
-                                    <h4 className="mt-2">Crear Orden de tarjetas de crédito aprobadas</h4>
-                                    <h5 className="mt-2">Tipo NOMINADA</h5>
+                                    <h4 className="mt-2">Crear Orden de tarjetas de crédito</h4>
+                                    <h5 className="mt-2">NOMINADAS</h5>
                                     <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={() => ordenPageHandler("crear",-1)}>Crear</Button>
                                 </Card>
                             </div>
@@ -236,8 +298,8 @@ function Orden(props) {
                                 {/*</Card>*/}
                                 <Card>
                                     <img style={{ width: "15%" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg"></img>
-                                    <h4 className="mt-2">Crear Orden de Entrega</h4>
-                                    <h5 className="mt-2">Para envío hacia Agencia/Matriz</h5>
+                                    <h4 className="mt-2">Crear Orden de Entrega de tarjetas de crédito</h4>
+                                    <h5 className="mt-2">Para entrega a Oficinas</h5>
                                     <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={() => ordenPageHandler("crearOrdenPedido", "")}>Crear</Button>
                                 </Card>
                             </div>
@@ -246,9 +308,9 @@ function Orden(props) {
 
                                 <Card>
                                     <img style={{ width: "15%" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg"></img>
-                                    <h4 className="mt-2">Generar archivo Ordenes creadas</h4>
-                                    <h5 className="mt-2">Tipo Batch</h5>
-                                    <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false}>Crear</Button>
+                                    <h4 className="mt-2">Generar archivo para solicitudes aprobadas</h4>
+                                    <h5 className="mt-2">Envío a Credencial</h5>
+                                    <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={envioOrdenProvModal }>Crear</Button>
                                 </Card>
                             </div>
 
@@ -259,31 +321,68 @@ function Orden(props) {
                 </div>
 
 
-                <div id="listado_ordenes" className="mt-3">
-                    <Table headers={headersOrdenesActivas}>
-                        {/*BODY*/}
-                        {lstOrdenes.map((orden, index) => {
-                            return (
-                                <tr key={index}>
-                                    <td style={{ width: "100px" }}>{orden.orden}</td>
-                                    <td>{orden.estado}</td>
-                                    <td>{orden.usuario_crea}</td>
-                                    <td>{orden.tipo_producto}</td>
-                                    <td>{orden.cant_tarjetas}</td>
-                                    <td>{orden.cant_disponible}</td>
-                                    <td style={{ width: "143px" }}>{orden.fecha_creacion}</td>
-                                    <td style={{ width: "143px" }}>{orden.fecha_solicita}</td>
-                                    <td style={{ width: "143px" }}>{orden.fecha_recepcion}</td>
-                                    <td style={{ width: "143px" }}>{orden.fecha_cierre_orden}</td>
-                                    <td>
-                                        <AccionesOrden numOrden={orden.orden} estadoOrden={orden.estado} />
-                                    </td>
-                                </tr>
-                            );
-                        })}
+                <Toggler className="mt-2" toggles={togglesRegistros}
+                    selectedToggle={handleSelectedToggle}>
+                </Toggler>
 
-                    </Table>
-                </div>
+
+                {isActiveOrdenesEntrada && 
+                    <div id="listado_ordenes" className="mt-3">
+                        <Table headers={headersOrdenesEntrada}>
+                            {/*BODY*/}
+                            {lstOrdenesEntrada.map((orden, index) => {
+                                return (
+                                    <tr key={orden.int_num_orden}>
+                                        <td style={{ width: "100px" }}>{orden.int_num_orden}</td>
+                                        {/*<td>{orden.str_estado}</td>*/}
+                                        <td>{'ENVIADO A PROVEEDOR'}</td>
+                                        <td>{'Ericka Rios'}</td>
+                                        <td>{orden.int_cantidad}</td>
+                                        <td>{orden.dtt_fecha_creacion}</td>
+                                        <td>{orden.dtt_fecha_recepcion}</td>
+                                        {/*<td style={{ width: "143px" }}>{orden.fecha_creacion}</td>*/}
+                                        {/*<td style={{ width: "143px" }}>{orden.fecha_solicita}</td>*/}
+                                        {/*<td style={{ width: "143px" }}>{orden.fecha_recepcion}</td>*/}
+                                        {/*<td style={{ width: "143px" }}>{orden.fecha_cierre_orden}</td>*/}
+                                        <td>
+                                            <AccionesOrden numOrden={orden.int_num_orden} estadoOrden={'ENVIADO A PROVEEDOR'} />
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+
+                        </Table>
+                    </div>
+                }
+
+
+                {isActiveOrdenesSalida && 
+                    <div id="listado_ordenes" className="mt-3">
+                        <Table headers={headersOrdenesSalida}>
+                            {/*BODY*/}
+                            {lstOrdenesSalida.map((ordenSalida, index) => {
+                                return (
+                                    <tr key={index}>
+                                        <td style={{ width: "100px" }}>{ordenSalida.orden}</td>
+                                        <td>{ordenSalida.estado}</td>
+                                        <td>{ordenSalida.usuario_crea}</td>
+                                        <td>{ordenSalida.cant_tarjetas}</td>
+                                        <td>OFICINA MATRIZ</td>
+                                        <td style={{ width: "143px" }}>{ordenSalida.fecha_creacion}</td>
+                                        <td style={{ width: "143px" }}>{ordenSalida.fecha_creacion}</td>
+                                        <td style={{ width: "143px" }}>{ordenSalida.fecha_recepcion}</td>
+                                        <td>
+                                            <AccionesOrden numOrden={ordenSalida.orden} estadoOrden={ordenSalida.estado} />
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+
+                        </Table>
+                    </div>
+                
+                } 
+                
 
                 {/*MODAL PARA SOLICITUD DE ORDEN A PROVEEDOR*/}
                 <ModalAccionesOrden

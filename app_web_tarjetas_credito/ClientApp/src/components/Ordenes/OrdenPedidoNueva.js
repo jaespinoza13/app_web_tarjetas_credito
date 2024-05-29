@@ -72,12 +72,6 @@ function OrdenPedidoNueva(props) {
 
 
 
-
-
-    const setNrOrdenPedidoHandler = (e) => {
-        setNrOrdenPedido(e.target.value);
-    }
-
     const agenciaDestinoHandler = (e) => {
         setAgenciaDestino(e.target.value);
         //TODO: PETICION BACK PARA BUSCAR TARJETAS PENDIENTES POR AGENCIA A RECEPTAR
@@ -154,7 +148,7 @@ function OrdenPedidoNueva(props) {
                                     <label htmlFor="numOrdenTarjetas" className="pbmg1 lbl-input label_horizontal">Número de orden</label>
                                     <div className="form_mg__item ptmg1">
 
-                                        <Input id="numOrdenTarjetas" name="numOrdenTarjetas" esRequerido={true} type="text" value={nrOrdenPedido} placeholder="Número de orden" setValueHandler={setNrOrdenPedidoHandler}></Input>
+                                        <Input id="numOrdenTarjetas" name="numOrdenTarjetas" esRequerido={true} type="text" value={nrOrdenPedido} placeholder="Número de orden" setValueHandler={(e) => setNrOrdenPedido(e)}></Input>
                                     </div>
                                 </div>
 
@@ -166,7 +160,7 @@ function OrdenPedidoNueva(props) {
                                     <label htmlFor="tipoOrden" className="pbmg1 lbl-input label_horizontal">Tipo de Orden</label>
                                     <div className="form_mg__item ptmg1">
 
-                                        <Input id="tipoOrden" name="tipoOrden" type="text" value={"PEDIDO"} disabled={true}></Input>
+                                        <Input id="tipoOrden" name="tipoOrden" type="text" value={"ENVIO"} disabled={true}></Input>
                                     </div>
                                 </div>
 
@@ -229,7 +223,7 @@ function OrdenPedidoNueva(props) {
                         </div>
 
 
-                        <div className="center_text_items">
+                        <div className="center_text_items ptmg1">
                             <button className="btn_mg btn_mg__primary" style={{ width: "200px" }} disabled={false} type="submit">
                                 Enviar</button>
                         </div>

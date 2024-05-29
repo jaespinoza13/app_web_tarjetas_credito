@@ -638,14 +638,14 @@ export function descargarArchivo(blob, nombreArchivo = "document", extensionArch
 
     const link = document.createElement("a");
     link.href = url;
-    link.download = nombreArchivo;
+    link.download = `${nombreArchivo}.${extensionArchivo}`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 }
 
 
-    export function generarFechaHoy(){
+export function generarFechaHoy(){
         let fechaHoy = new Date();
         let day = fechaHoy.getDate();
         let month = fechaHoy.getMonth() + 1;

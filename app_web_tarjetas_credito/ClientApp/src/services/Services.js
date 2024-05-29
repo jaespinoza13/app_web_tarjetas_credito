@@ -112,6 +112,9 @@ export const getResolucion = "GET_RESOLUCION"
 export const addResolucion = "ADD_RESOLUCION"
 export const updResolucion = "UPD_RESOLUCION"
 export const getReporteOrden = "GET_REPORTE_ORDEN"
+export const getOrdenes = "GET_ORDENES_TC"
+export const getTarjetasCredito = "GET_TARJETAS_CREDITO"
+export const getMedioAprobacion = "GET_MEDIO_APROBACION"
 
 /**
  * Obtener la Url de un servicio de acuerdo a su nombre de Proceso Unico
@@ -246,6 +249,15 @@ export function ServiceUrl(request, params = []) {
             break;
         case getReporteOrden:
             pathOut = "tc/getReporteOrden"
+            break;
+        case getOrdenes:
+            pathOut = "tc/getOrdenes"
+            break;
+        case getTarjetasCredito:
+            pathOut = "tc/getTarjetasCredito"
+            break;
+        case getMedioAprobacion:
+            pathOut = "tc/getMedioAprobacion"
             break;
         default:
             return null;
@@ -492,7 +504,11 @@ function pathRewrite(path) {
         "tc/getResolucion": '/tarjetacredito/getResoluciones',
         "tc/addResolucion": '/tarjetacredito/addResolucion',
         "tc/updResolucion": '/tarjetacredito/updResolucion',
-        "tc/getReporteOrden": '/tarjetacredito/getReporteOrden'
+        "tc/getReporteOrden": '/tarjetacredito/getReporteOrden',
+        "tc/getOrdenes": '/tarjetacredito/getOrdenes',
+        "tc/getTarjetasCredito": '/tarjetacredito/getTarjetasCredito',
+        "tc/getMedioAprobacion": '/tarjetacredito/getMedioAprobacion'
+
     };
     if (path) {
         var p = context[path];

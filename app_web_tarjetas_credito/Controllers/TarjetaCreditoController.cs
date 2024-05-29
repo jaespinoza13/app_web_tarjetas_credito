@@ -25,6 +25,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using plantilla_app_web.Controllers.Common;
 using plantilla_app_web.Filters;
+using Domain.Models.TarjetaCredito.GetOrdenes;
+using Domain.Models.TarjetaCredito.GetTarjetasCredito;
+using Domain.Models.TarjetaCredito.GetMedioAprobacion;
 
 namespace plantilla_app_web.Controllers
 {
@@ -221,6 +224,34 @@ namespace plantilla_app_web.Controllers
         public ResCrypt Post(ReqGetReporteOrden req)
         {
             ResGetReporteOrden res = tarjetaCreditoDat.getReporteOrden(req);
+            return Utiles.crypt(res, Request.Headers);
+        }
+
+        [Route("getMedioAprobacion")]
+        [ServiceFilter(typeof(CryptoFilter))]
+        [HttpPost]
+        public ResCrypt Post(ReqGetMedAprob req)
+        {
+            ResGetMedAprob res = tarjetaCreditoDat.getMedioAprobacion(req);
+            return Utiles.crypt(res, Request.Headers);
+        }
+
+        [Route("getOrdenes")]
+        [ServiceFilter(typeof(CryptoFilter))]
+        [HttpPost]
+        public ResCrypt Post(ReqGetOrdenes req)
+        {
+            ResGetOrdenes res = tarjetaCreditoDat.getOrdenes(req);
+            return Utiles.crypt(res, Request.Headers);
+        }
+
+
+        [Route("getTarjetasCredito")]
+        [ServiceFilter(typeof(CryptoFilter))]
+        [HttpPost]
+        public ResCrypt Post(ReqGetTarjetasCredito req)
+        {
+            ResGetTarjetasCredito res = tarjetaCreditoDat.getTarjetasCredito(req);
             return Utiles.crypt(res, Request.Headers);
         }
 

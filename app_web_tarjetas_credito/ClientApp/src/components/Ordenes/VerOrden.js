@@ -27,9 +27,8 @@ const mapStateToProps = (state) => {
 function VerOrden(props) {
 
     const headersTarjetasAprobadas = [
-        { nombre: 'Oficina recepta', key: 0 }, { nombre: 'Cuenta', key: 1 },
-        { nombre: 'Identificación', key: 2 }, { nombre: 'Ente', key: 3 }, { nombre: 'Nombre impreso', key: 4 },
-        { nombre: 'Producto TC.', key: 5 }, { nombre: 'Cupo solicitado', key: 7 }
+        { nombre: 'Número de tarjeta', key: 0 }, { nombre: 'Identificación', key: 1 }, { nombre: 'Cuenta', key: 2 },
+        { nombre: 'Nombre impreso', key: 3 }, { nombre: 'Producto TC.', key: 4 }, { nombre: 'Cupo', key: 5 }
     ]
 
     const navigate = useHistory();
@@ -55,10 +54,10 @@ function VerOrden(props) {
             /// TODO: traer data desde el back por peticion O VER SI DESDE LISTA ORDEN ENVIAR EL OBJETO YA A EDITAR
             setlstOrdenTarjetas(objConfirmacionRecepcionTarjetas[1].orden_tarjetaDet);
             setNrOrden(objConfirmacionRecepcionTarjetas[1].orden);
-            setCostoEmision(objConfirmacionRecepcionTarjetas[1].cost_emision);
+            //setCostoEmision(objConfirmacionRecepcionTarjetas[1].cost_emision);
             setDescripcion(objConfirmacionRecepcionTarjetas[1].descripcion);
-            setPrefijo(objConfirmacionRecepcionTarjetas[1].prefijo_tarjeta);
-            setAgenciaSolicita(objConfirmacionRecepcionTarjetas[1].oficina_solicita);
+            //setPrefijo(objConfirmacionRecepcionTarjetas[1].prefijo_tarjeta);
+            //setAgenciaSolicita(objConfirmacionRecepcionTarjetas[1].oficina_solicita);
 
         }
 
@@ -96,7 +95,7 @@ function VerOrden(props) {
                 const blob = base64ToBlob(reporteBytes, 'application/pdf');
                 let fechaHoy = generarFechaHoy();
                 const nombreArchivo = `Orden${nrOrnden}_${(fechaHoy)}`;
-                descargarArchivo(blob, nombreArchivo);
+                descargarArchivo(blob, nombreArchivo, 'pdf');
 
             } else {
                 window.alert("ERROR AL GENERAR EL REPORTE, COMUNIQUESE CON EL ADMINISTRADOR");
@@ -132,32 +131,32 @@ function VerOrden(props) {
                             </div>
                         </div>
 
-                        <div className="form_mg_row">
-                            <label id="label">Costo de emisión</label>
+                        {/*<div className="form_mg_row">*/}
+                        {/*    <label id="label">Costo de emisión</label>*/}
                             
-                            <div className="form_mg__item">
+                        {/*    <div className="form_mg__item">*/}
 
-                                <div style={{ display: 'flex' }}>
-                                    <div className=''>
-                                        <input type="radio" id="cobro_emision" name="cobro_tarjeta" value="cobro_emision" checked={costoEmision === "cobro_emision"} disabled={true} />
-                                        <label htmlFor="cobro_emision">Si</label>
-                                    </div>
-                                    <div className=''>
-                                        <input type="radio" id="no_cobro_emision" name="cobro_tarjeta" value="no_cobro_emision" checked={costoEmision === "no_cobro_emision"} disabled={true} />
-                                        <label htmlFor="no_cobro_emision">No</label>
-                                    </div>
-                                </div>
-                                {costoEmision === "" && <div className='text_error_validacion'>Escoja una opción.</div>}
+                        {/*        <div style={{ display: 'flex' }}>*/}
+                        {/*            <div className=''>*/}
+                        {/*                <input type="radio" id="cobro_emision" name="cobro_tarjeta" value="cobro_emision" checked={costoEmision === "cobro_emision"} disabled={true} />*/}
+                        {/*                <label htmlFor="cobro_emision">Si</label>*/}
+                        {/*            </div>*/}
+                        {/*            <div className=''>*/}
+                        {/*                <input type="radio" id="no_cobro_emision" name="cobro_tarjeta" value="no_cobro_emision" checked={costoEmision === "no_cobro_emision"} disabled={true} />*/}
+                        {/*                <label htmlFor="no_cobro_emision">No</label>*/}
+                        {/*            </div>*/}
+                        {/*        </div>*/}
+                        {/*        {costoEmision === "" && <div className='text_error_validacion'>Escoja una opción.</div>}*/}
 
-                            </div>
+                        {/*    </div>*/}
 
-                        </div>
+                        {/*</div>*/}
 
 
                         <div className="form_mg_row">
-                            <label htmlFor="tipoTC" className="pbmg1 lbl-input label_horizontal">Prefijo</label>
+                            <label htmlFor="tipoOrden" className="pbmg1 lbl-input label_horizontal">Tipo de Orden</label>
                             <div className="form_mg__item ptmg1">
-                                <Input id="prefijo" name="prefijo" type="text" value={prefijo} disabled={true}></Input>
+                                <Input id="tipoOrden" name="tipoOrden" type="text" value={'PEDIDO'} disabled={true}></Input>
                             </div>
                         </div>
 
@@ -172,11 +171,20 @@ function VerOrden(props) {
 
 
                         <div className="form_mg_row">
-                            <label htmlFor="oficina_solicita" className="pbmg1 lbl-input label_horizontal">Agencia que solicito</label>
+                            <label htmlFor="obser_adicional" className="pbmg1 lbl-input label_horizontal">Observación adicional</label>
                             <div className="form_mg__item ptmg1">
-                                <Input id="oficina_solicita" name="oficina_solicita" type="text" value={agenciaSolicita} disabled={true}></Input>
+                                <Input id="obser_adicional" name="obser_adicional" type="text" value={''} disabled={true}></Input>
                             </div>
                         </div>
+
+
+
+                        {/*<div className="form_mg_row">*/}
+                        {/*    <label htmlFor="oficina_solicita" className="pbmg1 lbl-input label_horizontal">Agencia que solicito</label>*/}
+                        {/*    <div className="form_mg__item ptmg1">*/}
+                        {/*        <Input id="oficina_solicita" name="oficina_solicita" type="text" value={agenciaSolicita} disabled={true}></Input>*/}
+                        {/*    </div>*/}
+                        {/*</div>*/}
 
 
                     </section>
@@ -186,14 +194,13 @@ function VerOrden(props) {
                             {lstOrdenTarjetas.map((tarjeta) => {
                                 return (
                                 <tr key={tarjeta.ente}>
-                                    <td>{tarjeta.oficina_recepta}</td>
-                                    <td>{tarjeta.cuenta}</td>
-                                    <td>{tarjeta.identificacion}</td>
-                                    <td>{tarjeta.ente}</td>
-                                    <td>{tarjeta.nombre}</td>
-                                    <td><Chip type={conversionTipoTC(tarjeta.tipo)}>{tarjeta.tipo}</Chip></td>
-                                    <td>{`$ ${Number(tarjeta.cupo).toLocaleString('en-US')}`}</td>
-                                    </tr>
+                                        <td>{tarjeta.numero_tarjeta}</td>
+                                        <td>{tarjeta.identificacion}</td>
+                                        <td>{tarjeta.cuenta}</td>
+                                        <td>{tarjeta.nombre}</td>
+                                        <td><Chip type={conversionTipoTC(tarjeta.tipo)}>{tarjeta.tipo}</Chip></td>
+                                        <td>{`$ ${Number(tarjeta.cupo).toLocaleString('en-US')}`}</td>
+                                </tr>
                                 )
                             })}
 

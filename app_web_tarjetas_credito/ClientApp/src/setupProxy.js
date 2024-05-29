@@ -43,7 +43,10 @@ const context =  [
     '/tarjetacredito/getResoluciones',
     '/tarjetacredito/addResolucion',
     '/tarjetacredito/updResolucion',
-    "/tarjetacredito/getReporteOrden"
+    "/tarjetacredito/getReporteOrden",
+    "/tarjetacredito/getOrdenes",
+    "/tarjetacredito/getTarjetasCredito",
+    "/tarjetacredito/getMedioAprobacion"
 ];
 
 module.exports = function(app) {
