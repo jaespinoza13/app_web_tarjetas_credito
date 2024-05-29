@@ -4,10 +4,11 @@ import Card from '../Common/Card';
 import { useHistory } from 'react-router-dom';
 import Table from '../Common/Table';
 import Chip from '../Common/UI/Chip'
-import { Input, FormGroup } from 'reactstrap';
-import { RadioGroup, Radio, FormControlLabel, Checkbox, FormLabel } from '@mui/material';
+import Input from '../Common/UI/Input'
 import { IsNullOrWhiteSpace } from '../../js/utiles';
 import { connect } from 'react-redux';
+import { ObjSolicitudesAprob, objConfirmacionRecepcionTarjetas } from './ObjetosMock';
+import Button from '../Common/UI/Button';
 
 const mapStateToProps = (state) => {
     var bd = state.GetWebService.data;
@@ -23,54 +24,41 @@ const mapStateToProps = (state) => {
 
 
 function OrdenNuevaEdicion(props) {
+    /*
+    const headersTarjetasAprobadas = [
+        { nombre: 'Seleccionar', key: 0 },
+        { nombre: 'Oficina Recepta', key: 1 }, { nombre: 'Cuenta', key: 2 },
+        { nombre: 'Identificación', key: 3 }, { nombre: 'Ente', key: 4 }, { nombre: 'Nombre impreso', key: 5 },
+        { nombre: 'Producto TC.', key: 6 }, { nombre: 'Cupo solicitado', key: 7 },
+    ]
+    */
 
     const headersTarjetasAprobadas = [
-        { nombre: 'Seleccionar', key: 0 }, { nombre: 'Cuenta', key: 1 }, { nombre: 'Tipo Identificacion', key: 2 },
-        { nombre: 'Identificación', key: 3 }, { nombre: 'Ente', key: 4 }, { nombre: 'Nombre', key: 5 },
-        { nombre: 'Nombre impreso', key: 6 }, { nombre: 'Producto TC.', key: 7 }, { nombre: 'Cupo solicitado', key: 8 }, 
+        { nombre: 'Cuenta', key: 2 },
+        { nombre: 'Identificación', key: 3 }, { nombre: 'Ente', key: 4 }, { nombre: 'Nombre impreso', key: 5 },
+        { nombre: 'Producto TC.', key: 6 }, { nombre: 'Cupo solicitado', key: 7 },
     ]
 
-    /* LO QUE RETORNARIA DESDE EL BACK */
-    const bodyTarjetasAprobadas = [
-        { cuenta: "410010064540", tipo_identificacion: "C", identificacion: "1150214375", ente: "189610", nombre: "DANNY VASQUEZ", nombre_impreso: "DANNY VASQUEZ", tipo: "BLACK", cupo: "8000", key: 23, Agencia: { nombre: "MATRIZ",  id: "1"  } },
-        { cuenta: "410010026841", tipo_identificacion: "C", identificacion: "1105970717", ente: "515145", nombre: "ROBERTH TORRES", nombre_impreso: "ROBERTH TORRES", tipo: "GOLDEN", cupo: "15000", key: 28, Agencia: { nombre: "MATRIZ", id: "3" } },
-        { cuenta: "410010061199", tipo_identificacion: "R", identificacion: "1105970712001", ente: "515146", nombre: "JUAN TORRES", nombre_impreso: "JUAN TORRES", tipo: "GOLDEN", cupo: "15000", key: 38, Agencia: { nombre: "MATRIZ", id: "2" } }, 
-        { cuenta: "410010094684", tipo_identificacion: "P", identificacion: "PL970713", ente: "515147", nombre: "LUIS TORRES", nombre_impreso: "LUIS TORRES", tipo: "ESTÁNDAR", cupo: "15000", key: 48, Agencia: { nombre: "MATRIZ", id: "3" } }, 
-        { cuenta: "410010061514", tipo_identificacion: "R", identificacion: "1105970714001", ente: "515148", nombre: "ROBERTH TORRES", nombre_impreso: "ROBERTH TORRES", tipo: "ESTÁNDAR", cupo: "15000", key: 58, Agencia: { nombre: "MATRIZ", id: "2" } }, 
-        { cuenta: "410010064000", tipo_identificacion: "P", identificacion: "PZ970715", ente: "515149", nombre: "ROBERTH TORRES", nombre_impreso: "ROBERTH TORRES", tipo: "GOLDEN", cupo: "15000", key: 68, Agencia: { nombre: "MATRIZ", id: "3" } }
-    ]
 
-    //OBJETO SIMULADO PARA EDITAR DATOS
-    const objetoEditacion = [
-        {
-            orden: "164",
-            prefijo_tarjeta: "53",
-            cost_emision: "cobro_emision",
-            descripcion: "TARJETAS SOLICITADAS PARA MES DE ABRIL",
-            tarjetas_solicitadas: [
-                bodyTarjetasAprobadas[1],
-                bodyTarjetasAprobadas[3]
-            ]
-
-        }
-    ]
-
-    
-    const navigate = useHistory();
     const [lstOrdenTarjetas, setLstOrdenTarjetas] = useState([]);
+
+    const navigate = useHistory();
     const [accion, setAccion] = useState();
     const [accionBtn, setAccionBtn] = useState();
-    const [agenciaSolicita, setAgenciaSolicita] = useState("-1");
+    const [tipoProducto, setTipoProducto] = useState("-1");
     const [desactivarCheckEditar, setDesactivarCheckEditar] = useState();
 
     const [nrOrnden, setNrOrden] = useState("");
     const [prefijo, setPrefijo] = useState("");
     const [costoEmision, setCostoEmision] = useState("");
     const [descripcion, setDescripcion] = useState("");
-    const [enableCostoEmision, setEnableCostoEmision] = useState(false); //TODO: MODIFICAR EN CASO QUIERA PARAMETRIZACION
 
     const [tarjetasAprobadasCheckBox, setTarjetasAprobadasCheckBox] = useState([]);
     const [isSelectAll, setIsSelectAll] = useState(false);
+    const [isBtnFormDisable, setIsBtnFormDisable] = useState(false);
+
+
+
 
     const seleccionMultiple = (e) => {
         toggleSelectAll();
@@ -102,19 +90,20 @@ function OrdenNuevaEdicion(props) {
     }
 
     const setNrOrdenHandler = (e) => {
-        setNrOrden(e.target.value);
+        setNrOrden(e);
     }
 
+    /*
     const setCostoEmisionHandler = (e) => {
-        setCostoEmision(e.target.value);
+        setCostoEmision(e);
     }
 
     const setPrefijoHandler = (e) => {
-        setPrefijo(e.target.value);
+        setPrefijo(e);
     }
-
+*/
     const setDescripcionHandler = (e) => {
-        setDescripcion(e.target.value);
+        setDescripcion(e);
     }
 
     useEffect(() => {
@@ -127,11 +116,11 @@ function OrdenNuevaEdicion(props) {
 
         if (props.location.pathname === '/orden/nueva' && (props.location?.state?.numOrdenEditar === null || props.location?.state?.numOrdenEditar === undefined || props.location?.state?.numOrdenEditar === -1)) {
             setAccion("Crear Orden")
-            setAccionBtn("Registrar nueva orden")
+            setAccionBtn("Guardar y enviar orden")
             //Estado de check table
             setDesactivarCheckEditar(false);
 
-            
+
         }
         else {
             //Control para evitar saltarse al editar, sin tener el numero de Orden
@@ -139,19 +128,21 @@ function OrdenNuevaEdicion(props) {
                 navigate.push('/orden');
             }
             else {
-                setAccion("Editar Orden")
-                setAccionBtn("Modificar orden")
+                //TODO: SOLO PARA VISUALIZAR CAMBIAR
+                setAccion("Editar Orden");
+                setAccionBtn("Modificar orden");
 
+                //LlAMAR METODO API
                 /// TODO: traer data desde el back por peticion O VER SI DESDE LISTA ORDEN ENVIAR EL OBJETO YA A EDITAR
-                setLstOrdenTarjetas(objetoEditacion[0].tarjetas_solicitadas);
-                setNrOrden(objetoEditacion[0].orden);
-                setCostoEmision(objetoEditacion[0].cost_emision);
-                setDescripcion(objetoEditacion[0].descripcion);
-                setPrefijo(objetoEditacion[0].prefijo_tarjeta);
-                setTarjetasAprobadasCheckBox(objetoEditacion[0].tarjetas_solicitadas.map(tarjeta => tarjeta.identificacion));
+                setLstOrdenTarjetas(objConfirmacionRecepcionTarjetas[1].orden_tarjetaDet);
+                setNrOrden(objConfirmacionRecepcionTarjetas[1].orden);
+                setCostoEmision(objConfirmacionRecepcionTarjetas[1].cost_emision);
+                setDescripcion(objConfirmacionRecepcionTarjetas[1].descripcion);
+                setPrefijo(objConfirmacionRecepcionTarjetas[1].prefijo_tarjeta);
+                setTarjetasAprobadasCheckBox(objConfirmacionRecepcionTarjetas[1].orden_tarjetaDet.map(tarjeta => tarjeta.identificacion));
 
                 //Estado para select de agencia
-                setAgenciaSolicita(objetoEditacion[0]?.tarjetas_solicitadas[0]?.Agencia?.id);
+                setTipoProducto(objConfirmacionRecepcionTarjetas[1].oficina_solicita);
                 //Estado de check para editar
                 setDesactivarCheckEditar(true);
 
@@ -159,13 +150,32 @@ function OrdenNuevaEdicion(props) {
         }
     }, [])
 
-    const agenciaHadler = (e) => {
-        setAgenciaSolicita(e.target.value)
+
+
+    useEffect(() => {
+        if (nrOrnden !== "" && descripcion !== null) {
+            setIsBtnFormDisable(false)
+        } else {
+            setIsBtnFormDisable(true)
+        }
+
+    }, [nrOrnden, descripcion])
+
+
+    const tipoProductoHandler = (e) => {
+        setTipoProducto(e.target.value);
+        setTarjetasAprobadasCheckBox([]);
+        setIsSelectAll(false);
         // TODO: llamado a back para todas las tarjetas
         // llamar al fetch correspondiente
-        const tarjetasDisponibles = bodyTarjetasAprobadas.filter(tarjeta => tarjeta?.Agencia?.id === e.target.value)
+        const tarjetasDisponibles = ObjSolicitudesAprob.filter(tarjetaSolicitud => tarjetaSolicitud.tipo === e.target.value)
         setLstOrdenTarjetas(tarjetasDisponibles);
     }
+
+    useEffect(() => {
+        setLstOrdenTarjetas(ObjSolicitudesAprob);
+    }, [])
+
 
     const conversionTipoTC = (tipo) => {
         let chipType = '';
@@ -184,143 +194,170 @@ function OrdenNuevaEdicion(props) {
         }
         return chipType;
     }
-    
+
 
     const onSubmitOrden = (e) => {
         e.preventDefault();
-        if (tarjetasAprobadasCheckBox.length === 0) {
+        /*if (tarjetasAprobadasCheckBox.length === 0) {
             window.alert("SELECCIONE ALMENOS UNA TARJETA PARA CREAR LA ORDEN");
         } else {
-            console.log("IMPLEMENTAR GUARDADO,", e);
             window.alert("SE GUARDO CORRECTAMENTE LA ORDEN");
             navigate.push('/orden');
+        }*/
+
+        window.alert("SE GUARDO CORRECTAMENTE LA ORDEN");
+
+        var result = {
+            "int_num_orden": Number(nrOrnden),
+            "str_tipo_requerido": "PEDIDO",
+            "str_tipo_producto": " ",
+            "str_estado": "CREADA",
+            "str_usuario_crea": "ERICKA RIOS",
+            "str_usuario_recibe": " ",
+            "dtt_fecha_creacion": new Date(),
+            "dtt_fecha_envia_oficina": "",
+            "dtt_fecha_recepcion": "",
+            "int_cantidad": lstOrdenTarjetas.length,
+            "str_oficina_solicita": " ",
+            "str_oficina_destino": " ",
+            "str_descripcion_recepta": descripcion
         }
+
+        const ordenesStorage = JSON.parse((localStorage.getItem('ordenesStorage')));
+        localStorage.removeItem('ordenesStorage');
+        const ordensNuevasStorage = JSON.stringify([...ordenesStorage, result]);
+        localStorage.setItem('ordenesStorage', ordensNuevasStorage.toString());
+        //console.log("RESULT CREAR ", [...ordenesStorage, result]);
+        navigate.push('/orden');
+
+
     };
 
     return (
         <div className="f-row">
-            <Sidebar enlace={props.location.pathname }></Sidebar>
+            <Sidebar enlace={props.location.pathname}></Sidebar>
             <div className="container_mg">
 
 
                 <Card className={["m-max justify-content-space-between align-content-center"]}>
-                    <br />
-                    <h2>{accion}</h2>
-                    <br />
+                    <h2 className="mt-1 mb-5">{accion}</h2>
 
-                    <form className="form_mg" onSubmit={onSubmitOrden} autoComplete="off">
+                    {/*onSubmit={onSubmitOrden}*/}
+                    <form className="form_mg"  autoComplete="off">
                         <section className="elements_two_column">
-                            <FormGroup>
+                            <div>
 
                                 <div className="form_mg_row">
                                     <label htmlFor="numOrdenTarjetas" className="pbmg1 lbl-input label_horizontal">Número de orden</label>
                                     <div className="form_mg__item ptmg1">
 
-                                        <Input id="numOrdenTarjetas" name="numOrdenTarjetas" required={true} type="text" value={nrOrnden} placeholder="Número de orden" onChange={setNrOrdenHandler} className={nrOrnden === "" ? "no_valido" : ""}></Input>
+                                        <Input id="numOrdenTarjetas" name="numOrdenTarjetas" esRequerido={true} type="text" value={nrOrnden} placeholder="Número de orden" setValueHandler={setNrOrdenHandler}></Input>
                                     </div>
                                 </div>
 
-                            </FormGroup>
+                            </div>
 
-                            <FormGroup>
-
-                                <div className="form_mg_row">
-                                    <FormLabel sx={{ fontFamily: `"Karbon", sans-serif`, fontSize: "1.1rem;", color: "#3D3D3D" }} component="label">Costo de emisión</FormLabel> 
-                                    <div className="form_mg__item">
-
-                                        <RadioGroup
-                                            row
-                                            aria-labelledby="label"
-                                            name="row-radio-buttons-group"
-                                            value={costoEmision}
-                                            onChange={setCostoEmisionHandler}
-                                        >
-                                            <FormControlLabel value="cobro_emision" control={<Radio />} label="Si" disabled={enableCostoEmision} />
-                                            <FormControlLabel value="no_cobro_emision" control={<Radio required={true} />} label="No" disabled={enableCostoEmision} />
-                                        </RadioGroup>
-                                        {costoEmision === "" && <div className='text_error_validacion'>Escoja una opción.</div>}
-
-                                    </div>
-                                </div>
-
-                            </FormGroup>
-
-                            <FormGroup>
+                            <div>
 
                                 <div className="form_mg_row">
-                                    <label htmlFor="tipoTC" className="pbmg1 lbl-input label_horizontal">Prefijo</label>
+                                    <label id="label">Tipo de Orden</label>
+                                    {/*<div className="form_mg__item">*/}
+
+                                    {/*     <div style={{ display: 'flex' }}>*/}
+                                    {/*         <div className=''>*/}
+                                    {/*             <input type="radio" id="cobro_emision" name="cobro_tarjeta" value="cobro_emision" checked={costoEmision === "cobro_emision"} onChange={() => setCostoEmisionHandler("cobro_emision")} disabled={enableCostoEmision} />*/}
+                                    {/*             <label htmlFor="cobro_emision" style={{ lineHeight: "1.5" }}>Si</label>*/}
+                                    {/*         </div>*/}
+                                    {/*         <div className=''>*/}
+                                    {/*             <input type="radio" id="no_cobro_emision" name="cobro_tarjeta" value="no_cobro_emision" checked={costoEmision === "no_cobro_emision"} onChange={() => setCostoEmisionHandler("no_cobro_emision")} disabled={enableCostoEmision} required />*/}
+                                    {/*             <label htmlFor="no_cobro_emision">No *</label>*/}
+                                    {/*         </div>*/}
+                                    {/*     </div>*/}
+                                    {/*     {costoEmision === "" && <div className='text_error_validacion'>Escoja una opción.</div>}*/}
+
+                                    {/* </div>*/}
+
                                     <div className="form_mg__item ptmg1">
-                                        <Input id="prefijo" name="prefijo" type="number" value={prefijo} onChange={setPrefijoHandler} min={0} className={prefijo === "" ? "no_valido" : ""}></Input>
+
+                                        <Input id="tipoOrden" name="tipoOrden" type="text" value={"PEDIDO"} disabled={true}></Input>
+
                                     </div>
+
+
                                 </div>
 
-                            </FormGroup>
+                            </div>
 
-                            <FormGroup>
 
+                            {/*<div>*/}
+
+                            {/*    <div className="form_mg_row">*/}
+                            {/*        <label htmlFor="oficina_solicita" className="pbmg1 lbl-input label_horizontal">Seleccione el tipo de producto</label>*/}
+                            {/*        <div className="form_mg__item ptmg1">*/}
+                            {/*            <select id="oficina_solicita" name="oficina_solicita" defaultValue={"-1"} onChange={tipoProductoHandler} value={tipoProducto} disabled={desactivarCheckEditar}>*/}
+                            {/*                <option value="-1" disabled={true}>----- SELECCIONE UN PRODUCTO -----</option>*/}
+                            {/*                <option value="BLACK">BLACK</option>*/}
+                            {/*                <option value="GOLDEN">GOLDEN</option>*/}
+                            {/*                <option value="ESTÁNDAR">ESTÁNDAR</option>*/}
+                            {/*            </select>*/}
+                            {/*        </div>*/}
+                            {/*    </div>*/}
+
+                            {/*</div>*/}
+
+                            <div>
                                 <div className="form_mg_row">
-                                    <label htmlFor="descripcion" className="pbmg1 lbl-input label_horizontal">Descripción de la orden</label>
+                                    <label htmlFor="descripcion" className="pbmg1 lbl-input label_horizontal">Descripción</label>
                                     <div className="form_mg__item ptmg1">
-                                        <Input id="descripcion" name="descripcion" type="text" value={descripcion} required={true} placeholder="Ingrese alguna descripción de la orden" onChange={setDescripcionHandler} className={descripcion === "" ? "no_valido" : ""}></Input>
+                                        <Input id="descripcion" name="descripcion" disabled={false} type="text" value={descripcion}
+                                            setValueHandler={setDescripcionHandler} esRequerido={true}></Input>
                                     </div>
                                 </div>
 
-                            </FormGroup>
+                            </div>
 
-                            <FormGroup>
-
+                            <div>
                                 <div className="form_mg_row">
-                                    <label htmlFor="agencia_solicita" className="pbmg1 lbl-input label_horizontal">Seleccione la Agencia que solicita nueva orden de tarjetas:</label>
+                                    <label htmlFor="cantidad" className="pbmg1 lbl-input label_horizontal">Cant.tarjetas para personalizar</label>
                                     <div className="form_mg__item ptmg1">
-                                        <select id="agencia_solicita" name="agencia_solicita" defaultValue={"-1"} onChange={agenciaHadler} value={agenciaSolicita} disabled={desactivarCheckEditar }>
-                                            <option value="-1" disabled={true}>----- SELECCIONE UNA AGENCIA -----</option>
-                                            <option value="1">MATRIZ</option>
-                                            <option value="2">SARAGURO</option>
-                                            <option value="3">CATAMAYO</option>
-                                            <option value="4">CARIAMANGA</option>
-                                            <option value="5">ALAMOR</option>
-                                            <option value="6">ZAMORA</option>
-                                            <option value="7">CUENCA</option>
-                                            <option value="8">AGENCIA NORTE</option>
-                                            <option value="9">MACARA</option>
-                                            <option value="10">AGENCIA SUR</option>
-                                            <option value="11">AGENCIA YANTZAZA</option>
-                                            <option value="12">BALSAS</option>
-                                            <option value="13">CATACOCHA</option>
-                                            <option value="14">SANTA ROSA</option>
-                                            <option value="15">AGENCIA GUALAQUIZA</option>
-                                            <option value="16">AGENCIA CUARTO CENTENARIO</option>
-                                            <option value="17">AGENCIA ZUMBA</option>
-                                            <option value="18">AGENCIA EL VALLE</option>
-                                            <option value="19">AGENCIA MACHALA</option>
-                                            <option value="20">AGENCIA EL EJIDO</option>
-                                            <option value="21">AGENCIA LATACUNGA</option>
-                                            <option value="22">AGENCIA SANTO DOMINGO</option>
-                                        </select>
+                                        {/*value={tarjetasAprobadasCheckBox.length.toString()}*/}
+                                        <Input id="cantidad" name="cantidad" disabled={true} type="text"
+                                            value={lstOrdenTarjetas.length }
+                                        ></Input>
                                     </div>
                                 </div>
 
-                            </FormGroup>
+                            </div>
+
+
+                            
 
                         </section>
 
+                        {/*<Table headers={headersTarjetasAprobadas}*/}
+                        {/*    multipleOpcion={true}*/}
+                        {/*    onChangeCheckBox={seleccionMultiple}*/}
+                        {/*    isSelectAll={isSelectAll} indexCheckbox={0}*/}
+                        {/*    desactivarCheckEditar={desactivarCheckEditar}*/}
+                        {/*>*/}
+
                         {lstOrdenTarjetas.length > 0 &&
                             <div id="listado_ordenes" className="mt-3">
-                                <Table headers={headersTarjetasAprobadas} multipleOpcion={true} onChangeCheckBox={seleccionMultiple} isSelectAll={isSelectAll}
-                                    desactivarCheckEditar={desactivarCheckEditar}>
+                                <Table headers={headersTarjetasAprobadas}
+                                >
                                     {/*BODY*/}
                                     {lstOrdenTarjetas.map((tarjeta, index) => {
                                         return (
                                             <tr key={tarjeta.ente}>
-                                                <td>
-                                                    <Checkbox key={tarjeta.identificacion} disabled={desactivarCheckEditar } checked={tarjetasAprobadasCheckBox.includes(tarjeta.identificacion)} onChange={() => checkTarjeta(tarjeta.identificacion)} />
-                                                </td>
+                                                {/*<td>*/}
+                                                {/*    <Input key={tarjeta.identificacion} disabled={desactivarCheckEditar} type="checkbox" checked={tarjetasAprobadasCheckBox.includes(tarjeta.identificacion)} setValueHandler={() => checkTarjeta(tarjeta.identificacion)}></Input>*/}
+
+                                                {/*</td>*/}
+                                               {/* <td>{tarjeta.oficina_recepta}</td>*/}
                                                 <td>{tarjeta.cuenta}</td>
-                                                <td>{tarjeta.tipo_identificacion}</td>
                                                 <td>{tarjeta.identificacion}</td>
                                                 <td>{tarjeta.ente}</td>
                                                 <td>{tarjeta.nombre}</td>
-                                                <td>{tarjeta.nombre_impreso}</td>
                                                 <td><Chip type={conversionTipoTC(tarjeta.tipo)}>{tarjeta.tipo}</Chip></td>
                                                 <td>{`$ ${Number(tarjeta.cupo).toLocaleString('en-US')}`}</td>
 
@@ -333,12 +370,15 @@ function OrdenNuevaEdicion(props) {
                         }
 
                         {lstOrdenTarjetas.length === 0 &&
-                            <p style={{ fontSize: '18px' }}> <strong> No existe tarjetas aprobadas de la agencia seleccionada </strong> </p> 
+                            <p style={{ fontSize: '18px' }}> <strong> No existe tarjetas aprobadas con ese tipo de producto. </strong> </p>
                         }
 
                         <div className="center_text_items">
-                            <button className="btn_mg btn_mg__primary" style={{ width: "200px" }} disabled={false} type="submit">
-                                {accionBtn}</button>
+                            <Button className={["btn_mg btn_mg__primary mt-2 mr-2"]} disabled={isBtnFormDisable} onClick={onSubmitOrden}>{accionBtn}  </Button>
+
+
+                            {/*<button className="btn_mg btn_mg__primary" style={{ width: "200px" }} disabled={} type="submit">*/}
+                            {/*    {accionBtn}</button>*/}
                         </div>
                     </form>
 

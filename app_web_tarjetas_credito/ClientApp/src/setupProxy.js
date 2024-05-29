@@ -43,6 +43,10 @@ const context =  [
     '/tarjetacredito/getResoluciones',
     '/tarjetacredito/addResolucion',
     '/tarjetacredito/updResolucion',
+    "/tarjetacredito/getReporteOrden",
+    "/tarjetacredito/getOrdenes",
+    "/tarjetacredito/getTarjetasCredito",
+    "/tarjetacredito/getMedioAprobacion",
     '/tarjetacredito/addProcEspecifico',
     '/tarjetacredito/updSolicitud',
     '/tarjetacredito/getParametros'

@@ -1,8 +1,8 @@
-﻿import { IsNullOrWhiteSpace } from "../../js/utiles";
+﻿import { IsNullOrWhiteSpace, base64ToBlob, descargarArchivo, generarFechaHoy, verificarPdf } from "../../js/utiles";
 import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { useEffect, useState } from "react";
-import { fetchGetInforme, fetchGetFlujoSolicitud, fetchAddComentarioAsesor, fetchAddComentarioSolicitud, fetchGetResolucion, fetchAddProcEspecifico, fetchUpdateCupoSolicitud } from "../../services/RestServices";
+import { fetchGetInforme, fetchGetFlujoSolicitud, fetchAddComentarioAsesor, fetchAddComentarioSolicitud, fetchGetResolucion, fetchAddProcEspecifico, fetchUpdateCupoSolicitud, fetchGetMedioAprobacion } from "../../services/RestServices";
 import Sidebar from "../Common/Navs/Sidebar";
 import Card from "../Common/Card";
 import Table from "../Common/Table";
@@ -274,14 +274,18 @@ const VerSolicitud = (props) => {
         document.body.removeChild(link);
     }
 
-    const descargarMedio = () => {
-        const pdfUrl = "Imagenes/Medio de aprobación-Tarjeta de crédito.pdf";
-        const link = document.createElement("a");
-        link.href = pdfUrl;
-        link.download = "document.pdf"; // specify the filename
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+    const descargarMedio = (numSolicitud) => {
+        //console.log("Num Sol,", numSolicitud)
+        fetchGetMedioAprobacion(props.token, (data) => {
+            if (data.str_res_codigo === "000" && verificarPdf(data.str_med_apro_bas_64)) {
+                const blob = base64ToBlob(data.str_med_apro_bas_64, 'application/pdf');
+                let fechaHoy = generarFechaHoy();
+                const nombreArchivo = `MedioAprobacionTC_Sol${numSolicitud}_${(fechaHoy)}`;
+                descargarArchivo(blob, nombreArchivo, 'pdf');
+            } else {
+                window.alert("ERROR AL GENERAR EL REPORTE, COMUNIQUESE CON EL ADMINISTRADOR");
+            }
+        }, dispatch);
     }
 
     const retornarSolicitud = () => {
@@ -635,11 +639,11 @@ const VerSolicitud = (props) => {
                                     {/*{regresaSolicitud?.find((id) => { return id.prm_id === props.solicitud.idSolicitud }) &&*/}
                                     {/*    <Button className="btn_mg__primary ml-2" onClick={guardarComentarioAtras}>Regresar solicitud</Button>*/}
                                     {/*}*/}
-                                    {imprimeMedio?.find((id) => { return id.prm_id === props.solicitud.idSolicitud }) &&
-                                        <Button className="btn_mg__primary ml-2">Imprimir formulario</Button>
-                                            }
+                                    {/*{imprimeMedio?.find((id) => { return id.prm_id === props.solicitud.idSolicitud }) &&*/}
+                                    {/*    <Button className="btn_mg__primary ml-2">Imprimir formulario</Button>*/}
+                                    {/*        }*/}
                                             {(props.solicitud.idSolicitud === "11135" || props.solicitud.idSolicitud === "11136") &&
-                                        <Button className="btn_mg__primary ml-2" >Imprimir medio aprobación</Button>
+                                                <Button className="btn_mg__primary ml-2" onClick={() => descargarMedio(props.solicitud.solicitud)}>Imprimir medio aprobación</Button>
                                     }
 
                                     {props.solicitud.idSolicitud >= "11135" && props.solicitud.idSolicitud <= "11137" &&

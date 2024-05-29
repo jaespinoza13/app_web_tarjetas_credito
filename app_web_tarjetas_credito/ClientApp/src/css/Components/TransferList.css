@@ -1,0 +1,83 @@
+﻿
+.elements_three_column_transfLst {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+}
+
+table.scroll {
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 7px;
+    width: 100%;
+    overflow: hidden;
+    border: #D4E7FF;
+    border-collapse: separate;
+    border-spacing: 0 0.3rem;
+}
+
+
+    table.scroll tr td:last-child {
+        border-radius: 7px 7px 7px 7px;
+        border-right: 1px solid #C1CBEA;
+    }
+
+    table.scroll td:nth-child(1) {
+        color: #3D3D3D;
+        font-family: "Karbon", sans-serif;
+    }
+
+    table.scroll td {
+        color: #3D3D3D;
+        text-align: center;
+    }
+
+
+    table.scroll th,
+    table.scroll td,
+    table.scroll tr,
+    table.scroll thead,
+    table.scroll tbody {
+        display: block;
+    }
+
+        table.scroll tr:after {
+            content: 'espacio';
+            display: block;
+            visibility: hidden;
+            clear: both;
+            font-size: 4px;
+        }
+
+        table.scroll thead th {
+            width: 100%;
+            float: left;
+        }
+
+    table.scroll tbody {
+        height: 360px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+        table.scroll tbody td {
+            width: 98%;
+            float: left;
+        }
+
+
+    table.scroll thead tr th {
+        height: 50px;
+        line-height: 30px;
+    }
+
+/* Estilo alternativo de la tabla cuando se alcanza cierto número de filas */
+table.alt tbody td, table.alt thead th {
+    width: 95%;
+}
+
+table.alt tbody {
+    height: auto;
+    overflow-y: hidden;
+    overflow-x: hidden;
+}

@@ -1,75 +1,66 @@
 ﻿import { useState, useEffect } from 'react';
+import { fetchGetReporteOrden } from "../../services/RestServices";
 import Sidebar from '../Common/Navs/Sidebar';
 import Card from '../Common/Card';
 import { useHistory } from 'react-router-dom';
 import Table from '../Common/Table';
 import Chip from '../Common/UI/Chip'
-import { Input} from 'reactstrap';
-import { RadioGroup, Radio, FormControlLabel, FormLabel } from '@mui/material';
-import { connect } from 'react-redux';
+import  Input  from '../Common/UI/Input';
+import { connect, useDispatch } from 'react-redux';
+import { IsNullOrWhiteSpace, base64ToBlob, verificarPdf, descargarArchivo, generarFechaHoy } from '../../js/utiles';
 import Button from "../Common/UI/Button";
-//import { generarPDF } from "../../js/generarPDF";
+import { objConfirmacionRecepcionTarjetas } from "./ObjetosMock";
 
 
+const mapStateToProps = (state) => {
+    var bd = state.GetWebService.data;
+    if (IsNullOrWhiteSpace(bd) || Array.isArray(state.GetWebService.data)) {
+        bd = sessionStorage.getItem("WSSELECTED");
+    }
+    return {
+        ws: bd,
+        listaFuncionalidades: state.GetListaFuncionalidades.data,
+        token: state.tokenActive.data,
+    };
+};
 
 function VerOrden(props) {
 
     const headersTarjetasAprobadas = [
-        { nombre: 'Cuenta', key: 0 }, { nombre: 'Tipo Identificacion', key: 1 },
-        { nombre: 'Identificación', key: 2 }, { nombre: 'Ente', key: 3 }, { nombre: 'Nombre', key: 4 },
-        { nombre: 'Nombre impreso', key: 5 }, { nombre: 'Producto TC.', key: 6 }, { nombre: 'Cupo solicitado', key: 7 }
+        { nombre: 'Número de tarjeta', key: 0 }, { nombre: 'Identificación', key: 1 }, { nombre: 'Cuenta', key: 2 },
+        { nombre: 'Nombre impreso', key: 3 }, { nombre: 'Producto TC.', key: 4 }, { nombre: 'Cupo', key: 5 }
     ]
-
-
-    //OBJETO SIMULADO PARA TRAER INFORMACION DE LA ORDEN 
-    const objetoEditacion = [
-        {
-            orden: "164",
-            prefijo_tarjeta: "53",
-            cost_emision: "cobro_emision",
-            descripcion: "TARJETAS SOLICITADAS PARA MES DE ABRIL",
-            agencia_solicita: { nombre: "MATRIZ", id: "1" },
-            tarjetas_solicitadas: [
-                { cuenta: "410010064540", tipo_identificacion: "C", identificacion: "1150214375", ente: "189610", nombre: "DANNY VASQUEZ", nombre_impreso: "DANNY VASQUEZ", tipo: "BLACK", cupo: "8000", key: 23, Agencia: { nombre: "MATRIZ", id: "1" } },
-                { cuenta: "410010061199", tipo_identificacion: "R", identificacion: "1105970712001", ente: "515146", nombre: "JUAN TORRES", nombre_impreso: "JUAN TORRES", tipo: "GOLDEN", cupo: "15000", key: 38, Agencia: { nombre: "MATRIZ", id: "1" } },
-                { cuenta: "410010061514", tipo_identificacion: "R", identificacion: "1105970714001", ente: "515148", nombre: "ROBERTH TORRES", nombre_impreso: "ROBERTH TORRES", tipo: "ESTÁNDAR", cupo: "15000", key: 58, Agencia: { nombre: "MATRIZ", id: "1" } },
-                { cuenta: "410010064000", tipo_identificacion: "P", identificacion: "PZ970715", ente: "515149", nombre: "ROBERTH TORRES", nombre_impreso: "ROBERTH TORRES", tipo: "GOLDEN", cupo: "15000", key: 68, Agencia: { nombre: "MATRIZ", id: "1" } }
-            ]
-
-        }
-    ]
-
 
     const navigate = useHistory();
-    const [lstSolicitudes, setLstSolicitudes] = useState([]);
+    const dispatch = useDispatch();
+    const [lstOrdenTarjetas, setlstOrdenTarjetas] = useState([]);
 
-
+    
     const [nrOrnden, setNrOrden] = useState("");
     const [prefijo, setPrefijo] = useState("");
     const [costoEmision, setCostoEmision] = useState("");
     const [descripcion, setDescripcion] = useState("");
     const [agenciaSolicita, setAgenciaSolicita] = useState("");
 
-
+    const [reporteBytes, setReporteBytes] = useState([]);
 
     useEffect(() => {
 
-        /*if (props.location.pathname === '/orden/verOrden' && (props.location?.state?.numOrden === null || props.location?.state?.numOrden === undefined || props.location?.state?.numOrden)) {
+        if (props.location.pathname === '/orden/verOrden' && (props.location?.state?.numOrden === null || props.location?.state?.numOrden === undefined)) {
             navigate.push('/orden');
         }
-        else {*/
+        else {
 
-        /// TODO: traer data desde el back por peticion O VER SI DESDE LISTA ORDEN ENVIAR EL OBJETO YA A EDITAR
-        setLstSolicitudes(objetoEditacion[0].tarjetas_solicitadas);
-        setNrOrden(objetoEditacion[0].orden);
-        setCostoEmision(objetoEditacion[0].cost_emision);
-        setDescripcion(objetoEditacion[0].descripcion);
-        setPrefijo(objetoEditacion[0].prefijo_tarjeta);
-        setAgenciaSolicita(objetoEditacion[0].agencia_solicita.nombre);
+            /// TODO: traer data desde el back por peticion O VER SI DESDE LISTA ORDEN ENVIAR EL OBJETO YA A EDITAR
+            setlstOrdenTarjetas(objConfirmacionRecepcionTarjetas[1].orden_tarjetaDet);
+            setNrOrden(objConfirmacionRecepcionTarjetas[1].orden);
+            //setCostoEmision(objConfirmacionRecepcionTarjetas[1].cost_emision);
+            setDescripcion(objConfirmacionRecepcionTarjetas[1].descripcion);
+            //setPrefijo(objConfirmacionRecepcionTarjetas[1].prefijo_tarjeta);
+            //setAgenciaSolicita(objConfirmacionRecepcionTarjetas[1].oficina_solicita);
 
-        console.log(objetoEditacion[0].tarjetas_solicitadas);
+        }
 
-        //}
     }, [])
 
 
@@ -92,11 +83,26 @@ function VerOrden(props) {
     }
 
     //columns, data, accountNumber, name, typeMovement
-    const onDescargarReporte = (e) => {
-        e.preventDefault();
-        //window.alert("DESCARGAR ORDEN");
-        //generarPDF(objetoEditacion[0].tarjetas_solicitadas);
+    const onDescargarReporte = () => {
+        fetchGetReporteOrden(nrOrnden, props.token, (data) => {
+            setReporteBytes(data.byt_reporte);
+        }, dispatch);
     };
+
+    useEffect(() => {
+        if (reporteBytes.length > 0) {
+            if (verificarPdf(reporteBytes)) {
+                const blob = base64ToBlob(reporteBytes, 'application/pdf');
+                let fechaHoy = generarFechaHoy();
+                const nombreArchivo = `Orden${nrOrnden}_${(fechaHoy)}`;
+                descargarArchivo(blob, nombreArchivo, 'pdf');
+
+            } else {
+                window.alert("ERROR AL GENERAR EL REPORTE, COMUNIQUESE CON EL ADMINISTRADOR");
+            }
+        }
+    }, [reporteBytes])
+
 
     return (
         <div className="f-row">
@@ -109,7 +115,10 @@ function VerOrden(props) {
                     <div style={{ display: "flex", position: "relative", paddingBottom: "70px" }}>
                         
                         <h2>VISUALIZAR DETALLE DE LA ORDEN</h2>
-                        <Button className={["btn_mg btn_mg__primary mr-2 close-modal"]} onClick={onDescargarReporte} disabled={false}>Descargar reporte</Button>
+                        <div className="btns-in-margin-rigth">
+                            <Button className={["btn_mg btn_mg__primary mr-2"]} onClick={() => onDescargarReporte()} disabled={false}>Descargar reporte</Button>
+                        </div>
+                        
                     </div>
                     
 
@@ -122,29 +131,32 @@ function VerOrden(props) {
                             </div>
                         </div>
 
+                        {/*<div className="form_mg_row">*/}
+                        {/*    <label id="label">Costo de emisión</label>*/}
+                            
+                        {/*    <div className="form_mg__item">*/}
+
+                        {/*        <div style={{ display: 'flex' }}>*/}
+                        {/*            <div className=''>*/}
+                        {/*                <input type="radio" id="cobro_emision" name="cobro_tarjeta" value="cobro_emision" checked={costoEmision === "cobro_emision"} disabled={true} />*/}
+                        {/*                <label htmlFor="cobro_emision">Si</label>*/}
+                        {/*            </div>*/}
+                        {/*            <div className=''>*/}
+                        {/*                <input type="radio" id="no_cobro_emision" name="cobro_tarjeta" value="no_cobro_emision" checked={costoEmision === "no_cobro_emision"} disabled={true} />*/}
+                        {/*                <label htmlFor="no_cobro_emision">No</label>*/}
+                        {/*            </div>*/}
+                        {/*        </div>*/}
+                        {/*        {costoEmision === "" && <div className='text_error_validacion'>Escoja una opción.</div>}*/}
+
+                        {/*    </div>*/}
+
+                        {/*</div>*/}
+
+
                         <div className="form_mg_row">
-                            <FormLabel sx={{ fontFamily: `"Karbon", sans-serif`, fontSize: "1.1rem;", color: "#3D3D3D" }} component="label">Costo de emisión</FormLabel>
-                            <div className="form_mg__item">
-
-                                <RadioGroup
-                                    row
-                                    aria-labelledby="label"
-                                    name="row-radio-buttons-group"
-                                    value={costoEmision}
-                                >
-                                    <FormControlLabel value="cobro_emision" control={<Radio />} label="Si" disabled={true} />
-                                    <FormControlLabel value="no_cobro_emision" control={<Radio />} label="No" disabled={true} />
-                                </RadioGroup>
-                                {costoEmision === "" && <div className='text_error_validacion'>Escoja una opción.</div>}
-
-                            </div>
-                        </div>
-
-
-                        <div className="form_mg_row">
-                            <label htmlFor="tipoTC" className="pbmg1 lbl-input label_horizontal">Prefijo</label>
+                            <label htmlFor="tipoOrden" className="pbmg1 lbl-input label_horizontal">Tipo de Orden</label>
                             <div className="form_mg__item ptmg1">
-                                <Input id="prefijo" name="prefijo" type="text" value={prefijo} disabled={true}></Input>
+                                <Input id="tipoOrden" name="tipoOrden" type="text" value={'PEDIDO'} disabled={true}></Input>
                             </div>
                         </div>
 
@@ -159,29 +171,36 @@ function VerOrden(props) {
 
 
                         <div className="form_mg_row">
-                            <label htmlFor="agencia_solicita" className="pbmg1 lbl-input label_horizontal">Agencia que solicito</label>
+                            <label htmlFor="obser_adicional" className="pbmg1 lbl-input label_horizontal">Observación adicional</label>
                             <div className="form_mg__item ptmg1">
-                                <Input id="agencia_solicita" name="agencia_solicita" type="text" value={agenciaSolicita} disabled={true}></Input>
+                                <Input id="obser_adicional" name="obser_adicional" type="text" value={''} disabled={true}></Input>
                             </div>
                         </div>
+
+
+
+                        {/*<div className="form_mg_row">*/}
+                        {/*    <label htmlFor="oficina_solicita" className="pbmg1 lbl-input label_horizontal">Agencia que solicito</label>*/}
+                        {/*    <div className="form_mg__item ptmg1">*/}
+                        {/*        <Input id="oficina_solicita" name="oficina_solicita" type="text" value={agenciaSolicita} disabled={true}></Input>*/}
+                        {/*    </div>*/}
+                        {/*</div>*/}
 
 
                     </section>
 
                     <div id="listado_ordenes" className="mt-3">
                         <Table headers={headersTarjetasAprobadas}>
-                            {lstSolicitudes.map((tarjeta) => {
+                            {lstOrdenTarjetas.map((tarjeta) => {
                                 return (
                                 <tr key={tarjeta.ente}>
-                                    <td>{tarjeta.cuenta}</td>
-                                    <td>{tarjeta.tipo_identificacion}</td>
-                                    <td>{tarjeta.identificacion}</td>
-                                    <td>{tarjeta.ente}</td>
-                                    <td>{tarjeta.nombre}</td>
-                                    <td>{tarjeta.nombre_impreso}</td>
-                                    <td><Chip type={conversionTipoTC(tarjeta.tipo)}>{tarjeta.tipo}</Chip></td>
-                                    <td>{`$ ${Number(tarjeta.cupo).toLocaleString('en-US')}`}</td>
-                                    </tr>
+                                        <td>{tarjeta.numero_tarjeta}</td>
+                                        <td>{tarjeta.identificacion}</td>
+                                        <td>{tarjeta.cuenta}</td>
+                                        <td>{tarjeta.nombre}</td>
+                                        <td><Chip type={conversionTipoTC(tarjeta.tipo)}>{tarjeta.tipo}</Chip></td>
+                                        <td>{`$ ${Number(tarjeta.cupo).toLocaleString('en-US')}`}</td>
+                                </tr>
                                 )
                             })}
 
@@ -197,4 +216,4 @@ function VerOrden(props) {
 
 }
 
-export default VerOrden; 
+export default connect(mapStateToProps, {})(VerOrden); 

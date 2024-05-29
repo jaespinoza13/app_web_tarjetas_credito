@@ -111,6 +111,10 @@ export const addComentarioAsesor = "ADD_INFORME_TC"
 export const getResolucion = "GET_RESOLUCION"
 export const addResolucion = "ADD_RESOLUCION"
 export const updResolucion = "UPD_RESOLUCION"
+export const getReporteOrden = "GET_REPORTE_ORDEN"
+export const getOrdenes = "GET_ORDENES_TC"
+export const getTarjetasCredito = "GET_TARJETAS_CREDITO"
+export const getMedioAprobacion = "GET_MEDIO_APROBACION"
 export const addProcEspecifico = "ADD_PROCESO_ESPECIFICO"
 export const updSolicitud = "UPD_SOLICITUD_TC"
 export const getParametros = "GET_PARAMETROS"
@@ -245,6 +249,18 @@ export function ServiceUrl(request, params = []) {
             break;
         case updResolucion:
             pathOut = "tc/updResolucion"
+            break;
+        case getReporteOrden:
+            pathOut = "tc/getReporteOrden"
+            break;
+        case getOrdenes:
+            pathOut = "tc/getOrdenes"
+            break;
+        case getTarjetasCredito:
+            pathOut = "tc/getTarjetasCredito"
+            break;
+        case getMedioAprobacion:
+            pathOut = "tc/getMedioAprobacion"
             break;
         case addProcEspecifico:
             pathOut = "tc/addProcEspec"
@@ -501,6 +517,10 @@ function pathRewrite(path) {
         "tc/getResolucion": '/tarjetacredito/getResoluciones',
         "tc/addResolucion": '/tarjetacredito/addResolucion',
         "tc/updResolucion": '/tarjetacredito/updResolucion',
+        "tc/getReporteOrden": '/tarjetacredito/getReporteOrden',
+        "tc/getOrdenes": '/tarjetacredito/getOrdenes',
+        "tc/getTarjetasCredito": '/tarjetacredito/getTarjetasCredito',
+        "tc/getMedioAprobacion": '/tarjetacredito/getMedioAprobacion',
         "tc/addProcEspec": '/tarjetacredito/addProcEspecifico',
         "tc/updSol": '/tarjetacredito/updSolicitud',
         "tc/getParams": '/tarjetacredito/getParametros'
