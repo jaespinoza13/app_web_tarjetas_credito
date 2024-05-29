@@ -241,9 +241,9 @@ function Solicitud(props) {
                                     <td>{validaNombreParam(solicitud.str_estado)}</td>
                                     <td>{"Matriz"}</td>
                                     <td>
-                                        <IconButton onClick={() => { setisModalComentarios(!isModalComentarios) }}>
-                                            <RateReviewSharpIcon></RateReviewSharpIcon>
-                                        </IconButton>
+                                        {/*<IconButton onClick={() => { setisModalComentarios(!isModalComentarios) }}>*/}
+                                        {/*    <RateReviewSharpIcon></RateReviewSharpIcon>*/}
+                                        {/*</IconButton>*/}
                                         
                                     </td>
                                 </tr>

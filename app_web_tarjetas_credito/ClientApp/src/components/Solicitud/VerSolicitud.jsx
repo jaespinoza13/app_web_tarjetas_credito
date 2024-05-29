@@ -153,6 +153,9 @@ const VerSolicitud = (props) => {
                 prm_id: "11137", estados: "11138|11140"
             }
         ]);
+
+        console.log("PROPS INFO", props)
+
     }, []);
 
 
@@ -338,7 +341,7 @@ const VerSolicitud = (props) => {
 
     const cambioEstadoBandeja = () => {
 
-        //if (props.solicitud.idSolicitud === '11137') {
+        if(props.solicitud.idSolicitud === '11137') {
             fetchAddProcEspecifico(props.solicitud.solicitud, 0, cambioEstadoSol, comentarioCambioEstado, props.token, (data) => {
                 if (data.str_res_codigo === "000") {
                     //Ir a pagina anterior
@@ -352,17 +355,18 @@ const VerSolicitud = (props) => {
 
             }, dispatch)
 
-        /*} else {
-            //console.log("ENTRA CAMBIO HACIA ATRAS"); idSolicitud, comentario, estadoSolicitud, regresaSolicitud
+        } else {
             fetchAddComentarioSolicitud(props.solicitud.solicitud, comentarioCambioEstado, props.solicitud.idSolicitud, true, props.token, (data) => {
                 if (data.str_res_codigo === "000") {
                     setModalCambioBandeja(false);
                     console.log("SE GUARDA AL NUEVO ESTADO");
                     navigate.push('/solicitud');
                 }
-                console.log("ERROR HACIA ATRAS, ", data)
+                else {
+                    console.log("No cuenta con permisos ", data);
+                }
             }, dispatch);
-        }*/
+        }
         
     }
 
@@ -633,10 +637,12 @@ const VerSolicitud = (props) => {
                                     {/*}*/}
                                     {imprimeMedio?.find((id) => { return id.prm_id === props.solicitud.idSolicitud }) &&
                                         <Button className="btn_mg__primary ml-2">Imprimir formulario</Button>
+                                            }
+                                            {(props.solicitud.idSolicitud === "11135" || props.solicitud.idSolicitud === "11136") &&
+                                        <Button className="btn_mg__primary ml-2" >Imprimir medio aprobación</Button>
                                     }
 
-                                            {props.solicitud.idSolicitud >= "11135" && props.solicitud.idSolicitud <= "11137" &&
-
+                                    {props.solicitud.idSolicitud >= "11135" && props.solicitud.idSolicitud <= "11137" &&
                                         <Button className="btn_mg__primary ml-2" onClick={openModalCambiarBandeja}>Retornar Solicitud</Button>
                                     }
 
@@ -867,31 +873,23 @@ const VerSolicitud = (props) => {
             {modalCambioBandeja && <div>
 
 
-                {/*{props.solicitud.idSolicitud === "11137" && */}
-                {/*<>*/}
-                    <h3 className="mt-4 mb-1">Seleccione a qué estado desea regresar la solicitud:</h3>
+                {props.solicitud.idSolicitud === "11137" &&
+                    <>
+                        <h3 className="mt-4 mb-1">Seleccione a qué estado desea regresar la solicitud:</h3>
 
-                    <select className='width-100' defaultValue={"-1"} onChange={cambiarEstadoSolHandler} value={cambioEstadoSol}>
-                        <option disabled={true} value="-1">Seleccione algún estado</option>
+                        <select className='width-100' defaultValue={"-1"} onChange={cambiarEstadoSolHandler} value={cambioEstadoSol}>
+                            <option disabled={true} value="-1">Seleccione algún estado</option>
 
-                        {(solicitudTarjeta?.str_estado === "ANALISIS UAC") &&
-                            <option value="EST_SOL_CREADA">SOLICITUD CREADA</option>
-                        }
-                        {solicitudTarjeta?.str_estado === "ANALISIS JEFE UAC" &&
-                            <>
-                            <option value="EST_ANALISIS_UAC">ANALISIS UAC</option>
-                            </>
-                        }
-                        {solicitudTarjeta?.str_estado === "ANALISIS COMITE" &&
-                            <>                        
-                            <option value="EST_SOL_CREADA">SOLICITUD CREADA</option>
-                            <option value="EST_ANALISIS_UAC">ANALISIS UAC</option>
-                            <option value="EST_ANALISIS_JEFE_UAC">ANALISIS JEFE UAC</option>
-                            </>
-                        }
-                    </select>
-                {/*</>*/}
-                {/*}*/}
+                            {solicitudTarjeta?.str_estado === "ANALISIS COMITE" &&
+                                <>
+                                    <option value="EST_SOL_CREADA">SOLICITUD CREADA</option>
+                                    <option value="EST_ANALISIS_UAC">ANALISIS UAC</option>
+                                    <option value="EST_ANALISIS_JEFE_UAC">ANALISIS JEFE UAC</option>
+                                </>
+                            }
+                        </select>
+                    </>
+                }
                 <br />
 
                 <div>
