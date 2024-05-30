@@ -16,15 +16,15 @@ namespace Domain.Models.TarjetaCredito.GetFlujoSolicitud
 
     public class FlujoSolicitudes
     {
-        public int slw_estado { get; set; }
-        public int slw_id { get; set; }
+        public int int_estado { get; set; }
+        public int int_id { get; set; }
         public string str_estado { get; set; } = string.Empty;
-        public string slw_cupo_solicitado { get; set; }
-        public string slw_cupo_sugerido { get; set; }
-        public string slw_cupo_aprobado { get; set; } = string.Empty;
+        public string str_cupo_solicitado { get; set; } = string.Empty;
+        public string srt_cupo_sugerido { get; set; } = string.Empty;
+        public string str_cupo_aprobado { get; set; } = string.Empty;
         //public string slw_fecha_solicitud { get; set; } = string.Empty;
-        public string slw_usuario_proc { get; set; } = string.Empty;
-        public DateTime slw_fecha_actualizacion { get; set; }
+        public string str_usuario_proc { get; set; } = string.Empty;
+        public DateTime dtt_fecha_actualizacion { get; set; }
         //public string slw_fecha_aprobacion { get; set; } = string.Empty;
         //public string slw_fecha_rechazo { get; set; } = string.Empty;
 
@@ -50,8 +50,8 @@ namespace Domain.Models.TarjetaCredito.GetFlujoSolicitud
         //public char slw_cod_prov { get; set; }
         //public string slw_cod_postal { get; set; } = string.Empty;
         //public string slw_zona_geo { get; set; } = string.Empty;
-        public string slw_decision_solicitud { get; set; } = string.Empty;
-        public string slw_comentario_proceso { get; set; } = string.Empty;
+        public string str_decision_solicitud { get; set; } = string.Empty;
+        public string str_comentario_proceso { get; set; } = string.Empty;
         //public string slw_id_doc_aut_consulta_buro { get; set; } = string.Empty;  
         //public string slw_id_doc_tratamiento_datos_per { get; set; } = string.Empty;  
         //public string slw_id_doc_adicional { get; set; } = string.Empty;  
