@@ -1125,7 +1125,7 @@ export function fetchGetFlujoSolicitud(idSolicitud, token, onSucces, dispatch) {
         int_id_solicitud: idSolicitud,
     }
     ServicioPostExecute(getFlujoSolicitud, body, token, { dispatch: dispatch }).then((data) => {
-        //  console.log("FLUJO,", data);
+        console.log("FLUJO RESULT,", data);
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));

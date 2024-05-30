@@ -451,7 +451,9 @@ namespace Infrastructure.TarjetaCredito
 
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
+                    
                     res = JsonSerializer.Deserialize<ResGetFlujoSolicitud>(response.Content!)!;
+                    Console.WriteLine(res);
                 }
             }
             catch (Exception ex)

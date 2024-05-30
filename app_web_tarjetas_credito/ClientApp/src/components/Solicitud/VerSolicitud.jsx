@@ -128,6 +128,8 @@ const VerSolicitud = (props) => {
             setFlujoSolId(datosSolicitud.slw_id);
             setSolicitudTarjeta(...[datosSolicitud])
 
+            console.log("FLUJO SOL", datosSolicitud);
+
 
         }, dispatch);
         setImprimeMedio([
@@ -390,6 +392,7 @@ const VerSolicitud = (props) => {
                 setModalRechazo(false);
                 navigate.push('/solicitud');
             }
+            console.log("RECHAZ ", data)
         }, dispatch)
     }
 
@@ -545,7 +548,7 @@ const VerSolicitud = (props) => {
                                     <div className="values  mb-3">
                                         <h5>Cupo solicitado:</h5>
                                         <h5 className="strong f-row">
-                                                    {`$ ${Number(solicitudTarjeta?.dec_cupo_solicitado).toLocaleString("en-US") || Number('1000.00').toLocaleString("en-US")}`}
+                                                    {`$ ${Number(solicitudTarjeta?.slw_cupo_solicitado).toLocaleString("en-US") || Number('1000.00').toLocaleString("en-US")}`}
                                                     {props.solicitud.idSolicitud === "11134" &&
                                                         <Button className="btn_mg__auto ml-2" onClick={updateMonto}>
                                                             <img src="/Imagenes/edit.svg"></img>
@@ -556,13 +559,20 @@ const VerSolicitud = (props) => {
                                     <div className="values  mb-3">
                                         <h5>Cupo sugerido:</h5>
                                         <h5 className="strong">
-                                                    {`$ ${Number(solicitudTarjeta?.dec_cupo_sugerido).toLocaleString("en-US") || Number('10000.00').toLocaleString("en-US")}`}
+                                                    {`$ ${Number(solicitudTarjeta?.slw_cupo_sugerido).toLocaleString("en-US") || Number('10000.00').toLocaleString("en-US")}`}
                                         </h5>
                                     </div>
                                     <div className="values  mb-3">
                                         <h5>Solicitud Nro:</h5>
                                         <h5 className="strong">
                                             {`${props.solicitud.solicitud || Number('10000.00').toLocaleString("en-US")}`}
+                                        </h5>
+                                    </div>
+
+                                    <div className="values  mb-3">
+                                        <h5>Cupo aprobado:</h5>
+                                        <h5 className="strong">
+                                                {`$ ${Number(solicitudTarjeta?.slw_cupo_aprobado).toLocaleString("en-US") || Number('10000.00').toLocaleString("en-US")}`}
                                         </h5>
                                     </div>
                                 </Item>
@@ -616,8 +626,8 @@ const VerSolicitud = (props) => {
                                             <div className="values  mb-3">
                                                 <h5>Cupo solicitado:</h5>
                                                 <h5 className="strong f-row">
-                                                   {/* {`$ ${solicitudTarjeta?.dec_cupo_solicitado.toLocaleString("en-US") || Number('10000.00').toLocaleString("en-US")}`}*/}
-                                                    {`$ ${solicitudTarjeta?.dec_cupo_solicitado || Number('10000.00').toLocaleString("en-US")}`}
+                                                   {/* {`$ ${solicitudTarjeta?.slw_cupo_solicitado.toLocaleString("en-US") || Number('10000.00').toLocaleString("en-US")}`}*/}
+                                                    {`$ ${solicitudTarjeta?.slw_cupo_solicitado || Number('10000.00').toLocaleString("en-US")}`}
 
                                                     {props.solicitud.idSolicitud === "11134" &&
 
@@ -630,8 +640,8 @@ const VerSolicitud = (props) => {
                                             <div className="values  mb-3">
                                                 <h5>Cupo sugerido:</h5>
                                                 <h5 className="strong">
-                                                    {/*{`$ ${solicitudTarjeta?.dec_cupo_sugerido.toLocaleString("en-US") || Number('10000.00').toLocaleString("en-US")}`}*/}
-                                                    {`$ ${solicitudTarjeta?.dec_cupo_sugerido|| Number('10000.00').toLocaleString("en-US")}`}
+                                                    {/*{`$ ${solicitudTarjeta?.slw_cupo_sugerido.toLocaleString("en-US") || Number('10000.00').toLocaleString("en-US")}`}*/}
+                                                    {`$ ${solicitudTarjeta?.slw_cupo_sugerido|| Number('10000.00').toLocaleString("en-US")}`}
                                                 </h5>
                                             </div>
                                             <div className="values  mb-3">
@@ -840,7 +850,7 @@ const VerSolicitud = (props) => {
         >
             {modalMonto && <div>
                 <h3 className="mt-4 mb-3">Ingrese el nuevo monto:</h3>
-                <Input className="mb-3 width-100" type="number" value={ solicitudTarjeta?.dec_cupo_solicitado} placeholder="Ingrese el nuevo monto" setValueHandler={nuevoMontoHandler}></Input>
+                <Input className="mb-3 width-100" type="number" value={ solicitudTarjeta?.slw_cupo_solicitado} placeholder="Ingrese el nuevo monto" setValueHandler={nuevoMontoHandler}></Input>
             </div>}
         </Modal>
 
