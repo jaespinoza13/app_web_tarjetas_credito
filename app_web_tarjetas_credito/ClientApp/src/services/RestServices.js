@@ -36,7 +36,7 @@ export function fetchMenuPrincipal(idPerfil, token, onSuccess, dispatch) {
                     });
                     onSuccess(listaMenus, listaUrls);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                 }
             }
         } else {
@@ -235,7 +235,7 @@ export function handlerSubmitCambiarClave(passNueva, token, exProcess = false, o
             if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
         } else {
             if (data) {
-                if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensajes[0] }, onSuccess ? () => onSuccess(data.codigo) : null));
+                if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicionals[0] }, onSuccess ? () => onSuccess(data.codigo) : null));
             } else {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
             }
@@ -264,7 +264,7 @@ export function fetchListaPreguntas(exProcess, token, onSuccess, dispatch) {
                 if (data.codigo === "0000") {
                     onSuccess(data.preguntas);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                 }
             }
         } else {
@@ -302,7 +302,7 @@ export function handlerSubmitCambiarPass1raVez(preguntas, respuestas, passNueva,
             if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
         } else {
             if (data) {
-                if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensajes[0] }, onSuccess ? () => onSuccess(data.codigo) : null));
+                if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicionals[0] }, onSuccess ? () => onSuccess(data.codigo) : null));
             } else {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
             }
@@ -339,7 +339,7 @@ export function handlerSubmitPreguntas(preguntas, respuestas, passAnterior, toke
             if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
         } else {
             if (data) {
-                if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensajes[0] }));
+                if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicionals[0] }));
                 if (onSuccess) {
                     onSuccess(data.codigo);
                 }
@@ -372,7 +372,7 @@ export function fetchConexiones(token, onSuccess, dispatch, usr = null, srv = nu
                 if (data.codigo === "000") {
                     onSuccess(data.lst_conexiones);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                 }
             } else {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
@@ -417,7 +417,7 @@ export function handlerConexion(token, dispatch, serverBd, userBd, passBd, isEdi
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
             } else {
                 if (data.codigo !== "000") {
-                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                 } else {
                     fetchConexiones(body.str_usuario, body.str_server);
                 }
@@ -476,7 +476,7 @@ export async function handlerGetSeguimiento(transaccionBuscar, token, onSuccess,
                     }
                     onSuccess(lstFinal);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                 }
             }
         } else {
@@ -523,7 +523,7 @@ export async function fetchBds(consultar, url, token, onSuccess, dispatch) {
                         dispatch(setListaBases(data.lst_bds));
                         onSuccess(data.lst_bds);
                     } else {
-                        if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                        if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                     }
                 } else {
                     if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
@@ -565,7 +565,7 @@ export function fetchColecciones(ws, token, onSuccess, dispatch, background = fa
                 } else {
                     if (!background) {
                         if (dispatch) dispatch(setErrorRedirigir("/logs"));
-                        if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                        if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                     } else {
                         onSuccess([], data.solToken);
                     }
@@ -615,7 +615,7 @@ export function fetchDocumentos(ws, coleccion, nro_regitros, ultimoRegistro, car
                     onSuccess(data);
                 } else {
                     if (!background) {
-                        if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                        if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                     } else {
                         onSuccess(data);
                     }
@@ -661,7 +661,7 @@ export function downloadArchivoLogs(ws, archivo, token, dispatch) {
                     a.click();
                     a.remove();  //se elimina el elemento creado para que no genere cambios en el DOM y no se puede usar de forma manual 
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                 }
             }
         } else {
@@ -695,7 +695,7 @@ export function fetchArchivosLogs(ws, token, onSuccess, dispatch) {
                     onSuccess(data.lst_logs);
                 } else {
                     if (dispatch) dispatch(setErrorRedirigir("/logs"));
-                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                 }
             }
         } else {
@@ -736,7 +736,7 @@ export function fetchContenidoArchivoLogs(ws, archivo, desde, hasta, token, onSu
                     onSuccess(data.str_body, data.int_total_registros);
                 } else {
                     if (dispatch) dispatch(setErrorRedirigir("/logsTexto"));
-                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                 }
             }
         } else {
@@ -769,7 +769,7 @@ export function fetchValidacionSocio(strCedula, strTipoValidacion, token, onSucc
                 if (data.str_res_codigo === "000") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                 }
             }
         } else {
@@ -847,7 +847,7 @@ export function fetchInfoSocio(strCedula, token, onSucces, dispatch) {
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                 }
             }
         } else {
@@ -879,7 +879,7 @@ export function fetchInfoEconomica(strEnte, token, onSucces, dispatch) {
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                 }
             }
         } else {
@@ -919,7 +919,7 @@ export function fetchAddAutorizacion(strTipoIdentificacion, intRegistrarAutoriza
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                 }
             }
         } else {
@@ -950,7 +950,7 @@ export function fetchGetContrato(token, onSucces, dispatch) {
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                 }
             }
         } else {
@@ -976,7 +976,7 @@ export function fetchGetSolicitudes(token, onSucces, dispatch) {
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                 }
             }
         } else {
@@ -996,7 +996,7 @@ export function fetchAddSolicitud(body,token, onSucces, dispatch) {
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                 }
             }
         } else {
@@ -1027,7 +1027,7 @@ export function fetchGetInfoFinan(ente, token, onSucces, dispatch) {
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                 }
             }
         } else {
@@ -1068,7 +1068,7 @@ export function fetchAddProspecto(str_num_documento, ente, nombres, apellidos, c
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                 }
             }
         } else {
@@ -1100,7 +1100,7 @@ export function fetchGetInforme(idSolicitud, idEstado, token, onSucces, dispatch
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                 }
             }
         } else {
@@ -1133,7 +1133,7 @@ export function fetchGetFlujoSolicitud(idSolicitud, token, onSucces, dispatch) {
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                 }
             }
         } else {
@@ -1167,7 +1167,7 @@ export function fetchAddComentarioAsesor(idSolicitud, comentarios, estadoSolicit
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                 }
             }
         } else {
@@ -1205,7 +1205,7 @@ export function fetchAddComentarioSolicitud(idSolicitud, comentario, estadoSolic
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                 }
             }
         } else {
@@ -1237,7 +1237,7 @@ export function fetchGetResolucion(idSolicitud, token, onSucces, dispatch) {
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                 }
             }
         } else {
@@ -1272,7 +1272,7 @@ export function fetchAddResolucion(idSolicitud, comentario, estadoSolicitud, tok
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                 }
             }
         } else {
@@ -1304,7 +1304,7 @@ export function fetchUpdResolucion(idSolicitud, token, onSucces, dispatch) {
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                 }
             }
         } else {
@@ -1341,7 +1341,7 @@ export function fetchAddProcEspecifico(idSolicitud, cupo, estado, comentario, to
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                 }
             }
         } else {
@@ -1374,7 +1374,7 @@ export function fetchGetParametrosSistema(token, onSucces, dispatch) {
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                 }
             }
         } else {
@@ -1412,7 +1412,7 @@ export function fetchUpdateCupoSolicitud(idSolicitud, idFlujoSol, estadoSol, dec
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                 }
             }
             console.log("RUSEL, ", data)
@@ -1436,7 +1436,7 @@ export function fetchGetReporteOrden(numOrden, token, onSucces, dispatch) {
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                 }
             }
         } else {
@@ -1462,7 +1462,7 @@ export function fetchGetOrdenes(tipo_requerido, token, onSucces, dispatch) {
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                 }
             }
         } else {
@@ -1487,7 +1487,7 @@ export function fetchGetTarjetasCredito(nemonico_producto, tipo_tarjeta, estado_
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                 }
             }
         } else {
@@ -1511,7 +1511,7 @@ export function fetchGetMedioAprobacion(token, onSucces, dispatch) {
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                 }
             }
         } else {
