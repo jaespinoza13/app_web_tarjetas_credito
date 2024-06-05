@@ -308,7 +308,7 @@ const NuevaSolicitud = (props) => {
             const strOficial = get(localStorage.getItem("sender_name"));
             const strCargo = get(localStorage.getItem("role"));
             
-            await fetchScore("C", cedulaSocio, nombreSocio, "Matriz", strOficial, strCargo, props.token, (data) => {
+            await fetchScore("C", "1150214375", nombreSocio, "Matriz", strOficial, strCargo, props.token, (data) => {
                 setScore(data);
             }, dispatch);
             return;
