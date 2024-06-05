@@ -190,7 +190,25 @@ const DatosSocio = (props) => {
                         <Item xs={6} sm={6} md={6} lg={6} xl={6}>
                             <h4 className="strong mb-3">Resultado de la calificación</h4>
                             <div className="values  mb-3">
-                                <h5>Cupo sugerido</h5>
+                                <h5>Ingresos</h5>
+                                <h5 className="strong">
+                                    {`$ ${Number('30000.00').toLocaleString("en-US")}`}
+                                </h5>
+                            </div>
+                            <div className="values  mb-3">
+                                <h5>Egresos</h5>
+                                <h5 className="strong">
+                                    {`$ ${Number('9500.00').toLocaleString("en-US")}`}
+                                </h5>
+                            </div>
+                            <div className="values  mb-3">
+                                <h5>Gastos Financieros</h5>
+                                <h5 className="strong">
+                                    {`$ ${Number('2500.00').toLocaleString("en-US")}`}
+                                </h5>
+                            </div>
+                            <div className="values  mb-3">
+                                <h5>Cupo solicitado</h5>
                                 <h5 className="strong">
                                     {`$ ${props.montoSugerido || Number('10000.00').toLocaleString("en-US")}`}
                                 </h5>
