@@ -26,6 +26,7 @@ import VerOrden from './components/Ordenes/VerOrden';
 import RecepcionTarjetaAgencias from './components/Ordenes/RecepcionTarjetaAgencias';
 import OrdenRecibirProveedor from './components/Ordenes/OrdenRecibirProveedor';
 import OrdenPedidoNueva from './components/Ordenes/OrdenPedidoNueva';
+import NuevaProspeccion from './components/Prospeccion/NuevaProspeccion';
 
 
 const mapStateToProps = (state) => {
@@ -44,7 +45,9 @@ function Menus({ listaMenus, id_perfil, token, setListas, setListaFunc, listaFun
     const [idPerfil, setIdPerfil] = useState(id_perfil);
     const [listaMenusi, setListaMenus] = useState([]);
     const [listaUrls, setListaUrls] = useState([]);
+    const [parametrosSistema, setParametrosSistema] = useState([]);
     const [sended, setSended] = useState(false);
+    const [sendedParams, setSendedParams] = useState(false);
 
     useEffect(() => {
         if (!IsNullOrWhiteSpace(token)) {
@@ -78,6 +81,31 @@ function Menus({ listaMenus, id_perfil, token, setListas, setListaFunc, listaFun
             clearTimeout(ti);
         }, 400);
     }, [idPerfil, tokeni, sended, listaMenus.length, listaMenusi.length, dispatch]);
+
+    //OBTENCION DE PARAMETROS DEL SISTEMA
+    useEffect(() => {
+        let params = setTimeout(() => {
+            if (idPerfil > 0 && !IsNullOrWhiteSpace(tokeni) && validateToken(tokeni) && parametrosSistema.length === 0 && !sendedParams) {
+                setSendedParams(true); 
+                fetchGetParametrosSistema(tokeni, (data) => {
+                const resultParametros = data.lst_parametros.map(param => ({
+                        param_id: param.int_id_parametro,
+                        param_nombre: param.str_nombre,
+                        param_descripcion: param.str_descripcion,
+                        param_nemonico: param.str_nemonico,
+                        param_valorInicial: param.str_valor_ini,
+                        param_valorFinal: param.str_valor_fin,
+                        param_error: param.str_error,
+                    }));                    
+
+                    setParametrosSistema(resultParametros)
+                }, dispatch)
+                
+            }
+            clearTimeout(params);
+        }, 400);
+    }, [idPerfil, tokeni, parametrosSistema.length, dispatch, sendedParams]);
+       
 
     useEffect(() => {
         var tOut = setTimeout(() => {
@@ -168,6 +196,20 @@ class App extends Component {
                             <Route render={() => <Redirect to="/auth" />} />
                         )}
                     </Route>
+
+                    <Route path='/prospeccion'>
+                        {this.state.isAuthenticated ? (
+                            <>
+                                
+                                <Route path='/prospeccion/nueva' component={NuevaProspeccion} />
+                               
+                            </>
+                        ) : (
+                            <Route render={() => <Redirect to="/auth" />} />
+                        )}
+                    </Route>
+
+
                     <Route path='/orden'>
                         {this.state.isAuthenticated ? (
                             <>

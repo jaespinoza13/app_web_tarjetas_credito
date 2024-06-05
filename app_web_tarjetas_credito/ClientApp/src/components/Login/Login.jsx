@@ -39,6 +39,7 @@ function Login(props) {
     const [openUsuario, setOpenUsuario] = useState(false);
     const [openPass, setOpenPass] = useState(false);
     const [openPass1ra, setOpenPass1ra] = useState(false);
+    const [codigo, setCodigo] = useState(false);
 
 
     const handlerSubmit = async (e) => {
@@ -74,6 +75,7 @@ function Login(props) {
                     setIsLogin(1);
                     setProgress(90);
                     setLoginCorrecto(true);
+                    setCodigo(data.codigo);
                 } else if (data.codigo === "002") {
                     localStorage.setItem('sender', set(data.datosUsuario.login));
                     data.datosUsuario.canRedirect = false;
@@ -271,7 +273,7 @@ function Login(props) {
                                 />
                             </FormGroup>
                             <FormGroup>
-                                <label>{msg}</label>
+                                <label>{codigo !== "000" ? msg : '' }</label>
                             </FormGroup>
                             <button className="btn_mg btn_mg__primary" style={{ width: "200px" }} disabled={disableBtn}>{disableBtn ? <CircularProgress /> : ""}Continuar</button>
                             <span className="version-app"><br />{props.dataVersion}</span>

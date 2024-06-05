@@ -236,8 +236,12 @@ namespace Infrastructure.TarjetaCredito
                 request.AddParameter("application/json", req, ParameterType.RequestBody);
                 request.Method = Method.Post;
 
+                Console.WriteLine(req.ToString());
+
                 var response = new RestResponse();
                 response = client.Post(request);
+
+
 
                 if (response.StatusCode == HttpStatusCode.OK)
                 {

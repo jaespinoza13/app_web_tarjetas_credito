@@ -620,8 +620,9 @@ textarea.no_valido {
 .content-cards {
     max-width: 1550px;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    grid-gap: 10px;
+    /*gap: 10px;*/
 }
 
 .card {
@@ -1370,12 +1371,20 @@ input:checked + .slider::before {
     width: 100%;
 }
 
+.w-85 {
+    width: 85%;
+}
+
 .w-80 {
     width: 80%;
 }
 
 .w-60 {
     width: 60%;
+}
+
+.w-50 {
+    width: 50%;
 }
 
 .w-40 {
@@ -1494,7 +1503,7 @@ img {
 .elements_two_column {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+    gap: 8px;
 }
 
 .elements_three_column {

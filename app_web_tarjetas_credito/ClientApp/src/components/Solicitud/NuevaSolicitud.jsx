@@ -1,7 +1,8 @@
-﻿import { connect, useDispatch } from 'react-redux';
+﻿/* eslint-disable react-hooks/exhaustive-deps */
+import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import Card from "../Common/Card";
-import { IsNullOrWhiteSpace } from "../../js/utiles";
+import { IsNullOrEmpty, IsNullOrWhiteSpace } from "../../js/utiles";
 import Sidebar from '../Common/Navs/Sidebar';
 import Button from '../Common/UI/Button';
 import { useState, useEffect } from 'react';
@@ -9,7 +10,7 @@ import ValidacionSocio from './ValidacionSocio';
 import Item from '../Common/UI/Item';
 import ValidacionesGenerales from './ValidacionesGenerales';
 import DatosSocio from './DatosSocio';
-import { fetchScore, fetchValidacionSocio, fetchAddAutorizacion, fetchA, fetchAddProspecto, fetchAddSolicitud } from '../../services/RestServices';
+import { fetchScore, fetchValidacionSocio, fetchAddAutorizacion, fetchAddSolicitud } from '../../services/RestServices';
 import { get } from '../../js/crypt';
 import Modal from '../Common/Modal/Modal';
 import Personalizacion from './Personalizacion';
@@ -44,7 +45,13 @@ const NuevaSolicitud = (props) => {
     //Global
     const [textoSiguiente, setTextoSiguiente] = useState("Continuar");
 
-    //ValidacionesSocio
+    const [datosFinancieros, setDatosFinancieros] = useState({
+        montoSolicitado: 0,
+        montoIngresos: 0,
+        montoEgresos: 0,
+        montoGastosFinancieros: "",
+
+    })
 
     //Validaciones
     const [validacionesOk, setValidacionesOk] = useState([]);
@@ -59,8 +66,9 @@ const NuevaSolicitud = (props) => {
     const [datosFaltan, setDatosFaltan] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
 
-    const [montoSolicitado, setMontoSolicitado] = useState(0);
+    
     const [isBtnDisabled, setIsBtnDisabled] = useState(false);
+    const [isCkeckGtosFinancieros, setIsCkeckGtosFinancieros] = useState(false);
 
     //Errores
     const [mensajeErrorScore, setMensajeErrorScore] = useState("");
@@ -77,11 +85,18 @@ const NuevaSolicitud = (props) => {
     const [subirAutorizacion, setSubirAutorizacion] = useState(false);
     const [isUploadingAthorization, setIsUploadingAthorization] = useState(false);
 
+
     //Prospeccion - Solicitud
 
     //Personalizacion
     const [nombreTarjeta, setNombreTarjeta] = useState("");
     const [tipoEntrega, setTipoEntrega] = useState("");
+    const [modalMensajeAviso, setModalMensajeAviso] = useState(false);
+    const [textoAviso, setTextoAviso] = useState(false);
+
+
+
+
     const [direccionEntrega, setDireccionEntrega] = useState("");
 
     //Info Socio
@@ -100,30 +115,79 @@ const NuevaSolicitud = (props) => {
         setDatosUsuario([{ strCargo: strRol, strOficial: strOficial}]);
     }, []);
 
+    
+
+
+    const validaCamposFinancieros = () => {
+        //Si esta activo el check de Gastos Financieros valida campo
+        //console.log("ckec,", isCkeckGtosFinancieros)
+        let validadorCheck = false;
+        let validadorCupo = false;
+
+
+        if (datosFinancieros.montoSolicitado > 0) {
+            //console.log("montoSolicitado, true ")
+            validadorCupo = true;
+        }
+        else if (IsNullOrEmpty(datosFinancieros.montoSolicitado) || IsNullOrWhiteSpace((datosFinancieros.montoSolicitado))
+            || datosFinancieros.montoSolicitado === "" || datosFinancieros.montoSolicitado === undefined) {
+            validadorCupo = false;
+        }
+
+        if (isCkeckGtosFinancieros === true) {
+            if (IsNullOrEmpty(datosFinancieros.montoGastosFinancieros) || datosFinancieros.montoGastosFinancieros === "0" || datosFinancieros.montoGastosFinancieros === "") {
+                //console.log("GastosFinancieros, falso, ", datosFinancieros.montoGastosFinancieros)
+                validadorCheck = false;
+                return false;
+            } else {
+                validadorCheck = true;
+                //console.log("GastosFinancieros, true")
+            }
+        } else if (isCkeckGtosFinancieros === false) {
+            validadorCheck = true;
+        }
+
+        if (validadorCheck && validadorCupo) {
+            return true;
+        } else {
+            return false;
+        }
+        
+    }
+
+
+
     useEffect(() => {
-        if (step === 2 && autorizacionOk) {
+        if (step === 1 && autorizacionOk) {
             setEstadoBotonSiguiente(false);
         }
-        else if (step === 2 && archivoAutorizacion) {
+        else if (step === 1 && archivoAutorizacion) {
             setEstadoBotonSiguiente(false);
         }
-        else if (step === 2 && !archivoAutorizacion) {
+        else if (step === 1 && !archivoAutorizacion) {
             setEstadoBotonSiguiente(true);
         }
     }, [archivoAutorizacion]);
 
+    
     useEffect(() => {
-        if (step === 1 && (montoSolicitado > 0 && montoSolicitado !== '') && validaCamposSocio()) {
-            setEstadoBotonSiguiente(false);
+        const index = validacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" && validacion.str_estado_alerta);
+        //console.log("index,", index)
+        if (step === 1 && showAutorizacion === false) {
+            if (validaCamposFinancieros() && !index) {
+                setEstadoBotonSiguiente(false);
+            } else {
+                setEstadoBotonSiguiente(true);
+            }
         }
-        else {
-            setEstadoBotonSiguiente(true);
-        }
-    }, [montoSolicitado, nombreSocio, apellidosSocio, correoSocio, celularSocio]);
+
+    },[datosFinancieros, step,  validaCamposFinancieros, isCkeckGtosFinancieros, validacionesErr, archivoAutorizacion]);
+
+
 
     useEffect(() => {
         if (score.str_res_codigo === "000") {
-            setStep(step + 1);
+            setStep(step + 1); // VA AL step(3)
         }
         else if (score.str_res_codigo === "") {
             setMensajeErrorScore("Hubo un error al obtener el score, intente más tarde");
@@ -131,98 +195,47 @@ const NuevaSolicitud = (props) => {
         }
     }, [score]);
 
-    useEffect(() => {
-        const index = validacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" && validacion.str_estado_alerta);
-        if (!index && step === 2) {
-            setEstadoBotonSiguiente(false);
-            setAutorizacionOk(true);
-        }
-        else {
-            setAutorizacionOk(false);
-            setSubirAutorizacion(false);
-        }
-        if (validacionesErr.length === 10) {
-            setEstadoBotonSiguiente(true);
-            setEstadoBtonProspecto(true);
-        }
-        if (validacionesErr.length === 0) {
-            setEstadoBotonSiguiente(true);
-            setEstadoBtonProspecto(false);
-        }
-    }, [validacionesErr]);
-
+    /*
     useEffect(() => {
         if (validacionesOk.length === 10) {
             setGestion("solicitud");
         }
         else {
-            setGestion("prospeccion");
+            //setGestion("prospeccion");
+            setEstadoBotonSiguiente(false);
         }
-    }, [validacionesOk]);
+    }, [validacionesOk]);*/
 
-    useEffect(() => {
-        if (gestion === "prospeccion") {
-            const index = validacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" && validacion.str_estado_alerta);
-            if (index) {
-                setEstadoBotonSiguiente(true);
-                setEstadoBtonProspecto(false)
-            }
-        }
-    }, [gestion]);
 
-    useEffect(() => {
-        if (infoSocio.str_nombres === "") {
-            setDatosFaltan(true);
-        }
-    }, [infoSocio]);
 
     useEffect(() => {
         if (step === 1) {
             setEstadoBotonSiguiente(true);
-        }
-        if (step === 2 && showAutorizacion) {
-            setTextoSiguiente("Continuar solicitud")
-        }
-        if (step === 2) {
-            if (validacionesErr.length === 10) {
-                setEstadoBotonSiguiente(true);
-            }
-        }
-        if (step === 2 && !showAutorizacion) {
-            setTextoSiguiente("Continuar")
         }
         if (step === -1) {
             setTextoSiguiente("Volver al inicio")
         }
     }, [step]);
 
-    const validaCamposSocio = () => {        
-        if (nombreSocio !== "" && apellidosSocio !== "" && correoSocio !== "" && celularSocio.length === 10) {
-            return true
-        }
-        return false;
-    }
+
 
     const agregarComentarioHandler = (e) => {
 
     }
 
-    const siguientePasoHandler = () => {
-        setModalVisible(false);
-        setEstadoBotonSiguiente(true);
-        setStep(1);
-    }
-
-    const nextProspeccionHandler = async () => {
-        setGestion("prospeccion");
-        await nextHandler();
+    const checkGastosFinancieroHandler = (e) => {
+        setIsCkeckGtosFinancieros(e);
     }
 
 
     const nextHandler = async () => {
+        //console.log("step,", step)
         if (step === 0) {
+            let validaSiguientePaso = false;
+
             setNombreSocio("");
             fetchValidacionSocio(cedulaSocio, '', props.token, (data) => {
+                //console.log("SOC,",data)
                 const arrValidacionesOk = [...data.lst_datos_alerta_true];
                 const arrValidacionesErr = [...data.lst_datos_alerta_false];
                 setValidacionesOk(arrValidacionesOk);
@@ -233,11 +246,19 @@ const NuevaSolicitud = (props) => {
                 setInfoSocio(data);
                 setApellidosSocio(`${data.str_apellido_paterno} ${data.str_apellido_materno}`)
                 setNombreSocio(`${data.str_nombres} ${data.str_apellido_paterno} ${data.str_apellido_materno}`);
+                
+                if (data.str_res_codigo === "100") {
+                    setTextoAviso("Ya se encuentra registrada una solicitud con esa cédula.")
+                    setModalMensajeAviso(true);
+                    return;
+                }
                 if (data.str_nombres !== "") {
                     setStep(1);
                 }
-                else {
-                    setModalVisible(true);
+                if (data.str_nombres === "") {
+                    setTextoAviso("No se encuentra registrado en las bases de la Coopmego. Realice una Prospección.")
+                    setModalMensajeAviso(true);
+                    validaSiguientePaso = true;
                 }
                 const objValidaciones = {
                     "lst_validaciones_ok": [...data.lst_datos_alerta_true],
@@ -245,22 +266,20 @@ const NuevaSolicitud = (props) => {
                 }
                 handleLists(objValidaciones);
             }, dispatch);
+
+            /*if (validaSiguientePaso) {
+                setTextoSiguiente("Continuar solicitud");
+                setStep(1);    
+            }*/
+            
         }
         if (step === 1) {
-            if (autorizacionOk) {
-                setEstadoBotonSiguiente(false);
-            }
-            else {
-                //setEstadoBotonSiguiente(true);
-            }
-            setTextoSiguiente("Continuar solicitud");
-            setStep(2);
-        }
-        if (step == 2) {
 
             if (showAutorizacion) {
-                fetchAddAutorizacion("C", 1, "F", cedulaSocio, nombreSocio, apellidosSocio, apellidosSocio, props.token, (data) => {
-                    if (data.str_res_codigo === "000") {
+
+                fetchAddAutorizacion("C", 1, "F", cedulaSocio, nombreSocio, apellidosSocio, apellidosSocio, archivoAutorizacion, props.token, (data) => {
+                    //console.log("AUTOR, ",data);
+                    //if (data.str_res_codigo === "000") {
                         const estadoAutorizacion = validacionesErr.find((validacion) => { return validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" })
                         estadoAutorizacion.str_estado_alerta = "True";                        
                         setSubirAutorizacion(false);   
@@ -278,7 +297,7 @@ const NuevaSolicitud = (props) => {
                             setAutorizacionOk(false);
                             setValidacionesErr(arrValidacionesErr);                            
                         }, dispatch);
-                    }
+                    //}
                 }, dispatch);
                 return;
             }
@@ -295,16 +314,10 @@ const NuevaSolicitud = (props) => {
             return;
         }
         
-        if (step === 3 && gestion === "solicitud") {
+        if (step === 2 && gestion === "solicitud") {
             setStep(4);
         }
-        if (step === 3 && gestion === "prospeccion") {
-            fetchAddProspecto(cedulaSocio, enteSocio, nombreSocio, apellidosSocio, cedulaSocio, correoSocio, montoSolicitado, comentario, comentarioAdic, props.token, (data) => {
-                if (data.str_res_codigo === "000") {
-                    setStep(-1);
-                }
-            }, dispatch)
-        }
+
         if (step === 4) {
             let body = {
                 int_ente_aprobador: 589693,
@@ -315,7 +328,7 @@ const NuevaSolicitud = (props) => {
                 str_segundo_apellido: "REYES", 
                 dtt_fecha_nacimiento: "1994-06-08", 
                 str_sexo: "M",
-                dec_cupo_solicitado: montoSolicitado, 
+                dec_cupo_solicitado: datosFinancieros.montoSolicitado, 
                 dec_cupo_sugerido: 100,
                 str_correo: correoSocio,
                 str_usuario_proc: "xnojeda1",
@@ -349,10 +362,10 @@ const NuevaSolicitud = (props) => {
             setCedulaSocio(e.valor);
         }
     }
-
+    /*
     const montoSolicitadoHandler = (e) => {
         setMontoSolicitado(e);
-    }
+    }*/
 
     const datosIngresadosHandler = (e) => {
         setNombreSocio(e.nombres);
@@ -382,7 +395,7 @@ const NuevaSolicitud = (props) => {
     }
 
     const handleAutorizacion = (data) => {
-        console.log(data);
+        //console.log(data);
         setIsUploadingAthorization(data);
     }
 
@@ -403,6 +416,21 @@ const NuevaSolicitud = (props) => {
         setShowAutorizacion(data);
     }
 
+    const retornoAviso = () => {
+        navigate.push('/solicitud');
+    }
+
+    const datosFinancierosHandler = (dato) => {
+        let datosFinanciero = {
+            montoSolicitado: dato.montoSolicitado,
+            montoIngresos: dato.montoIngresos,
+            montoEgresos: dato.montoEgresos,
+            montoGastosFinancieros: dato.montoGastosFinancieros
+        }
+        setDatosFinancieros(datosFinanciero)
+
+    }
+
     return (
         <div className="f-row" >
             <Sidebar enlace={props.location.pathname}></Sidebar>
@@ -411,23 +439,20 @@ const NuevaSolicitud = (props) => {
             <Card className={["m-max w-100 justify-content-space-between align-content-center"]}>
                 <div className="f-row justify-content-center">
                     {(step === 0 || step === 1) &&
-                        <div className="f-row w-100">
-                            <Item xs={3} sm={3} md={3} lg={3} xl={3} className=""></Item>
-                            <Item xs={6} sm={6} md={6} lg={6} xl={6} className="justify-content-center">
-                                <ValidacionSocio paso={step}
-                                    token={props.token}
-                                    setCedulaSocio={cedulaSocioHandler}
-                                    setMontoSolicitado={montoSolicitadoHandler}
-                                    infoSocio={infoSocio}
-                                    ingresoDatos={datosFaltan}
-                                    datosIngresados={datosIngresadosHandler}
+                        <div className={step === 1 ? "f-col w-50 align-content-center" : "f-row w-100"}>
+                            <ValidacionSocio paso={step}
+                                token={props.token}
+                                setCedulaSocio={cedulaSocioHandler}
+                                infoSocio={infoSocio}                               
+                                datosIngresados={datosIngresadosHandler}
+                                datosFinancieros={datosFinancierosHandler}
+                                isCkeckGtosFinancierosHandler={checkGastosFinancieroHandler}
                                 ></ValidacionSocio>
-                            </Item>
-                            <Item xs={3} sm={3} md={3} lg={3} xl={3} className=""></Item>
                         </div>
                     }
 
-                    {(step === 2) &&
+                    {(step === 1) &&
+                        <div className={showAutorizacion ? "f-col w-60" : ''}>
                         <ValidacionesGenerales token={props.token}
                             lst_validaciones={lstValidaciones}
                             onFileUpload={getFileHandler}
@@ -438,8 +463,9 @@ const NuevaSolicitud = (props) => {
                             onSetShowAutorizacion={showAutorizacionHandler}
                             cedula={cedulaSocio}
                         ></ValidacionesGenerales>
+                        </div>
                     }
-                    {(step === 3) &&
+                    {(step === 2) &&
                         <DatosSocio
                             informacionSocio={infoSocio}
                             lst_validaciones={lstValidaciones}
@@ -478,29 +504,46 @@ const NuevaSolicitud = (props) => {
                     <Item xs={2} sm={2} md={2} lg={2} xl={2} className=""></Item>
                     <Item xs={8} sm={8} md={8} lg={8} xl={8} className="f-row justify-content-space-evenly">
                         <Button className={["btn_mg btn_mg__primary mt-2"]} disabled={estadoBotonSiguiente} onClick={nextHandler}>{textoSiguiente}</Button>
-                        {((step === 2 && !autorizacionOk) && (step === 2 && !showAutorizacion)) && <Button className={["btn_mg btn_mg__secondary mt-2"]} disabled={estadoBotonProspecto} onClick={nextProspeccionHandler}>Continuar como prospecto</Button>}
+
+                        {/*{((step === 2 && !autorizacionOk) && (step === 2 && !showAutorizacion)) && <Button className={["btn_mg btn_mg__secondary mt-2"]} disabled={estadoBotonProspecto} onClick={nextProspeccionHandler}>Continuar como prospecto</Button>}*/}
                     </Item>
                     
                 </div>
 
             </Card>
-            
-            <Modal
-                modalIsVisible={modalVisible}
-                titulo={`Información!!!`}
-                onNextClick={siguientePasoHandler}
-                onCloseClick={closeModalHandler}
-                isBtnDisabled={isBtnDisabled}
-                type="sm"
-             >
-                {modalVisible && <div>
-                    <h4>{usuario}</h4>
-                    <p className="mt-3 mb-3">La persona con la cédula <strong>{cedulaSocio}</strong> no es socio de CoopMego</p>
-                    <p className="mb-3">Para poder realizar una solicitud de Tarjeta de crédito, la persona solicitante debe ser socio de CoopMego.</p>
-                    <p className="mb-3">Presiona en continuar si deseas realizar una prospección a esta persona</p>
 
+
+
+            <Modal
+                modalIsVisible={modalMensajeAviso}
+                titulo={`Aviso!`}
+                onNextClick={retornoAviso}
+                onCloseClick={retornoAviso}
+                isBtnDisabled={false}
+                type="sm"
+            >
+                {modalMensajeAviso && <div>
+                    <p>{textoAviso}</p>
                 </div>}
             </Modal>
+
+            
+            {/*<Modal*/}
+            {/*    modalIsVisible={modalVisible}*/}
+            {/*    titulo={`Información!!!`}*/}
+            {/*    onNextClick={siguientePasoHandler}*/}
+            {/*    onCloseClick={closeModalHandler}*/}
+            {/*    isBtnDisabled={isBtnDisabled}*/}
+            {/*    type="sm"*/}
+            {/* >*/}
+            {/*    {modalVisible && <div>*/}
+            {/*        <h4>{usuario}</h4>*/}
+            {/*        <p className="mt-3 mb-3">La persona con la cédula <strong>{cedulaSocio}</strong> no es socio de CoopMego</p>*/}
+            {/*        <p className="mb-3">Para poder realizar una solicitud de Tarjeta de crédito, la persona solicitante debe ser socio de CoopMego.</p>*/}
+            {/*        <p className="mb-3">Presiona en continuar si deseas realizar una prospección a esta persona</p>*/}
+
+            {/*    </div>}*/}
+            {/*</Modal>*/}
             
         </div >
     )

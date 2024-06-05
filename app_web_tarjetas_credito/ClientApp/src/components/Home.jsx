@@ -1,5 +1,5 @@
 import '../scss/components/Home.css';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import {
     Container,
@@ -8,11 +8,12 @@ import { get, set } from '../js/crypt';
 
 import Sidebar from "./Common/Navs/Sidebar";
 import { setParametrosSistema } from '../redux/ParametrosSistema/actions';
-import { fetchGetParametrosSistema } from '../services/RestServices';
+import { fetchGetParametrosSistema, fetchGetSolicitudes } from '../services/RestServices';
+import { useState } from 'react';
 
 
 const mapStateToProps = (state) => {
-    //console.log(state);
+    //console.log("PROPS STATE," ,state);
     var array = [...state.GetListaMejoras.data];
     for (let i = 0; i < array.length; i++) {
         array[i] = get(array[i]);
@@ -31,26 +32,33 @@ const mapStateToProps = (state) => {
 };
 
 function Home(props) {
-    const dispatch = useDispatch();
+    /*const dispatch = useDispatch();
+    const [paramEstadosSolicit, setParamEstadosSolicit] = useState();
 
     useEffect(() => {
-        //fetchGetParametrosSistema(props.token, (data) => {
-        //    if (data.str_res_codigo === "000") {
-        //        var array = [];
-        //        for (let i = 0; i < data.lst_parametros.length; i++) {
-        //            array.push({
-        //                prm_id: set((data.lst_parametros[i].prm_id)),
-        //                prm_nombre: set(data.lst_parametros[i].prm_nombre),
-        //                prm_nemonico: set(data.lst_parametros[i].prm_nemonico),
-        //                prm_valor_ini: set(data.lst_parametros[i].prm_valor_ini),
-        //                prm_valor_fin: set(data.lst_parametros[i].prm_valor_fin),
-        //                prm_descripcion: set(data.lst_parametros[i].prm_descripcion)
-        //            });
-        //        }
-        //        dispatch(setParametrosSistema(array));
-        //    }
-        //}, dispatch);
-    }, []);
+
+        fetchGetParametrosSistema( props.token, (data) => {
+            console.log("PARAMET ", data)
+            setParamEstadosSolicit(data);
+        }, dispatch)
+
+        //console.log("PARAMETROS SISTEMA,", get(props.GetParametros.data["sistema"]))
+
+
+    }, [])
+
+
+    useEffect(() => {
+
+        console.log("PARAMETROS, ", paramEstadosSolicit)
+    }, [paramEstadosSolicit])*/
+
+
+  
+
+
+
+
     return (
         <div className="f-row">
             <Sidebar enlace={props.location.pathname }></Sidebar>

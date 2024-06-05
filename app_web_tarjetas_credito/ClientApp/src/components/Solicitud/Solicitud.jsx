@@ -180,6 +180,10 @@ function Solicitud(props) {
         navigate.push('/solicitud/nueva');
     }
 
+    const irNuevaProspección = () => {
+        navigate.push('/prospeccion/nueva');
+    }
+
     const closeModalHandler = () => {
         setisModalComentarios(false);
     }
@@ -212,21 +216,34 @@ function Solicitud(props) {
         
         <div className="container_mg mb-4">
             {permisoNuevaSol && 
-                <Item xs={2} sm={2} md={2} lg={2} xl={2}>
+                <>
+                <div className="content-cards mt-2">
+                    
                     <Card>
                         <img style={{ width: "15%" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg"></img>
-                        <h4 className="mt-2">Solicitud / Prospección</h4>
-                        <h5 className="mt-2">Genera una nueva solicitud o prospección de tarjeta de crédito</h5>
+                        <h4 className="mt-2">Solicitud</h4>
+                        <h5 className="mt-5">Genera una nueva solicitud de tarjeta de crédito</h5>
                         <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={irNuevaSolicitud}>Siguiente</Button>
                     </Card>
-                </Item>
+
+                    <Card>
+                            <img style={{ width: "15%" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg"></img>
+                            <h4 className="mt-2">Prospección</h4>
+                            <h5 className="mt-2">Genera una nueva prospección de tarjeta de crédito</h5>
+                            <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={irNuevaProspección}>Siguiente</Button>
+                    </Card>
+                   
+                </div>
+
+                </>
+
             }
             
             <Toggler className="mt-2" toggles={accionesSolicitud}
                 selectedToggle={handleSelectedToggle}>
             </Toggler>
             {isLstSolicitudes &&
-                <div id="listado_solicitudes" className="mt-3">
+                <div id="listado_solicitudes" className="mt-2">
                     <Table headers={headerTableSolicitantes}>
                         {/*BODY*/}
                         {lstSolicitudes && lstSolicitudes.map((solicitud) => {
@@ -254,7 +271,7 @@ function Solicitud(props) {
                 </div>
             }
             {isLstProspecciones &&
-                <div id="listado_solicitudes">
+                <div id="listado_prospectos" className="mt-2">
                     <Table headers={headerTableProspectos}>
                         {/*BODY*/}
                         {lstProstectos && lstProstectos.map((prospecto) => {

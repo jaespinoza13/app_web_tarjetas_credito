@@ -6,6 +6,7 @@ import { fetchGetContrato, fetchScore } from "../../services/RestServices";
 import { useDispatch } from 'react-redux';
 import Uploader from "../Common/UI/Uploader";
 import { jsPDF } from "jspdf";
+import { base64ToBlob, descargarArchivo, generarFechaHoy, verificarPdf } from "../../js/utiles";
 
 const ValidacionesGenerales = (props) => {
     const dispatch = useDispatch();
@@ -30,13 +31,16 @@ const ValidacionesGenerales = (props) => {
         props.onSetShowAutorizacion(true);
     }
 
-    const descargarArchivo = (data) => {
+    const descargarArchivoConsulta = (data) => {
         try {
             // Decode base64 string to binary data
             const pdfData = atob(data.file_bytes);
             const a4WidthPt = 595.28; // A4 width in points
             const a4HeightPt = 841.89; // A4 height in points
 
+
+
+            /*
             // Create jsPDF instance with landscape orientation and A4 dimensions
             var doc = new jsPDF('p', 'px', [a4WidthPt, a4HeightPt],false, true);
 
@@ -46,7 +50,17 @@ const ValidacionesGenerales = (props) => {
                 },
                 x: 10,
                 y: 10
-            })
+            })*/
+
+            
+            if(data.file_bytes.length > 0 && verificarPdf(data.file_bytes)) {
+                const blob = base64ToBlob(data.file_bytes, 'application/pdf');
+                let fechaHoy = generarFechaHoy();
+                const nombreArchivo = `AprobacionConsultaBuro_${(fechaHoy)}`;
+                descargarArchivo(blob, nombreArchivo, 'pdf');
+
+            }
+            
 
             // Create Blob from binary data
             //const blob = new Blob([pdfData], { type: "application/pdf" });
@@ -87,11 +101,14 @@ const ValidacionesGenerales = (props) => {
 
     const getContrato = () => {
         fetchScore("C", props.cedula, props.infoSocio.nombreSocio, "Matriz", props.datosUsuario.strOficial, props.datosUsuario.strCargo, props.token, (data) => {
-            descargarArchivo(data);
+            descargarArchivoConsulta(data);
         }, dispatch);
     }
 
     const handleFileChange = (event) => {
+        //console.log("ARCHVIO, ", event.target.result)
+        console.log("ARCHIVO,", event)
+
         props.onFileUpload(event);
         setArchivoAutorizacion(event);       
     };
@@ -106,7 +123,7 @@ const ValidacionesGenerales = (props) => {
             {props.onShowAutorizacion
                 ?
                 <Fragment>
-                    <Card>
+                    <Card className={props.onShowAutorizacion ? 'f-col w-50' : ''}>
                         <p>
                             “EL SOCIO y/o CLIENTE” como titular de la tarjeta de crédito, al usar la tarjeta, personalizar la clave, transaccional o utilizar de cualquier otra forma los servicios o funciones asociadas a la tarjeta de débito, expresa su conformidad con los términos y condiciones para la emisión y uso de la tarjeta de débito bajo, los que se contienen en las siguientes cláusulas. PRIMERA ANTECEDENTES. “LA COOPERATIVA” ha puesto a disposición de sus socios y/o clientes, la TARJETA DE DÉBITO que les permite realizar transacciones y consultas de saldos de la cuenta de ahorros que mantienen en “LA COOPERATIVA”; a través de cajeros automáticos propios de “LA COOPERATIVA”: así como, de cajeros automáticos, puntos de venta (P.O.S), medios de pago electrónicos o botones de pago de la(s) Red(s) Transaccional(es) que “LA COOPERATIVA” mantenga convenio(s). SEGUNDA. ACCESO. “EL SOCIO y/o CLIENTE” como titular de la tarjeta de crédito, al usar la tarjeta, personalizar la clave, transaccional o utilizar de cualquier otra forma los servicios o funciones asociadas a la tarjeta de débito, expresa su conformidad con los términos y condiciones para la emisión y uso de la tarjeta de débito bajo, los que se contienen en las siguientes cláusulas. “EL SOCIO y/o CLIENTE” como titular de la tarjeta de crédito, al usar la tarjeta, personalizar la clave, transaccional o utilizar de cualquier otra forma los servicios o funciones asociadas a la tarjeta de débito, expresa su conformidad con los términos y condiciones para la emisión y uso de la tarjeta de débito bajo, los que se contienen en las siguientes cláusulas. PRIMERA ANTECEDENTES. “LA COOPERATIVA” ha puesto a disposición de sus socios y/o clientes, la TARJETA DE DÉBITO que les permite realizar transacciones y consultas de saldos de la cuenta de ahorros que mantienen en “LA COOPERATIVA”; a través de cajeros automáticos propios de “LA COOPERATIVA”: así como, de cajeros automáticos, puntos de venta (P.O.S), medios de pago electrónicos o botones de pago de la(s) Red(s) Transaccional(es) que “LA COOPERATIVA” mantenga convenio(s). SEGUNDA. ACCESO. “EL SOCIO y/o CLIENTE” como titular de la tarjeta de crédito, al usar la tarjeta, personalizar la clave, transaccional o utilizar de cualquier otra forma los servicios o funciones asociadas a la tarjeta de débito, expresa su conformidad con los términos y condiciones para la emisión y uso de la tarjeta de débito bajo, los que se contienen en las siguientes cláusulas.
                         </p>
@@ -115,12 +132,16 @@ const ValidacionesGenerales = (props) => {
                         <Button className="btn_mg__toggler active" onClick={getContrato}><img src="Imagenes/download.svg"></img> Descargar archivo</Button>
                         <Uploader onClick={handleFileChange} onRemoveFile={removeFile}>Subir archivo</Uploader>
                     </div>
+                    {/*<div>*/}
+                    {/*    <Button className={["btn_mg btn_mg__primary mt-2"]} disabled={archivoAutorizacion !== '' ? false : true} onClick={props.EnvioDoc}>Subir archivo</Button>*/}
+                    {/*</div>*/}
                 </Fragment>
 
                 :
                 <div className="f-col">
                     <label>Validaciones</label>
-                    {props.lst_validaciones.lst_validaciones_ok.length > 0 &&
+
+                    {props.lst_validaciones && props.lst_validaciones?.lst_validaciones_ok?.length > 0 &&
                         <Card className={["w-100"]}>
                             {props.lst_validaciones.lst_validaciones_ok.map((validacion) => {
                                 return (
@@ -133,7 +154,7 @@ const ValidacionesGenerales = (props) => {
                             })}
                         </Card>
                     }
-                    {props.lst_validaciones.lst_validaciones_err.length > 0 &&
+                    {props.lst_validaciones  && props.lst_validaciones?.lst_validaciones_err?.length > 0 &&
                         <Card className={["W-100 mt-4"]}>
                             {props.lst_validaciones.lst_validaciones_err.map((validacion) => {
                                 return (
@@ -141,7 +162,7 @@ const ValidacionesGenerales = (props) => {
                                         <img className="btn_mg mr-3" style={{ width: "15px", height: "15px" }} src="/Imagenes/statusBlocked.png"></img>
                                         <h3>{validacion.str_descripcion_alerta}</h3>
                                         {(validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" && validacion.str_estado_alerta === "False") &&
-                                            <button className="btn_mg" onClick={getDocAutorizacion}>
+                                            <button className="btn_mg_icons" onClick={getDocAutorizacion}>
                                                 <img src="/Imagenes/right.svg"></img>
                                             </button>
                                         }
@@ -151,6 +172,12 @@ const ValidacionesGenerales = (props) => {
                             })}
                         </Card>
                     }
+                    {!props.lst_validaciones &&
+                    <>
+                        <h2>CARGANDO</h2>
+                    </>
+                    }
+
                 </div>
                 }
         </div>

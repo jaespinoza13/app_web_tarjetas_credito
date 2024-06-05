@@ -396,7 +396,7 @@ export async function ServicioPostExecute(request, body, token, { encryptS = tru
             body.str_id_oficina = datosUsuario ? datosUsuario.id_oficina + "" : "";
             body.str_id_perfil = datosUsuario ? datosUsuario.id_perfil + "" : "";
             var strBody = JSON.stringify(body);
-            console.log(strBody);
+            
             const requestOptions = {
                 method: 'POST',
                 headers: {
@@ -466,7 +466,7 @@ export async function ServicioPostExecute(request, body, token, { encryptS = tru
         }
     } else {
         if (dispatch) dispatch(setStateLoad(false));
-        return { error: "Se presentó un inconveniente, por favor intente nuevamente más tarde amigo\n" + ServiceUrl(request, params), reload: false };
+        return { error: "Se presentó un inconveniente, por favor intente nuevamente.\n\n" + ServiceUrl(request, params), reload: false };
     }
 };
 

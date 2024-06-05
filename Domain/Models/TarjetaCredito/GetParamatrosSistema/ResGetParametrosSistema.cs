@@ -20,5 +20,6 @@ namespace Domain.Models.TarjetaCredito.GetParamatrosSistema
         public string str_descripcion { get; set; } = string.Empty;
         public string str_valor_ini { get; set; } = string.Empty;
         public string str_valor_fin { get; set; } = string.Empty;
+        public string str_error { get; set; } = string.Empty;
     }
 }
