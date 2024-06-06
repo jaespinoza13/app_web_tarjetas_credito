@@ -745,7 +745,7 @@ const VerSolicitud = (props) => {
 
                                 {props.solicitud.idSolicitud !== "11137" &&
                                     <div className="mt-4">
-                                        <h3 className="mb-3 strong">Comentario de la Solicitud</h3>
+                                        <h3 className="mb-3 strong">Observaciones</h3>
                                         <Textarea placeholder="Ingrese su comentario" onChange={getComentarioSolicitudHandler} esRequerido={true}></Textarea>
                                     </div>
                                 }
@@ -757,10 +757,10 @@ const VerSolicitud = (props) => {
                                 <div className="mt-2 f-row justify-content-center">
                                     {/*APROBADA O NEGADA*/}
                                     {(props.solicitud.idSolicitud === "11137") && 
-                                        <Button className="btn_mg__primary" disabled={isActivoBtnDecision} onClick={guardarDecisionComiteHandler}>Guardar</Button>
+                                        <Button className="btn_mg__primary" disabled={isActivoBtnDecision} onClick={guardarDecisionComiteHandler}>Enviar</Button>
                                     }
                                     {props.solicitud.idSolicitud !== "11137" &&
-                                        <Button className="btn_mg__primary" disabled={faltaComentariosAsesor} onClick={guardarComentarioSiguiente}>Guardar</Button>
+                                    <Button className="btn_mg__primary" disabled={faltaComentariosAsesor} onClick={guardarComentarioSiguiente}>Enviar</Button>
                                 }
                                     
                         </div>
@@ -795,7 +795,7 @@ const VerSolicitud = (props) => {
 
         <Modal
             modalIsVisible={modalVisible}
-            titulo={`Ingrese los comentarios`}
+            titulo={`Informe`}
             onNextClick={siguientePasoHandler}
             onCloseClick={closeModalHandler}
             isBtnDisabled={isBtnComentariosActivo}
