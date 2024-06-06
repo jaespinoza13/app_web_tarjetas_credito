@@ -768,11 +768,12 @@ export function fetchValidacionSocio(strCedula, strTipoValidacion, token, onSucc
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
             } else {
-                if (data.str_res_codigo === "000") {
+                if (data.str_res_codigo === "000" || data.str_res_codigo === "100") {
                     onSucces(data);
-                } else {
-                    /*if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));*/
-                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                }
+                else {
+                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
+                    //if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
                 }
             }
         } else {
@@ -929,7 +930,7 @@ export function fetchAddAutorizacion(strTipoIdentificacion, intRegistrarAutoriza
     }
     ServicioPostExecute(addAutorizacion, body, token, { dispatch: dispatch }).then((data) => {
 
-        console.log("ADD AUTORI", body);
+        //console.log("ADD AUTORI", body);
         if (data) {
             console.log("AUTO DATA", data);
             if (data.error) {
@@ -938,8 +939,9 @@ export function fetchAddAutorizacion(strTipoIdentificacion, intRegistrarAutoriza
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    //if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
-                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                    let codigo = data.codigo || data.str_res_codigo;
+                    let mensaje = data.mensaje || data.str_res_info_adicional;
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje+" Reenvie nuevamente." }));
                 }
             }
         } else {

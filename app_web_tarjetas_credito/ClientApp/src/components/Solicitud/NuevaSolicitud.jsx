@@ -229,13 +229,13 @@ const NuevaSolicitud = (props) => {
 
 
     const nextHandler = async () => {
-        //console.log("step,", step)
+        console.log("step,", step)
         if (step === 0) {
             let validaSiguientePaso = false;
 
             setNombreSocio("");
-            fetchValidacionSocio(cedulaSocio, '', props.token, (data) => {
-                //console.log("SOC,",data)
+            await fetchValidacionSocio(cedulaSocio, '', props.token, (data) => {
+                console.log("SOC,",data)
                 const arrValidacionesOk = [...data.lst_datos_alerta_true];
                 const arrValidacionesErr = [...data.lst_datos_alerta_false];
                 setValidacionesOk(arrValidacionesOk);
@@ -246,17 +246,20 @@ const NuevaSolicitud = (props) => {
                 setInfoSocio(data);
                 setApellidosSocio(`${data.str_apellido_paterno} ${data.str_apellido_materno}`)
                 setNombreSocio(`${data.str_nombres} ${data.str_apellido_paterno} ${data.str_apellido_materno}`);
-                
+
+                console.log("COD rescodigo ", data.str_res_codigo);
+
                 if (data.str_res_codigo === "100") {
                     setTextoAviso("Ya se encuentra registrada una solicitud con esa cédula.")
                     setModalMensajeAviso(true);
-                    return;
+                    console.log("ENTRO A SOLIC YA CREADA");
+                    //return;
                 }
-                if (data.str_nombres !== "") {
+                else if (data.str_nombres !== "") {
                     setStep(1);
                 }
-                if (data.str_nombres === "") {
-                    setTextoAviso("No se encuentra registrado en las bases de la Coopmego. Realice una Prospección.")
+                else if (data.str_nombres === "") {
+                    setTextoAviso("Se requiere actualizar información personal. Intente realizar una Prospección.")
                     setModalMensajeAviso(true);
                     validaSiguientePaso = true;
                 }
@@ -523,7 +526,7 @@ const NuevaSolicitud = (props) => {
                 type="sm"
             >
                 {modalMensajeAviso && <div>
-                    <p>{textoAviso}</p>
+                    <h3 className='mt-4 mb-4'>{textoAviso}</h3>
                 </div>}
             </Modal>
 

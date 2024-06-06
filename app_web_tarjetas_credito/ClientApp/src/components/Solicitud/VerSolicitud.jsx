@@ -2,7 +2,7 @@
 import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { useEffect, useState } from "react";
-import { fetchGetInforme, fetchGetFlujoSolicitud, fetchAddComentarioAsesor, fetchAddComentarioSolicitud, fetchGetResolucion, fetchAddProcEspecifico, fetchUpdateCupoSolicitud, fetchGetMedioAprobacion } from "../../services/RestServices";
+import { fetchGetInforme, fetchGetFlujoSolicitud, fetchAddComentarioAsesor, fetchAddComentarioSolicitud, fetchGetResolucion, fetchAddProcEspecifico, fetchUpdateCupoSolicitud, fetchGetMedioAprobacion, fetchAddResolucion } from "../../services/RestServices";
 import Sidebar from "../Common/Navs/Sidebar";
 import Card from "../Common/Card";
 import Table from "../Common/Table";
@@ -30,7 +30,7 @@ const mapStateToProps = (state) => {
 const VerSolicitud = (props) => {
     const dispatch = useDispatch();
     const navigate = useHistory();
-    const [comentariosAsesor, setComentariosAsesor] = useState([]);
+    const [informe, setInforme] = useState([]);
     const [solicitudTarjeta, setSolicitudTarjeta] = useState([]);
     const [resoluciones, setResoluciones] = useState([]);
     const [comentarioSolicitud, setComentarioSolicitud] = useState("");
@@ -113,13 +113,14 @@ const VerSolicitud = (props) => {
     
     useEffect(() => {
         fetchGetInforme(props.solicitud.solicitud, props.solicitud.idSolicitud, props.token, (data) => {
-            setComentariosAsesor(data.lst_informe);
+            setInforme(data.lst_informe);
             existeComentariosVacios(data.lst_informe);  
             //console.log("INFORME",data.lst_informe);
 
         }, dispatch);
         fetchGetResolucion(props.solicitud.solicitud, props.token, (data) => {
             setResoluciones(data.lst_resoluciones);
+            console.log("Resoluciones", data);
         }, dispatch);
         fetchGetFlujoSolicitud(props.solicitud.solicitud, props.token, (data) => {
             const arrayDeValores = data.flujo_solicitudes.map(objeto => objeto.int_id);
@@ -128,9 +129,9 @@ const VerSolicitud = (props) => {
             setFlujoSolId(datosSolicitud.int_id);
             setSolicitudTarjeta(...[datosSolicitud])
 
-            console.log("ARRA MAX SOL", arrayDeValores);
-            console.log("MAX SOL", valorMaximo);
-            console.log("FLUJO SOL", datosSolicitud);
+            //console.log("ARRA MAX SOL", arrayDeValores);
+            //console.log("MAX SOL", valorMaximo);
+            //console.log("FLUJO SOL", datosSolicitud);
 
 
         }, dispatch);
@@ -193,10 +194,10 @@ const VerSolicitud = (props) => {
     }, [estadosSiguientes]);
 
     const comentarioAdicionalHanlder = (data, event) => {
-        const id = comentariosAsesor.findIndex((comentario) => { return comentario.int_id_parametro === event });
-        const comentarioActualizado = [...comentariosAsesor]
+        const id = informe.findIndex((comentario) => { return comentario.int_id_parametro === event });
+        const comentarioActualizado = [...informe]
         comentarioActualizado[id].str_detalle = data;
-        setComentariosAsesor(comentarioActualizado) 
+        setInforme(comentarioActualizado) 
 
         existeComentariosVacios(comentarioActualizado);
         
@@ -215,9 +216,9 @@ const VerSolicitud = (props) => {
     }
 
     const siguientePasoHandler = () => {
-        if (!existeComentariosVacios(comentariosAsesor)) {
+        if (!existeComentariosVacios(informe)) {
             //console.log(comentariosAsesor);
-            fetchAddComentarioAsesor(props.solicitud.solicitud, comentariosAsesor, props.solicitud.idSolicitud, props.token, (data) => {
+            fetchAddComentarioAsesor(props.solicitud.solicitud, informe, props.solicitud.idSolicitud, props.token, (data) => {
                 if (data.str_res_codigo === "000") {
                     setFaltaComentariosAsesor(false);
                     setModalVisible(false);
@@ -234,7 +235,8 @@ const VerSolicitud = (props) => {
     }
 
     const guardarComentarioSiguiente = () => {
-        fetchAddComentarioSolicitud(props.solicitud.solicitud, comentarioSolicitud, props.solicitud.idSolicitud, false, props.token, (data) => {
+        //Debe guardar comentario de Resolucion
+            fetchAddComentarioSolicitud(props.solicitud.solicitud, comentarioSolicitud, props.solicitud.idSolicitud, false, props.token, (data) => {
             if (data.str_res_codigo === "000") {
                 setModalVisibleOk(true);
                 setTextoModal("Su comentario se ha guardado correctamente");
@@ -348,7 +350,7 @@ const VerSolicitud = (props) => {
     }
 
     const cambioEstadoBandeja = () => {
-
+        //Comite retorna a un estado de bandeja especifica
         if(props.solicitud.idSolicitud === '11137') {
             fetchAddProcEspecifico(props.solicitud.solicitud, 0, cambioEstadoSol, comentarioCambioEstado, props.token, (data) => {
                 if (data.str_res_codigo === "000") {
@@ -363,7 +365,7 @@ const VerSolicitud = (props) => {
 
             }, dispatch)
 
-        } else {
+        } else { //Otros perfiles solo retornan a bandeja anterior
             fetchAddComentarioSolicitud(props.solicitud.solicitud, comentarioCambioEstado, props.solicitud.idSolicitud, true, props.token, (data) => {
                 if (data.str_res_codigo === "000") {
                     setModalCambioBandeja(false);
@@ -805,7 +807,7 @@ const VerSolicitud = (props) => {
             {modalVisible && <div>
                 <Table headers={headerTableComentarios}>
                     {
-                        comentariosAsesor.map((comentario, index) => {
+                        informe.map((comentario, index) => {
                             return (
                                 <tr key={comentario.int_id_parametro}>
                                     <td style={{ width: "40%", justifyContent: "left" }}>
@@ -902,7 +904,7 @@ const VerSolicitud = (props) => {
                     <>
                         <h3 className="mt-4 mb-1">Seleccione a qué estado desea regresar la solicitud:</h3>
 
-                        <select className='width-100' defaultValue={"-1"} onChange={cambiarEstadoSolHandler} value={cambioEstadoSol}>
+                        <select className='w-100' defaultValue={"-1"} onChange={cambiarEstadoSolHandler} value={cambioEstadoSol}>
                             <option disabled={true} value="-1">Seleccione algún estado</option>
 
                             {solicitudTarjeta?.str_estado === "ANALISIS COMITE" &&
@@ -919,7 +921,7 @@ const VerSolicitud = (props) => {
 
                 <div>
                     <h3 className="mt-2 mb-2">Comentario:</h3>
-                    <Input className="width-100" type="text" value={comentarioCambioEstado} placeholder="Ingrese comentario" setValueHandler={setComentarioCambioEstado}></Input>
+                    <Input className="w-100" type="text" value={comentarioCambioEstado} placeholder="Ingrese comentario" setValueHandler={setComentarioCambioEstado}></Input>
                 </div>
 
                 <br/>
