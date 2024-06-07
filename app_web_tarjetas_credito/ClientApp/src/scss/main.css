@@ -1382,6 +1382,9 @@ input:checked + .slider::before {
 .w-60 {
     width: 60%;
 }
+.w-55 {
+    width: 55%;
+}
 
 .w-50 {
     width: 50%;

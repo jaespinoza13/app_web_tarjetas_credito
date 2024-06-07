@@ -119,24 +119,26 @@ const ValidacionSocio = (props) => {
                             <section className="elements_two_column">
                                 <div>
                                     <label>Nombres:</label>
-                                    <h4>{`${props.infoSocio.str_nombres} ${props.infoSocio.str_apellido_paterno} ${props.infoSocio.str_apellido_materno}`}</h4>
+                                    <h5>{`${props.infoSocio.str_nombres} ${props.infoSocio.str_apellido_paterno} ${props.infoSocio.str_apellido_materno}`}</h5>
                                     <hr className="dashed"></hr>
                                 </div>
 
                                 <div>
                                     <label>Ente:</label>
-                                    <h4>{props.infoSocio.str_ente}</h4>
+                                    <h5>{props.infoSocio.str_ente}</h5>
                                     <hr className="dashed"></hr>
                                 </div>
 
                                 <div>
                                     <label>Correo:</label>
-                                    <h4>{props.infoSocio.str_email}</h4>
+                                    <h5>{props.infoSocio.str_email}</h5>
+                                    <hr className="dashed"></hr>
                                 </div>
 
                                 <div>
-                                    <label>Número celular:</label>
-                                    <h3>{props.infoSocio.str_celular}</h3>
+                                    <label>Celular:</label>
+                                    <h5>{props.infoSocio.str_celular}</h5>
+                                    <hr className="dashed"></hr>
                                 </div>
 
                             </section>
@@ -148,23 +150,23 @@ const ValidacionSocio = (props) => {
                             <Card className='mt-2'>
                                 <section className="elements_two_column">
                                     <div>
-                                        <h2>Ingresos</h2>
+                                        <label>Ingresos</label>
                                         <div className="f-row">
                                             <h2 className='mr-2'>$</h2><Input className={'w-85'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setMontoIngresosHandler} value={montoIngresos} disabled={true}></Input>
                                         </div>
                                     </div>
 
                                     <div>
-                                        <h2>Egresos</h2>
+                                        <label>Egresos</label>
                                         <div className="f-row">
-                                            <h2 className='mr-2'>$</h2><Input className={'w-85'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setMontoEgresosHandler} value={montoEgresos} disabled={true}></Input>
+                                            <h2 className='mr-2'>$</h2><Input className={'w-100'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setMontoEgresosHandler} value={montoEgresos} disabled={true}></Input>
                                         </div>
                                     </div>
 
                                     <div>
                                         <div className="f-row">
                                             <Input type="checkbox" setValueHandler={CkeckGtosFinancierosHandler} checked={isCkeckGtosFinancieros} ></Input>
-                                            <h2 className='ml-2'>Gtos. Financieros</h2>
+                                            <label className='ml-2'>Gtos. Financieros</label>
                                         </div>
                                        
                                         <div className="f-row">
@@ -173,9 +175,9 @@ const ValidacionSocio = (props) => {
                                     </div>
 
                                     <div>
-                                        <h2>Cupo solicitado</h2>
+                                        <label>Cupo solicitado</label>
                                         <div className="f-row">
-                                            <h2 className='mr-2'>$</h2><Input className={'w-85'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setMontoSolicitadoHandler} value={montoSolicitado}></Input>
+                                            <h2 className='mr-2'>$</h2><Input className={'w-100'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setMontoSolicitadoHandler} value={montoSolicitado}></Input>
                                         </div>
                                     </div>
                                 </section>

@@ -172,9 +172,13 @@ const NuevaSolicitud = (props) => {
     
     useEffect(() => {
         const index = validacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" && validacion.str_estado_alerta);
-        //console.log("index,", index)
+        const validacionesErrorTotal = validacionesErr.length;
+        //console.log("TOTAL validaciones ok, ", validacionesErrorTotal);
+
+        
+        // Controles para pasar a la consulta al score. Valida que todas las alertas esten OK
         if (step === 1 && showAutorizacion === false) {
-            if (validaCamposFinancieros() && !index) {
+            if (validaCamposFinancieros() && !index && validacionesErrorTotal === 0) {
                 setEstadoBotonSiguiente(false);
             } else {
                 setEstadoBotonSiguiente(true);
@@ -455,7 +459,7 @@ const NuevaSolicitud = (props) => {
                     }
 
                     {(step === 1) &&
-                        <div className={showAutorizacion ? "f-col w-60" : ''}>
+                        <div className={showAutorizacion ? "f-col w-50" : ''}>
                         <ValidacionesGenerales token={props.token}
                             lst_validaciones={lstValidaciones}
                             onFileUpload={getFileHandler}

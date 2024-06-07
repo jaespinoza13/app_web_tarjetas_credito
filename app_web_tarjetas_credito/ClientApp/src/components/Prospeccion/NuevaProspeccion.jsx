@@ -487,6 +487,7 @@ const NuevaProspeccion = (props) => {
                     }
 
                     {(step === 1) &&
+                        <div className={showAutorizacion ? "f-col w-50" : ''}>
                         <ValidacionesGenerales token={props.token}
                             infoSocio={infoSocio}
                             lst_validaciones={lstValidaciones}
@@ -496,7 +497,8 @@ const NuevaProspeccion = (props) => {
                             datosUsuario={datosUsuario}
                             onSetShowAutorizacion={showAutorizacionHandler}
                             cedula={documento}
-                        ></ValidacionesGenerales>
+                            ></ValidacionesGenerales>
+                        </div>
 
 
                         //<ValidacionesGenerales token={props.token}

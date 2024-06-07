@@ -237,14 +237,14 @@ const RegistroCliente = (props) => {
                             <div>
                                 <label>Cédula:</label>
                                     <div className="f-row">
-                                        <Input className={'w-85'} type="text" placeholder="1150216791" setValueHandler={documentoHandler} value={documento} disabled={true}></Input>
+                                        <Input className={'w-100'} type="text" placeholder="1150216791" setValueHandler={documentoHandler} value={documento} disabled={true}></Input>
                                 </div>
                             </div>
 
-                            <div>
+                                <div className='ml-1'>
                                 <label>Nombres:</label>
                                 <div className="f-row">
-                                    <Input className={'w-85'} type="text" placeholder="Ej. Luis Miguel" setValueHandler={nombresClienteHandler} value={nombresCliente}></Input>
+                                        <Input className={'w-100'} type="text" placeholder="Ej. Luis Miguel" setValueHandler={nombresClienteHandler} value={nombresCliente}></Input>
                                 </div>
                                 
                             </div>
@@ -253,14 +253,14 @@ const RegistroCliente = (props) => {
                             <div>
                                 <label>Apellidos paterno:</label>
                                 <div className="f-row">
-                                    <Input className={'w-85'} type="text" placeholder="Ej. Salazar" setValueHandler={apellidoPaternoHandler} value={apellidoPaterno}></Input>
+                                        <Input className={'w-100'} type="text" placeholder="Ej. Salazar" setValueHandler={apellidoPaternoHandler} value={apellidoPaterno}></Input>
                                 </div>
                             </div>
 
-                            <div>
+                                <div className='ml-1'>
                                 <label>Apellido materno:</label>
                                 <div className="f-row">
-                                    <Input className={'w-85'} type="text" placeholder="Ej. Benitez" setValueHandler={apellidoMaternoHandler} value={apellidoMaterno}></Input>
+                                        <Input className={'w-100'} type="text" placeholder="Ej. Benitez" setValueHandler={apellidoMaternoHandler} value={apellidoMaterno}></Input>
                                 </div>
 
                             </div>
@@ -283,16 +283,16 @@ const RegistroCliente = (props) => {
                             <div>
                                 <label>Correo:</label>
                                 <div className="f-row">
-                                    <Input className={'w-85'} type="text" placeholder="Ej. test@test.com" setValueHandler={correoClienteHandler} value={correoCliente}></Input>    
+                                        <Input className={'w-100'} type="text" placeholder="Ej. test@test.com" setValueHandler={correoClienteHandler} value={correoCliente}></Input>    
                                 </div>
 
                                 
                             </div>
 
-                            <div>
-                                <label>Celular:</label>
+                                <div className='ml-1'>
+                                    <label>Celular:</label>
                                 <div className="f-row">
-                                    <Input className={'w-85'} type="text" placeholder="Ej. 0999999999" setValueHandler={celularClienteHandler} value={celularCliente}></Input>
+                                        <Input className={'w-100'} type="text" placeholder="Ej. 0999999999" setValueHandler={celularClienteHandler} value={celularCliente}></Input>
                                 </div>
 
                                 
@@ -308,23 +308,23 @@ const RegistroCliente = (props) => {
                         <Card className='mt-2'>
                             <section className="elements_two_column">
                                 <div>
-                                    <h2>Ingresos</h2>
+                                    <label>Ingresos</label>
                                     <div className="f-row">
                                         <h2 className='mr-2'>$</h2><Input className={'w-85'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setMontoIngresosHandler} value={montoIngresos}></Input>
                                     </div>
                                 </div>
 
                                 <div>
-                                    <h2>Egresos</h2>
+                                        <label>Egresos</label>
                                     <div className="f-row">
-                                        <h2 className='mr-2'>$</h2><Input className={'w-85'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setMontoEgresosHandler} value={montoEgresos}></Input>
+                                        <h2 className='mr-2'>$</h2><Input className={'w-100'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setMontoEgresosHandler} value={montoEgresos}></Input>
                                     </div>
                                 </div>
 
                                 <div>
                                         <div className="f-row">
                                             <Input type="checkbox" setValueHandler={CkeckGtosFinancierosHandler} checked={isCkeckGtosFinancieros} ></Input>
-                                            <h2 className='ml-2'>Gtos. Financieros</h2>
+                                            <label className='ml-2'>Gtos. Financieros</label>
                                         </div>
 
                                     <div className="f-row">
@@ -333,9 +333,9 @@ const RegistroCliente = (props) => {
                                 </div>
 
                                 <div>
-                                    <h2>Cupo solicitado</h2>
+                                        <label>Cupo solicitado</label>
                                     <div className="f-row">
-                                        <h2 className='mr-2'>$</h2><Input className={'w-85'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setMontoSolicitadoHandler} value={montoSolicitado}></Input>
+                                        <h2 className='mr-2'>$</h2><Input className={'w-100'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setMontoSolicitadoHandler} value={montoSolicitado}></Input>
                                     </div>
                                 </div>
 

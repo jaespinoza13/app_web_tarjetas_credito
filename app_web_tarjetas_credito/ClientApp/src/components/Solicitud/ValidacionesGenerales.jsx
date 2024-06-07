@@ -123,7 +123,7 @@ const ValidacionesGenerales = (props) => {
             {props.onShowAutorizacion
                 ?
                 <Fragment>
-                    <Card className={props.onShowAutorizacion ? 'f-col w-50' : ''}>
+                    <Card className={props.onShowAutorizacion === true ? 'mt-4 f-col w-50' : 'mt-4'}>
                         <p>
                             “EL SOCIO y/o CLIENTE” como titular de la tarjeta de crédito, al usar la tarjeta, personalizar la clave, transaccional o utilizar de cualquier otra forma los servicios o funciones asociadas a la tarjeta de débito, expresa su conformidad con los términos y condiciones para la emisión y uso de la tarjeta de débito bajo, los que se contienen en las siguientes cláusulas. PRIMERA ANTECEDENTES. “LA COOPERATIVA” ha puesto a disposición de sus socios y/o clientes, la TARJETA DE DÉBITO que les permite realizar transacciones y consultas de saldos de la cuenta de ahorros que mantienen en “LA COOPERATIVA”; a través de cajeros automáticos propios de “LA COOPERATIVA”: así como, de cajeros automáticos, puntos de venta (P.O.S), medios de pago electrónicos o botones de pago de la(s) Red(s) Transaccional(es) que “LA COOPERATIVA” mantenga convenio(s). SEGUNDA. ACCESO. “EL SOCIO y/o CLIENTE” como titular de la tarjeta de crédito, al usar la tarjeta, personalizar la clave, transaccional o utilizar de cualquier otra forma los servicios o funciones asociadas a la tarjeta de débito, expresa su conformidad con los términos y condiciones para la emisión y uso de la tarjeta de débito bajo, los que se contienen en las siguientes cláusulas. “EL SOCIO y/o CLIENTE” como titular de la tarjeta de crédito, al usar la tarjeta, personalizar la clave, transaccional o utilizar de cualquier otra forma los servicios o funciones asociadas a la tarjeta de débito, expresa su conformidad con los términos y condiciones para la emisión y uso de la tarjeta de débito bajo, los que se contienen en las siguientes cláusulas. PRIMERA ANTECEDENTES. “LA COOPERATIVA” ha puesto a disposición de sus socios y/o clientes, la TARJETA DE DÉBITO que les permite realizar transacciones y consultas de saldos de la cuenta de ahorros que mantienen en “LA COOPERATIVA”; a través de cajeros automáticos propios de “LA COOPERATIVA”: así como, de cajeros automáticos, puntos de venta (P.O.S), medios de pago electrónicos o botones de pago de la(s) Red(s) Transaccional(es) que “LA COOPERATIVA” mantenga convenio(s). SEGUNDA. ACCESO. “EL SOCIO y/o CLIENTE” como titular de la tarjeta de crédito, al usar la tarjeta, personalizar la clave, transaccional o utilizar de cualquier otra forma los servicios o funciones asociadas a la tarjeta de débito, expresa su conformidad con los términos y condiciones para la emisión y uso de la tarjeta de débito bajo, los que se contienen en las siguientes cláusulas.
                         </p>
@@ -139,7 +139,7 @@ const ValidacionesGenerales = (props) => {
 
                 :
                 <div className="f-col">
-                    <label>Validaciones</label>
+                    <h2>Validaciones</h2>
 
                     {props.lst_validaciones && props.lst_validaciones?.lst_validaciones_ok?.length > 0 &&
                         <Card className={["w-100"]}>
@@ -154,8 +154,8 @@ const ValidacionesGenerales = (props) => {
                             })}
                         </Card>
                     }
-                    {props.lst_validaciones  && props.lst_validaciones?.lst_validaciones_err?.length > 0 &&
-                        <Card className={["W-100 mt-4"]}>
+                    {props.lst_validaciones && props.lst_validaciones?.lst_validaciones_err?.length > 0 &&
+                        <Card className={[`W-100 ${props.lst_validaciones?.lst_validaciones_ok?.length !== 0 ? 'mt-4' : ''}`]}>
                             {props.lst_validaciones.lst_validaciones_err.map((validacion) => {
                                 return (
                                     <div className="f-row validacion mt-2" key={validacion.str_descripcion_alerta}>
