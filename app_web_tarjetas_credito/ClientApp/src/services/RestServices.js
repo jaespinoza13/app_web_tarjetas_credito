@@ -772,8 +772,8 @@ export function fetchValidacionSocio(strCedula, strTipoValidacion, token, onSucc
                     onSucces(data);
                 }
                 else {
-                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
-                    //if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                    //if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
+                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
                 }
             }
         } else {

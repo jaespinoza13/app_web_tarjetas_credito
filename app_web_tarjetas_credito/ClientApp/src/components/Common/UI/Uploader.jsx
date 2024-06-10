@@ -10,7 +10,7 @@ const Uploader = (props) => {
 
     const handleFileChange = (event) => {
         const file = event.target.files[0];
-        event.target.value = null;
+        //event.target.value = null;
         if (file) {
             setFilename(file.name);
             props.onClick(file);

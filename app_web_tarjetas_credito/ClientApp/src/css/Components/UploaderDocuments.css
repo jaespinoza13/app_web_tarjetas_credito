@@ -1,0 +1,130 @@
+﻿.content_uploader {
+    border-radius: 1px;
+    border: 1px solid rgba(9, 57, 208, 0.2);
+    display: flex;
+    flex-direction: column;
+    padding: 1.8em 3em;
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.0588235294);
+    background-color: #fff;
+    min-width: 15rem;
+}
+
+
+.elements_tres_column {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+}
+
+p.normal {
+    font-size: 0.87rem !important;
+    font-family: 'Karbon', sans-serif !important;
+}
+
+p.negrita {
+    font-family: "Karbon-Bold", sans-serif !important;
+    margin-left: 5px;
+}
+
+.uploader_arc {
+    width: auto;
+    position: relative;
+    z-index: 1;
+    cursor: pointer;
+}
+
+    .uploader_arc .btn_arch {
+        height: 2rem;
+        width: 8rem;
+    }
+
+.btn_arch {
+    border: none;
+    border-radius: 2px;
+    letter-spacing: 0px;
+    color: black;
+    display: flex;
+    background-color: #F8F8F8;
+    display: "flex";
+    align-content: "center";
+    justify-content: "center";
+}
+
+
+.btn_arch__toggler {
+    border-radius: 3px;
+    padding: 0.3rem 0.5rem;
+    border: 1px solid rgba(9, 57, 208, 0.2);
+    min-width: 9.5rem;
+    text-align: center;
+    min-height: 1.5rem;
+    justify-content: flex-start;
+}
+
+
+
+table.archivos td {
+    color: #3D3D3D;
+    text-align: center;
+    border-spacing: 0 1rem;
+    font-size: 15px;
+    padding: 0rem 0rem;
+}
+
+.content_table {
+    overflow-x: scroll;
+    overflow: auto;
+    width: 98%;
+    margin: 0 auto;
+}
+
+table.archivos {
+    font-family: "Karbon", sans-serif;
+    width: 100%;
+    overflow: hidden;
+    border: #D4E7FF;
+    border-spacing: 0 0rem;
+    overflow-y: auto;
+    padding-top: 30px;
+    padding-bottom: 15px;
+    margin: 0 auto;
+    position: relative;
+}
+
+    table.archivos td {
+        border-bottom: 1px solid #C1CBEA;
+        border-top: 1px solid #C1CBEA;
+    }
+
+    table.archivos th {
+        border: black;
+        background-color: #004CAC;
+        color: #fff;
+        letter-spacing: 0px;
+        padding: 0.5rem 1rem;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+
+
+    table.archivos td:nth-child(1) {
+        color: black;
+        font-family: "Karbon-Bold", sans-serif;
+    }
+
+
+    table.archivos tr td:first-child {
+        border-radius: 0 0 0 0;
+        border-left: 1px solid #C1CBEA;
+    }
+
+    table.archivos tr td:last-child {
+        border-radius: 0 0 0 0;
+        border-right: 1px solid #C1CBEA;
+    }
+
+
+.border_content {
+    border: #3D3D3D;
+}

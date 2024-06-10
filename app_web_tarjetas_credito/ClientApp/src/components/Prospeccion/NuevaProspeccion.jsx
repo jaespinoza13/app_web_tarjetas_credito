@@ -12,9 +12,9 @@ import DatosSocio from '../Solicitud/DatosSocio';
 import { fetchScore, fetchValidacionSocio, fetchAddAutorizacion,  fetchAddProspecto} from '../../services/RestServices';
 import { get } from '../../js/crypt';
 import Modal from '../Common/Modal/Modal';
-//import Personalizacion from './Personalizacion';
 import FinProceso from '../Solicitud/FinProceso';
-import RegistroCliente from './ValidacionCliente';
+import RegistroCliente from './RegistroCliente';
+import DatosFinancieros from '../Solicitud/DatosFinancieros';
 
 const mapStateToProps = (state) => {
     var bd = state.GetWebService.data;
@@ -160,18 +160,6 @@ const NuevaProspeccion = (props) => {
         if (step === 1) {
             setEstadoBotonSiguiente(true);
         }
-        /*if (step === 2 && showAutorizacion) {
-            setTextoSiguiente("Continuar solicitud")
-        }
-        if (step === 2) {
-            if (validacionesErr.length === 10) {
-                setEstadoBotonSiguiente(true);
-            }
-        }
-        if (step === 2 && !showAutorizacion) {
-            setTextoSiguiente("Continuar")
-            
-        }*/
         if (step === -1) {
             setTextoSiguiente("Volver al inicio")
         }
@@ -179,6 +167,8 @@ const NuevaProspeccion = (props) => {
 
     const validaCamposSocio = () => {
         //console.log(`${documento}|${nombreSocio}|${apellidoPaterno}|${apellidoMaterno}|${correoSocio}|${celularSocio}`)
+
+        
 
         if (documento !== "" && nombreSocio !== "" && apellidoPaterno !== "" && apellidoMaterno !== "" && correoSocio !== "" && celularSocio !== "") {
             //console.log("CAMPOS CLIENTE LLENOS")
@@ -198,6 +188,8 @@ const NuevaProspeccion = (props) => {
             validadorOtrosMontos = true;
         }
 
+        //console.log(`isCkeckGtosFinancieros ${isCkeckGtosFinancieros}, GastosFinancieros ${datosFinancieros.montoGastosFinancieros}`)
+
         if (datosFinancieros.montoSolicitado > 0) {
             //console.log("montoSolicitado, true ")
             validadorCupo = true;
@@ -208,7 +200,7 @@ const NuevaProspeccion = (props) => {
         }
 
         if (isCkeckGtosFinancieros === true) {
-            if (IsNullOrEmpty(datosFinancieros.montoGastosFinancieros) || datosFinancieros.montoGastosFinancieros === "0" || datosFinancieros.montoGastosFinancieros === "") {
+            if (IsNullOrEmpty(datosFinancieros.montoGastosFinancieros) || datosFinancieros.montoGastosFinancieros === "0" || datosFinancieros.montoGastosFinancieros === "" || datosFinancieros.montoGastosFinancieros === " ") {
                 //console.log("GastosFinancieros, falso, ", datosFinancieros.montoGastosFinancieros)
                 validadorCheck = false;
                 return false;
@@ -230,29 +222,54 @@ const NuevaProspeccion = (props) => {
 
     }
    
+    useEffect(() => {
+        if (step === 1) {
+            if (validaCamposSocio()) {
+                setEstadoBotonSiguiente(false);
+            }
+            else {
+                setEstadoBotonSiguiente(true);
+            }
+        }
+    }, [validaCamposSocio, step])
 
 
 
     ///CAMBIOS
-
     useEffect(() => {
-        if (step === 1 && autorizacionOk) {
+        if (step === 2 && autorizacionOk) {
             setEstadoBotonSiguiente(false);
         }
-        else if (step === 1 && archivoAutorizacion) {
+        else if (step === 2 && archivoAutorizacion) {
             setEstadoBotonSiguiente(false);
         }
-        else if (step === 1 && !archivoAutorizacion) {
+        else if (step === 2 && !archivoAutorizacion) {
             setEstadoBotonSiguiente(true);
         }
     }, [archivoAutorizacion]);
 
     useEffect(() => {
+        if (step === 3) {
+            const index = validacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" && validacion.str_estado_alerta);
+            if (validaCamposFinancieros() && !index) {
+                setEstadoBotonSiguiente(false);
+            } else {
+                setEstadoBotonSiguiente(true);
+            }
+        }
+
+    }, [datosFinancieros, step, validaCamposFinancieros, validacionesErr, isCkeckGtosFinancieros])
+
+
+  
+    /*
+    useEffect(() => {
         const index = validacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" && validacion.str_estado_alerta);
 
         //console.log("index,", index)
         // console.log("VALIDACION DE CAMPOS,", step);
-        if (step === 1 && showAutorizacion === false) {
+        // Controles para pasar a la consulta al score. Valida que no exista Alerta Consulta buro
+        if (step === 2 && showAutorizacion === false) {
             if (validaCamposSocio()) {
                 if (validaCamposFinancieros() && !index) {
                     setEstadoBotonSiguiente(false);
@@ -265,14 +282,12 @@ const NuevaProspeccion = (props) => {
             }
         }
     }, [datosFinancieros, step, validaCamposSocio, validaCamposFinancieros, isCkeckGtosFinancieros, validacionesErr, archivoAutorizacion]);
+    */
 
 
 
     const nextHandler = async () => {
         if (step === 0) {
-            //console.log(`doc ${documento}, ced ${cedulaValidacion}`)
-
-            var informacionCliente = null;
             //TODO: FALTA EDITAR PARA REGISTRO DE INGRESOS, EGRESOS, ETC
             fetchValidacionSocio(documento, '', props.token, (data) => {
                 const arrValidacionesOk = [...data.lst_datos_alerta_true];
@@ -292,34 +307,33 @@ const NuevaProspeccion = (props) => {
                 setCelularSocio(data.str_celular);
                 setCorreoSocio(data.str_email);
 
-                informacionCliente = {
-                    cedula: documento,
-                    nombres: data.str_nombres,
-                    apellidoPaterno: data.str_apellido_paterno,
-                    apellidoMaterno: data.str_apellido_materno,
-                    celularCliente: data.str_celular,
-                    correoCliente: data.str_email
-                }
-                setInfoSocio(informacionCliente);
+                data.cedula = documento
+                data.nombres = data.str_nombres
+                data.apellidoPaterno = data.str_apellido_paterno
+                data.apellidoMaterno = data.str_apellido_materno
+                data.celularCliente = data.str_celular
+                data.correoCliente = data.str_email
+
+                //console.log("DATA ASIG, ", data)
+                //setInfoSocio(informacionCliente);
+                setInfoSocio(data);
                 setEnteSocio("")
                 setStep(1);
             }, dispatch);
 
-            //TODO PARA LAS ALERTAS           
-            //console.log("Info cliente consulta ",informacionCliente)
-
         }
-
-
         if (step === 1) {
-            console.log("STEP 1, SHOW ", showAutorizacion)
+            setStep(2);
+        }
+        if (step === 2) {
+            //console.log("STEP 1, SHOW ", showAutorizacion)
 
             if (showAutorizacion) {
                 fetchAddAutorizacion("C", 1, "F", documento, nombreSocio, apellidoPaterno, apellidoMaterno,
                     archivoAutorizacion, props.token, (data) => {
                         //console.log("AUTOR, ", data);
                         //TODO DESCOMENTAR
-                        //if (data.str_res_codigo === "000") {
+                        if (data.str_res_codigo === "000") {
                             const estadoAutorizacion = validacionesErr.find((validacion) => { return validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" })
                             estadoAutorizacion.str_estado_alerta = "True";
                             setSubirAutorizacion(false);
@@ -337,7 +351,7 @@ const NuevaProspeccion = (props) => {
                                 setAutorizacionOk(false);
                                 setValidacionesErr(arrValidacionesErr);
                             }, dispatch);
-                        //}             
+                        }             
                 }, dispatch);
                 return;
             }
@@ -356,9 +370,16 @@ const NuevaProspeccion = (props) => {
             return;
 
         }
-        if (step === 2) {
-            //REALIZA REGISTROS DE SIMULACION
 
+        if (step === 3) {
+            const dataSocio = infoSocio;
+            dataSocio.datosFinancieros = datosFinancieros;
+            setInfoSocio(dataSocio);
+            setStep(4);
+        }
+
+        if (step === 4) {
+            //REALIZA REGISTROS DE SIMULACION
             //SIMULACION GUARDADA
             fetchAddProspecto(documento, 0, nombreSocio, apellidoPaterno + " " + apellidoMaterno, celularSocio, correoSocio, datosFinancieros.montoSolicitado, comentario, comentarioAdic, props.token, (data) => {
                 //console.log("RESP ADD PROSP, ", data)
@@ -393,11 +414,6 @@ const NuevaProspeccion = (props) => {
         }
     }
 
-    /*
-    const montoSolicitadoHandler = (e) => {
-        setMontoSolicitado(e);
-    }*/
-
     const datosFinancierosHandler = (dato)  => {
         let datosFinanciero = {
             montoSolicitado: dato.montoSolicitado,
@@ -412,17 +428,14 @@ const NuevaProspeccion = (props) => {
     const datosIngresadosHandler = (e) => {
         //setCedulaSocio(e.documento)
         setNombreSocio(e.nombres);
-        setApellidoPaterno(e.apellidoMaterno);
+        setApellidoPaterno(e.apellidoPaterno);
         setApellidoMaterno(e.apellidoMaterno);
         setCelularSocio(e.celular);
         setCorreoSocio(e.correo);
-        //setTipoDocumento(e.tipo_documento);
         setDocumento(e.documento);
     }
 
-    /*const closeModalHandler = () => {
-        setModalVisible(false);
-    }*/
+
 
     const getFileHandler = (e) => {
         //Si se carga documento enviar a step para agregar la autorizacion a consulta buro
@@ -451,12 +464,12 @@ const NuevaProspeccion = (props) => {
     const [comentario, setComentario] = useState("");
     const [comentarioAdic, setComentarioAdic] = useState("");
 
-    const handleComentario = (data) => {
-        setComentario(data);
+    const handleComentario = (comentarioToggle) => {
+        setComentario(comentarioToggle);
     }
 
-    const handleComentarioAdic = (data) => {
-        setComentarioAdic(data);
+    const handleComentarioAdic = (valor) => {
+        setComentarioAdic(valor);
     }
 
     const [showAutorizacion, setShowAutorizacion] = useState(false);
@@ -473,21 +486,18 @@ const NuevaProspeccion = (props) => {
             <Card className={["m-max w-100 justify-content-space-between align-content-center"]}>
                 <div className="f-row justify-content-center">
                     {(step === 0 || step === 1) &&
-                        <div className={step === 1 ? "f-col w-50 align-content-center" : "f-row w-100"}>
+                        <div className={"f-row w-100 justify-content-center"}>
                             <RegistroCliente paso={step}
                                 token={props.token}
                                 setCedulaSocio={cedulaSocioHandler}
-                                datosIngresados={datosIngresadosHandler}
-                                datosFinancieros={datosFinancierosHandler}
                                 infoSocio={infoSocio}
-                                isCkeckGtosFinancierosHandler={checkGastosFinancieroHandler}
-                                    
+                                datosIngresados={datosIngresadosHandler}                                    
                                 ></RegistroCliente>
                         </div>
                     }
 
-                    {(step === 1) &&
-                        <div className={showAutorizacion ? "f-col w-50" : ''}>
+                    {(step === 2) &&
+                        <div className="f-row w-100 justify-content-center">
                         <ValidacionesGenerales token={props.token}
                             infoSocio={infoSocio}
                             lst_validaciones={lstValidaciones}
@@ -499,32 +509,32 @@ const NuevaProspeccion = (props) => {
                             cedula={documento}
                             ></ValidacionesGenerales>
                         </div>
-
-
-                        //<ValidacionesGenerales token={props.token}
-                        //    lst_validaciones={lstValidaciones}
-                        //    onFileUpload={getFileHandler}
-                        //    onShowAutorizacion={showAutorizacion}
-                        //    infoSocio={infoSocio}
-                        //    onAddAutorizacion={handleAutorizacion}
-                        //    datosUsuario={datosUsuario}
-                        //    onSetShowAutorizacion={showAutorizacionHandler}
-                        //    cedula={documento}
-                        //></ValidacionesGenerales>
-
                     }
-                    {(step === 2) &&
-                        <DatosSocio
-                            informacionSocio={infoSocio}
-                            lst_validaciones={lstValidaciones}
-                            score={score}
-                            token={props.token}
-                            onAgregarComentario={agregarComentarioHandler}
-                            gestion={gestion}
-                            onInfoSocio={getIfoSocioHandler}
-                            onComentario={handleComentario}
-                            onComentarioAdic={handleComentarioAdic}
-                        ></DatosSocio>
+
+
+                    {(step === 3) &&
+                        <div className="f-row w-100">
+                            <DatosFinancieros
+                                datosFinancieros={datosFinancierosHandler}
+                                isCkeckGtosFinancierosHandler={checkGastosFinancieroHandler}
+                                gestion={gestion}
+                            >
+                            </DatosFinancieros>
+                        </div>
+                    }
+
+                    {(step === 4) &&
+                            <DatosSocio
+                                informacionSocio={infoSocio}
+                                lst_validaciones={lstValidaciones}
+                                score={score}
+                                token={props.token}
+                                onAgregarComentario={agregarComentarioHandler}
+                                gestion={gestion}
+                                onInfoSocio={getIfoSocioHandler}
+                                onComentario={handleComentario}
+                                onComentarioAdic={handleComentarioAdic}
+                            ></DatosSocio>                        
                     }
                   
                     {step === -1 &&
@@ -539,12 +549,6 @@ const NuevaProspeccion = (props) => {
                     <Item xs={2} sm={2} md={2} lg={2} xl={2} className=""></Item>
                     <Item xs={8} sm={8} md={8} lg={8} xl={8} className="f-row justify-content-space-evenly">
                         <Button className={["btn_mg btn_mg__primary mt-2"]} disabled={estadoBotonSiguiente} onClick={nextHandler}>{textoSiguiente}</Button>
-                        {/*{((step === 2 && !autorizacionOk) && (step === 2 && !showAutorizacion)) &&*/}
-                        {/*    <Button className={["btn_mg btn_mg__secondary mt-2"]} disabled={estadoBotonProspecto} onClick={nextProspeccionHandler}>Continuar como prospecto</Button>}*/}
-
-
-
-
                     </Item>
 
                 </div>
