@@ -1371,6 +1371,10 @@ input:checked + .slider::before {
     width: 100%;
 }
 
+.w-90 {
+    width: 90%;
+}
+
 .w-85 {
     width: 85%;
 }
@@ -1598,6 +1602,11 @@ input[type=radio] {
 .f-col {
     display: flex;
     flex-direction: column;
+}
+
+.stepper {
+    margin-top: 10px;
+    margin-bottom: 35px;
 }
 
 @keyframes ripple {

@@ -6,14 +6,15 @@ import { fetchGetContrato, fetchScore } from "../../services/RestServices";
 import { useDispatch } from 'react-redux';
 import Uploader from "../Common/UI/Uploader";
 import { jsPDF } from "jspdf";
-import { base64ToBlob, descargarArchivo, generarFechaHoy, verificarPdf } from "../../js/utiles";
+import { base64ToBlob, descargarArchivo, generarFechaHoy, verificarPdf, getBase64 } from "../../js/utiles";
 
 const ValidacionesGenerales = (props) => {
     const dispatch = useDispatch();
     const [isGenerandoAutorizacion, setIsGenerandoAutorizacion] = useState(false);
     const [archivoAutorizacion, setArchivoAutorizacion] = useState('');
+    const [isDocCargado, setIsDocCargado] = useState(false);
 
-    useEffect(() => { console.log(props) },[]);
+ 
 
     //useEffect(() => {
     //    if (isGenerandoAutorizacion) {
@@ -109,13 +110,31 @@ const ValidacionesGenerales = (props) => {
         //console.log("ARCHVIO, ", event.target.result)
         console.log("ARCHIVO,", event)
 
-        props.onFileUpload(event);
-        setArchivoAutorizacion(event);       
+        //props.onFileUpload(event);
+        //setArchivoAutorizacion(event);     
+        getBase64(event, (result) => {
+            setArchivoAutorizacion(result);
+        });
+
     };
 
     const removeFile = () => {
         setArchivoAutorizacion('');
+        setIsDocCargado(false);
     }
+
+    /*
+    useEffect(() => {
+        if (archivoAutorizacion !== "" && !isDocCargado) {
+            console.log(archivoAutorizacion?.split(',')[1]);
+            let val = archivoAutorizacion?.split(',')[1];
+            //props.archivoPdf(val);
+            props.setDocumento(val)
+            setArchivoAutorizacion(val);       
+            setIsDocCargado(true)
+
+        }
+    }, [archivoAutorizacion, isDocCargado])*/
 
     return (
         <div className="f-col justify-content-center">
@@ -123,7 +142,7 @@ const ValidacionesGenerales = (props) => {
             {props.onShowAutorizacion
                 ?
                 <Fragment>
-                    <Card className={props.onShowAutorizacion === true ? 'mt-4 f-col w-50' : 'mt-4'}>
+                    <Card className='f col mt-4'>
                         <p>
                             “EL SOCIO y/o CLIENTE” como titular de la tarjeta de crédito, al usar la tarjeta, personalizar la clave, transaccional o utilizar de cualquier otra forma los servicios o funciones asociadas a la tarjeta de débito, expresa su conformidad con los términos y condiciones para la emisión y uso de la tarjeta de débito bajo, los que se contienen en las siguientes cláusulas. PRIMERA ANTECEDENTES. “LA COOPERATIVA” ha puesto a disposición de sus socios y/o clientes, la TARJETA DE DÉBITO que les permite realizar transacciones y consultas de saldos de la cuenta de ahorros que mantienen en “LA COOPERATIVA”; a través de cajeros automáticos propios de “LA COOPERATIVA”: así como, de cajeros automáticos, puntos de venta (P.O.S), medios de pago electrónicos o botones de pago de la(s) Red(s) Transaccional(es) que “LA COOPERATIVA” mantenga convenio(s). SEGUNDA. ACCESO. “EL SOCIO y/o CLIENTE” como titular de la tarjeta de crédito, al usar la tarjeta, personalizar la clave, transaccional o utilizar de cualquier otra forma los servicios o funciones asociadas a la tarjeta de débito, expresa su conformidad con los términos y condiciones para la emisión y uso de la tarjeta de débito bajo, los que se contienen en las siguientes cláusulas. “EL SOCIO y/o CLIENTE” como titular de la tarjeta de crédito, al usar la tarjeta, personalizar la clave, transaccional o utilizar de cualquier otra forma los servicios o funciones asociadas a la tarjeta de débito, expresa su conformidad con los términos y condiciones para la emisión y uso de la tarjeta de débito bajo, los que se contienen en las siguientes cláusulas. PRIMERA ANTECEDENTES. “LA COOPERATIVA” ha puesto a disposición de sus socios y/o clientes, la TARJETA DE DÉBITO que les permite realizar transacciones y consultas de saldos de la cuenta de ahorros que mantienen en “LA COOPERATIVA”; a través de cajeros automáticos propios de “LA COOPERATIVA”: así como, de cajeros automáticos, puntos de venta (P.O.S), medios de pago electrónicos o botones de pago de la(s) Red(s) Transaccional(es) que “LA COOPERATIVA” mantenga convenio(s). SEGUNDA. ACCESO. “EL SOCIO y/o CLIENTE” como titular de la tarjeta de crédito, al usar la tarjeta, personalizar la clave, transaccional o utilizar de cualquier otra forma los servicios o funciones asociadas a la tarjeta de débito, expresa su conformidad con los términos y condiciones para la emisión y uso de la tarjeta de débito bajo, los que se contienen en las siguientes cláusulas.
                         </p>
@@ -131,6 +150,7 @@ const ValidacionesGenerales = (props) => {
                     <div className="f-row mt-4 justify-content-space-evenly">
                         <Button className="btn_mg__toggler active" onClick={getContrato}><img src="Imagenes/download.svg"></img> Descargar archivo</Button>
                         <Uploader onClick={handleFileChange} onRemoveFile={removeFile}>Subir archivo</Uploader>
+
                     </div>
                     {/*<div>*/}
                     {/*    <Button className={["btn_mg btn_mg__primary mt-2"]} disabled={archivoAutorizacion !== '' ? false : true} onClick={props.EnvioDoc}>Subir archivo</Button>*/}
