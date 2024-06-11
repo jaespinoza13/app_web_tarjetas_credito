@@ -25,6 +25,8 @@ const Stepper = ({ steps, setStepsVisited, setActualStep }) => {
     useEffect(() => {
         //setVisitedSteps([0]);
 
+        console.log(`StepVisitados ${setStepsVisited}, StepActual ${setActualStep}`)
+
         setVisitedSteps([...setStepsVisited])
         setCurrentStep(setActualStep);
 
@@ -45,7 +47,9 @@ const Stepper = ({ steps, setStepsVisited, setActualStep }) => {
                         {steps.map((step, index) => (
                             <>
                                 <div key={index} className={`step ${visitedSteps.includes(index) ? 'active' : ''}`}>
-                                    {index + 1}
+                                <span>
+                                        {index + 1}
+                                    </span>
                                     <span name='span_step' style={{
                                         position: 'absolute',
                                         transform: "translateY(-35px)", color: "black"

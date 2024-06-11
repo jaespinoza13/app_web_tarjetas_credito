@@ -3,12 +3,14 @@
 const FinProceso = (props) => {
     return (
         <div className="f-row w-100 justify-content-center align-content-center">
-            <div className="f-col mb-4">
-                {props.gestion === "solicitud"
-                    ? <img style={{ width: "25rem" }} src="Imagenes/Solicitud-exitosa.gif" loop={false}></img>
-                    : <img style={{ width: "25rem" }} src="Imagenes/Prospecto-exitoso.gif" loop={false}></img>
+            <div className="f-col w-60 mb-4">
+                <div className="f-row justify-content-center align-content-center">
+                    {props.gestion === "solicitud"
+                        ? <img style={{ width: "28rem" }} src="Imagenes/Solicitud-exitosa.gif" loop={false}></img>
+                        : <img style={{ width: "28rem" }} src="Imagenes/Prospecto-exitoso.gif" loop={false}></img>
 
-                }
+                    }
+                </div>
                 <div className="">
                     <p className="mb-4">Detalles: </p>
                     <Card>
@@ -28,6 +30,7 @@ const FinProceso = (props) => {
                             <p>Email</p>
                             <h3>{props.email}</h3>
                         </div>
+                        <hr className="dashed"></hr>
                     </Card>
                 </div>
             </div>

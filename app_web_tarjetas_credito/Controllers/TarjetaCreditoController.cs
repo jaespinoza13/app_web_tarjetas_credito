@@ -31,6 +31,7 @@ using plantilla_app_web.Filters;
 using Domain.Models.TarjetaCredito.GetOrdenes;
 using Domain.Models.TarjetaCredito.GetTarjetasCredito;
 using Domain.Models.TarjetaCredito.GetMedioAprobacion;
+using Domain.Models.TarjetaCredito.Axentria.GetSeparadores;
 
 namespace plantilla_app_web.Controllers
 {
@@ -274,6 +275,15 @@ namespace plantilla_app_web.Controllers
         public ResCrypt Post(ReqUpdSolicitud req)
         {
             ResUpdSolicitud res = tarjetaCreditoDat.updSolicitud(req);
+            return Utiles.crypt(res, Request.Headers);
+        }
+
+        [Route("getSeparadores")]
+        [ServiceFilter(typeof(CryptoFilter))]
+        [HttpPost]
+        public ResCrypt Post(ReqGetSeparadores req)
+        {
+            ResGetSeparadores res = tarjetaCreditoDat.getSeparadores(req);
             return Utiles.crypt(res, Request.Headers);
         }
 

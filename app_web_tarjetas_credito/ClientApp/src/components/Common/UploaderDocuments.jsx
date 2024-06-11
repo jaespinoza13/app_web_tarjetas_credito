@@ -10,6 +10,9 @@ const UploadDocumentos = (props) => {
     { id: 4, texto: "Grupo Documental" }, { id: 5, texto: "Propietario Documentación" }, { id: 6, texto: "Abrir archivo" },
     { id: 7, texto: "Usuario carga" }, { id: 8, texto: "Fecha subida" }, { id: 9, texto: "Version" }, { id: 10, texto: "Ver" }, { id: 11, texto: "Descargar" }]
 
+
+
+
     const [tablaContenido, setTablaContenido] = useState([
         { id: 0, actor: "T", ord: "", grupo_documental: "SOLICITUD DE CREDITO", propiedad_doc: "VASQUEZ DANNY", ruta: "", usu_carga: "", fecha_subida: "", version: "", nombre_archivo: "1_SOLICITUD_DE_CREDITO" },
         { id: 1, actor: "G", ord: "1", grupo_documental: "DOCUMENTOS DE IDENTIDAD", propiedad_doc: "VASQUEZ DANNY", ruta: "", usu_carga: "", fecha_subida: "", version: "", nombre_archivo: "3_DOCUMENTOS_DE_IDENTIDAD" },
@@ -246,85 +249,87 @@ const UploadDocumentos = (props) => {
 
     return (
         <div className="content_uploader">
-
+            <h4 className='strong mb-1'>Información General</h4>
             <div className='border_content'>
-                <div style={{ display: "flex" }}>
-                    <p className='normal'>Socio: </p>
-                    <p className="negrita">Danny Vasquez</p>
+                <div className='m-2'>
+                    <div style={{ display: "flex" }}>
+                        <p className='normal'>Socio: </p>
+                        <p className="negrita">Danny Vasquez</p>
+                    </div>
+
+                    <section className='elements_tres_column mt-3'>
+
+                        <div style={{ display: "flex" }}>
+                            <p>TIPO DOCUMENTO: </p>
+                            <p className="negrita">CÉDULA</p>
+                        </div>
+
+                        <div style={{ display: "flex" }}>
+                            <p className='normal'>Fecha Ult. Modificación: </p>
+                            <p className="negrita">05/20/2023</p>
+                        </div>
+
+                        <div style={{ display: "flex" }}>
+                            <p className='normal'>SOLICITUD NRO: </p>
+                            <p className="negrita"> 188888</p>
+                        </div>
+
+                    </section>
+
+                    <section className='elements_tres_column mt-3'>
+                        <div style={{ display: "flex" }}>
+                            <p className='normal'>DOCUMENTO: </p>
+                            <p className="negrita">1150214983</p>
+                        </div>
+
+                        <div style={{ display: "flex" }}>
+                            <p className='normal'>Estado Calificación: </p>
+                            <p className="negrita"> </p>
+                        </div>
+
+                        <div style={{ display: "flex" }}>
+                            <p className='normal'>Trámite Nro: </p>
+                            <p className="negrita">0</p>
+                        </div>
+
+                    </section>
+
+                    <section className='elements_tres_column mt-3'>
+                        <div style={{ display: "flex" }}>
+                            <p className='normal'>Oficina: </p>
+                            <p className="negrita">Matriz</p>
+                        </div>
+
+                        <div style={{ display: "flex" }}>
+                            <p className='normal'>Estado de la Solicitud: </p>
+                            <p className="negrita">POR DIGITAR </p>
+                        </div>
+
+                        <div style={{ display: "flex" }}>
+                            <p className='normal'>Monto: </p>
+                            <p className="negrita">100,000</p>
+                        </div>
+
+                    </section>
+
+                    <section className='elements_tres_column mt-3'>
+                        <div style={{ display: "flex" }}>
+                            <p className='normal'>Oficial: </p>
+                            <p className="negrita">xnojeda1</p>
+                        </div>
+
+                        <div style={{ display: "flex" }}>
+                            <p className='normal'>Producto Crédito: </p>
+                            <p className="negrita">CREDI PYMES </p>
+                        </div>
+
+                        <div style={{ display: "flex" }}>
+                            <p className='normal'>Ente aprobador: </p>
+                            <p className="negrita">COMITE GENERAL DE CRÉDITO</p>
+                        </div>
+                    </section>
+
                 </div>
-
-                <section className='elements_tres_column mt-3'>
-
-                    <div style={{ display: "flex" }}>
-                        <p>TIPO DOCUMENTO: </p>
-                        <p className="negrita">CÉDULA</p>
-                    </div>
-
-                    <div style={{ display: "flex" }}>
-                        <p className='normal'>Fecha Ult. Modificación: </p>
-                        <p className="negrita">05/20/2023</p>
-                    </div>
-
-                    <div style={{ display: "flex" }}>
-                        <p className='normal'>SOLICITUD NRO: </p>
-                        <p className="negrita"> 188888</p>
-                    </div>
-
-                </section>
-
-                <section className='elements_tres_column mt-3'>
-                    <div style={{ display: "flex" }}>
-                        <p className='normal'>DOCUMENTO: </p>
-                        <p className="negrita">1150214983</p>
-                    </div>
-
-                    <div style={{ display: "flex" }}>
-                        <p className='normal'>Estado Calificación: </p>
-                        <p className="negrita"> </p>
-                    </div>
-
-                    <div style={{ display: "flex" }}>
-                        <p className='normal'>Trámite Nro: </p>
-                        <p className="negrita">0</p>
-                    </div>
-
-                </section>
-
-                <section className='elements_tres_column mt-3'>
-                    <div style={{ display: "flex" }}>
-                        <p className='normal'>Oficina: </p>
-                        <p className="negrita">Matriz</p>
-                    </div>
-
-                    <div style={{ display: "flex" }}>
-                        <p className='normal'>Estado de la Solicitud: </p>
-                        <p className="negrita">POR DIGITAR </p>
-                    </div>
-
-                    <div style={{ display: "flex" }}>
-                        <p className='normal'>Monto: </p>
-                        <p className="negrita">100,000</p>
-                    </div>
-
-                </section>
-
-                <section className='elements_tres_column mt-3'>
-                    <div style={{ display: "flex" }}>
-                        <p className='normal'>Oficial: </p>
-                        <p className="negrita">xnojeda1</p>
-                    </div>
-
-                    <div style={{ display: "flex" }}>
-                        <p className='normal'>Producto Crédito: </p>
-                        <p className="negrita">CREDI PYMES </p>
-                    </div>
-
-                    <div style={{ display: "flex" }}>
-                        <p className='normal'>Ente aprobador: </p>
-                        <p className="negrita">COMITE GENERAL DE CRÉDITO</p>
-                    </div>
-                </section>
-
             </div>
 
             <div className='f-row center_text_items' style={{ width: "100%" }}>
@@ -410,7 +415,7 @@ const UploadDocumentos = (props) => {
                     <div className={"btn_arch btn_arch__toggler "} >
                         <div className='f-row w-100 center_text_items'>
                             <h3 > Separadores </h3>
-                            <img style={{ marginLeft: "10px" }} src="icons/Axentria/barcode.png" alt="" />
+                            <img style={{ marginLeft: "10px" }} src="Imagenes/icons_axentria/barcode.png" alt="" />
                         </div>
                     </div>
                 </div>
@@ -423,7 +428,7 @@ const UploadDocumentos = (props) => {
                     <div className={"btn_arch btn_arch__toggler "} >
                         <div className='f-row w-100 center_text_items'>
                             <h3 > Examinar </h3>
-                            <img style={{ marginLeft: "10px" }} src="icons/Axentria/carpeta-de-búsqueda.png" alt="" />
+                            <img style={{ marginLeft: "10px" }} src="Imagenes/icons_axentria/carpeta-de-búsqueda.png" alt="" />
                             <input type="file" accept={".pdf"} style={{ display: 'none' }} ref={inputCargaRef} directory="" webkitdirectory="" onChange={cargarArchivosHandler} />
                         </div>
                     </div>
@@ -433,7 +438,7 @@ const UploadDocumentos = (props) => {
                     <div className={"btn_arch btn_arch__toggler "} >
                         <div className='f-row w-100 center_text_items'>
                             <h3 > Publicar </h3>
-                            <img style={{ marginLeft: "10px" }} src="icons/Axentria/subir-carpeta.png" alt="" />
+                            <img style={{ marginLeft: "10px" }} src="Imagenes/icons_axentria/subir-carpeta.png" alt="" />
                         </div>
                     </div>
                 </div>
@@ -442,7 +447,7 @@ const UploadDocumentos = (props) => {
                     <div className={"btn_arch btn_arch__toggler"} >
                         <div className='f-row w-100 center_text_items'>
                             <h3 > Búsqueda </h3>
-                            <img style={{ marginLeft: "10px" }} src="icons/Axentria/carpeta-de-documentos.png" alt="" />
+                            <img style={{ marginLeft: "10px" }} src="Imagenes/icons_axentria/carpeta-de-documentos.png" alt="" />
                         </div>
                     </div>
                 </div>
@@ -451,7 +456,7 @@ const UploadDocumentos = (props) => {
                     <div className={"btn_arch btn_arch__toggler "} >
                         <div className='f-row w-100 center_text_items'>
                             <h3 > Salir</h3>
-                            <img style={{ marginLeft: "10px" }} src="icons/close.svg" alt="" />
+                            <img style={{ marginLeft: "10px" }} src="Imagenes/close.svg" alt="" />
                         </div>
                     </div>
                 </div>

@@ -1,4 +1,5 @@
-﻿import Toggler from "../Common/UI/Toggler";
+﻿import Card from "../Common/Card";
+import Toggler from "../Common/UI/Toggler";
 import { useEffect, useState } from "react";
 
 const Personalizacion = (props) => {
@@ -98,7 +99,7 @@ const Personalizacion = (props) => {
     }
 
     return (
-        <div>
+        <Card className='mt-2'>
             <div>
                 <h3 className="mb-3">Personalización</h3>
                 <h5 className={"mb-2"}>Selecciona el nombre a imprimir en la tarjeta</h5>
@@ -159,7 +160,7 @@ const Personalizacion = (props) => {
             {/*    onChange={nombreTarjetaHnadler}*/}
             {/*    id={`${infoSocio[0].str_nombres.split(" ")[1]} ${infoSocio[0].str_apellido_paterno}`} ></input>*/}
             {/*<label htmlFor={`${infoSocio[0].str_nombres.split(" ")[1]} ${infoSocio[0].str_apellido_paterno}`}>{`${infoSocio[0].str_nombres.split(" ")[1]} ${infoSocio[0].str_apellido_paterno}`}</label>*/}
-        </div>
+        </Card>
     );
 }
 

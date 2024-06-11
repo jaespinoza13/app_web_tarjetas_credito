@@ -126,7 +126,7 @@ function Login(props) {
                     handlerBtnAceptar={() => { loginCorrecto ? window.location.reload() : setIsLogin(0); }}
                     handlerBtnCancelar={() => { loginCorrecto ? window.location.reload() : setIsLogin(0); }}
                     btnAceptar={"Aceptar"}
-                    size={"md"} />
+                    size={"lg"} />
                 : isLogin === 2 ?
                     <div>
                         {!IsNullOrWhiteSpace(textLogin) ?

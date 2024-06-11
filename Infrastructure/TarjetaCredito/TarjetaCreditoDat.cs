@@ -7,6 +7,7 @@ using Domain.Models.TarjetaCredito.AddProcesoEspecifico;
 using Domain.Models.TarjetaCredito.AddProspeccion;
 using Domain.Models.TarjetaCredito.AddResolucion;
 using Domain.Models.TarjetaCredito.AddSolicitud;
+using Domain.Models.TarjetaCredito.Axentria.GetSeparadores;
 using Domain.Models.TarjetaCredito.GetComentarios;
 using Domain.Models.TarjetaCredito.GetContrato;
 using Domain.Models.TarjetaCredito.GetContratos;
@@ -877,6 +878,44 @@ namespace Infrastructure.TarjetaCredito
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
                     res = JsonSerializer.Deserialize<ResGetTarjetasCredito>(response.Content!)!;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            return res;
+        }
+
+
+        public ResGetSeparadores getSeparadores(ReqGetSeparadores req)
+        {
+            ResGetSeparadores res = new ResGetSeparadores();
+            try
+            {
+                req.llenarDatosConfig(_settings);
+                req.str_id_servicio = "REQ_" + _settings.service_get_separadores;
+                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_separadores)
+                {
+                    ThrowOnAnyError = true,
+                    MaxTimeout = _settings.time_out
+                };
+
+                var client = new RestClient(options);
+                var request = new RestRequest();
+                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                request.AddHeader("Content-Type", "application/json");
+                request.AddParameter("application/json", req, ParameterType.RequestBody);
+                request.Method = Method.Post;
+
+                var response = new RestResponse();
+                response = client.Post(request);
+
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+
+                    res = JsonSerializer.Deserialize<ResGetSeparadores>(response.Content!)!;
+                    Console.WriteLine(res);
                 }
             }
             catch (Exception ex)

@@ -99,6 +99,7 @@ const NuevaSolicitud = (props) => {
     const [modalMensajeAviso, setModalMensajeAviso] = useState(false);
     const [textoAviso, setTextoAviso] = useState(false);
 
+    //Stepper
     const [visitadosSteps, setVisitadosSteps] = useState([0]);
     const [actualStep, setActualStep] = useState(0);
 
@@ -251,12 +252,13 @@ const NuevaSolicitud = (props) => {
 
     
     const steps = [
-        "PASO 1",
-        "PASO 2",
-        "PASO 3",
-        "PASO 4",
-        "PASO 5",
-        "PASO 6",
+        "",
+        "Datos personales",
+        "Requisitos",
+        "Datos financieros",
+        "Simulación",
+        "Personalización",
+        "Registro de Solicitud",
     ];
 
     /*
@@ -285,10 +287,9 @@ const NuevaSolicitud = (props) => {
         //console.log("step,", step)
         if (step === 0) {
 
-            setVisitadosSteps([...visitadosSteps, actualStep + 1])
-            setActualStep(1);
+            //TODO: FALTA EDITAR PARA REGISTRO DE INGRESOS, EGRESOS, ETC
             fetchValidacionSocio(cedulaSocio, '', props.token, (data) => {
-                console.log("SOC,",data)
+                //console.log("SOC,",data)
                 const arrValidacionesOk = [...data.lst_datos_alerta_true];
                 const arrValidacionesErr = [...data.lst_datos_alerta_false];
                 setValidacionesOk(arrValidacionesOk);
@@ -308,10 +309,13 @@ const NuevaSolicitud = (props) => {
                 if (data.str_res_codigo === "100") {
                     setTextoAviso("Ya se encuentra registrada una solicitud con esa cédula.")
                     setModalMensajeAviso(true);
-                    console.log("ENTRO A SOLIC YA CREADA");
-                    //return;
+                    console.log("SOLIC YA CREADA");
+
                 }
                 else if (data.str_nombres !== "") {
+
+                    setVisitadosSteps([...visitadosSteps, actualStep + 1])
+                    setActualStep(1);
                     setStep(1);
                     setEstadoBotonSiguiente(true);
                 }
@@ -387,8 +391,12 @@ const NuevaSolicitud = (props) => {
             setActualStep(4);
             setStep(4);
         }
-
         if (step === 4) {
+            setVisitadosSteps([...visitadosSteps, actualStep + 1])
+            setActualStep(5);
+            setStep(5);
+        }
+        if (step === 5) {
             let body = {
                 int_ente_aprobador: 589693,
                 str_tipo_documento: "C",
@@ -409,9 +417,10 @@ const NuevaSolicitud = (props) => {
                 str_comentario_adicional: comentarioAdic
             }
             fetchAddSolicitud(body, props.token, (data) => {
-                setStep(-1);
                 setVisitadosSteps([...visitadosSteps, actualStep + 1])
-                setActualStep(5);
+                setActualStep(6);
+                setStep(-1);
+                
             }, dispatch);
         }
         if (step === -1) {
@@ -489,10 +498,6 @@ const NuevaSolicitud = (props) => {
 
     }
 
-
-    const handleNext = () => {
-    };
-
     return (
         <div className="f-row" >
             <Sidebar enlace={props.location.pathname}></Sidebar>
@@ -501,9 +506,7 @@ const NuevaSolicitud = (props) => {
                 <div className="f-col justify-content-center">
 
                     <div className="stepper">
-
-                        <Stepper steps={steps} setStepsVisited={visitadosSteps} setActualStep={actualStep}  ></Stepper>
-
+                        <Stepper steps={steps} setStepsVisited={visitadosSteps} setActualStep={actualStep}/>
                     </div>
                     
 
@@ -555,6 +558,7 @@ const NuevaSolicitud = (props) => {
                         ></DatosSocio>
                     }
                     {step === 5 &&
+                        <div className="f-row w-100 justify-content-center">
                         <Personalizacion
                             nombres={nombreSocio}
                             str_apellido_paterno={apellidoPaterno}
@@ -564,7 +568,8 @@ const NuevaSolicitud = (props) => {
                             onNombreTarjeta={nombreTarjetaHandler}
                             onTipoEntrega={tipoEntregaHandler}
                             onDireccionEntrega={direccionEntregaHandler}
-                        ></Personalizacion>
+                            ></Personalizacion>
+                        </div>
                     }
                     {step === 6 }
 
