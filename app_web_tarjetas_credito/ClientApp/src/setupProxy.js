@@ -50,7 +50,9 @@ const context =  [
     '/tarjetacredito/addProcEspecifico',
     '/tarjetacredito/updSolicitud',
     '/tarjetacredito/getParametros',
-    '/tarjetacredito/getSeparadores'
+    '/tarjetacredito/getSeparadores',
+    '/tarjetacredito/addDocumentosAxentria',
+    '/tarjetacredito/getDocumentosAxentria'
 ];
 
 module.exports = function(app) {

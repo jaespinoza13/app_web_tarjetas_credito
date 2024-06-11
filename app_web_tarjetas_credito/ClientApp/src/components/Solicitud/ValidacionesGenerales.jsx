@@ -101,7 +101,7 @@ const ValidacionesGenerales = (props) => {
     }
 
     const getContrato = () => {
-        fetchScore("C", props.cedula, props.infoSocio.nombreSocio, "Matriz", props.datosUsuario.strOficial, props.datosUsuario.strCargo, props.token, (data) => {
+        fetchScore("C", props.str_identificacion, props.str_nombres + " " + props.str_apellido_paterno + " " + props.str_apellido_materno, "Matriz", props.datosUsuario.strOficial, props.datosUsuario.strCargo, props.token, (data) => {
             descargarArchivoConsulta(data);
         }, dispatch);
     }

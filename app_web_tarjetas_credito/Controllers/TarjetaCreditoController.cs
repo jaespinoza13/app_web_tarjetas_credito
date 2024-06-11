@@ -32,6 +32,8 @@ using Domain.Models.TarjetaCredito.GetOrdenes;
 using Domain.Models.TarjetaCredito.GetTarjetasCredito;
 using Domain.Models.TarjetaCredito.GetMedioAprobacion;
 using Domain.Models.TarjetaCredito.Axentria.GetSeparadores;
+using Domain.Models.TarjetaCredito.Axentria.AddDocumentos;
+using Domain.Models.TarjetaCredito.Axentria.ObtenerDocumentos;
 
 namespace plantilla_app_web.Controllers
 {
@@ -284,6 +286,24 @@ namespace plantilla_app_web.Controllers
         public ResCrypt Post(ReqGetSeparadores req)
         {
             ResGetSeparadores res = tarjetaCreditoDat.getSeparadores(req);
+            return Utiles.crypt(res, Request.Headers);
+        }
+
+        [Route("addDocumentosAxentria")]
+        [ServiceFilter(typeof(CryptoFilter))]
+        [HttpPost]
+        public ResCrypt Post(ReqAddDocumentos req)
+        {
+            ResAddDocumentos res = tarjetaCreditoDat.addDocumentosAxentria(req);
+            return Utiles.crypt(res, Request.Headers);
+        }
+
+        [Route("getDocumentosAxentria")]
+        [ServiceFilter(typeof(CryptoFilter))]
+        [HttpPost]
+        public ResCrypt Post(ReqGetDocumentos req)
+        {
+            ResGetDocumentos res = tarjetaCreditoDat.getDocumentosAxentria(req);
             return Utiles.crypt(res, Request.Headers);
         }
 

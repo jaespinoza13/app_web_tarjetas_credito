@@ -10,20 +10,39 @@ const UploadDocumentos = (props) => {
     { id: 4, texto: "Grupo Documental" }, { id: 5, texto: "Propietario Documentación" }, { id: 6, texto: "Abrir archivo" },
     { id: 7, texto: "Usuario carga" }, { id: 8, texto: "Fecha subida" }, { id: 9, texto: "Version" }, { id: 10, texto: "Ver" }, { id: 11, texto: "Descargar" }]
 
+    const [tablaContenido, setTablaContenido] = useState([]);
 
-
-
+    /*
     const [tablaContenido, setTablaContenido] = useState([
-        { id: 0, actor: "T", ord: "", grupo_documental: "SOLICITUD DE CREDITO", propiedad_doc: "VASQUEZ DANNY", ruta: "", usu_carga: "", fecha_subida: "", version: "", nombre_archivo: "1_SOLICITUD_DE_CREDITO" },
-        { id: 1, actor: "G", ord: "1", grupo_documental: "DOCUMENTOS DE IDENTIDAD", propiedad_doc: "VASQUEZ DANNY", ruta: "", usu_carga: "", fecha_subida: "", version: "", nombre_archivo: "3_DOCUMENTOS_DE_IDENTIDAD" },
-        { id: 2, actor: "T", ord: "", grupo_documental: "SUSTENTO DE CAPACIDAD DE PAGO", propiedad_doc: "VASQUEZ DANNY", ruta: "", usu_carga: "", fecha_subida: "", version: "", nombre_archivo: "7_SUSTENTO_DE_CAPACIDAD_DE_PAGO" },
+        { int_id_separador: 0, str_actor: "T", str_ord: "", str_separador: "SOLICITUD DE CREDITO", str_ruta_arc: "VASQUEZ DANNY", ruta: "", str_login_carga: "", dtt_fecha_sube: "", str_version: "", str_nombre_separador: "1_SOLICITUD_DE_CREDITO" },
+        { int_id_separador: 1, str_actor: "G", str_ord: "1", str_separador: "DOCUMENTOS DE IDENTIDAD", str_ruta_arc: "VASQUEZ DANNY", ruta: "", str_login_carga: "", dtt_fecha_sube: "", str_version: "", str_nombre_separador: "3_DOCUMENTOS_DE_IDENTIDAD" },
+        { int_id_separador: 2, str_actor: "T", str_ord: "", str_separador: "SUSTENTO DE CAPACIDAD DE PAGO", str_ruta_arc: "VASQUEZ DANNY", ruta: "", str_login_carga: "", dtt_fecha_sube: "", str_version: "", str_nombre_separador: "7_SUSTENTO_DE_CAPACIDAD_DE_PAGO" },
     ])
-
+    /*
     const grupoDocumental = [
         { id: 0, actor: "T", ord: "", grupo_documental: "SOLICITUD DE CREDITO", nombre_archivo: "1_SOLICITUD_DE_CREDITO" },
         { id: 1, actor: "T", ord: "", grupo_documental: "DOCUMENTOS DE IDENTIDAD", nombre_archivo: "3_DOCUMENTOS_DE_IDENTIDAD" },
         { id: 2, actor: "T", ord: "", grupo_documental: "SUSTENTO DE CAPACIDAD DE PAGO", nombre_archivo: "7_SUSTENTO_DE_CAPACIDAD_DE_PAGO" },
     ]
+    */
+
+   /*
+    useEffect(() => {
+        //if (props.contenido > 0) {
+
+        /*
+        //TODO: eliminar el id no corresponde
+        let result = props.contenido;
+
+            result.forEach((elem, index) => {
+                result[index].int_id_separador = index;
+            })
+            
+
+        
+        //}
+    }, [])
+    */
 
     const [docsBase64, setDocsBase64] = useState("");
     const [totalRegistros, setTotalRegistros] = useState(0);
@@ -34,6 +53,7 @@ const UploadDocumentos = (props) => {
     const [publicadorCheckBox, setPublicadorCheckBox] = useState([]);
 
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isModalBusqVisible, setIsModalBusqVisible] = useState(false);
     const [isSelectAllDocumental, setIsSelectAllDocumental] = useState(false);
     const [documentalCheckBox, setDocumentalheckBox] = useState([]);
 
@@ -48,6 +68,14 @@ const UploadDocumentos = (props) => {
         setIsModalVisible(false);
     }
 
+    const openModalBusqueda = () => {
+        setIsModalBusqVisible(true);
+    }
+
+    const hideModalBusqueda = () => {
+        setIsModalBusqVisible(false);
+    }
+
 
     const seleccionMultipleSeparador = (e) => {
         toggleSelectAllSeparador();
@@ -58,9 +86,9 @@ const UploadDocumentos = (props) => {
         setIsSelectAllSeparador(!isSelectAllSeparador);
         if (!isSelectAllSeparador) {
             const resultado = tablaContenido.map((doc, indexOrden) => {
-                return doc.id
+                return doc.int_id_separador
             }).flat();
-            //console.log("RESULT FLAT ", resultado)
+            console.log("RESULT SEPAR ", resultado)
             setSeparadorCheckBox(resultado);
         } else {
             setSeparadorCheckBox([]);
@@ -86,8 +114,8 @@ const UploadDocumentos = (props) => {
     }
     useEffect(() => {
         //console.log(`${separadorCheckBox} -->  ${separadorCheckBox.length} `)
-        //console.log("TOTAL R", totalRegistros)
-        //console.log("Separador Check ", separadorCheckBox.length)
+        console.log("TOTAL R", totalRegistros)
+        console.log("Separador Check ", separadorCheckBox.length)
         setIsSelectAllSeparador(separadorCheckBox.length === totalRegistros && separadorCheckBox.length !== 0);
     }, [separadorCheckBox]);
 
@@ -104,7 +132,7 @@ const UploadDocumentos = (props) => {
         setIsSelectAllPublicar(!isSelectAllPublicar);
         if (!isSelectAllPublicar) {
             const resultado = tablaContenido.map((doc, indexOrden) => {
-                return doc.id
+                return doc.int_id_separador
             }).flat();
             setPublicadorCheckBox(resultado);
         } else {
@@ -144,7 +172,7 @@ const UploadDocumentos = (props) => {
         setIsSelectAllDocumental(!isSelectAllDocumental);
         if (!isSelectAllDocumental) {
             const resultado = tablaContenido.map((doc, indexOrden) => {
-                return doc.id
+                return doc.int_id_separador
             }).flat();
             setDocumentalheckBox(resultado);
         } else {
@@ -192,10 +220,10 @@ const UploadDocumentos = (props) => {
 
 
     useEffect(() => {
-        const conteoRegistros = tablaContenido.length;
+        const conteoRegistros = props.contenido.length;
         //console.log("TOTAL REG ",conteoRegistros)
         setTotalRegistros(conteoRegistros);
-
+        setTablaContenido(props.contenido);
         /* EN caso se requiera solo seleccionar las filas q tenga cargado el archivo
         let checkDocCargados = filasDocsCargados();
         if(checkDocCargados.length > 0){
@@ -212,7 +240,7 @@ const UploadDocumentos = (props) => {
     function filasDocsCargados() {
         let checkDocCargados = [];
         tablaContenido.forEach(element => {
-            if (element.ruta !== "") checkDocCargados = [...checkDocCargados, element.id];
+            if (element.str_ruta_arc !== "") checkDocCargados = [...checkDocCargados, element.int_id_separador];
         })
         return checkDocCargados;
     }
@@ -233,15 +261,19 @@ const UploadDocumentos = (props) => {
         archivosLimpieza = archivosLimpieza.filter(doc => doc.type === "application/pdf")
         //console.log(archivosLimpieza)
 
-        archivosLimpieza.forEach(element => {
-            let indexArchivo;
-            indexArchivo = tablaContenido.findIndex(fila => fila.nombre_archivo === element.name.split('.')[0])
-            //console.log(indexArchivo);
-            tablaContenido[indexArchivo].ruta = element.webkitRelativePath;
-            tablaContenido[indexArchivo].usu_carga = "dvvasquez";
-        })
-        setValidadorCambio(true);
-        setTablaContenido([...tablaContenido]);
+        if (archivosLimpieza.length > 0) {
+
+            archivosLimpieza.forEach(element => {
+                let indexArchivo;
+                indexArchivo = tablaContenido.findIndex(fila => fila.str_nombre_separador === element.name.split('.')[0])
+                //console.log(indexArchivo);
+                tablaContenido[indexArchivo].str_ruta_arc = element.webkitRelativePath;
+                tablaContenido[indexArchivo].str_login_carga = "dvvasquez";
+            })
+            setValidadorCambio(true);
+            setTablaContenido([...tablaContenido]);
+        }
+
     }
 
 
@@ -253,19 +285,19 @@ const UploadDocumentos = (props) => {
             <div className='border_content'>
                 <div className='m-2'>
                     <div style={{ display: "flex" }}>
-                        <p className='normal'>Socio: </p>
+                        <p className='normal'>SOCIO: </p>
                         <p className="negrita">Danny Vasquez</p>
                     </div>
 
                     <section className='elements_tres_column mt-3'>
 
                         <div style={{ display: "flex" }}>
-                            <p>TIPO DOCUMENTO: </p>
+                            <p className='normal'>TIPO DOCUMENTO: </p>
                             <p className="negrita">CÉDULA</p>
                         </div>
 
                         <div style={{ display: "flex" }}>
-                            <p className='normal'>Fecha Ult. Modificación: </p>
+                            <p className='normal'>FECHA ULT. MODIF.: </p>
                             <p className="negrita">05/20/2023</p>
                         </div>
 
@@ -283,12 +315,12 @@ const UploadDocumentos = (props) => {
                         </div>
 
                         <div style={{ display: "flex" }}>
-                            <p className='normal'>Estado Calificación: </p>
+                            <p className='normal'>ESTADO CALIFICACION: </p>
                             <p className="negrita"> </p>
                         </div>
 
                         <div style={{ display: "flex" }}>
-                            <p className='normal'>Trámite Nro: </p>
+                            <p className='normal'>TRAMITE NRO: </p>
                             <p className="negrita">0</p>
                         </div>
 
@@ -296,17 +328,17 @@ const UploadDocumentos = (props) => {
 
                     <section className='elements_tres_column mt-3'>
                         <div style={{ display: "flex" }}>
-                            <p className='normal'>Oficina: </p>
+                            <p className='normal'>OFICINA: </p>
                             <p className="negrita">Matriz</p>
                         </div>
 
                         <div style={{ display: "flex" }}>
-                            <p className='normal'>Estado de la Solicitud: </p>
+                            <p className='normal'>ESTADO DE LA SOLICITUD: </p>
                             <p className="negrita">POR DIGITAR </p>
                         </div>
 
                         <div style={{ display: "flex" }}>
-                            <p className='normal'>Monto: </p>
+                            <p className='normal'>MONTO: </p>
                             <p className="negrita">100,000</p>
                         </div>
 
@@ -314,17 +346,17 @@ const UploadDocumentos = (props) => {
 
                     <section className='elements_tres_column mt-3'>
                         <div style={{ display: "flex" }}>
-                            <p className='normal'>Oficial: </p>
+                            <p className='normal'>OFICIAL: </p>
                             <p className="negrita">xnojeda1</p>
                         </div>
 
                         <div style={{ display: "flex" }}>
-                            <p className='normal'>Producto Crédito: </p>
+                            <p className='normal'>PRODUCTO CRÉDITO: </p>
                             <p className="negrita">CREDI PYMES </p>
                         </div>
 
                         <div style={{ display: "flex" }}>
-                            <p className='normal'>Ente aprobador: </p>
+                            <p className='normal'>ENTE APROBADOR: </p>
                             <p className="negrita">COMITE GENERAL DE CRÉDITO</p>
                         </div>
                     </section>
@@ -355,40 +387,40 @@ const UploadDocumentos = (props) => {
                         <tbody>
                             {tablaContenido.map((documentacion) => {
                                 return (
-                                    <Fragment key={documentacion.id}>
-                                        <tr key={documentacion.id}>
+                                    <Fragment key={documentacion.int_id_separador}>
+                                        <tr key={documentacion.int_id_separador}>
 
                                             <td style={{ width: "2px" }} >
-                                                <Input disabled={false} type="checkbox" setValueHandler={() => ckeckSelector(documentacion.id)} checked={separadorCheckBox.includes(documentacion.id)}  ></Input>
+                                                <Input disabled={false} type="checkbox" setValueHandler={() => ckeckSelector(documentacion.int_id_separador)} checked={separadorCheckBox.includes(documentacion.int_id_separador)}  ></Input>
                                             </td>
 
                                             <td style={{ width: "2px" }} >
-                                                <Input disabled={false} type="checkbox" setValueHandler={() => ckeckPublicador(documentacion.id)} checked={publicadorCheckBox.includes(documentacion.id)}   ></Input>
+                                                <Input disabled={false} type="checkbox" setValueHandler={() => ckeckPublicador(documentacion.int_id_separador)} checked={publicadorCheckBox.includes(documentacion.int_id_separador)}   ></Input>
                                             </td>
 
                                             <td style={{ width: "2px", justifyContent: "left" }} >
-                                                {documentacion.actor}
+                                                {documentacion.str_actor}
                                             </td>
                                             <td style={{ width: "2%", justifyContent: "left" }} >
-                                                {documentacion.ord}
+                                                {documentacion.str_ord}
                                             </td>
                                             <td style={{ width: "20%", justifyContent: "left" }} >
-                                                {documentacion.grupo_documental}
+                                                {documentacion.str_separador}
                                             </td>
                                             <td style={{ width: "20%", justifyContent: "left" }} >
-                                                {documentacion.propiedad_doc}
+                                                {documentacion.str_nombre_socio}
                                             </td>
                                             <td style={{ width: "10%", justifyContent: "left" }} >
-                                                <div style={{ whiteSpace: "nowrap" }}>{documentacion.ruta}</div>
+                                                <div style={{ whiteSpace: "nowrap" }}>{documentacion.str_ruta_arc}</div>
                                             </td>
                                             <td style={{ width: "10%", justifyContent: "left" }} >
-                                                {documentacion.usu_carga}
+                                                {documentacion.str_login_carga}
                                             </td>
                                             <td style={{ width: "10%", justifyContent: "left" }} >
-                                                {documentacion.fecha_subida}
+                                                {documentacion.dtt_fecha_sube}
                                             </td>
                                             <td style={{ width: "3%", justifyContent: "left" }} >
-                                                {documentacion.version}
+                                                {documentacion.str_version}
                                             </td>
                                             <td style={{ width: "2%", justifyContent: "left" }} >
                                                 Ver
@@ -443,7 +475,7 @@ const UploadDocumentos = (props) => {
                     </div>
                 </div>
 
-                <div style={{ marginRight: "5px" }} className="f-row uploader_arc">
+                <div style={{ marginRight: "5px" }} className="f-row uploader_arc" onClick={openModalBusqueda}>
                     <div className={"btn_arch btn_arch__toggler"} >
                         <div className='f-row w-100 center_text_items'>
                             <h3 > Búsqueda </h3>
@@ -478,21 +510,21 @@ const UploadDocumentos = (props) => {
                     </thead>
                     <tbody>
 
-                        {grupoDocumental.map(separador => {
+                        {props.grupoDocumental.map(separador => {
 
                             return (
-                                <tr key={separador.id}>
+                                <tr key={separador.int_id_separador}>
                                     <td style={{ width: "21px" }} >
-                                        <Input disabled={false} type="checkbox" setValueHandler={() => ckeckDocumental(separador.id)} checked={documentalCheckBox.includes(separador.id)}  ></Input>
+                                        <Input disabled={false} type="checkbox" setValueHandler={() => ckeckDocumental(separador.int_id_separador)} checked={documentalCheckBox.includes(separador.int_id_separador)}  ></Input>
                                     </td>
                                     <td style={{ width: "5px" }} >
-                                        {separador.actor}
+                                        {separador.str_actor}
                                     </td>
                                     <td style={{ width: "37%", justifyContent: "left" }} >
-                                        {separador.grupo_documental}
+                                        {separador.str_separador}
                                     </td>
                                     <td style={{ width: "37%", justifyContent: "left" }} >
-                                        {separador.nombre_archivo}
+                                        {separador.str_nombre_separador}
                                     </td>
                                 </tr>
 
@@ -505,6 +537,69 @@ const UploadDocumentos = (props) => {
                 </table>
 
 
+            </Modal>
+
+
+            <Modal modalIsVisible={isModalBusqVisible} type="md" onCloseClick={hideModalBusqueda} onNextClick={(e) => console.log("Sig Generar")} mainText="Buscar" titulo="Buscar">
+
+                <section className="elements_two_column mt-2 mb-2">
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                        <p>IDENTIFICACION: </p>
+                        <Input className="w-60 ml-2" id='identificacion' name='identificacion' esRequerido={true} type="text" placeholder="1150214375"></Input>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                        <p>ENTE: </p>
+                        <Input className="w-60 ml-2" id='ente' name='ente' esRequerido={true} type="text" placeholder="455428"></Input>
+                    </div>
+
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                        <p style={{ marginRight: "42px" }}>SOLICITUD: </p>
+                        <Input className="w-60" id='flujo' name='flujo' esRequerido={true} type="text"></Input>
+                    </div>
+
+                </section>
+
+                <table className='archivos mt-4'>
+                    <thead>
+                        <tr>
+                            <th style={{ width: "30px" }}  >Nombre Archivo</th>
+                            <th style={{ width: "15%", justifyContent: "left" }}  >Usuario Carga</th>
+                            <th style={{ width: "15%", justifyContent: "left" }} >Solicitud</th>
+                            <th style={{ width: "10%", justifyContent: "left" }} >Version</th>
+                            <th style={{ width: "15%", justifyContent: "left" }} >Ult. Modificación</th>
+                            <th style={{ width: "15%", justifyContent: "left" }} >Ver Documento</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        {props.grupoDocumental.map(separador => {
+
+                            return (
+                                <tr key={separador.id}>
+                                    <td style={{ justifyContent: "left" }} >
+                                        {separador.str_separador}
+                                    </td>
+                                    <td style={{ ustifyContent: "left" }} >
+                                        dvvasquez
+                                    </td>
+                                    <td style={{ ustifyContent: "left" }} >
+                                        4866846
+                                    </td>
+                                    <td style={{ ustifyContent: "left" }} >
+                                        1
+                                    </td>
+                                    <td style={{ ustifyContent: "left" }} >
+                                        06/11/2024
+                                    </td>
+                                    <td style={{ ustifyContent: "left" }} >
+                                        1
+                                    </td>
+                                </tr>
+                            )
+                        })}
+                    </tbody>
+                </table>
             </Modal>
 
 
