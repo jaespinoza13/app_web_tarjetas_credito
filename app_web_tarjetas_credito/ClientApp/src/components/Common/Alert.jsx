@@ -115,7 +115,7 @@ function ModalAlert(props) {
                             }
                         </Grid>
                         <Grid item xs={1}>
-                            {canClose ? <button className="btn_mg btn_mg__tertiary btn_mg__auto"><FontAwesomeIcon icon={solid("close")} onClick={toggleCancel} /></button> : ""}
+                            {canClose ? <button className="btn_mg btn_mg__tertiary btn_mg__auto supr_padding"><FontAwesomeIcon icon={solid("close")} onClick={toggleCancel} /></button> : ""}
                         </Grid>
                     </Grid>
                 </DialogTitle>

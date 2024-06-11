@@ -1562,6 +1562,11 @@ input[type=radio] {
     width: 30px;
 }
 
+
+.supr_padding {
+    padding: 0 !important
+}
+
 @media screen and (max-width: 600px) {
     .responsive-table {
         overflow-x: auto;

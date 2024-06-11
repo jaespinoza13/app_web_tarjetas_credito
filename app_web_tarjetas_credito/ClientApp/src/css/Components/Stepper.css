@@ -1,6 +1,4 @@
-﻿
-
-.step-largo-barra {
+﻿.step-largo-barra {
     width: 95%; /* modificar si se elimina propiedad transform  */
     display: inline-flex;
     /* transform: translateX(-10px); */ /*eliminar si no se colocar ningun "span_step" como titulo del Step*/
@@ -8,6 +6,9 @@
 
 .span_step {
     font-family: "Karbon", sans-serif;
+    text-decoration: none;
+    font-size: 0.8rem;
+    display: inline;
 }
 
 .stepper-container {

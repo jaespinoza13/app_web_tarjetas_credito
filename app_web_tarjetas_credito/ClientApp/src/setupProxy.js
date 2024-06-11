@@ -49,7 +49,8 @@ const context =  [
     "/tarjetacredito/getMedioAprobacion",
     '/tarjetacredito/addProcEspecifico',
     '/tarjetacredito/updSolicitud',
-    '/tarjetacredito/getParametros'
+    '/tarjetacredito/getParametros',
+    '/tarjetacredito/getSeparadores'
 ];
 
 module.exports = function(app) {

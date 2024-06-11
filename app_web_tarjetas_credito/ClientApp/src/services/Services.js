@@ -118,6 +118,7 @@ export const getMedioAprobacion = "GET_MEDIO_APROBACION"
 export const addProcEspecifico = "ADD_PROCESO_ESPECIFICO"
 export const updSolicitud = "UPD_SOLICITUD_TC"
 export const getParametros = "GET_PARAMETROS"
+export const getSeparadores = "GET_SEPARADORES"
 
 /**
  * Obtener la Url de un servicio de acuerdo a su nombre de Proceso Unico
@@ -270,6 +271,9 @@ export function ServiceUrl(request, params = []) {
             break;
         case getParametros:
             pathOut = "tc/getParams"
+            break;
+        case getSeparadores:
+            pathOut = "tc/getSeparadores"
             break;
         default:
             return null;
@@ -523,7 +527,8 @@ function pathRewrite(path) {
         "tc/getMedioAprobacion": '/tarjetacredito/getMedioAprobacion',
         "tc/addProcEspec": '/tarjetacredito/addProcEspecifico',
         "tc/updSol": '/tarjetacredito/updSolicitud',
-        "tc/getParams": '/tarjetacredito/getParametros'
+        "tc/getParams": '/tarjetacredito/getParametros',
+        "tc/getSeparadores": '/tarjetacredito/getSeparadores'
     };
     if (path) {
         var p = context[path];

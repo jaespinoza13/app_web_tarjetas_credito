@@ -2,7 +2,7 @@
 import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { useEffect, useState } from "react";
-import { fetchGetInforme, fetchGetFlujoSolicitud, fetchAddComentarioAsesor, fetchAddComentarioSolicitud, fetchGetResolucion, fetchAddProcEspecifico, fetchUpdateCupoSolicitud, fetchGetMedioAprobacion, fetchAddResolucion } from "../../services/RestServices";
+import { fetchGetInforme, fetchGetFlujoSolicitud, fetchAddComentarioAsesor, fetchAddComentarioSolicitud, fetchGetResolucion, fetchAddProcEspecifico, fetchUpdateCupoSolicitud, fetchGetMedioAprobacion, fetchAddResolucion, fetchGetSeparadores } from "../../services/RestServices";
 import Sidebar from "../Common/Navs/Sidebar";
 import Card from "../Common/Card";
 import Table from "../Common/Table";
@@ -12,6 +12,7 @@ import Button from "../Common/UI/Button";
 import Modal from "../Common/Modal/Modal";
 import Input from "../Common/UI/Input";
 import Toggler from "../Common/UI/Toggler";
+import UploadDocumentos from "../Common/UploaderDocuments";
 
 const mapStateToProps = (state) => {
     //console.log(state);
@@ -64,6 +65,10 @@ const VerSolicitud = (props) => {
     const [estadosSiguientes, setEstadosSiguientes] = useState([]);
     const [estadosSiguientesAll, setEstadosSiguientesAll] = useState([]);
     const [archivoMostrado, setArchivoMostrado] = useState("FRMSYS-020.pdf")
+
+    //Axentria
+    const [separadores, setSeparadores] = useState([]);
+
     const estadosSol = [
         {
             prm_id: "11035", prm_valor_ini: "SOLICITUD CREADA"
@@ -112,28 +117,34 @@ const VerSolicitud = (props) => {
     ];
     
     useEffect(() => {
+        fetchGetFlujoSolicitud(props.solicitud.solicitud, props.token, (data) => {
+            if (data.flujo_solicitudes.length > 0) {
+                const arrayDeValores = data.flujo_solicitudes.map(objeto => objeto.int_id);
+                const valorMaximo = Math.max(...arrayDeValores);
+                const datosSolicitud = data.flujo_solicitudes.find(solFlujo => solFlujo.int_id === valorMaximo);
+                setFlujoSolId(datosSolicitud.int_id);
+                setSolicitudTarjeta(...[datosSolicitud])
+
+                //console.log("ARRA MAX SOL", arrayDeValores);
+                //console.log("MAX SOL", valorMaximo);
+                //console.log("FLUJO SOL", datosSolicitud);
+            }
+            
+
+        }, dispatch);
         fetchGetInforme(props.solicitud.solicitud, props.solicitud.idSolicitud, props.token, (data) => {
             setInforme(data.lst_informe);
-            existeComentariosVacios(data.lst_informe);  
+            existeComentariosVacios(data.lst_informe);
             //console.log("INFORME",data.lst_informe);
 
         }, dispatch);
         fetchGetResolucion(props.solicitud.solicitud, props.token, (data) => {
             setResoluciones(data.lst_resoluciones);
-            console.log("Resoluciones", data);
+            //console.log("Resoluciones", data);
         }, dispatch);
-        fetchGetFlujoSolicitud(props.solicitud.solicitud, props.token, (data) => {
-            const arrayDeValores = data.flujo_solicitudes.map(objeto => objeto.int_id);
-            const valorMaximo = Math.max(...arrayDeValores);
-            const datosSolicitud = data.flujo_solicitudes.find(solFlujo => solFlujo.int_id === valorMaximo);
-            setFlujoSolId(datosSolicitud.int_id);
-            setSolicitudTarjeta(...[datosSolicitud])
-
-            //console.log("ARRA MAX SOL", arrayDeValores);
-            //console.log("MAX SOL", valorMaximo);
-            //console.log("FLUJO SOL", datosSolicitud);
-
-
+        fetchGetSeparadores(props.token, (data) => {
+            console.log("RES, ", data.lst_separadores)
+            setSeparadores(data.lst_separadores);
         }, dispatch);
         setImprimeMedio([
             {
@@ -784,10 +795,16 @@ const VerSolicitud = (props) => {
                 <div className="select-item">
                     <Input type="checkbox"></Input>
                     <a onClick={() => { downloadArchivo("/Imagenes/archivo.pdf") }}>Autorizacion de consulta al buró</a>
-                </div>
+                    </div>
+
+
+                    <div className="mt-3">
+                        <UploadDocumentos grupoDocumental={separadores} contenido={separadores}></UploadDocumentos>
+                    </div>
                 </Card>
             }
 
+         
 
 
 

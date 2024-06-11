@@ -15,6 +15,7 @@ import Modal from '../Common/Modal/Modal';
 import FinProceso from '../Solicitud/FinProceso';
 import RegistroCliente from './RegistroCliente';
 import DatosFinancieros from '../Solicitud/DatosFinancieros';
+import Stepper from '../Common/Stepper';
 
 const mapStateToProps = (state) => {
     var bd = state.GetWebService.data;
@@ -100,6 +101,10 @@ const NuevaProspeccion = (props) => {
         setDirTrabajoSocio([...data.lst_dir_trabajo]);
     }
 
+    //Stepper
+    const [visitadosSteps, setVisitadosSteps] = useState([0]);
+    const [actualStep, setActualStep] = useState(0);
+
     useEffect(() => {
         const strOficial = get(localStorage.getItem("sender_name"));
         setUsuario(strOficial);
@@ -114,6 +119,8 @@ const NuevaProspeccion = (props) => {
     useEffect(() => {
         if (score.str_res_codigo === "000") {
             setStep(step + 1); // PASA AL PASO 2
+            setActualStep(3);
+            setVisitadosSteps([...visitadosSteps, actualStep + 1])
         }
         else if (score.str_res_codigo === "") {
             setMensajeErrorScore("Hubo un error al obtener el score, intente más tarde");
@@ -319,11 +326,15 @@ const NuevaProspeccion = (props) => {
                 setInfoSocio(data);
                 setEnteSocio("")
                 setStep(1);
+                setVisitadosSteps([...visitadosSteps, actualStep + 1])
+                setActualStep(1);
             }, dispatch);
 
         }
         if (step === 1) {
             setStep(2);
+            setVisitadosSteps([...visitadosSteps, actualStep + 1])
+            setActualStep(2)
         }
         if (step === 2) {
             //console.log("STEP 1, SHOW ", showAutorizacion)
@@ -375,6 +386,8 @@ const NuevaProspeccion = (props) => {
             const dataSocio = infoSocio;
             dataSocio.datosFinancieros = datosFinancieros;
             setInfoSocio(dataSocio);
+            setVisitadosSteps([...visitadosSteps, actualStep + 1])
+            setActualStep(4);
             setStep(4);
         }
 
@@ -383,6 +396,8 @@ const NuevaProspeccion = (props) => {
             //SIMULACION GUARDADA
             fetchAddProspecto(documento, 0, nombreSocio, apellidoPaterno + " " + apellidoMaterno, celularSocio, correoSocio, datosFinancieros.montoSolicitado, comentario, comentarioAdic, props.token, (data) => {
                 //console.log("RESP ADD PROSP, ", data)
+                setVisitadosSteps([...visitadosSteps, actualStep + 1])
+                setActualStep(5);
                 setStep(-1);
             }, dispatch)
 
@@ -478,13 +493,27 @@ const NuevaProspeccion = (props) => {
         setShowAutorizacion(data);
     }
 
+    const steps = [
+        "",
+        "Datos personales",
+        "Requisitos",
+        "Datos financieros",
+        "Simulación",
+        "Registro simulación",
+    ];
+
     return (
         <div className="f-row" >
             <Sidebar enlace={props.location.pathname}></Sidebar>
-            <div className="stepper"></div>
+            
             {showAutorizacion.toString()}
             <Card className={["m-max w-100 justify-content-space-between align-content-center"]}>
-                <div className="f-row justify-content-center">
+                <div className="f-col justify-content-center">
+
+                    <div className="stepper">
+                        <Stepper steps={steps} setStepsVisited={visitadosSteps} setActualStep={actualStep} />
+                    </div>
+
                     {(step === 0 || step === 1) &&
                         <div className={"f-row w-100 justify-content-center"}>
                             <RegistroCliente paso={step}

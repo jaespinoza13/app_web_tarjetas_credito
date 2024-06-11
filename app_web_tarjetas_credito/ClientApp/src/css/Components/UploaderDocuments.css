@@ -1,5 +1,5 @@
 ﻿.content_uploader {
-    border-radius: 1px;
+    /*border-radius: 1px;*/
     border: 1px solid rgba(9, 57, 208, 0.2);
     display: flex;
     flex-direction: column;
@@ -46,8 +46,8 @@ p.negrita {
     display: flex;
     background-color: #F8F8F8;
     display: "flex";
-    align-content: "center";
-    justify-content: "center";
+    align-content: center;
+    justify-content: center;
 }
 
 
@@ -74,7 +74,7 @@ table.archivos td {
 .content_table {
     overflow-x: scroll;
     overflow: auto;
-    width: 98%;
+    width: 100%;
     margin: 0 auto;
 }
 
@@ -85,7 +85,7 @@ table.archivos {
     border: #D4E7FF;
     border-spacing: 0 0rem;
     overflow-y: auto;
-    padding-top: 30px;
+    padding-top: 15px;
     padding-bottom: 15px;
     margin: 0 auto;
     position: relative;
@@ -127,4 +127,5 @@ table.archivos {
 
 .border_content {
     border: #3D3D3D;
+    border: 1px solid rgba(9, 57, 208, 0.2);
 }
