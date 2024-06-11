@@ -119,7 +119,7 @@ const NuevaProspeccion = (props) => {
     useEffect(() => {
         if (score.str_res_codigo === "000") {
             setStep(step + 1); // PASA AL PASO 2
-            setActualStep(3);
+            setActualStep(4);
             setVisitadosSteps([...visitadosSteps, actualStep + 1])
         }
         else if (score.str_res_codigo === "") {
@@ -362,23 +362,14 @@ const NuevaProspeccion = (props) => {
                                 setAutorizacionOk(false);
                                 setValidacionesErr(arrValidacionesErr);
                             }, dispatch);
-                        }             
-                }, dispatch);
+                        }
+                    }, dispatch);
                 return;
+            } else {
+                setActualStep(3);
+                setVisitadosSteps([...visitadosSteps, actualStep + 1])
+                setStep(3)
             }
-
-            //const strNombreSocio = `${nombresSolicitud} ${pApellidoSolicitud} ${sApellidoSolicitud}`;
-            const strOficina = "MATRIZ";
-            //const strOficina = get(localStorage.getItem("office"));
-            const strOficial = get(localStorage.getItem("sender_name"));
-            const strCargo = get(localStorage.getItem("role"));
-
-
-            //TODO: CAMBIAR LA CEDULA por "documento"
-            await fetchScore("C", "1150214375", nombreSocio, "Matriz", strOficial, strCargo, props.token, (data) => {
-                setScore(data);
-            }, dispatch);
-            return;
 
         }
 
@@ -386,9 +377,21 @@ const NuevaProspeccion = (props) => {
             const dataSocio = infoSocio;
             dataSocio.datosFinancieros = datosFinancieros;
             setInfoSocio(dataSocio);
-            setVisitadosSteps([...visitadosSteps, actualStep + 1])
-            setActualStep(4);
-            setStep(4);
+            //setVisitadosSteps([...visitadosSteps, actualStep + 1])
+            //setActualStep(4);
+            //setStep(4);
+
+            //const strNombreSocio = `${nombresSolicitud} ${pApellidoSolicitud} ${sApellidoSolicitud}`;
+            const strOficina = "MATRIZ";
+            //const strOficina = get(localStorage.getItem("office"));
+            const strOficial = get(localStorage.getItem("sender_name"));
+            const strCargo = get(localStorage.getItem("role"));
+
+            //TODO: CAMBIAR LA CEDULA por "documento"
+            await fetchScore("C", "1150214375", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, "Matriz", strOficial, strCargo, props.token, (data) => {
+                setScore(data);
+            }, dispatch);
+            
         }
 
         if (step === 4) {

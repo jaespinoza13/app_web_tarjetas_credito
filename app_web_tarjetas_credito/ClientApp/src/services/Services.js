@@ -119,6 +119,8 @@ export const addProcEspecifico = "ADD_PROCESO_ESPECIFICO"
 export const updSolicitud = "UPD_SOLICITUD_TC"
 export const getParametros = "GET_PARAMETROS"
 export const getSeparadores = "GET_SEPARADORES"
+export const addDocumentosAxentria = "ADD_DOCUMENTOS"
+export const getDocumentosAxentria = "GET_DOCUMENTOS"
 
 /**
  * Obtener la Url de un servicio de acuerdo a su nombre de Proceso Unico
@@ -274,6 +276,12 @@ export function ServiceUrl(request, params = []) {
             break;
         case getSeparadores:
             pathOut = "tc/getSeparadores"
+            break;
+        case addDocumentosAxentria:
+            pathOut = "tc/addDocumentosAxentria"
+            break;
+        case getDocumentosAxentria:
+            pathOut = "tc/getDocumentosAxentria"
             break;
         default:
             return null;
@@ -528,7 +536,9 @@ function pathRewrite(path) {
         "tc/addProcEspec": '/tarjetacredito/addProcEspecifico',
         "tc/updSol": '/tarjetacredito/updSolicitud',
         "tc/getParams": '/tarjetacredito/getParametros',
-        "tc/getSeparadores": '/tarjetacredito/getSeparadores'
+        "tc/getSeparadores": '/tarjetacredito/getSeparadores',
+        "tc/addDocumentosAxentria": '/tarjetacredito/addDocumentosAxentria',
+        "tc/getDocumentosAxentria": '/tarjetacredito/getDocumentosAxentria'
     };
     if (path) {
         var p = context[path];

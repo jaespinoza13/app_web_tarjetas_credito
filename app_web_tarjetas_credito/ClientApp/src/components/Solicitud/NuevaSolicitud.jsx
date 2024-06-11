@@ -106,6 +106,7 @@ const NuevaSolicitud = (props) => {
 
     const [direccionEntrega, setDireccionEntrega] = useState("");
 
+
     //Info Socio
     const [dirDocimicilioSocio, setDirDomicilioSocio] = useState([]);
     const [dirTrabajoSocio, setDirTrabajoSocio] = useState([]);
@@ -119,7 +120,8 @@ const NuevaSolicitud = (props) => {
         setUsuario(strOficial);
         const strRol = get(localStorage.getItem("role"));
         setRol(strRol);
-        setDatosUsuario([{ strCargo: strRol, strOficial: strOficial}]);
+        setDatosUsuario([{ strCargo: strRol, strOficial: strOficial }]);
+        console.log(`DATOS USER, ${strOficial}, ${strRol}`)
     }, []);
 
     
@@ -212,7 +214,7 @@ const NuevaSolicitud = (props) => {
     useEffect(() => {
         if (score.str_res_codigo === "000") {
             setStep(step + 1); // VA AL step(3)
-            setActualStep(3);
+            setActualStep(4);
             setVisitadosSteps([...visitadosSteps, actualStep + 1])
         }
         else if (score.str_res_codigo === "") {
@@ -360,24 +362,16 @@ const NuevaSolicitud = (props) => {
                             setAutorizacionOk(false);
                             setValidacionesErr(arrValidacionesErr);
                         }, dispatch);
+
                     }
                 }, dispatch);
                 return;
+            } else {
+                setActualStep(3);
+                setVisitadosSteps([...visitadosSteps, actualStep + 1])
+                setStep(3)
             }
-
-            const strOficina = "MATRIZ";
-            //const strOficina = get(localStorage.getItem("office"));
-            const strOficial = get(localStorage.getItem("sender_name"));
-            const strCargo = get(localStorage.getItem("role"));
-
-            await fetchScore("C", "1150214375", nombreSocio, "Matriz", strOficial, strCargo, props.token, (data) => {
-                setScore(data);
-                //console.log("SCORE, ",data)
-            }, dispatch);
-            //setVisitadosSteps([...visitadosSteps, actualStep + 1])
-            //setActualStep(3);
-            return;
-
+            
 
         }
         
@@ -387,9 +381,24 @@ const NuevaSolicitud = (props) => {
             const dataSocio = infoSocio;
             dataSocio.datosFinancieros = datosFinancieros;
             setInfoSocio(dataSocio);
-            setVisitadosSteps([...visitadosSteps, actualStep + 1])
+
+            /*
+            const strOficina = "MATRIZ";
+            //const strOficina = get(localStorage.getItem("office"));
+            const strOficial = get(localStorage.getItem("sender_name"));
+            const strCargo = get(localStorage.getItem("role"));*/
+
+            await fetchScore("C", "1150214375", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, "Matriz", datosUsuario.strOficial, datosUsuario.strCargo, props.token, (data) => {
+                setScore(data);
+                //console.log("SCORE, ",data)
+            }, dispatch);
+            //setVisitadosSteps([...visitadosSteps, actualStep + 1])
+            //setActualStep(3);
+            //return;
+
+            /*setVisitadosSteps([...visitadosSteps, actualStep + 1])
             setActualStep(4);
-            setStep(4);
+            setStep(4);*/
         }
         if (step === 4) {
             setVisitadosSteps([...visitadosSteps, actualStep + 1])
@@ -397,6 +406,10 @@ const NuevaSolicitud = (props) => {
             setStep(5);
         }
         if (step === 5) {
+
+            console.log("CONTROL NOMBRE", nombreSocio)
+            console.log("apellidoPaterno", apellidoPaterno )
+            console.log("apellidoMaterno", apellidoMaterno )
             let body = {
                 int_ente_aprobador: 589693,
                 str_tipo_documento: "C",
