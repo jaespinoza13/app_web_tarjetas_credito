@@ -2,7 +2,7 @@
 import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { useEffect, useState } from "react";
-import { fetchGetInforme, fetchGetFlujoSolicitud, fetchAddComentarioAsesor, fetchAddComentarioSolicitud, fetchGetResolucion, fetchAddProcEspecifico, fetchUpdateCupoSolicitud, fetchGetMedioAprobacion, fetchAddResolucion, fetchGetSeparadores } from "../../services/RestServices";
+import { fetchGetInforme, fetchGetFlujoSolicitud, fetchAddComentarioAsesor, fetchAddComentarioSolicitud, fetchGetResolucion, fetchAddProcEspecifico, fetchUpdateCupoSolicitud, fetchGetMedioAprobacion, fetchAddResolucion, fetchGetSeparadores, fetchCrearSeparadoresAxentria } from "../../services/RestServices";
 import Sidebar from "../Common/Navs/Sidebar";
 import Card from "../Common/Card";
 import Table from "../Common/Table";
@@ -115,7 +115,7 @@ const VerSolicitud = (props) => {
     const headerTableResoluciones = [
         { nombre: 'Usuario', key: 3 }, {nombre: 'Fecha actualización', key: 4}, { nombre: "Comentario", key: 6}
     ];
-    
+
     useEffect(() => {
         fetchGetFlujoSolicitud(props.solicitud.solicitud, props.token, (data) => {
             if (data.flujo_solicitudes.length > 0) {
@@ -146,6 +146,7 @@ const VerSolicitud = (props) => {
             console.log("RES, ", data.lst_separadores)
             setSeparadores(data.lst_separadores);
         }, dispatch);
+
         setImprimeMedio([
             {
                 prm_id: "11135"
@@ -799,7 +800,7 @@ const VerSolicitud = (props) => {
 
 
                     <div className="mt-3">
-                        <UploadDocumentos grupoDocumental={separadores} contenido={separadores}></UploadDocumentos>
+                        <UploadDocumentos grupoDocumental={separadores} contenido={separadores} token={props.token}></UploadDocumentos>
                     </div>
                 </Card>
             }

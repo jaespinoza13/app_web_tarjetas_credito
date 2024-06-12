@@ -1567,6 +1567,32 @@ input[type=radio] {
     padding: 0 !important
 }
 
+.sliding-div {
+    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+    position: relative; /* Para animar el desplazamiento */    
+}
+
+.visibleY {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.hiddenY {
+    transform: translateY(-50%); /* Desplaza el div completamente hacia un costado */
+    opacity: 0;
+}
+
+.visibleX {
+    transform: translateX(-50%);
+    opacity: 1;
+}
+
+.hiddenX {
+    transform: translateX(0); /* Desplaza el div completamente hacia un costado */
+    opacity: 0;
+}
+
+
 @media screen and (max-width: 600px) {
     .responsive-table {
         overflow-x: auto;

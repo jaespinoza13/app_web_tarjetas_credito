@@ -108,6 +108,7 @@
         public string service_get_separadores { get; set; } = String.Empty;
         public string service_add_documentos_axentria { get; set; } = String.Empty;
         public string service_get_documentos_axentria { get; set; } = String.Empty;
+        public string service_crear_separadores { get; set; } = String.Empty;
 
         #endregion
     }

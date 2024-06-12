@@ -8,6 +8,7 @@ using Domain.Models.TarjetaCredito.AddProspeccion;
 using Domain.Models.TarjetaCredito.AddResolucion;
 using Domain.Models.TarjetaCredito.AddSolicitud;
 using Domain.Models.TarjetaCredito.Axentria.AddDocumentos;
+using Domain.Models.TarjetaCredito.Axentria.CrearSeparadores;
 using Domain.Models.TarjetaCredito.Axentria.GetSeparadores;
 using Domain.Models.TarjetaCredito.Axentria.ObtenerDocumentos;
 using Domain.Models.TarjetaCredito.GetComentarios;
@@ -239,6 +240,7 @@ namespace Infrastructure.TarjetaCredito
                 request.AddParameter("application/json", req, ParameterType.RequestBody);
                 request.Method = Method.Post;
 
+                Console.WriteLine("SUBIR \n\n");
                 Console.WriteLine(req.ToString());
 
                 var response = new RestResponse();
@@ -990,6 +992,43 @@ namespace Infrastructure.TarjetaCredito
                 {
 
                     res = JsonSerializer.Deserialize<ResGetDocumentos>(response.Content!)!;
+                    Console.WriteLine(res);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            return res;
+        }
+
+        public ResCrearSeparadores crearSeparadores(ReqCrearSeparadores req)
+        {
+            ResCrearSeparadores res = new ResCrearSeparadores();
+            try
+            {
+                req.llenarDatosConfig(_settings);
+                req.str_id_servicio = "REQ_" + _settings.service_crear_separadores;
+                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_crear_separadores)
+                {
+                    ThrowOnAnyError = true,
+                    MaxTimeout = _settings.time_out
+                };
+
+                var client = new RestClient(options);
+                var request = new RestRequest();
+                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                request.AddHeader("Content-Type", "application/json");
+                request.AddParameter("application/json", req, ParameterType.RequestBody);
+                request.Method = Method.Post;
+
+                var response = new RestResponse();
+                response = client.Post(request);
+
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+
+                    res = JsonSerializer.Deserialize<ResCrearSeparadores>(response.Content!)!;
                     Console.WriteLine(res);
                 }
             }

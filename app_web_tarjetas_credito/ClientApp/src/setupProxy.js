@@ -51,6 +51,7 @@ const context =  [
     '/tarjetacredito/updSolicitud',
     '/tarjetacredito/getParametros',
     '/tarjetacredito/getSeparadores',
+    '/tarjetacredito/crearSeparadores',
     '/tarjetacredito/addDocumentosAxentria',
     '/tarjetacredito/getDocumentosAxentria'
 ];

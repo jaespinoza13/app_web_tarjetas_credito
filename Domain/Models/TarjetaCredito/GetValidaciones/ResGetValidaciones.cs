@@ -17,5 +17,9 @@ namespace Domain.Models.TarjetaCredito.GetValidaciones
         public string str_ente {  get; set; } = String.Empty;
         public string str_email { get; set; } = String.Empty;
         public string str_celular { get; set;} = String.Empty;
+        public string str_fecha_nacimiento { get; set;} = String.Empty;
+        public string str_sexo { get; set;} = String.Empty;
+        public string str_estado_civil { get; set;} = String.Empty;
+
     }
 }
