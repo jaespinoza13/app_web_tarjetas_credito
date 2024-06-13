@@ -57,6 +57,7 @@ const NuevaProspeccion = (props) => {
     const [enteSocio, setEnteSocio] = useState('');
     const [celularSocio, setCelularSocio] = useState('');
     const [correoSocio, setCorreoSocio] = useState('');
+    const [fechaNacimiento, setFechaNacimiento] = useState('');
     
     const [cedulaValidacion, setCedulaValidacion] = useState('');
     const [infoSocio, setInfoSocio] = useState([]);
@@ -105,6 +106,9 @@ const NuevaProspeccion = (props) => {
     const [visitadosSteps, setVisitadosSteps] = useState([0]);
     const [actualStep, setActualStep] = useState(0);
 
+    //EFECTO PARA DESVANECER STEP 0
+    const [isVisibleBloque, setIsVisibleBloque] = useState(true);
+
     useEffect(() => {
         const strOficial = get(localStorage.getItem("sender_name"));
         setUsuario(strOficial);
@@ -119,7 +123,7 @@ const NuevaProspeccion = (props) => {
     useEffect(() => {
         if (score.str_res_codigo === "000") {
             setStep(step + 1); // PASA AL PASO 2
-            setActualStep(4);
+            setActualStep(3);
             setVisitadosSteps([...visitadosSteps, actualStep + 1])
         }
         else if (score.str_res_codigo === "") {
@@ -294,9 +298,11 @@ const NuevaProspeccion = (props) => {
 
 
     const nextHandler = async () => {
+        console.log("STEPPP ", step)
         if (step === 0) {
             //TODO: FALTA EDITAR PARA REGISTRO DE INGRESOS, EGRESOS, ETC
-            fetchValidacionSocio(documento, '', props.token, (data) => {
+            setIsVisibleBloque(!isVisibleBloque);
+            fetchValidacionSocio(documento, '', props.token, (data) => {                
                 const arrValidacionesOk = [...data.lst_datos_alerta_true];
                 const arrValidacionesErr = [...data.lst_datos_alerta_false];
                 setValidacionesOk(arrValidacionesOk);
@@ -313,6 +319,8 @@ const NuevaProspeccion = (props) => {
                 setApellidoMaterno(data.str_apellido_materno);
                 setCelularSocio(data.str_celular);
                 setCorreoSocio(data.str_email);
+                //TODO: VALIDAR FECHA NACIMIENTO
+                setFechaNacimiento(data.str_fecha_nacimiento)
 
                 data.cedula = documento
                 data.nombres = data.str_nombres
@@ -320,21 +328,22 @@ const NuevaProspeccion = (props) => {
                 data.apellidoMaterno = data.str_apellido_materno
                 data.celularCliente = data.str_celular
                 data.correoCliente = data.str_email
+                data.fechaNacimiento = data.str_fecha_nacimiento
 
                 //console.log("DATA ASIG, ", data)
                 //setInfoSocio(informacionCliente);
                 setInfoSocio(data);
                 setEnteSocio("")
                 setStep(1);
-                setVisitadosSteps([...visitadosSteps, actualStep + 1])
-                setActualStep(1);
+                //setVisitadosSteps([...visitadosSteps, actualStep + 1])
+                //setActualStep(1);
             }, dispatch);
 
         }
         if (step === 1) {
             setStep(2);
             setVisitadosSteps([...visitadosSteps, actualStep + 1])
-            setActualStep(2)
+            setActualStep(1)
         }
         if (step === 2) {
             //console.log("STEP 1, SHOW ", showAutorizacion)
@@ -365,11 +374,11 @@ const NuevaProspeccion = (props) => {
                         }
                     }, dispatch);
                 return;
-            } else {
-                setActualStep(3);
-                setVisitadosSteps([...visitadosSteps, actualStep + 1])
-                setStep(3)
-            }
+            } 
+            setActualStep(2);
+            setVisitadosSteps([...visitadosSteps, actualStep + 1])
+            setStep(3)
+            
 
         }
 
@@ -397,10 +406,11 @@ const NuevaProspeccion = (props) => {
         if (step === 4) {
             //REALIZA REGISTROS DE SIMULACION
             //SIMULACION GUARDADA
+            console.log("STEP 4")
             fetchAddProspecto(documento, 0, nombreSocio, apellidoPaterno + " " + apellidoMaterno, celularSocio, correoSocio, datosFinancieros.montoSolicitado, comentario, comentarioAdic, props.token, (data) => {
-                //console.log("RESP ADD PROSP, ", data)
+                console.log("RESP ADD PROSP, ", data)
                 setVisitadosSteps([...visitadosSteps, actualStep + 1])
-                setActualStep(5);
+                setActualStep(4);
                 setStep(-1);
             }, dispatch)
 
@@ -451,6 +461,7 @@ const NuevaProspeccion = (props) => {
         setCelularSocio(e.celular);
         setCorreoSocio(e.correo);
         setDocumento(e.documento);
+        setFechaNacimiento(e.fechaNacimiento);
     }
 
 
@@ -497,7 +508,6 @@ const NuevaProspeccion = (props) => {
     }
 
     const steps = [
-        "",
         "Datos personales",
         "Requisitos",
         "Datos financieros",
@@ -523,7 +533,8 @@ const NuevaProspeccion = (props) => {
                                 token={props.token}
                                 setCedulaSocio={cedulaSocioHandler}
                                 infoSocio={infoSocio}
-                                datosIngresados={datosIngresadosHandler}                                    
+                                datosIngresados={datosIngresadosHandler} 
+                                isVisibleBloque={isVisibleBloque}
                                 ></RegistroCliente>
                         </div>
                     }

@@ -101,22 +101,47 @@ const ValidacionesGenerales = (props) => {
     }
 
     const getContrato = () => {
-        fetchScore("C", props.str_identificacion, props.str_nombres + " " + props.str_apellido_paterno + " " + props.str_apellido_materno, "Matriz", props.datosUsuario.strOficial, props.datosUsuario.strCargo, props.token, (data) => {
+        
+        const nombresApellidos = props.infoSocio.str_nombres + " " + props.infoSocio.str_apellido_paterno + " " + props.infoSocio.str_apellido_materno;
+        fetchScore("C", props.infoSocio.cedula, nombresApellidos, "Matriz", props.datosUsuario[0].strOficial, props.datosUsuario[0].strCargo, props.token, (data) =>
+        {
             descargarArchivoConsulta(data);
         }, dispatch);
     }
 
-    const handleFileChange = (event) => {
+    const handleFileChange = async (event) => {
         //console.log("ARCHVIO, ", event.target.result)
-        console.log("ARCHIVO,", event)
+        //console.log("ARCHIVO,", event)
 
-        //props.onFileUpload(event);
-        //setArchivoAutorizacion(event);     
-        getBase64(event, (result) => {
+        
+        //setArchivoAutorizacion(event);
+
+
+        /*getBase64(event, (result) => {
             setArchivoAutorizacion(result);
-        });
+        });*/
+
+        const base64 = await convertBase64(event);
+        console.log(base64.split(',')[1]);
+        props.onFileUpload(base64.split(',')[1]);
 
     };
+
+    const convertBase64 = file => {
+        return new Promise((resolve, reject) => {
+            const fileReader = new FileReader();
+            fileReader.readAsDataURL(file);
+
+            fileReader.onload = () => {
+                resolve(fileReader.result);
+            }
+
+            fileReader.onerror = (error) => {
+                reject(error);
+            }
+        })
+    }
+
 
     const removeFile = () => {
         setArchivoAutorizacion('');

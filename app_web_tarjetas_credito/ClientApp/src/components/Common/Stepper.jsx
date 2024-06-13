@@ -25,7 +25,7 @@ const Stepper = ({ steps, setStepsVisited, setActualStep }) => {
     useEffect(() => {
         //setVisitedSteps([0]);
 
-        console.log(`StepVisitados ${setStepsVisited}, StepActual ${setActualStep}`)
+        //console.log(`StepVisitados ${setStepsVisited}, StepActual ${setActualStep}`)
 
         setVisitedSteps([...setStepsVisited])
         setCurrentStep(setActualStep);

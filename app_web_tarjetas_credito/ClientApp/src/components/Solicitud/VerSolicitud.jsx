@@ -2,7 +2,7 @@
 import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { useEffect, useState } from "react";
-import { fetchGetInforme, fetchGetFlujoSolicitud, fetchAddComentarioAsesor, fetchAddComentarioSolicitud, fetchGetResolucion, fetchAddProcEspecifico, fetchUpdateCupoSolicitud, fetchGetMedioAprobacion, fetchAddResolucion, fetchGetSeparadores } from "../../services/RestServices";
+import { fetchGetInforme, fetchGetFlujoSolicitud, fetchAddComentarioAsesor, fetchAddComentarioSolicitud, fetchGetResolucion, fetchAddProcEspecifico, fetchUpdateCupoSolicitud, fetchGetMedioAprobacion, fetchAddResolucion, fetchGetSeparadores, fetchCrearSeparadoresAxentria } from "../../services/RestServices";
 import Sidebar from "../Common/Navs/Sidebar";
 import Card from "../Common/Card";
 import Table from "../Common/Table";
@@ -68,7 +68,7 @@ const VerSolicitud = (props) => {
 
     //Axentria
     const [separadores, setSeparadores] = useState([]);
-
+    /*
     const estadosSol = [
         {
             prm_id: "11035", prm_valor_ini: "SOLICITUD CREADA"
@@ -91,15 +91,15 @@ const VerSolicitud = (props) => {
         {
             prm_id: "11042", prm_valor_ini: "ENTREGADA"
         },
-    ];
+    ];*/
     const parametros = [
-        { prm_id: "11134", prm_valor_ini: "SOLICITUD CREADA" },
-        { prm_id: "11135", prm_valor_ini: "ANALISIS UAC" },
-        { prm_id: "11136", prm_valor_ini: "ANALISIS JEFE UAC" },
-        { prm_id: "11137", prm_valor_ini: "ANALISIS COMITE" },
-        { prm_id: "11138", prm_valor_ini: "APROBADA COMITE" },
-        { prm_id: "11140", prm_valor_ini: "NEGADA" },
-        { prm_id: "11139", prm_valor_ini: "ANULADA COMITE" },
+        { prm_id: "10981", prm_valor_ini: "SOLICITUD CREADA" },
+        { prm_id: "10982", prm_valor_ini: "ANALISIS UAC" },
+        { prm_id: "10983", prm_valor_ini: "ANALISIS JEFE UAC" },
+        { prm_id: "10984", prm_valor_ini: "ANALISIS COMITE" },
+        { prm_id: "10985", prm_valor_ini: "APROBADA COMITE" },
+        { prm_id: "10988", prm_valor_ini: "NEGADA" },
+        { prm_id: "10986", prm_valor_ini: "ANULADA COMITE" },
         { prm_id: "11042", prm_valor_ini: "ENTREGADA" }
     ];
     const seleccionAccionSolicitud = (value) => {
@@ -115,7 +115,7 @@ const VerSolicitud = (props) => {
     const headerTableResoluciones = [
         { nombre: 'Usuario', key: 3 }, {nombre: 'Fecha actualización', key: 4}, { nombre: "Comentario", key: 6}
     ];
-    
+
     useEffect(() => {
         fetchGetFlujoSolicitud(props.solicitud.solicitud, props.token, (data) => {
             if (data.flujo_solicitudes.length > 0) {
@@ -146,27 +146,28 @@ const VerSolicitud = (props) => {
             console.log("RES, ", data.lst_separadores)
             setSeparadores(data.lst_separadores);
         }, dispatch);
+
         setImprimeMedio([
             {
-                prm_id: "11135"
+                prm_id: "10982"
             }, {
-                prm_id: "11136"
+                prm_id: "10983"
             }, {
-                prm_id: "11137"
+                prm_id: "10984"
             }
         ]);
         setRegresaSolicitud([
             {
                 prm_id: "11189" //NO SE SABE A CUAL CORRESPONDE
             }, {
-                prm_id: "11136"
+                prm_id: "10983"
             }, {
-                prm_id: "11137"
+                prm_id: "10984"
             }
         ]);
         setEstadosSiguientesAll([
             {
-                prm_id: "11137", estados: "11138|11140"
+                prm_id: "10984", estados: "10985|10988"
             }
         ]);
 
@@ -316,7 +317,7 @@ const VerSolicitud = (props) => {
     }
     const getDesicion = (event) => {
         setValorDecisionSelect(event.target.value);
-        if (event.target.value === "11138") { //APROBADO
+        if (event.target.value === "10985") { //APROBADO
             setIsMontodiferente(true);
         }
         else {
@@ -453,7 +454,7 @@ const VerSolicitud = (props) => {
 
 
     const guardarDecisionComiteHandler = () => {
-        if (valorDecisionSelect === "11138") { //APROBADO
+        if (valorDecisionSelect === "10985") { //APROBADO
             fetchAddProcEspecifico(props.solicitud.solicitud, nuevoMontoAprobado, "EST_APROBADA_COMITE", comentarioSolicitud, props.token, (data) => { //APROBADO 11138
                 if (data.str_res_codigo === "000") {
                     console.log("SE APROBO SOLICITUD");
@@ -464,7 +465,7 @@ const VerSolicitud = (props) => {
                 }
             }, dispatch)
 
-        } else if (valorDecisionSelect === "11140") { // ANULADA
+        } else if (valorDecisionSelect === "10988") { // ANULADA
             fetchAddProcEspecifico(props.solicitud.solicitud, 0, "EST_ANULADA_COMITE", "", props.token, (data) => { //ANULADA 11139
                 if (data.str_res_codigo === "000") {
                     console.log("SE NEGO SOLICITUD");
@@ -480,7 +481,7 @@ const VerSolicitud = (props) => {
 
     useEffect(() => {
 
-        if (valorDecisionSelect === "11140") {
+        if (valorDecisionSelect === "10988") {
             setIsActivoBtnDecision(false);
         }
         else if (valorDecisionSelect !== "-1" && nuevoMontoAprobado !== 0 && comentarioSolicitud !== "") {
@@ -504,7 +505,7 @@ const VerSolicitud = (props) => {
             {
                 accionSeleccionada === 1 &&                 
                 <>
-                    {props.solicitud.idSolicitud === "11138"
+                    {props.solicitud.idSolicitud === "10985"
                     ?
                             <Card className={["w-100 justify-content-space-between align-content-center"]}>
                         <div>
@@ -536,7 +537,7 @@ const VerSolicitud = (props) => {
                                                 {`${solicitudTarjeta?.str_usuario_proc}`}
                                         </h5>
                                             </div>
-                                            {props.solicitud.idSolicitud === "11134" 
+                                            {props.solicitud.idSolicitud === "10981" 
                                                 ? 
                                                 <>
                                                     <div className="values  mb-3">
@@ -564,7 +565,7 @@ const VerSolicitud = (props) => {
                                         <h5>Cupo solicitado:</h5>
                                         <h5 className="strong f-row">
                                                 {`$ ${Number(solicitudTarjeta?.str_cupo_solicitado).toLocaleString("en-US") || Number('1000.00').toLocaleString("en-US")}`}
-                                                    {props.solicitud.idSolicitud === "11134" &&
+                                                    {props.solicitud.idSolicitud === "10981" &&
                                                         <Button className="btn_mg__auto ml-2" onClick={updateMonto}>
                                                             <img src="/Imagenes/edit.svg"></img>
                                                         </Button>
@@ -644,7 +645,7 @@ const VerSolicitud = (props) => {
                                                    {/* {`$ ${solicitudTarjeta?.slw_cupo_solicitado.toLocaleString("en-US") || Number('10000.00').toLocaleString("en-US")}`}*/}
                                                 {`$ ${solicitudTarjeta?.str_cupo_solicitado || Number('10000.00').toLocaleString("en-US")}`}
 
-                                                    {props.solicitud.idSolicitud === "11134" &&
+                                                    {props.solicitud.idSolicitud === "10981" &&
 
                                                         <Button className="btn_mg__auto ml-2" onClick={updateMonto}>
                                                             <img src="/Imagenes/edit.svg"></img>
@@ -676,11 +677,11 @@ const VerSolicitud = (props) => {
                                     {/*{imprimeMedio?.find((id) => { return id.prm_id === props.solicitud.idSolicitud }) &&*/}
                                     {/*    <Button className="btn_mg__primary ml-2">Imprimir formulario</Button>*/}
                                     {/*        }*/}
-                                            {(props.solicitud.idSolicitud === "11135" || props.solicitud.idSolicitud === "11136") &&
+                                            {(props.solicitud.idSolicitud === "10982" || props.solicitud.idSolicitud === "10983") &&
                                                 <Button className="btn_mg__primary ml-2" onClick={() => descargarMedio(props.solicitud.solicitud)}>Imprimir medio aprobación</Button>
                                     }
 
-                                    {props.solicitud.idSolicitud >= "11135" && props.solicitud.idSolicitud <= "11137" &&
+                                    {props.solicitud.idSolicitud >= "10982" && props.solicitud.idSolicitud <= "10984" &&
                                         <Button className="btn_mg__primary ml-2" onClick={openModalCambiarBandeja}>Retornar Solicitud</Button>
                                     }
 
@@ -713,7 +714,7 @@ const VerSolicitud = (props) => {
                                     }
                                 </Table>
                                         {
-                                            props.solicitud.idSolicitud === "11137" &&
+                                            props.solicitud.idSolicitud === "10984" &&
                                             <Card>
                                                     <h3>Decisión</h3>
                                                     <select disabled={isDesicionHanilitada} onChange={getDesicion} defaultValue={"-1"} value={valorDecisionSelect}>
@@ -756,7 +757,7 @@ const VerSolicitud = (props) => {
                                 }
                                     </Card>
 
-                                {props.solicitud.idSolicitud !== "11137" &&
+                                {props.solicitud.idSolicitud !== "10984" &&
                                     <div className="mt-4">
                                         <h3 className="mb-3 strong">Observaciones</h3>
                                         <Textarea placeholder="Ingrese su comentario" onChange={getComentarioSolicitudHandler} esRequerido={true}></Textarea>
@@ -769,10 +770,10 @@ const VerSolicitud = (props) => {
 
                                 <div className="mt-2 f-row justify-content-center">
                                     {/*APROBADA O NEGADA*/}
-                                    {(props.solicitud.idSolicitud === "11137") && 
+                                    {(props.solicitud.idSolicitud === "10984") && 
                                         <Button className="btn_mg__primary" disabled={isActivoBtnDecision} onClick={guardarDecisionComiteHandler}>Enviar</Button>
                                     }
-                                    {props.solicitud.idSolicitud !== "11137" &&
+                                    {props.solicitud.idSolicitud !== "10984" &&
                                     <Button className="btn_mg__primary" disabled={faltaComentariosAsesor} onClick={guardarComentarioSiguiente}>Enviar</Button>
                                 }
                                     
@@ -799,7 +800,7 @@ const VerSolicitud = (props) => {
 
 
                     <div className="mt-3">
-                        <UploadDocumentos grupoDocumental={separadores} contenido={separadores}></UploadDocumentos>
+                        <UploadDocumentos grupoDocumental={separadores} contenido={separadores} token={props.token}></UploadDocumentos>
                     </div>
                 </Card>
             }
@@ -917,7 +918,7 @@ const VerSolicitud = (props) => {
             {modalCambioBandeja && <div>
 
 
-                {props.solicitud.idSolicitud === "11137" &&
+                {props.solicitud.idSolicitud === "10984" &&
                     <>
                         <h3 className="mt-4 mb-1">Seleccione a qué estado desea regresar la solicitud:</h3>
 

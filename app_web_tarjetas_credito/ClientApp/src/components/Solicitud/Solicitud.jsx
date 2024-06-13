@@ -78,13 +78,13 @@ function Solicitud(props) {
     ]
 
     const parametros = [
-        { prm_id: "11134", prm_valor_ini: "SOLICITUD CREADA" },
-        { prm_id: "11135", prm_valor_ini: "ANALISIS UAC" },
-        { prm_id: "11136", prm_valor_ini: "ANALISIS JEFE UAC" },
-        { prm_id: "11137", prm_valor_ini: "ANALISIS COMITE" },
-        { prm_id: "11138", prm_valor_ini: "APROBADA COMITE" },
-        { prm_id: "11140", prm_valor_ini: "NEGADA" },
-        { prm_id: "11139", prm_valor_ini: "ANULADA COMITE" },
+        { prm_id: "10981", prm_valor_ini: "SOLICITUD CREADA" },
+        { prm_id: "10982", prm_valor_ini: "ANALISIS UAC" },
+        { prm_id: "10983", prm_valor_ini: "ANALISIS JEFE UAC" },
+        { prm_id: "10984", prm_valor_ini: "ANALISIS COMITE" },
+        { prm_id: "10985", prm_valor_ini: "APROBADA COMITE" },
+        { prm_id: "10988", prm_valor_ini: "NEGADA" },
+        { prm_id: "10986", prm_valor_ini: "ANULADA COMITE" },
         { prm_id: "11042", prm_valor_ini: "ENTREGADA" }
     ];
 
@@ -190,7 +190,7 @@ function Solicitud(props) {
 
     const moveToSolicitud = (solId) => {
         const solicitudSeleccionada = lstSolicitudes.find((solicitud) => { return solicitud.int_id === solId });
-        if (solicitudSeleccionada.str_estado === '11138' || solicitudSeleccionada.str_estado === "11134" && rol === "ASESOR DE CRÉDITO") {
+        if (solicitudSeleccionada.str_estado === '11138' || solicitudSeleccionada.str_estado === "10981" && rol === "ASESOR DE CRÉDITO") {
             dispatch(setSolicitudStateAction({ solicitud: solicitudSeleccionada.int_id, cedulaSocio: solicitudSeleccionada.str_identificacion, idSolicitud: solicitudSeleccionada.str_estado, rol: rol }))
             navigate.push('/solicitud/ver');
         }

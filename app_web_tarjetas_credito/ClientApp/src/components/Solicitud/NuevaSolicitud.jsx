@@ -10,7 +10,7 @@ import ValidacionSocio from './ValidacionSocio';
 import Item from '../Common/UI/Item';
 import ValidacionesGenerales from './ValidacionesGenerales';
 import DatosSocio from './DatosSocio';
-import { fetchScore, fetchValidacionSocio, fetchAddAutorizacion, fetchAddSolicitud } from '../../services/RestServices';
+import { fetchScore, fetchValidacionSocio, fetchAddAutorizacion, fetchAddSolicitud, fetchCrearSeparadoresAxentria } from '../../services/RestServices';
 import { get } from '../../js/crypt';
 import Modal from '../Common/Modal/Modal';
 import Personalizacion from './Personalizacion';
@@ -115,13 +115,20 @@ const NuevaSolicitud = (props) => {
         setDirTrabajoSocio([...data.lst_dir_trabajo]);
     }
 
-    useEffect(() => {
+    //EFECTO PARA DESVANECER STEP 0
+    const [isVisibleBloque, setIsVisibleBloque] = useState(true);
+
+    /*const toggleVisibilityBloque = () => {
+        setIsVisibleBloque(!isVisibleBloque);
+    };*/
+
+     useEffect(() => {
         const strOficial = get(localStorage.getItem("sender_name"));
         setUsuario(strOficial);
         const strRol = get(localStorage.getItem("role"));
         setRol(strRol);
         setDatosUsuario([{ strCargo: strRol, strOficial: strOficial }]);
-        console.log(`DATOS USER, ${strOficial}, ${strRol}`)
+         //console.log(`DATOS USER, ${strOficial}, ${strRol}`)
     }, []);
 
     
@@ -214,7 +221,7 @@ const NuevaSolicitud = (props) => {
     useEffect(() => {
         if (score.str_res_codigo === "000") {
             setStep(step + 1); // VA AL step(3)
-            setActualStep(4);
+            setActualStep(3);
             setVisitadosSteps([...visitadosSteps, actualStep + 1])
         }
         else if (score.str_res_codigo === "") {
@@ -237,8 +244,8 @@ const NuevaSolicitud = (props) => {
     
 
     const getFileHandler = (event) => {
-        //setArchivoAutorizacion(e);
-        console.log("ARCHI SOL, ", event)      
+        setArchivoAutorizacion(event);
+        //console.log("RETURN ARC, ", event)      
 
 
     }
@@ -254,7 +261,6 @@ const NuevaSolicitud = (props) => {
 
     
     const steps = [
-        "",
         "Datos personales",
         "Requisitos",
         "Datos financieros",
@@ -288,12 +294,13 @@ const NuevaSolicitud = (props) => {
 
         //console.log("step,", step)
         if (step === 0) {
-
             //TODO: FALTA EDITAR PARA REGISTRO DE INGRESOS, EGRESOS, ETC
-            fetchValidacionSocio(cedulaSocio, '', props.token, (data) => {
-                //console.log("SOC,",data)
+            setIsVisibleBloque(!isVisibleBloque);
+            fetchValidacionSocio(cedulaSocio, '', props.token, (data) => {             
+                console.log("SOC,",data)
                 const arrValidacionesOk = [...data.lst_datos_alerta_true];
                 const arrValidacionesErr = [...data.lst_datos_alerta_false];
+                data.cedula = cedulaSocio;
                 setValidacionesOk(arrValidacionesOk);
                 setValidacionesErr(arrValidacionesErr);
                 setEnteSocio(data.str_ente);
@@ -311,13 +318,15 @@ const NuevaSolicitud = (props) => {
                 if (data.str_res_codigo === "100") {
                     setTextoAviso("Ya se encuentra registrada una solicitud con esa cédula.")
                     setModalMensajeAviso(true);
-                    console.log("SOLIC YA CREADA");
+                    //console.log("SOLIC YA CREADA");
 
                 }
                 else if (data.str_nombres !== "") {
 
-                    setVisitadosSteps([...visitadosSteps, actualStep + 1])
-                    setActualStep(1);
+                    
+                    //setVisitadosSteps([...visitadosSteps, actualStep + 1])
+                    //setActualStep(1);
+                    setTimeout('',2000);
                     setStep(1);
                     setEstadoBotonSiguiente(true);
                 }
@@ -331,19 +340,22 @@ const NuevaSolicitud = (props) => {
                 }
                 handleLists(objValidaciones);
             }, dispatch);
+            //if (nombreSocio !== '') setIsVisibleBloque(!isVisibleBloque);
 
             
         }
         if (step === 1) {
             setStep(2);
             setVisitadosSteps([...visitadosSteps, actualStep + 1])
-            setActualStep(2)
+            setActualStep(1)
         }
         if (step === 2) {
-            if (showAutorizacion) {
+            console.log(`SHOW AUTOR, ${showAutorizacion}`)
 
+            if (showAutorizacion) {
+                console.log("CED ENVIA DOC, ", cedulaSocio)
                 fetchAddAutorizacion("C", 1, "F", cedulaSocio, nombreSocio, apellidoPaterno, apellidoMaterno, archivoAutorizacion, props.token, (data) => {
-                    console.log("AUTOR, ", data);
+                    //console.log("AUTOR, ", data);
                     if (data.str_res_codigo === "000") {
                         const estadoAutorizacion = validacionesErr.find((validacion) => { return validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" })
                         estadoAutorizacion.str_estado_alerta = "True";
@@ -366,11 +378,12 @@ const NuevaSolicitud = (props) => {
                     }
                 }, dispatch);
                 return;
-            } else {
-                setActualStep(3);
-                setVisitadosSteps([...visitadosSteps, actualStep + 1])
-                setStep(3)
-            }
+            } 
+
+            setActualStep(2);
+            setVisitadosSteps([...visitadosSteps, actualStep + 1])
+            setStep(3)
+            
             
 
         }
@@ -402,7 +415,7 @@ const NuevaSolicitud = (props) => {
         }
         if (step === 4) {
             setVisitadosSteps([...visitadosSteps, actualStep + 1])
-            setActualStep(5);
+            setActualStep(4);
             setStep(5);
         }
         if (step === 5) {
@@ -431,7 +444,7 @@ const NuevaSolicitud = (props) => {
             }
             fetchAddSolicitud(body, props.token, (data) => {
                 setVisitadosSteps([...visitadosSteps, actualStep + 1])
-                setActualStep(6);
+                setActualStep(5);
                 setStep(-1);
                 
             }, dispatch);
@@ -449,7 +462,7 @@ const NuevaSolicitud = (props) => {
         setCedulaSocio(e.valor);
         if (step === 0 && e.valido) {
             setEstadoBotonSiguiente(false);
-            setCedulaSocio(e.valor);
+            setCedulaSocio(e.valor);            
         }
         else {
             setEstadoBotonSiguiente(true);
@@ -524,11 +537,12 @@ const NuevaSolicitud = (props) => {
                     
 
                     {(step === 0 || step === 1) &&
-                        <div className="f-row w-100 justify-content-center">
+                        <div className="f-row w-100 justify-content-center sliding-div ">
                             <ValidacionSocio paso={step}
                                 token={props.token}
                                 setCedulaSocio={cedulaSocioHandler}
-                                infoSocio={infoSocio}                               
+                                infoSocio={infoSocio}
+                                isVisibleBloque={isVisibleBloque}
                             ></ValidacionSocio>
                         </div>
                     }

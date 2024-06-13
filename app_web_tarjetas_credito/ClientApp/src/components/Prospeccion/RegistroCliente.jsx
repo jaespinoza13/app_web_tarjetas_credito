@@ -15,6 +15,7 @@ const RegistroCliente = (props) => {
     const [celularCliente, setCelularCliente] = useState("");
     const [correoCliente, setCorreoCliente] = useState("");
     const [documento, setDocumento] = useState("");
+    const [fechaNacimiento, setFechaNacimiento] = useState("");
 
     //Estado validacion
     const [isCedulaValida, setIsCedulaValida] = useState(false);
@@ -39,7 +40,8 @@ const RegistroCliente = (props) => {
             apellidoMaterno: apellidoMaterno,
             celular: celularCliente,
             correo: correoCliente,
-            documento: documento
+            documento: documento,
+            fechaNacimiento: fechaNacimiento
         })
     }
     const apellidoPaternoHandler = (valor) => {
@@ -50,7 +52,8 @@ const RegistroCliente = (props) => {
             apellidoMaterno: apellidoMaterno,
             celular: celularCliente,
             correo: correoCliente,
-            documento: documento
+            documento: documento,
+            fechaNacimiento: fechaNacimiento
         })
     }
 
@@ -62,7 +65,8 @@ const RegistroCliente = (props) => {
             apellidoMaterno: valor,
             celular: celularCliente,
             correo: correoCliente,
-            documento: documento
+            documento: documento,
+            fechaNacimiento: fechaNacimiento
         })
     }
 
@@ -73,7 +77,8 @@ const RegistroCliente = (props) => {
             apellidos: apellidoPaterno,
             celular: valor,
             correo: correoCliente,
-            documento: documento
+            documento: documento,
+            fechaNacimiento: fechaNacimiento
         })
     }
     const correoClienteHandler = (valor) => {
@@ -83,7 +88,8 @@ const RegistroCliente = (props) => {
             apellidos: apellidoPaterno,
             celular: celularCliente,
             correo: valor,
-            documento: documento
+            documento: documento,
+            fechaNacimiento: fechaNacimiento
         })
     }
 
@@ -95,11 +101,24 @@ const RegistroCliente = (props) => {
             apellidoMaterno: apellidoMaterno,
             celular: celularCliente,
             correo: correoCliente,
-            //tipo_documento: tipoDocumento,
-            documento: valor
+            documento: valor,
+            fechaNacimiento: fechaNacimiento
         })
     }
 
+
+    const fechaNacimientoHandler = (valor) => {
+        setFechaNacimiento(valor)
+        props.datosIngresados({
+            nombres: nombresCliente,
+            apellidoPaterno: apellidoPaterno,
+            apellidoMaterno: apellidoMaterno,
+            celular: celularCliente,
+            correo: correoCliente,
+            documento: documento,
+            fechaNacimiento: valor
+        })
+    }
 
 
     useEffect(() => {
@@ -111,6 +130,10 @@ const RegistroCliente = (props) => {
             setApellidoMaterno(props.infoSocio.apellidoMaterno);
             setCelularCliente(props.infoSocio.celularCliente);
             setCorreoCliente(props.infoSocio.correoCliente);
+            console.log(props.infoSocio.fechaNacimiento)
+           const partesFecha = props.infoSocio.fechaNacimiento.split('-');
+            setFechaNacimiento(`${partesFecha[2]}-${partesFecha[0]}-${partesFecha[1]}`)
+            //setFechaNacimiento('01-10-1967')
         }
     }, [props.infoSocio, props.paso])
 
@@ -118,7 +141,7 @@ const RegistroCliente = (props) => {
     return (
         <>
             {props.paso === 0 &&
-                <>
+                <div className={`f-row w-100 sliding-div ${props.isVisibleBloque ? 'visibleY' : 'hiddenY'}`}>
                     <Item xs={3} sm={3} md={3} lg={3} xl={3} className=""></Item>
                     <Item xs={6} sm={6} md={6} lg={6} xl={6} className="justify-content-center">
                         <div className="f-col w-100">
@@ -127,7 +150,7 @@ const RegistroCliente = (props) => {
                         </div>
                     </Item>
                     <Item xs={3} sm={3} md={3} lg={3} xl={3} className=""></Item>
-                </>
+                </div> 
             }
 
 
@@ -141,7 +164,7 @@ const RegistroCliente = (props) => {
                                 <div className='mb-2'>
                                     <label>Cédula:</label>
                                     <div className="f-row">
-                                        <Input className={'w-100'} type="text" placeholder="1150216791" setValueHandler={documentoHandler} value={documento} disabled={true}></Input>
+                                        <Input className={'w-100'} type="text" placeholder="1150216791" setValueHandler={documentoHandler} value={documento} disabled={true} maxlength={10 }></Input>
                                     </div>
                                 </div>
 
@@ -174,17 +197,20 @@ const RegistroCliente = (props) => {
                                     <div className="f-row">
                                         <Input className={'w-100'} type="text" placeholder="Ej. test@test.com" setValueHandler={correoClienteHandler} value={correoCliente}></Input>
                                     </div>
-
-
                                 </div>
 
                                 <div className='mb-2'>
                                     <label>Celular:</label>
                                     <div className="f-row">
-                                        <Input className={'w-100'} type="number" placeholder="Ej. 0999999999" setValueHandler={celularClienteHandler} value={celularCliente} maxlength={"10"}></Input>
+                                        <Input className={'w-100'} type="number" placeholder="Ej. 0999999999" setValueHandler={celularClienteHandler} value={celularCliente} maxlength={10}></Input>
                                     </div>
+                                </div>
 
-
+                                <div className='mb-2'>
+                                    <label>Fecha Nacimiento:</label>
+                                    <div className="f-row">
+                                            <Input className={'w-100'} type="date"  setValueHandler={fechaNacimientoHandler} value={fechaNacimiento} ></Input>
+                                    </div>
                                 </div>
 
                             </section>

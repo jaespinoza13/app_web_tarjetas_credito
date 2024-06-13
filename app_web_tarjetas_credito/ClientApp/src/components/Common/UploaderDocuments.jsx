@@ -2,6 +2,10 @@
 import '../../css/Components/UploaderDocuments.css';
 import Input from './UI/Input';
 import Modal from './Modal/Modal';
+import { fetchCrearSeparadoresAxentria } from "../../services/RestServices";
+import { useDispatch } from 'react-redux';
+import { element } from 'prop-types';
+import { base64ToBlob, verificarPdf, descargarArchivo } from '../../js/utiles';
 
 const UploadDocumentos = (props) => {
 
@@ -11,6 +15,8 @@ const UploadDocumentos = (props) => {
     { id: 7, texto: "Usuario carga" }, { id: 8, texto: "Fecha subida" }, { id: 9, texto: "Version" }, { id: 10, texto: "Ver" }, { id: 11, texto: "Descargar" }]
 
     const [tablaContenido, setTablaContenido] = useState([]);
+    const dispatch = useDispatch();
+    const [generarSeparador, setGenerarSeparador] = useState([]);
 
     /*
     const [tablaContenido, setTablaContenido] = useState([
@@ -43,6 +49,41 @@ const UploadDocumentos = (props) => {
         //}
     }, [])
     */
+    const separadoresAx = ["1_SOLICITUD_DE_CREDITO", "2_EXCEPCIONES"]
+    const [base64SeparadorGenerado, setBase64SeparadorGenerado] = useState("");
+
+    const generarSeparadores = () => {
+
+        let resum = [];
+        documentalCheckBox.forEach(element => {
+            let resultadoEscoge = props.grupoDocumental.find(grupo => grupo.int_id_separador === element);
+            resum = [...resum, resultadoEscoge.str_nombre_separador];
+        });
+
+        fetchCrearSeparadoresAxentria(resum, props.token, (data) => {
+            console.log("SEPARADORES, ", data.separadores)
+            setBase64SeparadorGenerado(data.separadores);
+        }, dispatch);
+    }
+
+
+    useEffect(() => {
+        if (base64SeparadorGenerado !== "" && verificarPdf(base64SeparadorGenerado)) {
+            const blob = base64ToBlob(base64SeparadorGenerado, 'application/pdf');
+            descargarArchivo(blob, "Separadores", 'pdf');
+        }
+
+        /*
+        if (data.file_bytes.length > 0 && verificarPdf(data.file_bytes)) {
+            const blob = base64ToBlob(data.file_bytes, 'application/pdf');
+            let fechaHoy = generarFechaHoy();
+            const nombreArchivo = `AprobacionConsultaBuro_${(fechaHoy)}`;
+            descargarArchivo(blob, nombreArchivo, 'pdf');
+
+        }*/
+
+    }, [base64SeparadorGenerado])
+
 
     const [docsBase64, setDocsBase64] = useState("");
     const [totalRegistros, setTotalRegistros] = useState(0);
@@ -496,7 +537,7 @@ const UploadDocumentos = (props) => {
             </section>
 
 
-            <Modal modalIsVisible={isModalVisible} type="md" onCloseClick={hideModalSeparadores} onNextClick={(e) => console.log("Sig Generar")} mainText="Generar" titulo="Generar Separadores">
+            <Modal modalIsVisible={isModalVisible} type="md" onCloseClick={hideModalSeparadores} onNextClick={generarSeparadores} mainText="Generar" titulo="Generar Separadores">
 
                 <table className='archivos mt-4'>
                     <thead>
