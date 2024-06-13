@@ -455,7 +455,6 @@ span.tooltip-info {
 }
 
     .info-sistema img {
-        max-height: -moz-fit-content;
         max-height: fit-content;
     }
 
@@ -568,11 +567,6 @@ input, select {
 
     input.squared {
         border-radius: 7px;
-    }
-
-    input::-moz-placeholder {
-        color: #B6B7B8;
-        font-family: "Karbon", sans-serif;
     }
 
     input::placeholder {
@@ -816,7 +810,6 @@ li {
     height: 45%;
     width: auto;
     display: flex;
-    -moz-text-align-last: end;
     text-align-last: end;
 }
 
@@ -1278,6 +1271,7 @@ h3.chip {
     left: 0;
     right: 0;
     background-color: #E8E8E8;
+    -webkit-transition: 0.4s;
     transition: 0.4s;
 }
 
@@ -1311,6 +1305,8 @@ input + .slider::before {
 
 input:checked + .slider::before {
     background-color: #fff;
+    -ms-transform: translateX(0.875rem);
+    -webkit-transform: translateX(0.875rem);
     transform: translateX(0.875rem);
 }
 
@@ -1386,6 +1382,7 @@ input:checked + .slider::before {
 .w-60 {
     width: 60%;
 }
+
 .w-55 {
     width: 55%;
 }
@@ -1497,11 +1494,13 @@ img {
     border-top-right-radius: 8px;
 }
 
-    img:hover {
-        transform: scale3d(1.2, 1.2, 1);
-        transition: all 1s linear;
-    }
-
+/*
+img:hover {
+    -webkit-transform: scale3d(1.2, 1.2, 1);
+    transform: scale3d(1.2, 1.2, 1);
+    transition: all 1s linear;
+}
+*/
 .text-box-wrapper {
     padding: 20px;
 }
@@ -1562,14 +1561,13 @@ input[type=radio] {
     width: 30px;
 }
 
-
 .supr_padding {
-    padding: 0 !important
+    padding: 0 !important;
 }
 
 .sliding-div {
     transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
-    position: relative; /* Para animar el desplazamiento */    
+    position: relative; /* Para animar el desplazamiento */
 }
 
 .visibleY {
@@ -1592,6 +1590,10 @@ input[type=radio] {
     opacity: 0;
 }
 
+.stepper {
+    margin-top: 10px;
+    margin-bottom: 35px;
+}
 
 @media screen and (max-width: 600px) {
     .responsive-table {
@@ -1633,11 +1635,6 @@ input[type=radio] {
 .f-col {
     display: flex;
     flex-direction: column;
-}
-
-.stepper {
-    margin-top: 10px;
-    margin-bottom: 35px;
 }
 
 @keyframes ripple {
@@ -1714,4 +1711,3 @@ input[type=radio] {
         transform: rotate(359deg);
     }
 }
-/*# sourceMappingURL=main.css.map */

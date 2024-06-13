@@ -1075,6 +1075,7 @@ export function fetchAddProspecto(str_num_documento, ente, nombres, apellidos, c
         str_comentario_adicional: comentarioAdic
     }
     ServicioPostExecute(addProspecto, body, token, { dispatch: dispatch }).then((data) => {
+        console.log("DATA",  data)
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));

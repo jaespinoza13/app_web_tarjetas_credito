@@ -298,6 +298,7 @@ const NuevaProspeccion = (props) => {
 
 
     const nextHandler = async () => {
+        console.log("STEPPP ", step)
         if (step === 0) {
             //TODO: FALTA EDITAR PARA REGISTRO DE INGRESOS, EGRESOS, ETC
             setIsVisibleBloque(!isVisibleBloque);
@@ -405,8 +406,9 @@ const NuevaProspeccion = (props) => {
         if (step === 4) {
             //REALIZA REGISTROS DE SIMULACION
             //SIMULACION GUARDADA
+            console.log("STEP 4")
             fetchAddProspecto(documento, 0, nombreSocio, apellidoPaterno + " " + apellidoMaterno, celularSocio, correoSocio, datosFinancieros.montoSolicitado, comentario, comentarioAdic, props.token, (data) => {
-                //console.log("RESP ADD PROSP, ", data)
+                console.log("RESP ADD PROSP, ", data)
                 setVisitadosSteps([...visitadosSteps, actualStep + 1])
                 setActualStep(4);
                 setStep(-1);
