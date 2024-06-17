@@ -2,7 +2,7 @@
 import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { useEffect, useState } from "react";
-import { fetchGetInforme, fetchGetFlujoSolicitud, fetchAddComentarioAsesor, fetchAddComentarioSolicitud, fetchGetResolucion, fetchAddProcEspecifico, fetchUpdateCupoSolicitud, fetchGetMedioAprobacion, fetchAddResolucion, fetchGetSeparadores, fetchCrearSeparadoresAxentria } from "../../services/RestServices";
+import { fetchGetInforme, fetchGetFlujoSolicitud, fetchAddComentarioAsesor, fetchAddComentarioSolicitud, fetchGetResolucion, fetchAddProcEspecifico, fetchUpdateCupoSolicitud, fetchGetMedioAprobacion, fetchGetSeparadores, fetchInfoSocio } from "../../services/RestServices";
 import Sidebar from "../Common/Navs/Sidebar";
 import Card from "../Common/Card";
 import Table from "../Common/Table";
@@ -13,6 +13,7 @@ import Modal from "../Common/Modal/Modal";
 import Input from "../Common/UI/Input";
 import Toggler from "../Common/UI/Toggler";
 import UploadDocumentos from "../Common/UploaderDocuments";
+import { get } from "../../js/crypt";
 
 const mapStateToProps = (state) => {
     //console.log(state);
@@ -66,6 +67,15 @@ const VerSolicitud = (props) => {
     const [estadosSiguientesAll, setEstadosSiguientesAll] = useState([]);
     const [archivoMostrado, setArchivoMostrado] = useState("FRMSYS-020.pdf")
 
+    //DATOS DEL USUARIO
+    const [datosUsuario, setDatosUsuario] = useState([]);
+
+
+    //Datos del socio
+    const [datosSocio, setDatosSocio] = useState();
+
+
+
     //Axentria
     const [separadores, setSeparadores] = useState([]);
     /*
@@ -117,6 +127,14 @@ const VerSolicitud = (props) => {
     ];
 
     useEffect(() => {
+
+        //Obtener datos del cliente
+        fetchInfoSocio(props.cedulaSocio, props.token, (data) => {
+            console.log("BUSQ SOCI AXEN ", data)
+            setDatosSocio(data.datos_cliente[0]);
+        }, dispatch);
+
+
         fetchGetFlujoSolicitud(props.solicitud.solicitud, props.token, (data) => {
             if (data.flujo_solicitudes.length > 0) {
                 const arrayDeValores = data.flujo_solicitudes.map(objeto => objeto.int_id);
@@ -171,7 +189,18 @@ const VerSolicitud = (props) => {
             }
         ]);
 
-        console.log("PROPS INFO", props)
+
+        //OBTENER DATOS DEL USUARIO
+        const strOficial = get(localStorage.getItem("sender_name"));
+        const strRol = get(localStorage.getItem("role"));
+        const userOficial = get(localStorage.getItem('sender'));
+        setDatosUsuario([{ strCargo: strRol, strOficial: strOficial, strUserOficial: userOficial }]);
+        //console.log(`DATOS USER, ${strOficial}, ${strRol} , ${userOficial}`)
+
+        //console.log("PROPS INFO", props)
+
+
+
 
     }, []);
 
@@ -517,8 +546,9 @@ const VerSolicitud = (props) => {
                                 <Item xs={6} sm={6} md={6} lg={6} xl={6}>
                                     <div className="values  mb-3">
                                         <h5>Socio:</h5>
-                                        <h5 className="strong">
-                                            {`$ ${props.montoSugerido || Number('10000.00').toLocaleString("en-US")}`}
+                                            <h5 className="strong">
+                                                {datosSocio?.str_nombres} {datosSocio?.str_apellido_paterno} {datosSocio?.str_apellido_materno}
+                                            {/*{`$ ${props.montoSugerido || Number('10000.00').toLocaleString("en-US")}`}*/}
                                         </h5>
                                     </div>
                                     <div className="values  mb-3">
@@ -610,8 +640,9 @@ const VerSolicitud = (props) => {
                                         <Item xs={6} sm={6} md={6} lg={6} xl={6}>
                                             <div className="values  mb-3">
                                                 <h5>Socio:</h5>
-                                                <h5 className="strong">
-                                                    {`$ ${props.montoSugerido || Number('10000.00').toLocaleString("en-US")}`}
+                                            <h5 className="strong">
+                                                {datosSocio?.str_nombres} {datosSocio?.str_apellido_paterno} {datosSocio?.str_apellido_materno}
+                                                   {/* {`$ ${props.montoSugerido || Number('10000.00').toLocaleString("en-US")}`}*/}
                                                 </h5>
                                             </div>
                                             <div className="values  mb-3">
@@ -665,7 +696,7 @@ const VerSolicitud = (props) => {
                                             <div className="values  mb-3">
                                                 <h5>Solicitud Nro:</h5>
                                                 <h5 className="strong">
-                                                    {`${props.solicitud.solicitud || Number('10000.00').toLocaleString("en-US")}`}
+                                                    {`${props.solicitud.solicitud}`}
                                                 </h5>
                                             </div>
                                         </Item>
@@ -806,7 +837,11 @@ const VerSolicitud = (props) => {
                             grupoDocumental={separadores}
                             contenido={separadores}
                             token={props.token}
-                            cedulaSocio={props.solicitud.cedulaSocio }
+                            cedulaSocio={props.solicitud.cedulaSocio}
+                            solicitud={props.solicitud.solicitud}
+                            datosSocio={datosSocio}
+                            datosUsuario={datosUsuario}
+                            solicitudTarjeta={solicitudTarjeta}
                         ></UploadDocumentos>
                     </div>
                 </Card>

@@ -138,6 +138,11 @@ const RegistroCliente = (props) => {
         }
     }, [props.infoSocio, props.paso])
 
+    const atajosHandler = (event) => {
+        if (event.key === 'Enter') {
+            props.AtajoHandler(event, 'Enter');
+        }
+    };
 
     return (
         <>
@@ -147,7 +152,7 @@ const RegistroCliente = (props) => {
                     <Item xs={6} sm={6} md={6} lg={6} xl={6} className="justify-content-center">
                         <div className="f-col w-100">
                             <label>Número de cédula</label>
-                            <Input type="number" className={`mt-3 ${isCedulaValida ? '' : 'no_valido'}`} placeholder="Ej. 1105970717" readOnly={false} value={documento} setValueHandler={setCedulaHandler}></Input>
+                            <Input type="number" className={`mt-3 ${isCedulaValida ? '' : 'no_valido'}`} placeholder="Ej. 1105970717" readOnly={false} value={documento} setValueHandler={setCedulaHandler} onKeyDown={atajosHandler}></Input>
                         </div>
                     </Item>
                     <Item xs={3} sm={3} md={3} lg={3} xl={3} className=""></Item>

@@ -2,7 +2,7 @@
 import '../../css/Components/UploaderDocuments.css';
 import Input from './UI/Input';
 import Modal from './Modal/Modal';
-import { fetchCrearSeparadoresAxentria, fetchAddDocumentosAxentria } from "../../services/RestServices";
+import { fetchCrearSeparadoresAxentria, fetchAddDocumentosAxentria, fetchInfoSocio } from "../../services/RestServices";
 import { useDispatch } from 'react-redux';
 import { element } from 'prop-types';
 import { base64ToBlob, verificarPdf, descargarArchivo } from '../../js/utiles';
@@ -272,6 +272,8 @@ const UploadDocumentos = (props) => {
         }
         */
 
+        console.log(props.solicitudTarjeta)
+
     }, [])
 
 
@@ -375,7 +377,7 @@ const UploadDocumentos = (props) => {
                 <div className='m-2'>
                     <div style={{ display: "flex" }}>
                         <p className='normal'>SOCIO: </p>
-                        <p className="negrita">Danny Vasquez</p>
+                        <p className="negrita">{props.datosSocio?.str_nombres} {props.datosSocio?.str_apellido_paterno} {props.datosSocio?.str_apellido_materno}</p>
                     </div>
 
                     <section className='elements_tres_column mt-3'>
@@ -387,12 +389,12 @@ const UploadDocumentos = (props) => {
 
                         <div style={{ display: "flex" }}>
                             <p className='normal'>FECHA ULT. MODIF.: </p>
-                            <p className="negrita">05/20/2023</p>
+                            <p className="negrita">-</p>
                         </div>
 
                         <div style={{ display: "flex" }}>
                             <p className='normal'>SOLICITUD NRO: </p>
-                            <p className="negrita"> 188888</p>
+                            <p className="negrita"> {props.solicitud}</p>
                         </div>
 
                     </section>
@@ -400,7 +402,7 @@ const UploadDocumentos = (props) => {
                     <section className='elements_tres_column mt-3'>
                         <div style={{ display: "flex" }}>
                             <p className='normal'>DOCUMENTO: </p>
-                            <p className="negrita">1150214983</p>
+                            <p className="negrita">{props.cedulaSocio}</p>
                         </div>
 
                         <div style={{ display: "flex" }}>
@@ -423,7 +425,7 @@ const UploadDocumentos = (props) => {
 
                         <div style={{ display: "flex" }}>
                             <p className='normal'>ESTADO DE LA SOLICITUD: </p>
-                            <p className="negrita">POR DIGITAR </p>
+                            <p className="negrita">SOLICITUD CREADA </p>
                         </div>
 
                         <div style={{ display: "flex" }}>
@@ -441,7 +443,7 @@ const UploadDocumentos = (props) => {
 
                         <div style={{ display: "flex" }}>
                             <p className='normal'>PRODUCTO CRÉDITO: </p>
-                            <p className="negrita">CREDI PYMES </p>
+                            <p className="negrita">TARJETA DE CRÉDITO </p>
                         </div>
 
                         <div style={{ display: "flex" }}>
@@ -499,8 +501,8 @@ const UploadDocumentos = (props) => {
                                             <td style={{ width: "20%", justifyContent: "left" }} >
                                                 {documentacion.str_nombre_socio}
                                             </td>
-                                            <td style={{ width: "10%", justifyContent: "left" }} >
-                                                <div style={{ whiteSpace: "nowrap" }}>{documentacion.str_ruta_arc}</div>
+                                            <td style={{ width: "10%", wordBreak: "break-word", fontSize: "10px"}} > 
+                                                {documentacion.str_ruta_arc}
                                             </td>
                                             <td style={{ width: "10%", justifyContent: "left" }} >
                                                 {documentacion.str_login_carga}
@@ -511,11 +513,19 @@ const UploadDocumentos = (props) => {
                                             <td style={{ width: "3%", justifyContent: "left" }} >
                                                 {documentacion.str_version}
                                             </td>
-                                            <td style={{ width: "2%", justifyContent: "left" }} >
-                                                Ver
+                                            <td style={{ width: "2%", justifyContent: "center" }} >
+                                                <div className="f-row justify-content-center align-content-center">
+                                                    <button className="btn_mg_icons custom-icon-button" onClick={(e) => { console.log("VISUALIZADOR DOC") }} title="Visualizar Documento">
+                                                        <img className="img-icons-acciones" src="Imagenes/view.svg" alt="Visualizar Documento"></img>
+                                                    </button>
+                                                </div>
                                             </td>
                                             <td style={{ width: "2%", justifyContent: "left" }} >
-                                                Down
+                                                <div className="f-row justify-content-center align-content-center">
+                                                    <button className="btn_mg_icons custom-icon-button" onClick={(e) => { console.log("DESCARGAR DOC") }} title="Descargar Documento">
+                                                        <img className="img-icons-acciones" src="Imagenes/download.svg" alt="Descargar Documento"></img>
+                                                    </button>
+                                                </div>
                                             </td>
 
                                         </tr>
@@ -652,7 +662,7 @@ const UploadDocumentos = (props) => {
                     <thead>
                         <tr>
                             <th style={{ width: "30px" }}  >Nombre Archivo</th>
-                            <th style={{ width: "15%", justifyContent: "left" }}  >Usuario Carga</th>
+                            <th style={{ width: "15%", justifyContent: "left" }} >Usuario Carga</th>
                             <th style={{ width: "15%", justifyContent: "left" }} >Solicitud</th>
                             <th style={{ width: "10%", justifyContent: "left" }} >Version</th>
                             <th style={{ width: "15%", justifyContent: "left" }} >Ult. Modificación</th>
@@ -681,9 +691,11 @@ const UploadDocumentos = (props) => {
                                     <td style={{ ustifyContent: "left" }} >
                                         06/11/2024
                                     </td>
-                                    <td style={{ ustifyContent: "left" }} >
-                                        1
-                                    </td>
+                                    <div className="f-row justify-content-center align-content-center">
+                                        <button className="btn_mg_icons custom-icon-button" onClick={(e) => { console.log("VISUALIZADOR DOC") }} title="Visualizar Documento">
+                                            <img className="img-icons-acciones" src="Imagenes/view.svg" alt="Visualizar Documento"></img>
+                                        </button>
+                                    </div>
                                 </tr>
                             )
                         })}

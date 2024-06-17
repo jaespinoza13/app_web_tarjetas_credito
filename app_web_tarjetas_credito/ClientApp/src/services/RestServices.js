@@ -3,7 +3,7 @@ import { setAlertText, setErrorRedirigir } from "../redux/Alert/actions";
 import hex_md5 from '../js/md5';
 import { desencriptar, generate, get, set } from '../js/crypt';
 import { getUser, removeSession, saveSession } from 'react-session-persist/lib';
-import { cifrarConexionesLocales, IsNullOrWhiteSpace, obtenerConexionesLocales } from '../js/utiles';
+import { cifrarConexionesLocales, descargarArchivo, IsNullOrWhiteSpace, obtenerConexionesLocales } from '../js/utiles';
 import { setListaBases } from '../redux/Logs/ListaBases/actions';
 
 /**
@@ -1671,11 +1671,15 @@ export function fetchReporteAval(idCliente, token, onSucces, dispatch) {
 
     ServicioPostExecute(getReporteAval, body, token, { dispatch: dispatch }).then((data) => {
         if (data) {
-            console.log("Reporte AVAL", data)
+            console.log("Reporte AVAL", data.file_bytes)
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
             } else {
-                if (data.str_res_codigo === "000" || data.str_res_codigo === "010") {
+                if (data.str_res_codigo === "000") {
+
+                    const blob = new Blob([data.file_bytes], { type: "text/plain" });
+
+                    descargarArchivo(blob, 'prueba', 'txt')
                     onSucces(data);
                 } else {
                     let codigo = data.codigo || data.str_res_codigo;
