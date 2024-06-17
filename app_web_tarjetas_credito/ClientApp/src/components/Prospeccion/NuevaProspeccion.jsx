@@ -10,7 +10,7 @@ import Item from '../Common/UI/Item';
 import ValidacionesGenerales from '../Solicitud/ValidacionesGenerales';
 import DatosSocio from '../Solicitud/DatosSocio';
 import { fetchScore, fetchValidacionSocio, fetchAddAutorizacion, fetchAddProspecto, fetchInfoSocio } from '../../services/RestServices';
-import { get } from '../../js/crypt';
+import { get, set } from '../../js/crypt';
 import Modal from '../Common/Modal/Modal';
 import FinProceso from '../Solicitud/FinProceso';
 import RegistroCliente from './RegistroCliente';
@@ -59,13 +59,14 @@ const NuevaProspeccion = (props) => {
     const [correoSocio, setCorreoSocio] = useState('');
     const [fechaNacimiento, setFechaNacimiento] = useState('');
     
-    const [cedulaValidacion, setCedulaValidacion] = useState('');
+    //const [cedulaValidacion, setCedulaValidacion] = useState('');
     const [infoSocio, setInfoSocio] = useState([]);
     const [datosFaltan, setDatosFaltan] = useState(false);
     //const [modalVisible, setModalVisible] = useState(false);
 
     const [tipoDocumento, setTipoDocumento] = useState('-1');
     const [documento, setDocumento] = useState('');
+    const [cedulaValida, setCedulaValida] = useState(false);
 
     //const [montoSolicitado, setMontoSolicitado] = useState(0);
     const [datosFinancieros, setDatosFinancieros] = useState({
@@ -331,7 +332,6 @@ const NuevaProspeccion = (props) => {
             setApellidoMaterno(data.str_apellido_materno);
             setCelularSocio(data.str_celular);
             setCorreoSocio(data.str_email);
-            //TODO: VALIDAR FECHA NACIMIENTO
             setFechaNacimiento(data.str_fecha_nacimiento)
 
             data.cedula = documento
@@ -375,7 +375,6 @@ const NuevaProspeccion = (props) => {
                 fetchAddAutorizacion("C", 1, "F", documento, nombreSocio, apellidoPaterno, apellidoMaterno,
                     archivoAutorizacion, props.token, (data) => {
                         //console.log("AUTOR, ", data);
-                        //TODO DESCOMENTAR
                         if (data.str_res_codigo === "000") {
                             const estadoAutorizacion = validacionesErr.find((validacion) => { return validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" })
                             estadoAutorizacion.str_estado_alerta = "True";
@@ -447,7 +446,7 @@ const NuevaProspeccion = (props) => {
                     console.log(data.datos_cliente[0].str_calificacion_riesgo)
                 }, dispatch);
 
-                const valorCP = ingresoNeto * 0.4; //TODO: valor temporal Calificacion riesgo -->  propiedad a recuperar calificacionRiesgo (infoSocio. str_calificacion_riesgo)
+                 const valorCP = ingresoNeto * 0.4; //TODO: valor temporal Calificacion riesgo -->  propiedad a recuperar calificacionRiesgo (infoSocio. str_calificacion_riesgo)
                 const taza = 0.167;
                 const plazo = 12;
                 const tazaVsPlazo = (taza / plazo);
@@ -503,9 +502,10 @@ const NuevaProspeccion = (props) => {
     
     const cedulaSocioHandler = (e) => {
         setDocumento(e.valor)
-        setCedulaValidacion(e.valor)
+        //setCedulaValidacion(e.valor)
         if (step === 0 && e.valido) {
             setEstadoBotonSiguiente(false)
+            setCedulaValida(true);
         }
         else {
             setEstadoBotonSiguiente(true);
@@ -601,6 +601,13 @@ const NuevaProspeccion = (props) => {
         setStep(step - 1)
     }
 
+
+    const AtajoTecladoHandler = (event, accion) => {
+        if (accion === "Enter" && cedulaValida && step === 0) {
+            nextHandler(step);
+        }
+    }
+
     return (
         <div className="f-row" >
             <Sidebar enlace={props.location.pathname}></Sidebar>
@@ -622,6 +629,7 @@ const NuevaProspeccion = (props) => {
                                 datosIngresados={datosIngresadosHandler} 
                                 isVisibleBloque={isVisibleBloque}
                                 requiereActualizar={refrescarInformacionHandler}
+                                AtajoHandler={AtajoTecladoHandler}
                                 ></RegistroCliente>
                         </div>
                     }

@@ -99,7 +99,7 @@ const NuevaSolicitud = (props) => {
 
 
     //Personalizacion
-    const [nombreTarjeta, setNombreTarjeta] = useState("");
+    const [nombrePersonalTarjeta, setNombrePersonalTarjeta] = useState("");
     const [tipoEntrega, setTipoEntrega] = useState("");
     const [modalMensajeAviso, setModalMensajeAviso] = useState(false);
     const [textoAviso, setTextoAviso] = useState(false);
@@ -136,9 +136,10 @@ const NuevaSolicitud = (props) => {
         const strOficial = get(localStorage.getItem("sender_name"));
         setUsuario(strOficial);
         const strRol = get(localStorage.getItem("role"));
-        setRol(strRol);
-        setDatosUsuario([{ strCargo: strRol, strOficial: strOficial }]);
-         //console.log(`DATOS USER, ${strOficial}, ${strRol}`)
+         setRol(strRol);
+         const userOficial = get(localStorage.getItem('sender'));
+         setDatosUsuario([{ strCargo: strRol, strOficial: strOficial, strUserOficial: userOficial }]);
+         //console.log(`DATOS USER, ${strOficial}, ${strRol} , ${userOficial}`)
     }, []);
 
     
@@ -296,7 +297,6 @@ const NuevaSolicitud = (props) => {
             // ${data.str_apellido_paterno} ${data.str_apellido_materno}`);
             setApellidoPaterno(data.str_apellido_paterno);
             setApellidoMaterno(data.str_apellido_materno);
-            //console.log("COD rescodigo ", data.str_res_codigo);
 
             if (data.str_res_codigo === "100") {
                 setTextoAviso("Ya se encuentra registrada una solicitud con esa cédula.")
@@ -369,7 +369,7 @@ const NuevaSolicitud = (props) => {
             console.log(`SHOW AUTOR, ${showAutorizacion}`)
 
             if (showAutorizacion) {
-                console.log("CED ENVIA DOC, ", cedulaSocio)
+                //console.log("CED ENVIA DOC, ", cedulaSocio)
                 fetchAddAutorizacion("C", 1, "F", cedulaSocio, nombreSocio, apellidoPaterno, apellidoMaterno, archivoAutorizacion, props.token, (data) => {
                     //console.log("AUTOR, ", data);
                     if (data.str_res_codigo === "000") {
@@ -418,7 +418,7 @@ const NuevaSolicitud = (props) => {
             const strCargo = get(localStorage.getItem("role"));*/
 
             if (!realizaNuevaSimulacion) {
-                console.log("PRIMERA CONSULTA BURO ")
+                //console.log("PRIMERA CONSULTA BURO ")
                 await fetchScore("C", "1150214375", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, "Matriz", datosUsuario.strOficial, datosUsuario.strCargo, props.token, (data) => {
                     setScore(data);
                     setIdClienteScore(data.int_cliente);
@@ -460,7 +460,7 @@ const NuevaSolicitud = (props) => {
                 
 
                 scoreStorage.montoSugerido = Number.parseFloat(nuevoCupoSugerido).toFixed(2);
-                console.log("data Score Alm ", scoreStorage.montoSugerido);
+                //console.log("data Score Alm ", scoreStorage.montoSugerido);
                 setScore(scoreStorage);
             }
 
@@ -485,15 +485,15 @@ const NuevaSolicitud = (props) => {
                 str_nombres: nombreSocio, 
                 str_primer_apellido: apellidoPaterno, 
                 str_segundo_apellido: apellidoMaterno, 
-                dtt_fecha_nacimiento: "1994-06-08", 
-                str_sexo: "M",
+                dtt_fecha_nacimiento: infoSocio.str_fecha_nacimiento, 
+                str_sexo: infoSocio.str_sexo,
                 dec_cupo_solicitado: datosFinancieros.montoSolicitado, 
                 dec_cupo_sugerido: 100,
                 str_correo: correoSocio,
-                str_usuario_proc: "xnojeda1",
-                int_oficina_proc: 1,
+                str_usuario_proc: datosUsuario.strUserOficial,
+                int_oficina_proc: 1, //TODO: setItem('office' aun no retorna nada 
                 str_ente: enteSocio,
-                str_denominacion_tarjeta: "ROBERTH TORRES",
+                str_denominacion_tarjeta: nombrePersonalTarjeta,
                 str_comentario_proceso: comentario,
                 str_comentario_adicional: comentarioAdic
             }
@@ -533,7 +533,7 @@ const NuevaSolicitud = (props) => {
 
 
     const nombreTarjetaHandler = (data) => {
-        setNombreTarjeta(data);
+        setNombrePersonalTarjeta(data);
     }
 
     const tipoEntregaHandler = (data) => {
@@ -588,12 +588,11 @@ const NuevaSolicitud = (props) => {
         setCalificacionRiesgo(calificacion)
     }
 
-    //isVisibleBloque
     const AtajoTecladoHandler = (event, accion) => {
         //ENTER
-        console.log("Even ", event)
+        /*console.log("Even ", event)
         console.log("Accion ", accion)
-        console.log("Accion ", cedulaValida)
+        console.log("Accion ", cedulaValida)*/
         if (accion === "Enter" && cedulaValida && step === 0 )  {
             nextHandler(step);            
         }
@@ -722,24 +721,6 @@ const NuevaSolicitud = (props) => {
                     <h3 className='mt-4 mb-4'>{textoAviso}</h3>
                 </div>}
             </Modal>
-
-            
-            {/*<Modal*/}
-            {/*    modalIsVisible={modalVisible}*/}
-            {/*    titulo={`Información!!!`}*/}
-            {/*    onNextClick={siguientePasoHandler}*/}
-            {/*    onCloseClick={closeModalHandler}*/}
-            {/*    isBtnDisabled={isBtnDisabled}*/}
-            {/*    type="sm"*/}
-            {/* >*/}
-            {/*    {modalVisible && <div>*/}
-            {/*        <h4>{usuario}</h4>*/}
-            {/*        <p className="mt-3 mb-3">La persona con la cédula <strong>{cedulaSocio}</strong> no es socio de CoopMego</p>*/}
-            {/*        <p className="mb-3">Para poder realizar una solicitud de Tarjeta de crédito, la persona solicitante debe ser socio de CoopMego.</p>*/}
-            {/*        <p className="mb-3">Presiona en continuar si deseas realizar una prospección a esta persona</p>*/}
-
-            {/*    </div>}*/}
-            {/*</Modal>*/}
             
         </div >
     )

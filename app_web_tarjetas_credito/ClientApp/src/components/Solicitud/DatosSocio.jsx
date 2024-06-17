@@ -180,16 +180,31 @@ const DatosSocio = (props) => {
 
         console.log("SCORE ID CLI ", props.idClienteScore)
         //fetchReporteAval(props.idClienteScore, props.token, (data) => { //TODO: DEJAR ESTA LINEA PARA PRODUCCION
-        fetchReporteAval(189460, props.token, (data) => {
+
+        /*
+        let val = setTimeout( async function() {
+            await fetchReporteAval(189554, props.token, (data) => {
+                console.log("REPORTE AVAL ", data)
+                if (data.file_bytes.length > 0 && verificarPdf(data.file_bytes)) {
+                    const blob = base64ToBlob(data.file_bytes, 'application/pdf');
+                    let fechaHoy = generarFechaHoy();
+                    const nombreArchivo = `ReporteAval_Prueba${(fechaHoy)}`;
+                    descargarArchivo(blob, nombreArchivo, 'pdf');
+                }
+            }, dispatch)
+            clearTimeout(val)
+        }, 5000);*/
+               
+
+        fetchReporteAval(189554, props.token, (data) => {
             console.log("REPORTE AVAL ", data)
-            if (data.file_bytes.length > 0 && verificarPdf(data.file_bytes)) {
+            if (data.file_bytes.length > 0) { //&& verificarPdf(data.file_bytes)) {
                 const blob = base64ToBlob(data.file_bytes, 'application/pdf');
                 let fechaHoy = generarFechaHoy();
                 const nombreArchivo = `ReporteAval_Prueba${(fechaHoy)}`;
                 descargarArchivo(blob, nombreArchivo, 'pdf');
             }
         }, dispatch);
-               
 
     }
 
