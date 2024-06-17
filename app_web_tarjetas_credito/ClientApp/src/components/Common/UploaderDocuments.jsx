@@ -2,7 +2,7 @@
 import '../../css/Components/UploaderDocuments.css';
 import Input from './UI/Input';
 import Modal from './Modal/Modal';
-import { fetchCrearSeparadoresAxentria } from "../../services/RestServices";
+import { fetchCrearSeparadoresAxentria, fetchAddDocumentosAxentria } from "../../services/RestServices";
 import { useDispatch } from 'react-redux';
 import { element } from 'prop-types';
 import { base64ToBlob, verificarPdf, descargarArchivo } from '../../js/utiles';
@@ -289,8 +289,10 @@ const UploadDocumentos = (props) => {
     useEffect(() => {
         if (validadorCambio) {
             let checkDocCargados = filasDocsCargados();
+            //console.log("DOCS CARGA NUEVA, ", checkDocCargados)
             setPublicadorCheckBox(checkDocCargados)
             setSeparadorCheckBox(checkDocCargados)
+            setValidadorCambio(false);
         }
 
     }, [validadorCambio])
@@ -301,6 +303,8 @@ const UploadDocumentos = (props) => {
         let archivosLimpieza = [...event.target.files];
         archivosLimpieza = archivosLimpieza.filter(doc => doc.type === "application/pdf")
         //console.log(archivosLimpieza)
+
+        //TODO: Falta obtener archivo en base64
 
         if (archivosLimpieza.length > 0) {
 
@@ -314,6 +318,50 @@ const UploadDocumentos = (props) => {
             setValidadorCambio(true);
             setTablaContenido([...tablaContenido]);
         }
+
+    }
+
+    /*
+    export function fetchAddDocumentosAxentria(requiereSeparar, requierePublicar, rutaArchivo, nombreArchivo, identificacionSocio, usuCarga, nombreSocio, nombreGrupo, referencia, token, onSucces, dispatch) {
+    if (dispatch) dispatch(setErrorRedirigir(""));
+
+    let body = {
+        bln_separar: requiereSeparar,
+        bln_publicar: requierePublicar,
+        str_ruta_arc: rutaArchivo,
+        str_nombre_arc: nombreArchivo,
+        str_identificacion: identificacionSocio,
+        str_login_carga: usuCarga,
+        str_nombre_socio: nombreSocio,
+        str_nombre_grupo: nombreGrupo,
+        str_referencia: referencia
+    }
+    */
+
+    const publicarDocumentos = () => {
+        console.log(separadorCheckBox)
+        console.log(publicadorCheckBox)
+
+        //function fetchAddDocumentosAxentria(requiereSeparar, rutaArchivo, nombreArchivo, identificacionSocio, usuCarga, nombreSocio, nombreGrupo, referencia, token,
+
+        const docsCargados = tablaContenido.filter(docum => docum.str_ruta_arc !== "");
+
+        docsCargados.forEach(grupo => {
+            let validarSeparador = separadorCheckBox.includes(grupo.int_id_separador);
+            let validarPublicacion = publicadorCheckBox.includes(grupo.int_id_separador);
+
+            console.log(` VCHECK ${validarSeparador} | VPUBLIC ${validarPublicacion}`)
+
+            if (validarPublicacion) {
+                //Obtener el archivo en base64
+                /*fetchAddDocumentosAxentria(validarSeparador, grupo.str_ruta_ar,  props.token, (data) => {
+
+
+                }, dispatch);*/
+            }
+           
+        })
+
 
     }
 
@@ -507,7 +555,7 @@ const UploadDocumentos = (props) => {
                     </div>
                 </div>
 
-                <div style={{ marginRight: "5px" }} className="f-row uploader_arc" >
+                <div style={{ marginRight: "5px" }} className="f-row uploader_arc" onClick={publicarDocumentos} >
                     <div className={"btn_arch btn_arch__toggler "} >
                         <div className='f-row w-100 center_text_items'>
                             <h3 > Publicar </h3>

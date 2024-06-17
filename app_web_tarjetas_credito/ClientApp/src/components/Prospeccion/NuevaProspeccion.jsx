@@ -9,7 +9,7 @@ import { useState, useEffect } from 'react';
 import Item from '../Common/UI/Item';
 import ValidacionesGenerales from '../Solicitud/ValidacionesGenerales';
 import DatosSocio from '../Solicitud/DatosSocio';
-import { fetchScore, fetchValidacionSocio, fetchAddAutorizacion,  fetchAddProspecto} from '../../services/RestServices';
+import { fetchScore, fetchValidacionSocio, fetchAddAutorizacion, fetchAddProspecto, fetchInfoSocio } from '../../services/RestServices';
 import { get } from '../../js/crypt';
 import Modal from '../Common/Modal/Modal';
 import FinProceso from '../Solicitud/FinProceso';
@@ -72,7 +72,9 @@ const NuevaProspeccion = (props) => {
         montoSolicitado: 0,
         montoIngresos: 0,
         montoEgresos: 0,
-        montoGastosFinancieros: "",
+        montoGastosFinancieros: 0,
+        montoGastoFinaCodeudor: "",
+        montoRestaGstFinanciero: "",
 
     })
     const [isBtnDisabled, setIsBtnDisabled] = useState(false);
@@ -91,8 +93,13 @@ const NuevaProspeccion = (props) => {
     const [step, setStep] = useState(0);
     const [subirAutorizacion, setSubirAutorizacion] = useState(false);
     const [isUploadingAthorization, setIsUploadingAthorization] = useState(false);
+    const [idClienteScore, setIdClienteScore] = useState("");
 
-    const [isCkeckGtosFinancieros, setIsCkeckGtosFinancieros] = useState(false);
+    const [isCkeckGtosFinanCodeudor, setIsCkeckGtosFinanCodeudor] = useState(false);
+
+    // DatosSocio componente
+    const [calificacionRiesgo, setCalificacionRiesgo] = useState("");
+
 
     //Info Socio
     const [dirDocimicilioSocio, setDirDomicilioSocio] = useState([]);
@@ -104,10 +111,13 @@ const NuevaProspeccion = (props) => {
 
     //Stepper
     const [visitadosSteps, setVisitadosSteps] = useState([0]);
-    const [actualStep, setActualStep] = useState(0);
+    const [actualStepper, setActualStepper] = useState(0);
 
     //EFECTO PARA DESVANECER STEP 0
     const [isVisibleBloque, setIsVisibleBloque] = useState(true);
+
+    //Retorno nueva simulacion
+    const [realizaNuevaSimulacion, setRealizaNuevaSimulacion] = useState(false);
 
     useEffect(() => {
         const strOficial = get(localStorage.getItem("sender_name"));
@@ -123,8 +133,8 @@ const NuevaProspeccion = (props) => {
     useEffect(() => {
         if (score.str_res_codigo === "000") {
             setStep(step + 1); // PASA AL PASO 2
-            setActualStep(3);
-            setVisitadosSteps([...visitadosSteps, actualStep + 1])
+            setActualStepper(3);
+            setVisitadosSteps([...visitadosSteps, actualStepper + 1])
         }
         else if (score.str_res_codigo === "") {
             setMensajeErrorScore("Hubo un error al obtener el score, intente más tarde");
@@ -189,29 +199,24 @@ const NuevaProspeccion = (props) => {
         return false;
     }
 
+
+    //Validacion campos cuando no se edita
     const validaCamposFinancieros = () => {
+        //Si esta activo el check de Gastos Financieros valida campo
         let validadorCheck = false;
-        let validadorCupo = false;
         let validadorOtrosMontos = false;
+        let validaRestoMontoGstFinanciero = false;
+
+
 
         if (datosFinancieros.montoSolicitado > 0 && datosFinancieros.montoIngresos > 0 &&
-            datosFinancieros.montoEgresos > 0) {
+            datosFinancieros.montoEgresos > 0 && datosFinancieros.montoGastosFinancieros > 0) {
             validadorOtrosMontos = true;
         }
 
         //console.log(`isCkeckGtosFinancieros ${isCkeckGtosFinancieros}, GastosFinancieros ${datosFinancieros.montoGastosFinancieros}`)
-
-        if (datosFinancieros.montoSolicitado > 0) {
-            //console.log("montoSolicitado, true ")
-            validadorCupo = true;
-        }
-        else if (IsNullOrEmpty(datosFinancieros.montoSolicitado) || IsNullOrWhiteSpace((datosFinancieros.montoSolicitado))
-            || datosFinancieros.montoSolicitado === "" || datosFinancieros.montoSolicitado === undefined) {
-            validadorCupo = false;
-        }
-
-        if (isCkeckGtosFinancieros === true) {
-            if (IsNullOrEmpty(datosFinancieros.montoGastosFinancieros) || datosFinancieros.montoGastosFinancieros === "0" || datosFinancieros.montoGastosFinancieros === "" || datosFinancieros.montoGastosFinancieros === " ") {
+        if (isCkeckGtosFinanCodeudor === true) {
+            if (IsNullOrEmpty(datosFinancieros.montoGastoFinaCodeudor) || datosFinancieros.montoGastoFinaCodeudor === "0" || datosFinancieros.montoGastoFinaCodeudor === "" || datosFinancieros.montoGastoFinaCodeudor === " ") {
                 //console.log("GastosFinancieros, falso, ", datosFinancieros.montoGastosFinancieros)
                 validadorCheck = false;
                 return false;
@@ -219,13 +224,26 @@ const NuevaProspeccion = (props) => {
                 validadorCheck = true;
                 //console.log("GastosFinancieros, true")
             }
-        } else if (isCkeckGtosFinancieros === false) {
+        } else if (isCkeckGtosFinanCodeudor === false) {
             validadorCheck = true;
         }
 
-        //console.log(`Check ${validadorCheck}, cupo ${validadorCupo}, montosOtros${validadorOtrosMontos}`)
+        //Si se vuelve a realizar la Simulacion Habilita campos
+        if (realizaNuevaSimulacion) {
+            if (IsNullOrEmpty(datosFinancieros.montoRestaGstFinanciero) || datosFinancieros.montoRestaGstFinanciero === "" || datosFinancieros.montoRestaGstFinanciero === " ") {
+                console.log("Resta Gst Financ, ", datosFinancieros.montoRestaGstFinanciero)
+                validaRestoMontoGstFinanciero = false;
+                return false;
+            } else {
+                validaRestoMontoGstFinanciero = true;
 
-        if (validadorCheck && validadorCupo && validadorOtrosMontos) {
+            }
+        } else {
+            validaRestoMontoGstFinanciero = true;
+        }
+
+        //console.log(`Check ${validadorCheck}, cupo ${validadorOtrosMontos},  restoGast ${validaRestoMontoGstFinanciero} `)
+        if (validadorCheck && validadorOtrosMontos && validaRestoMontoGstFinanciero) {
             return true;
         } else {
             return false;
@@ -269,9 +287,9 @@ const NuevaProspeccion = (props) => {
             }
         }
 
-    }, [datosFinancieros, step, validaCamposFinancieros, validacionesErr, isCkeckGtosFinancieros])
+    }, [datosFinancieros, step, validaCamposFinancieros, validacionesErr, isCkeckGtosFinanCodeudor])
 
-
+   
   
     /*
     useEffect(() => {
@@ -295,55 +313,60 @@ const NuevaProspeccion = (props) => {
     }, [datosFinancieros, step, validaCamposSocio, validaCamposFinancieros, isCkeckGtosFinancieros, validacionesErr, archivoAutorizacion]);
     */
 
+    const refrescarInformacionHandler = (valor) => {
+        fetchValidacionSocio(documento, '', props.token, (data) => {
+            const arrValidacionesOk = [...data.lst_datos_alerta_true];
+            const arrValidacionesErr = [...data.lst_datos_alerta_false];
+            setValidacionesOk(arrValidacionesOk);
+            setValidacionesErr(arrValidacionesErr);
+            const objValidaciones = {
+                "lst_validaciones_ok": [...data.lst_datos_alerta_true],
+                "lst_validaciones_err": [...data.lst_datos_alerta_false]
+            }
+            //console.log("VALIDACIONES, ", objValidaciones)
+            handleLists(objValidaciones);
 
+            setNombreSocio(data.str_nombres);
+            setApellidoPaterno(data.str_apellido_paterno);
+            setApellidoMaterno(data.str_apellido_materno);
+            setCelularSocio(data.str_celular);
+            setCorreoSocio(data.str_email);
+            //TODO: VALIDAR FECHA NACIMIENTO
+            setFechaNacimiento(data.str_fecha_nacimiento)
+
+            data.cedula = documento
+            data.nombres = data.str_nombres
+            data.apellidoPaterno = data.str_apellido_paterno
+            data.apellidoMaterno = data.str_apellido_materno
+            data.celularCliente = data.str_celular
+            data.correoCliente = data.str_email
+            data.fechaNacimiento = data.str_fecha_nacimiento
+
+            //console.log("DATA ASIG, ", data)
+            //setInfoSocio(informacionCliente);
+            setInfoSocio(data);
+            setEnteSocio("")
+            setStep(1);
+            let retrasoEfecto =setTimeout(function () {
+                setIsVisibleBloque(true);
+                clearTimeout(retrasoEfecto);
+            }, 100);
+            //setVisitadosSteps([...visitadosSteps, actualStep + 1])
+            //setActualStep(1);
+        }, dispatch);
+    }
 
     const nextHandler = async () => {
         console.log("STEPPP ", step)
         if (step === 0) {
-            //TODO: FALTA EDITAR PARA REGISTRO DE INGRESOS, EGRESOS, ETC
-            setIsVisibleBloque(!isVisibleBloque);
-            fetchValidacionSocio(documento, '', props.token, (data) => {                
-                const arrValidacionesOk = [...data.lst_datos_alerta_true];
-                const arrValidacionesErr = [...data.lst_datos_alerta_false];
-                setValidacionesOk(arrValidacionesOk);
-                setValidacionesErr(arrValidacionesErr);
-                const objValidaciones = {
-                    "lst_validaciones_ok": [...data.lst_datos_alerta_true],
-                    "lst_validaciones_err": [...data.lst_datos_alerta_false]
-                }       
-                //console.log("VALIDACIONES, ", objValidaciones)
-                handleLists(objValidaciones);
-
-                setNombreSocio(data.str_nombres);
-                setApellidoPaterno(data.str_apellido_paterno);
-                setApellidoMaterno(data.str_apellido_materno);
-                setCelularSocio(data.str_celular);
-                setCorreoSocio(data.str_email);
-                //TODO: VALIDAR FECHA NACIMIENTO
-                setFechaNacimiento(data.str_fecha_nacimiento)
-
-                data.cedula = documento
-                data.nombres = data.str_nombres
-                data.apellidoPaterno = data.str_apellido_paterno
-                data.apellidoMaterno = data.str_apellido_materno
-                data.celularCliente = data.str_celular
-                data.correoCliente = data.str_email
-                data.fechaNacimiento = data.str_fecha_nacimiento
-
-                //console.log("DATA ASIG, ", data)
-                //setInfoSocio(informacionCliente);
-                setInfoSocio(data);
-                setEnteSocio("")
-                setStep(1);
-                //setVisitadosSteps([...visitadosSteps, actualStep + 1])
-                //setActualStep(1);
-            }, dispatch);
-
+            //TODO: FALTA EDITAR PARA EXTRAER INGRESOS, EGRESOS, GASTOS FINANCIEROS TITULAR
+            setIsVisibleBloque(false);
+            refrescarInformacionHandler();
         }
         if (step === 1) {
             setStep(2);
-            setVisitadosSteps([...visitadosSteps, actualStep + 1])
-            setActualStep(1)
+            setVisitadosSteps([...visitadosSteps, actualStepper + 1])
+            setActualStepper(1);
         }
         if (step === 2) {
             //console.log("STEP 1, SHOW ", showAutorizacion)
@@ -374,10 +397,12 @@ const NuevaProspeccion = (props) => {
                         }
                     }, dispatch);
                 return;
-            } 
-            setActualStep(2);
-            setVisitadosSteps([...visitadosSteps, actualStep + 1])
-            setStep(3)
+            } else {
+                setActualStepper(2);
+                setVisitadosSteps([...visitadosSteps, actualStepper + 1])
+                setStep(3)
+            }
+            
             
 
         }
@@ -391,15 +416,60 @@ const NuevaProspeccion = (props) => {
             //setStep(4);
 
             //const strNombreSocio = `${nombresSolicitud} ${pApellidoSolicitud} ${sApellidoSolicitud}`;
-            const strOficina = "MATRIZ";
+
+            /*const strOficina = "MATRIZ";
             //const strOficina = get(localStorage.getItem("office"));
             const strOficial = get(localStorage.getItem("sender_name"));
-            const strCargo = get(localStorage.getItem("role"));
+            const strCargo = get(localStorage.getItem("role"));*/
 
-            //TODO: CAMBIAR LA CEDULA por "documento"
-            await fetchScore("C", "1150214375", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, "Matriz", strOficial, strCargo, props.token, (data) => {
-                setScore(data);
-            }, dispatch);
+            if (!realizaNuevaSimulacion) {
+                console.log("PRIMERA CONSULTA BURO ")
+
+                //TODO: CAMBIAR LA CEDULA por "documento"
+                await fetchScore("C", "1150214375", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, "Matriz", datosUsuario.strOficial, datosUsuario.strCargo, props.token, (data) => {
+                    setScore(data);
+                    setIdClienteScore(data.int_cliente);
+                    //console.log("SCORE, ", data.int_cliente)
+                    setRealizaNuevaSimulacion(true);
+                    const scoreStorage = JSON.stringify(data);
+                    localStorage.setItem('dataPuntaje', scoreStorage.toString());
+                }, dispatch);
+
+            } else {
+                let scoreStorage = JSON.parse((localStorage.getItem('dataPuntaje')));
+
+                //Simulacion nueva campo monto sugerido
+                const ingresoNeto = ((datosFinancieros.montoIngresos - datosFinancieros.montoEgresos - datosFinancieros.montoGastosFinancieros + Number(datosFinancieros.montoRestaGstFinanciero)))
+
+                //TODO CAMBIAR CEDULA y calificacion hacer cambio a porcentaje, ahora retorna solo A1.
+                await fetchInfoSocio("1105970717", props.token, (data) => {
+                    calificacionRiesgoHandler(data.datos_cliente[0].str_calificacion_riesgo)
+                    console.log(data.datos_cliente[0].str_calificacion_riesgo)
+                }, dispatch);
+
+                const valorCP = ingresoNeto * 0.4; //TODO: valor temporal Calificacion riesgo -->  propiedad a recuperar calificacionRiesgo (infoSocio. str_calificacion_riesgo)
+                const taza = 0.167;
+                const plazo = 12;
+                const tazaVsPlazo = (taza / plazo);
+
+
+
+                //const numerador = (Math.pow(1 + tazaVsPlazo, plazo) - 1);
+                //const denominador = (tazaVsPlazo * (Math.pow(1 + tazaVsPlazo, plazo)));
+                //const nuevoCupoSugerido = valorCP *(numerador / denominador);
+                //console.log(`Num ${numerador}, Den ${denominador}, NUevoCupo ${nuevoCupoSugerido}`);
+
+
+                const nuevoCupoSugerido = valorCP * ((Math.pow(1 + tazaVsPlazo, plazo) - 1) / (tazaVsPlazo * (Math.pow(1 + tazaVsPlazo, plazo))));
+                console.log(`NETO ${ingresoNeto}, cp ${valorCP}, tazaPla ${tazaVsPlazo}, nuevoCupo ${nuevoCupoSugerido}`);
+
+
+                scoreStorage.montoSugerido = Number.parseFloat(nuevoCupoSugerido).toFixed(2);
+                console.log("data Score Alm ", scoreStorage.montoSugerido);
+                setScore(scoreStorage);
+            }
+
+           
             
         }
 
@@ -409,8 +479,8 @@ const NuevaProspeccion = (props) => {
             console.log("STEP 4")
             fetchAddProspecto(documento, 0, nombreSocio, apellidoPaterno + " " + apellidoMaterno, celularSocio, correoSocio, datosFinancieros.montoSolicitado, comentario, comentarioAdic, props.token, (data) => {
                 console.log("RESP ADD PROSP, ", data)
-                setVisitadosSteps([...visitadosSteps, actualStep + 1])
-                setActualStep(4);
+                setVisitadosSteps([...visitadosSteps, actualStepper + 1])
+                setActualStepper(4);
                 setStep(-1);
             }, dispatch)
 
@@ -427,7 +497,7 @@ const NuevaProspeccion = (props) => {
     }
 
     const checkGastosFinancieroHandler = (e) => {
-        setIsCkeckGtosFinancieros(e);
+        setIsCkeckGtosFinanCodeudor(e);
     }
 
     
@@ -442,15 +512,21 @@ const NuevaProspeccion = (props) => {
         }
     }
 
-    const datosFinancierosHandler = (dato)  => {
+    const datosFinancierosHandler = (dato) => {
         let datosFinanciero = {
             montoSolicitado: dato.montoSolicitado,
             montoIngresos: dato.montoIngresos,
             montoEgresos: dato.montoEgresos,
-            montoGastosFinancieros: dato.montoGastosFinancieros
+            montoGastosFinancieros: dato.montoGastosFinancieros,
+            montoGastoFinaCodeudor: dato.montoGastoFinaCodeudor,
+            montoRestaGstFinanciero: dato.restaGastoFinanciero
         }
         setDatosFinancieros(datosFinanciero)
 
+    }
+    const calificacionRiesgoHandler = (calificacion) => {
+        console.log("RETORNA CALIFICACION RIESGO, ", calificacion);
+        setCalificacionRiesgo(calificacion)
     }
 
     const datosIngresadosHandler = (e) => {
@@ -515,6 +591,16 @@ const NuevaProspeccion = (props) => {
         "Registro simulación",
     ];
 
+    const anteriorStepHandler = (paso) => {
+        if (actualStepper !== 0) {
+            const updateSteps = visitadosSteps.filter((index) => index !== actualStepper);
+            setVisitadosSteps(updateSteps);
+            setActualStepper(actualStepper - 1);
+        }
+        setIsVisibleBloque(true);
+        setStep(step - 1)
+    }
+
     return (
         <div className="f-row" >
             <Sidebar enlace={props.location.pathname}></Sidebar>
@@ -524,7 +610,7 @@ const NuevaProspeccion = (props) => {
                 <div className="f-col justify-content-center">
 
                     <div className="stepper">
-                        <Stepper steps={steps} setStepsVisited={visitadosSteps} setActualStep={actualStep} />
+                        <Stepper steps={steps} setStepsVisited={visitadosSteps} setActualStep={actualStepper} />
                     </div>
 
                     {(step === 0 || step === 1) &&
@@ -535,6 +621,7 @@ const NuevaProspeccion = (props) => {
                                 infoSocio={infoSocio}
                                 datosIngresados={datosIngresadosHandler} 
                                 isVisibleBloque={isVisibleBloque}
+                                requiereActualizar={refrescarInformacionHandler}
                                 ></RegistroCliente>
                         </div>
                     }
@@ -561,6 +648,8 @@ const NuevaProspeccion = (props) => {
                                 datosFinancieros={datosFinancierosHandler}
                                 isCkeckGtosFinancierosHandler={checkGastosFinancieroHandler}
                                 gestion={gestion}
+                                habilitaRestaGstFinancieros={realizaNuevaSimulacion}
+                                requiereActualizar={refrescarInformacionHandler}
                             >
                             </DatosFinancieros>
                         </div>
@@ -576,7 +665,8 @@ const NuevaProspeccion = (props) => {
                                 gestion={gestion}
                                 onInfoSocio={getIfoSocioHandler}
                                 onComentario={handleComentario}
-                                onComentarioAdic={handleComentarioAdic}
+                            onComentarioAdic={handleComentarioAdic}
+                            idClienteScore={idClienteScore}
                             ></DatosSocio>                        
                     }
                   
@@ -589,8 +679,15 @@ const NuevaProspeccion = (props) => {
                         ></FinProceso>}
                 </div>
                 <div id="botones" className="f-row ">
-                    <Item xs={2} sm={2} md={2} lg={2} xl={2} className=""></Item>
+                    <Item xs={2} sm={2} md={2} lg={2} xl={2} className="">
+                        {(step !== 0 || step === -1) &&
+                            <Button className={["btn_mgprev mt-2"]} onClick={anteriorStepHandler}>{"Anterior"}</Button>
+                        } 
+                    </Item>
                     <Item xs={8} sm={8} md={8} lg={8} xl={8} className="f-row justify-content-space-evenly">
+                        {(step === 1 || step === 3) &&
+                            <Button className={["btn_mg btn_mg__primary mt-2 mr-2"]} onClick={refrescarInformacionHandler}>{"Actualizar"}</Button>
+                        }  
                         <Button className={["btn_mg btn_mg__primary mt-2"]} disabled={estadoBotonSiguiente} onClick={nextHandler}>{textoSiguiente}</Button>
                     </Item>
 

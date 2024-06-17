@@ -1,5 +1,5 @@
 import React, { Component, useEffect, useState } from 'react';
-import { getAuthenticated, getUser } from 'react-session-persist';
+import { getAuthenticated, getUser, removeSession } from 'react-session-persist';
 import { Route, Switch, Redirect } from 'react-router';
 import Layout from './components/Layout';
 import Home from './components/Home';
@@ -124,8 +124,12 @@ function Menus({ listaMenus, id_perfil, token, setListas, setListaFunc, listaFun
                     if (!match) {
                         history.push("/");
                     }
-                } else {
-                    history.push("/");
+                } else { //NO PUEDE ACCEDER SI NO TIENES FUNCIONALIDADES
+                    removeSession();
+                    history.push("/auth");
+                    localStorage.removeItem('sender');
+                    localStorage.removeItem('remitente');
+                    localStorage.removeItem('aceptar');
                 }
             }
             clearTimeout(tOut);
@@ -161,6 +165,7 @@ class App extends Component {
                         localStorage.removeItem('sender');
                         localStorage.removeItem('remitente');
                         localStorage.removeItem('aceptar');
+                        removeSession();
                     }
                     if (getAuthenticated() && datosUsuario && datosUsuario.id_perfil > 0) {
                         this.setState({ idUsuario: datosUsuario.id_perfil });

@@ -6,7 +6,7 @@ import { fetchGetContrato, fetchScore } from "../../services/RestServices";
 import { useDispatch } from 'react-redux';
 import Uploader from "../Common/UI/Uploader";
 import { jsPDF } from "jspdf";
-import { base64ToBlob, descargarArchivo, generarFechaHoy, verificarPdf, getBase64 } from "../../js/utiles";
+import { base64ToBlob, descargarArchivo, generarFechaHoy, verificarPdf, conversionBase64 } from "../../js/utiles";
 
 const ValidacionesGenerales = (props) => {
     const dispatch = useDispatch();
@@ -121,13 +121,14 @@ const ValidacionesGenerales = (props) => {
             setArchivoAutorizacion(result);
         });*/
 
-        const base64 = await convertBase64(event);
+        const base64 = await conversionBase64(event);
         console.log(base64.split(',')[1]);
         props.onFileUpload(base64.split(',')[1]);
 
     };
 
-    const convertBase64 = file => {
+    /*
+    const conversionBase64 = file => {
         return new Promise((resolve, reject) => {
             const fileReader = new FileReader();
             fileReader.readAsDataURL(file);
@@ -140,7 +141,7 @@ const ValidacionesGenerales = (props) => {
                 reject(error);
             }
         })
-    }
+    }*/
 
 
     const removeFile = () => {

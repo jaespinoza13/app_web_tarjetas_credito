@@ -171,7 +171,7 @@ const VerSolicitud = (props) => {
             }
         ]);
 
-        //console.log("PROPS INFO", props)
+        console.log("PROPS INFO", props)
 
     }, []);
 
@@ -294,7 +294,9 @@ const VerSolicitud = (props) => {
 
     const descargarMedio = (numSolicitud) => {
         //console.log("Num Sol,", numSolicitud)
-        fetchGetMedioAprobacion(props.token, (data) => {
+        //TODO: ESTADO 
+        fetchGetMedioAprobacion("", props.solicitud.solicitud,  props.token, (data) => {
+            console.log("RESP MEDIO", data)
             if (data.str_res_codigo === "000" && verificarPdf(data.str_med_apro_bas_64)) {
                 const blob = base64ToBlob(data.str_med_apro_bas_64, 'application/pdf');
                 let fechaHoy = generarFechaHoy();
@@ -800,7 +802,12 @@ const VerSolicitud = (props) => {
 
 
                     <div className="mt-3">
-                        <UploadDocumentos grupoDocumental={separadores} contenido={separadores} token={props.token}></UploadDocumentos>
+                        <UploadDocumentos
+                            grupoDocumental={separadores}
+                            contenido={separadores}
+                            token={props.token}
+                            cedulaSocio={props.solicitud.cedulaSocio }
+                        ></UploadDocumentos>
                     </div>
                 </Card>
             }

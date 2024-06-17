@@ -622,6 +622,13 @@ export function verificarPdf(pdf) {
     }
     return true;
 }
+
+/**
+ * 
+ * @param {any} base64 es el arreglo de bytes a trasformar
+ * @param {any} type es e tipo de formato
+ * @returns
+ */
 export function base64ToBlob(base64, type = 'application/octet-stream') {
     const binStr = atob(base64);
     const len = binStr.length;
@@ -686,6 +693,20 @@ export function conversionTipoTC (tipo){
     return chipType;
 }
 
+export function conversionBase64(file) {
+    return new Promise((resolve, reject) => {
+        const fileReader = new FileReader();
+        fileReader.readAsDataURL(file);
+
+        fileReader.onload = () => {
+            resolve(fileReader.result);
+        }
+
+        fileReader.onerror = (error) => {
+            reject(error);
+        }
+    })
+}
 
 export function getBase64(file, cb) {
     let reader = new FileReader();

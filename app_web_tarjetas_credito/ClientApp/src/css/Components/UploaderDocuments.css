@@ -109,8 +109,8 @@ table.archivos {
 
 
     table.archivos td:nth-child(1) {
-        color: black;
-        font-family: "Karbon-Bold", sans-serif;
+        color: #3D3D3D;
+        font-family: "Karbon", sans-serif;
     }
 
 

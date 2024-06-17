@@ -23,6 +23,9 @@ namespace Domain.Models.TarjetaCredito.Axentria.GetSeparadores
             public DateTime dtt_fecha_sube { get; set; }
             public string str_version { get; set; } = string.Empty;
 
+            public int int_valida_separador { get; set; } = 0;
+            public int int_valida_publicacion { get; set; } = 0;
+
         }
     }
 }

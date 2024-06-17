@@ -4,10 +4,11 @@ import '../../css/Components/Stepper.css';
 
 
 
-const Stepper = ({ steps, setStepsVisited, setActualStep }) => {
+const Stepper = ({ steps, setStepsVisited, setActualStep, cambioRealBool, cambioRealRetorno }) => {
 
     const [visitedSteps, setVisitedSteps] = useState([]);
     const [currentStep, setCurrentStep] = useState(0);
+    //const [cambioReal, setCambioReal] = useState(false);
 
     /*
     const handleNext = () => {
@@ -24,13 +25,16 @@ const Stepper = ({ steps, setStepsVisited, setActualStep }) => {
 
     useEffect(() => {
         //setVisitedSteps([0]);
+        //if (cambioRealBool) {
+            //console.log(`StepVisitados ${setStepsVisited}, StepActual ${setActualStep}`)
 
-        //console.log(`StepVisitados ${setStepsVisited}, StepActual ${setActualStep}`)
-
-        setVisitedSteps([...setStepsVisited])
-        setCurrentStep(setActualStep);
+            setVisitedSteps([...setStepsVisited])
+            setCurrentStep(setActualStep);
+            //cambioRealRetorno(true);
+        //}        
 
     }, [steps, setStepsVisited, setActualStep]);
+    //}, [steps, setStepsVisited, setActualStep, cambioRealBool]);
 
     return (
         <div className="stepper-container">

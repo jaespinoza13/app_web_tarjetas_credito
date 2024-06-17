@@ -22,7 +22,7 @@ import { setSolicitudStateAction } from '../../redux/Solicitud/actions';
 
 
 const mapStateToProps = (state) => {
-    console.log("state, ", state)
+    //console.log("state, ", state)
     var bd = state.GetWebService.data;
     if (IsNullOrWhiteSpace(bd) || Array.isArray(state.GetWebService.data)) {
         bd = sessionStorage.getItem("WSSELECTED");
@@ -55,11 +55,11 @@ function Solicitud(props) {
     const [modalVisible, setModalVisible] = useState(false);
     const [permisoNuevaSol, setPermisoNuevaSol] = useState(false);
 
- 
+
 
     //Headers tablas Solicitudes y Prospectos
     const headerTableSolicitantes = [
-        { nombre: 'Nro. Solicitud', key: 0}, { nombre: 'Identificación', key: 1 }, { nombre: 'Ente', key: 2 }, { nombre: 'Nombre solicitante', key: 3 },
+        { nombre: 'Nro. Solicitud', key: 0 }, { nombre: 'Identificación', key: 1 }, { nombre: 'Ente', key: 2 }, { nombre: 'Nombre solicitante', key: 3 },
         { nombre: 'Monto', key: 5 }, { nombre: 'Calificación', key: 6 },
         { nombre: 'Estado', key: 7 }, { nombre: 'Oficina Crea', key: 8 }, { nombre: 'Acciones', key: 9 },
     ];
@@ -89,7 +89,7 @@ function Solicitud(props) {
     ];
 
     const validaNombreParam = (id) => {
-        console.log(id);
+        //console.log(id);
         const parametro = parametros.find((param) => { return param.prm_id === id });
         return parametro.prm_valor_ini;
     }
@@ -126,22 +126,33 @@ function Solicitud(props) {
     const [lstProstectos, stLstProspectos] = useState([]);
     const [lstSolicitudes, stLstSolicitudes] = useState([]);
 
-    //Carga de solicitudes
+    const [controlConsultaCargaComp, setControlConsultaCargaComp] = useState(false);
+
+    //Carga de solicitudes (SE MODIFICA PARA QUE APAREZCA PRIMERA PANTALLA COMO PREDETERMINADA AL LOGUEARSE)
     useEffect(() => {
-        //console.log("TOKEN", props.token);
-        fetchGetSolicitudes(props.token, (data) => {
-            console.log("ENTRA SOLICITUDES");
-            console.log(data);
-            stLstProspectos(data.prospectos);
-            stLstSolicitudes(data.solicitudes);
-        }, dispatch)
-        const strOficial = get(localStorage.getItem("sender_name"));
-        setUsuario(strOficial);
-        const strRol = get(localStorage.getItem("role"));
-        //console.log(strRol);
-        setRol(strRol);
-        setDatosUsuario([{ strCargo: strRol, strOficial: strOficial }]);
-    }, []);
+        if (props.token && !controlConsultaCargaComp) {
+            console.log("TOKEN", props.token);
+            fetchGetSolicitudes(props.token, (data) => {
+                console.log("ENTRA SOLICITUDES");
+                console.log(data);
+                stLstProspectos(data.prospectos);
+                stLstSolicitudes(data.solicitudes);
+            }, dispatch)
+            const strOficial = get(localStorage.getItem("sender_name"));
+            setUsuario(strOficial);
+            const strRol = get(localStorage.getItem("role"));
+            //console.log(strRol);
+            setRol(strRol);
+            setDatosUsuario([{ strCargo: strRol, strOficial: strOficial }]);
+            setControlConsultaCargaComp(true);
+        }
+
+    }, [props.token]);
+
+    /*
+    useEffect(() => {
+        console.log("CAMBIO TOKEN")
+    }, [props.token])*/
 
     useEffect(() => {
         if (rol) {
