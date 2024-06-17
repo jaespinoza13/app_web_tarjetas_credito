@@ -504,6 +504,19 @@ span.ripple {
     justify-content: center;
 }
 
+.btn_mgprev {
+    border: none;
+    border-radius: 25px;
+    color: #004CAC;
+    letter-spacing: 0px;
+    width: 8rem;
+    display: flex;
+    align-items: center;
+    background-color: #F8F8F8;
+    justify-content: center;
+    height: 27px;
+}
+
 .btn_mg__auto {
     width: auto;
 }
@@ -936,13 +949,17 @@ li {
 
 .modal-content.modal-content-show {
     visibility: visible;
-    animation: modal-up 0.3s forwards;
-    animation-timing-function: ease-in;
+    /*animation: modal-up 0.3s forwards;
+    animation-timing-function: ease-in;*/
+    opacity: 1;
 }
 
 .modal-content.modal-content-hide {
-    animation: modal-down 0.3s forwards;
-    animation-timing-function: ease-in;
+    /*animation: modal-down 0.3s forwards;*/
+    /*animation-timing-function: ease-in;*/
+    opacity: 0;
+    display: block;
+
 }
 
 button.close-modal {
@@ -963,9 +980,11 @@ button.close-modal {
     border-radius: 25px;
     border: 1px solid #D4E7FF;
     position: relative;
-    display: flex;
+    transition: all ease 0.4s;
+    /*transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;*/
     flex-direction: column;
     justify-content: space-between;
+    opacity: 0;
 }
 
 .modal-content-lg {
@@ -1478,9 +1497,8 @@ input:checked + .slider::before {
     }
 
 .image-wrapper {
-    width: 300px;
     /*height: 200px;*/
-    height: auto;
+    height: 150px;
     overflow: hidden;
     display: flex;
     justify-content: center; /* Centrado horizontal */
@@ -1581,12 +1599,12 @@ input[type=radio] {
 }
 
 .visibleX {
-    transform: translateX(-50%);
+    transform: translateX(0%);
     opacity: 1;
 }
 
 .hiddenX {
-    transform: translateX(0); /* Desplaza el div completamente hacia un costado */
+    transform: translateX(80%); /* Desplaza el div completamente hacia un costado */
     opacity: 0;
 }
 

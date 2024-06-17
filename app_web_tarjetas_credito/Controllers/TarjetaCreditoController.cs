@@ -35,6 +35,7 @@ using Domain.Models.TarjetaCredito.Axentria.GetSeparadores;
 using Domain.Models.TarjetaCredito.Axentria.AddDocumentos;
 using Domain.Models.TarjetaCredito.Axentria.ObtenerDocumentos;
 using Domain.Models.TarjetaCredito.Axentria.CrearSeparadores;
+using Domain.Models.TarjetaCredito.GetReporteAval;
 
 namespace plantilla_app_web.Controllers
 {
@@ -323,6 +324,23 @@ namespace plantilla_app_web.Controllers
         public ResCrypt Post(ReqGetParametrosSistema req)
         {
             ResGetParametrosSistema res = tarjetaCreditoDat.getParametros(req);
+            return Utiles.crypt(res, Request.Headers);
+        }
+
+        [Route("getReporteAval")]
+        [ServiceFilter(typeof(CryptoFilter))]
+        [HttpPost]
+        public ResCrypt Post(ReqGetReporteAval req)
+        {
+            ReqGetReporteAval reqReporteAval = new ReqGetReporteAval();
+            reqReporteAval.str_login = req.str_login;
+            reqReporteAval.str_mac_dispositivo = req.str_mac_dispositivo;
+            reqReporteAval.str_sesion = req.str_sesion;
+            reqReporteAval.str_id_oficina = req.str_id_oficina;
+            reqReporteAval.str_id_perfil = req.str_id_perfil;
+            reqReporteAval.str_ip_dispositivo = Utiles.getIP();
+            string ip = Utiles.getIP();
+            ResGetReporteAval res = tarjetaCreditoDat.getReporteAval(reqReporteAval);
             return Utiles.crypt(res, Request.Headers);
         }
     }

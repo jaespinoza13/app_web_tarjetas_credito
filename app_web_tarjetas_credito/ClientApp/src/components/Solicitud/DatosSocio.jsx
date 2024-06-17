@@ -3,12 +3,13 @@ import Accordion from "../Common/UI/Accordion";
 import { Fragment, useState } from "react";
 import { useDispatch } from 'react-redux';
 import Item from "../Common/UI/Item";
-import { fetchInfoSocio, fetchInfoEconomica, fetchGetInfoFinan } from "../../services/RestServices";
+import { fetchInfoSocio, fetchInfoEconomica, fetchGetInfoFinan, fetchReporteAval } from "../../services/RestServices";
 import Switch from "../Common/UI/Switch";
 import Toggler from "../Common/UI/Toggler";
 import Input from "../Common/UI/Input";
 import Textarea from "../Common/UI/Textarea";
 import Button from "../Common/UI/Button";
+import { base64ToBlob, descargarArchivo, generarFechaHoy, verificarPdf } from "../../js/utiles";
 
 const DatosSocio = (props) => {
     const dispatch = useDispatch();
@@ -115,6 +116,7 @@ const DatosSocio = (props) => {
 
     const getInfoSocio = () => {
         //TODO: CAMBIAR CEDULA QUEMADA
+        // PUEDA Q SE TENGA Q RETORNAR CALIFICACION RIESGO PARA HACER RECALCULO DE CUPO SUGERIDO
         setEstadoLoadingInfoSocio(true);
         fetchInfoSocio("1105970717", props.token, (data) => {
             setDirDomicilioSocio([...data.lst_dir_domicilio]);
@@ -123,6 +125,7 @@ const DatosSocio = (props) => {
             setEstadoAccordionInfoSocio(true);
             setContentReadyInfoSocio(true);
             props.onInfoSocio(data);
+            //props.calificacionRiesgo(data.datos_cliente[0].str_calificacion_riesgo)
         }, dispatch);
         setEstadoLoadingInfoSocio(false);
     }
@@ -163,13 +166,31 @@ const DatosSocio = (props) => {
     }
 
     const descargarReporte = () => {
+
+        /*
         const pdfUrl = "Imagenes/reporteavalhtml.pdf";
         const link = document.createElement("a");
         link.href = pdfUrl;
         link.download = "document.pdf"; // specify the filename
         document.body.appendChild(link);
         link.click();
-        document.body.removeChild(link);
+        document.body.removeChild(link);*/
+
+        //TODO: REVISAR PRIMER PARAMETRO intCliente reporta del metodo Score
+
+        console.log("SCORE ID CLI ", props.idClienteScore)
+        //fetchReporteAval(props.idClienteScore, props.token, (data) => { //TODO: DEJAR ESTA LINEA PARA PRODUCCION
+        fetchReporteAval(189460, props.token, (data) => {
+            console.log("REPORTE AVAL ", data)
+            if (data.file_bytes.length > 0 && verificarPdf(data.file_bytes)) {
+                const blob = base64ToBlob(data.file_bytes, 'application/pdf');
+                let fechaHoy = generarFechaHoy();
+                const nombreArchivo = `ReporteAval_Prueba${(fechaHoy)}`;
+                descargarArchivo(blob, nombreArchivo, 'pdf');
+            }
+        }, dispatch);
+               
+
     }
 
     return (
@@ -178,7 +199,7 @@ const DatosSocio = (props) => {
                 <img src="Imagenes/Cupo sugerido.svg"></img>
                 <div className="ml-3 datosMonto">
                     <h3 className="blue">Cupo sugerido:</h3>
-                    <h2 className="strong blue">{`${props.montoSugerido || Number('10000.00').toLocaleString('en-US')}`}</h2>
+                    <h2 className="strong blue">{`${props.score.montoSugerido ? Number(props.score.montoSugerido).toLocaleString('en-US') : Number('10000.00').toLocaleString('en-US')}`}</h2>
                 </div>
             </div>
             <div className="info f-row mb-4">
@@ -193,32 +214,34 @@ const DatosSocio = (props) => {
                                 <h5>Ingresos</h5>
                                 <h5 className="strong">
                                     {/*{`$ ${Number(props.informacionSocio.montoIngresos).toLocaleString("en-US")}`}*/}
-                                    {`$ ${Number(props.informacionSocio.datosFinancieros
-.montoIngresos)}`}
+                                    {`$ ${Number(props.informacionSocio.datosFinancieros.montoIngresos)}`}
                                 </h5>
                             </div>
                             <div className="values  mb-3">
                                 <h5>Egresos</h5>
                                 <h5 className="strong">
                                     {/*{`$ ${Number(props.informacionSocio.montoEgresos).toLocaleString("en-US")}`}*/}
-                                    {`$ ${Number(props.informacionSocio.datosFinancieros
-.montoEgresos)}`}
+                                    {`$ ${Number(props.informacionSocio.datosFinancieros.montoEgresos)}`}
+                                </h5>
+                            </div>
+                            <div className="values  mb-3">
+                                <h5>Resta Gasto Financiero</h5>
+                                <h5 className="strong">                                 
+                                    {`$ ${Number(props.informacionSocio.datosFinancieros.montoRestaGstFinanciero)}`}
                                 </h5>
                             </div>
                             <div className="values  mb-3">
                                 <h5>Gastos Financieros</h5>
                                 <h5 className="strong">
                                     {/*{`$ ${Number(props.informacionSocio.montoGastosFinancieros).toLocaleString("en-US")}`}*/}
-                                    {`$ ${Number(props.informacionSocio.datosFinancieros
-.montoGastosFinancieros)}`}
+                                    {`$ ${Number(props.informacionSocio.datosFinancieros.montoGastosFinancieros)}`}
                                 </h5>
                             </div>
                             <div className="values  mb-3">
                                 <h5>Cupo solicitado</h5>
                                 <h5 className="strong">
                                     {/* {`$ ${(props.informacionSocio.montoSolicitado).toLocaleString("en-US")}`}*/}
-                                    {`$ ${(props.informacionSocio.datosFinancieros
-.montoSolicitado)}`}
+                                    {`$ ${(props.informacionSocio.datosFinancieros.montoSolicitado)}`}
                                 </h5>
                             </div>
                             <div className="values  mb-3">

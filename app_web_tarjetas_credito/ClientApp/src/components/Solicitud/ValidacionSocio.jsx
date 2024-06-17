@@ -3,6 +3,8 @@ import Card from "../Common/Card";
 import { Fragment, useState } from "react";
 import { validaCedula } from '../../js/utiles';
 import Item from "../Common/UI/Item";
+import { useEffect } from "react";
+import Button from "../Common/UI/Button";
 
 
 const ValidacionSocio = (props) => {
@@ -23,6 +25,12 @@ const ValidacionSocio = (props) => {
     }
 
     /*
+    useEffect(() => {
+
+        console.log(`PROPS VISIBILIDAD ${props.isVisibleBloque}`)
+    }, [props.isVisibleBloque])*/
+
+    /*
     const [isVisibleBloque, setIsVisibleBloque] = useState(true);
 
     const toggleVisibility = () => {
@@ -31,6 +39,18 @@ const ValidacionSocio = (props) => {
 
     /*<div className={`f-row w-100 sliding-div ${!props.isVisibleBloque ? 'visibleX' : 'hiddenX'}`}>     */
     /*         */
+
+
+    const updDatosHandler = () => {
+        props.requiereActualizar(true)
+    }
+
+    const atajosHandler = (event) => {
+        if (event.key === 'Enter') {
+            props.AtajoHandler(event,'Enter');
+        }
+    };
+
     return (
         <>
             {props.paso === 0 &&
@@ -39,7 +59,7 @@ const ValidacionSocio = (props) => {
                     <Item xs={6} sm={6} md={6} lg={6} xl={6} className="justify-content-center">
                     <div className="f-col w-100">
                             <label>Número de cédula</label>
-                            <Input type="number" className={`mt-3 ${isCedulaValida ? '' : 'no_valido'}`} placeholder="Ej. 1105970717" readOnly={false} value={cedulaSocio} setValueHandler={setCedulaHandler}></Input>
+                            <Input type="number" className={`mt-3 ${isCedulaValida ? '' : 'no_valido'}`} placeholder="Ej. 1105970717" readOnly={false} value={cedulaSocio} setValueHandler={setCedulaHandler} onKeyDown={atajosHandler}></Input>
                         </div>
 
                     </Item>
@@ -48,10 +68,17 @@ const ValidacionSocio = (props) => {
             }
   
             {props.paso === 1 &&
-                <div className="f-row w-100">
+                <div className={`f-row w-100 sliding-div ${props.isVisibleBloque ? 'visibleX' : 'hiddenX'}`}>   
                     <Item xs={3} sm={3} md={3} lg={3} xl={3} className=""></Item>
                     <Item xs={6} sm={6} md={6} lg={6} xl={6} className="justify-content-center">
+                        <div className={"f-row"}>
                         <h2>Datos del Socio</h2>
+                        <Button className="btn_mg__auto " onClick={updDatosHandler}>
+                                <img src="/Imagenes/refresh.svg" style={{ transform: "scaleX(-1)" }}></img>
+                         </Button>
+
+                        </div>
+
                         <Card >
                             <section>
                                 <div>

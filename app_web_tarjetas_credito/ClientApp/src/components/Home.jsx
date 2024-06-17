@@ -1,15 +1,13 @@
 import '../scss/components/Home.css';
 import { useEffect } from 'react';
-import { connect, useDispatch } from 'react-redux';
+import { connect } from 'react-redux';
 import {
     Container,
 } from 'reactstrap';
-import { get, set } from '../js/crypt';
+import { get } from '../js/crypt';
 
 import Sidebar from "./Common/Navs/Sidebar";
-import { setParametrosSistema } from '../redux/ParametrosSistema/actions';
-import { fetchGetParametrosSistema, fetchGetSolicitudes } from '../services/RestServices';
-import { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 
 
 const mapStateToProps = (state) => {
@@ -32,32 +30,11 @@ const mapStateToProps = (state) => {
 };
 
 function Home(props) {
-    /*const dispatch = useDispatch();
-    const [paramEstadosSolicit, setParamEstadosSolicit] = useState();
-
+    //TODO: PENDIENTE DE HACER UNA VALDIACION SI CUENTA CON PERMISOS SINO PRESENTAR ESTA PAG POR DEFECTO
+    const navigate = useHistory();
     useEffect(() => {
-
-        fetchGetParametrosSistema( props.token, (data) => {
-            console.log("PARAMET ", data)
-            setParamEstadosSolicit(data);
-        }, dispatch)
-
-        //console.log("PARAMETROS SISTEMA,", get(props.GetParametros.data["sistema"]))
-
-
-    }, [])
-
-
-    useEffect(() => {
-
-        console.log("PARAMETROS, ", paramEstadosSolicit)
-    }, [paramEstadosSolicit])*/
-
-
-  
-
-
-
+        navigate.push("/solicitud")
+    },[])
 
     return (
         <div className="f-row">

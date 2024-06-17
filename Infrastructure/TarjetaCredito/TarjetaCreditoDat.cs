@@ -21,6 +21,7 @@ using Domain.Models.TarjetaCredito.GetInfoSocio;
 using Domain.Models.TarjetaCredito.GetMedioAprobacion;
 using Domain.Models.TarjetaCredito.GetOrdenes;
 using Domain.Models.TarjetaCredito.GetParamatrosSistema;
+using Domain.Models.TarjetaCredito.GetReporteAval;
 using Domain.Models.TarjetaCredito.GetResoluciones;
 using Domain.Models.TarjetaCredito.GetScore;
 using Domain.Models.TarjetaCredito.GetSolicitudes;
@@ -1035,6 +1036,41 @@ namespace Infrastructure.TarjetaCredito
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
+            }
+            return res;
+        }
+
+        public ResGetReporteAval getReporteAval(ReqGetReporteAval req)
+        {
+            ResGetReporteAval res = new();
+            try
+            {
+                req.llenarDatosConfig(_settings);
+                req.str_id_servicio = "REQ_" + _settings.service_get_reporte_aval;
+                var options = new RestClientOptions(_settings.ws_aval + _settings.service_get_reporte_aval)
+                {
+                    ThrowOnAnyError = true,
+                    MaxTimeout = _settings.time_out
+                };
+
+                var client = new RestClient(options);
+
+                var request = new RestRequest();
+                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_aval);
+                request.AddHeader("Content-Type", "application/json");
+                request.AddParameter("application/json", req, ParameterType.RequestBody);
+                request.Method = Method.Post;
+                var response = new RestResponse();
+                response = client.Post(request);
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    res = JsonSerializer.Deserialize<ResGetReporteAval>(response.Content!)!;
+                }
+            }
+            catch (Exception ex)
+            {
+                res.str_res_codigo = "500";
+                res.str_res_info_adicional = "Ocurrió un error al obtener los datos del score";
             }
             return res;
         }

@@ -35,6 +35,7 @@ const Input = (props) => {
             min={props.min}
             max={props.max}
             disabled={props.disabled}
+            onKeyDown={props.onKeyDown}
         /*  key={props.key} */
 
         ></input>

@@ -1,4 +1,4 @@
-import { ServicioGetExecute, getMenuPrincipal, getPreguntaUsuario, ServicioPostExecute, getValidarPreguntaUsuario, setResetPassword, getLogin, getLoginPerfil, getPreguntas, setPreguntas, setPassword, setPasswordPrimeraVez, getListaBases, getListaConexiones, setConexion, addConexion, getListaSeguimiento, getListaDocumentos, getListaColecciones, getDescargarLogsTexto, getLogsTexto, getContenidoLogsTexto, getValidaciones, getScore, getInfoSocio, getInfoEco, addAutorizacion, getSolicitudes, addSolicitud, getContrato, getInfoFinan, addProspecto, getFlujoSolicitud, addComentarioAsesor, addComentarioSolicitud, updResolucion, addResolucion, getResolucion, addProcEspecifico, updSolicitud, getParametros, getReporteOrden, getOrdenes, getTarjetasCredito, getInforme, getMedioAprobacion, getSeparadores, addDocumentosAxentria, getDocumentosAxentria, crearSeparadores } from './Services';
+import { ServicioGetExecute, getMenuPrincipal, getPreguntaUsuario, ServicioPostExecute, getValidarPreguntaUsuario, setResetPassword, getLogin, getLoginPerfil, getPreguntas, setPreguntas, setPassword, setPasswordPrimeraVez, getListaBases, getListaConexiones, setConexion, addConexion, getListaSeguimiento, getListaDocumentos, getListaColecciones, getDescargarLogsTexto, getLogsTexto, getContenidoLogsTexto, getValidaciones, getScore, getInfoSocio, getInfoEco, addAutorizacion, getSolicitudes, addSolicitud, getContrato, getInfoFinan, addProspecto, getFlujoSolicitud, addComentarioAsesor, addComentarioSolicitud, updResolucion, addResolucion, getResolucion, addProcEspecifico, updSolicitud, getParametros, getReporteOrden, getOrdenes, getTarjetasCredito, getInforme, getMedioAprobacion, getSeparadores, addDocumentosAxentria, getDocumentosAxentria, crearSeparadores, getReporteAval } from './Services';
 import { setAlertText, setErrorRedirigir } from "../redux/Alert/actions";
 import hex_md5 from '../js/md5';
 import { desencriptar, generate, get, set } from '../js/crypt';
@@ -1515,12 +1515,14 @@ export function fetchGetTarjetasCredito(nemonico_producto, tipo_tarjeta, estado_
     });
 }
 
-export function fetchGetMedioAprobacion(token, onSucces, dispatch) {
+export function fetchGetMedioAprobacion(estadoSoli, idSolicitud, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
-       
+        str_est_sol: estadoSoli,
+        int_id_sol: Number(idSolicitud)
     }
+    //console.log("BOD ", body)
     ServicioPostExecute(getMedioAprobacion, body, token, { dispatch: dispatch }).then((data) => {
         //console.log("MEDIO APRO,",data)
         if (data) {
@@ -1646,6 +1648,34 @@ export function fetchCrearSeparadoresAxentria(separadores, token, onSucces, disp
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
             } else {
                 if (data.str_res_estado_transaccion === "OK") {
+                    onSucces(data);
+                } else {
+                    let codigo = data.codigo || data.str_res_codigo;
+                    let mensaje = data.mensaje || data.str_res_info_adicional;
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
+                }
+            }
+        } else {
+            if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
+        }
+    });
+}
+
+export function fetchReporteAval(idCliente, token, onSucces, dispatch) {
+    if (dispatch) dispatch(setErrorRedirigir(""));
+
+    let body = {
+        int_cliente: Number(idCliente),
+        int_id_con: -1 //NECESARIO PASAR ESE VALOR
+    };
+
+    ServicioPostExecute(getReporteAval, body, token, { dispatch: dispatch }).then((data) => {
+        if (data) {
+            console.log("Reporte AVAL", data)
+            if (data.error) {
+                if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
+            } else {
+                if (data.str_res_codigo === "000" || data.str_res_codigo === "010") {
                     onSucces(data);
                 } else {
                     let codigo = data.codigo || data.str_res_codigo;

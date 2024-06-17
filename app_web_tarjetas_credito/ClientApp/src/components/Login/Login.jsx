@@ -115,6 +115,12 @@ function Login(props) {
         }
     };
 
+    const atajosHandler = (event) => {
+        if (event.key === 'Enter') {
+            handlerSubmit(event);
+        }
+    };
+
     return (
         <div className="bg_fixed login">
             {isLogin === 1 ?
@@ -270,6 +276,7 @@ function Login(props) {
                                         setPassword(pass);
                                         setPassOff(passOff);
                                     })}
+                                    onKeyDown={atajosHandler}
                                 />
                             </FormGroup>
                             <FormGroup>

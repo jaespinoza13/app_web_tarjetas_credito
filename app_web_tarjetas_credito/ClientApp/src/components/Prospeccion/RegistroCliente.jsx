@@ -4,6 +4,7 @@ import { useState } from "react";
 import { validaCedula } from '../../js/utiles';
 import Item from "../Common/UI/Item";
 import { useEffect } from "react";
+import Button from "../Common/UI/Button";
 
 
 const RegistroCliente = (props) => {
@@ -155,10 +156,12 @@ const RegistroCliente = (props) => {
 
 
             {props.paso === 1 &&
-                <div className="f-row w-100">
+                <div className={`f-row w-100 sliding-div ${props.isVisibleBloque ? 'visibleX' : 'hiddenX'}`}>   
                     <Item xs={3} sm={3} md={3} lg={3} xl={3} className=""></Item>
                     <Item xs={6} sm={6} md={6} lg={6} xl={6} className="justify-content-center">
-                        <h2>Registro Datos del Cliente</h2>
+                        <div className={"f-row"}>
+                            <h2>Registro Datos del Cliente</h2>
+                        </div>
                         <Card>
                             <section>
                                 <div className='mb-2'>
