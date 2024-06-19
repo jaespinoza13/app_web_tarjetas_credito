@@ -216,7 +216,8 @@ const DatosSocio = (props) => {
                 <img src="Imagenes/Cupo sugerido.svg"></img>
                 <div className="ml-3 datosMonto">
                     <h3 className="blue">Cupo sugerido:</h3>
-                    <h2 className="strong blue">{`${props.score.montoSugerido ? Number(props.score.montoSugerido).toLocaleString('en-US') : Number('10000.00').toLocaleString('en-US')}`}</h2>
+                    {/*<h2 className="strong blue">{`${props.score.montoSugerido ? Number(props.score.montoSugerido).toLocaleString('en-US') : Number('0.00').toLocaleString('en-US')}`}</h2>*/}
+                    <h2 className="strong blue">{`${props.score.str_cupo_sugerido ? Number(props.score.str_cupo_sugerido).toLocaleString('en-US') : Number('0.00').toLocaleString('en-US')}`}</h2>
                 </div>
             </div>
             <div className="info f-row mb-4">
@@ -247,13 +248,13 @@ const DatosSocio = (props) => {
                                     {`$ ${Number(props.informacionSocio.datosFinancieros.montoRestaGstFinanciero)}`}
                                 </h5>
                             </div>
-                            <div className="values  mb-3">
-                                <h5>Gastos Financieros</h5>
-                                <h5 className="strong">
-                                    {/*{`$ ${Number(props.informacionSocio.montoGastosFinancieros).toLocaleString("en-US")}`}*/}
-                                    {`$ ${Number(props.informacionSocio.datosFinancieros.montoGastosFinancieros)}`}
-                                </h5>
-                            </div>
+                            {/*<div className="values  mb-3">*/}
+                            {/*    <h5>Gastos Financieros</h5>*/}
+                            {/*    <h5 className="strong">*/}
+                            {/*        */}{/*{`$ ${Number(props.informacionSocio.montoGastosFinancieros).toLocaleString("en-US")}`}*/}
+                            {/*        {`$ ${Number(props.informacionSocio.datosFinancieros.montoGastosFinancieros)}`}*/}
+                            {/*    </h5>*/}
+                            {/*</div>*/}
                             <div className="values  mb-3">
                                 <h5>Cupo solicitado</h5>
                                 <h5 className="strong">

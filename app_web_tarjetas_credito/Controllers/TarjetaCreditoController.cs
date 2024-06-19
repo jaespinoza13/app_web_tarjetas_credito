@@ -84,6 +84,13 @@ namespace plantilla_app_web.Controllers
             reqGetScore.str_lugar = req.str_lugar;
             reqGetScore.str_oficial = req.str_oficial;
             reqGetScore.str_cargo = req.str_cargo;
+            reqGetScore.bln_cupo_sugerido = req.bln_cupo_sugerido;
+            reqGetScore.str_ingresos = req.str_ingresos;
+            reqGetScore.str_gastosPersonales = req.str_gastosPersonales;
+            reqGetScore.str_restaGastoFinanciero = req.str_restaGastoFinanciero;
+            reqGetScore.str_gastos_codeudor = req.str_gastos_codeudor;
+
+
             string ip = Utiles.getIP();
             ResGetScore res = tarjetaCreditoDat.getScore(reqGetScore);
             return Utiles.crypt(res, Request.Headers);
