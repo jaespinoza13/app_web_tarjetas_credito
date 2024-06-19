@@ -809,7 +809,7 @@ export function fetchScore(strTipoDocumento, strCedula, strNombres, strLugar, st
         str_oficial: strOficial,
         bln_cupo_sugerido: false
     };
-    //console.log("SCORE BODY, ",body)
+    console.log("SCORE BODY, ",body)
 
     ServicioPostExecute(getScore, body, token, { dispatch: dispatch }).then((data) => {
         if (data) {
@@ -846,31 +846,28 @@ export function fetchScore(strTipoDocumento, strCedula, strNombres, strLugar, st
 * @param {Function} dispatch
 */
 export function fetchNuevaSimulacionScore(strTipoDocumento, strCedula, strNombres, strLugar, strOficial, strCargo,
-    ingresos, egresos, gastosFinancieros, gastosCodeudor, 
-    token, onSucces, dispatch) {
+    ingresos, egresos, gastosFinancieros, gastoFinanCodeudor, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
+        bln_cupo_sugerido: true,
+        str_ingresos: ingresos.toString(),//"2000",
+        str_gastosPersonales: egresos.toString(), //"1000",
+        str_restaGastoFinanciero: gastosFinancieros.toString(),//"300",
+        str_gastos_codeudor: gastoFinanCodeudor.toString(),// "500",
+
         str_cargo: strCargo,
         str_identificacion: strCedula,
         str_tipo_identificacion: strTipoDocumento,
         str_nombres: strNombres,
         str_lugar: strLugar,
-        str_oficial: strOficial,
-
-        bln_cupo_sugerido: true,
-        dcm_total_ingresos: Number.parseFloat(ingresos),
-        dcm_total_egresos: Number.parseFloat(egresos),
-        dcm_gastos_financieros: Number.parseFloat(gastosFinancieros),
-        dcm_gastos_finan_codeudor: Number.parseFloat(gastosCodeudor),
-            
-
+        str_oficial: strOficial
     };
     //console.log("SCORE BODY, ",body)
 
     ServicioPostExecute(getScore, body, token, { dispatch: dispatch }).then((data) => {
         if (data) {
-            console.log("SOCREE", data)
+            console.log("SIMULACION NUEVA", data)
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
             } else {

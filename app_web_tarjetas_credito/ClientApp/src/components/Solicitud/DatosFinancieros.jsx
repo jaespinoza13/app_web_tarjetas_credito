@@ -10,14 +10,14 @@ const DatosFinancieros = (props) => {
     const [montoSolicitado, setMontoSolicitado] = useState(0);
     const [montoIngresos, setMontoIngresos] = useState(0);
     const [montoEgresos, setMontoEgresos] = useState(0);
-    const [montoGastosFinancieros, setMontoGastosFinancieros] = useState(0);
+    //const [montoGastosFinancieros, setMontoGastosFinancieros] = useState(0);
     const [montoGastoFinaCodeudor, setMontoGastoFinanCodeudor] = useState("");
     const [restaMontoGastosFinancieros, setRestaMontoGastosFinancieros] = useState("");
 
-    const [isCkeckGtoFinanCodeudor, setIsCkeckGtosFinancieros] = useState(false);
+    const [isCkeckRestaGtoFinancero, setIsCkeckRestaGtoFinancero] = useState(false);
 
     const [isCamposDesactivados, setIsCamposDesactivados] = useState(true);
-    const [isHabilitadoRestaGstFinancieros, setIsHabilitadoRestaGstFinancieros] = useState(false);
+    //const [isHabilitadoRestaGstFinancieros, setIsHabilitadoRestaGstFinancieros] = useState(false);
 
 
     const setMontoSolicitadoHandler = (value) => {
@@ -26,7 +26,7 @@ const DatosFinancieros = (props) => {
             montoSolicitado: Number(value),
             montoIngresos: montoIngresos,
             montoEgresos: montoEgresos,
-            montoGastosFinancieros: montoGastosFinancieros,
+            //montoGastosFinancieros: montoGastosFinancieros,
             montoGastoFinaCodeudor: montoGastoFinaCodeudor,
             restaGastoFinanciero: restaMontoGastosFinancieros
         })
@@ -38,7 +38,7 @@ const DatosFinancieros = (props) => {
             montoSolicitado: montoSolicitado,
             montoIngresos: Number(value),
             montoEgresos: montoEgresos,
-            montoGastosFinancieros: montoGastosFinancieros,
+            //montoGastosFinancieros: montoGastosFinancieros,
             montoGastoFinaCodeudor: montoGastoFinaCodeudor,
             restaGastoFinanciero: restaMontoGastosFinancieros
         })
@@ -50,12 +50,12 @@ const DatosFinancieros = (props) => {
             montoSolicitado: montoSolicitado,
             montoIngresos: montoIngresos,
             montoEgresos: Number(value),
-            montoGastosFinancieros: montoGastosFinancieros,
+            //montoGastosFinancieros: montoGastosFinancieros,
             montoGastoFinaCodeudor: montoGastoFinaCodeudor,
             restaGastoFinanciero: restaMontoGastosFinancieros
         })
     }
-
+    /*
     const setMontoGastosFinancierosHandler = (value) => {
         setMontoGastosFinancieros(Number(value));
         props.datosFinancieros({
@@ -66,7 +66,7 @@ const DatosFinancieros = (props) => {
             montoGastoFinaCodeudor: montoGastoFinaCodeudor,
             restaGastoFinanciero: restaMontoGastosFinancieros
         })
-    }
+    }*/
 
     const setMontoGastoFinanCodeudorHandler = (value) => {
         setMontoGastoFinanCodeudor(value);
@@ -74,7 +74,7 @@ const DatosFinancieros = (props) => {
             montoSolicitado: montoSolicitado,
             montoIngresos: montoIngresos,
             montoEgresos: montoEgresos,
-            montoGastosFinancieros: montoGastosFinancieros,
+            //montoGastosFinancieros: montoGastosFinancieros,
             montoGastoFinaCodeudor: value,
             restaGastoFinanciero: restaMontoGastosFinancieros
         })
@@ -86,7 +86,7 @@ const DatosFinancieros = (props) => {
             montoSolicitado: montoSolicitado,
             montoIngresos: montoIngresos,
             montoEgresos: montoEgresos,
-            montoGastosFinancieros: montoGastosFinancieros,
+            //montoGastosFinancieros: montoGastosFinancieros,
             montoGastoFinaCodeudor: montoGastoFinaCodeudor,
             restaGastoFinanciero: value
         })
@@ -96,21 +96,24 @@ const DatosFinancieros = (props) => {
 
     const CkeckGtosFinancierosHandler = (e) => {
         //console.log("CAMBIO DE CHECK", !isCkeckGtosFinancieros)
-        setIsCkeckGtosFinancieros(!isCkeckGtoFinanCodeudor);
-        props.isCkeckGtosFinancierosHandler(!isCkeckGtoFinanCodeudor);
+        setIsCkeckRestaGtoFinancero(!isCkeckRestaGtoFinancero);
+        props.isCkeckGtosFinancierosHandler(!isCkeckRestaGtoFinancero);
 
     }
 
     useEffect(() => {
         //Habilita campo de gastos financieros
         //console.log("CAMBIO DE CHECK 2,",isCkeckGtosFinancieros)
-        if (isCkeckGtoFinanCodeudor === false) {
+        if (isCkeckRestaGtoFinancero === false) {
             //setMontoGastosFinancieros(" ");
             //setMontoGastosFinancierosHandler("")
-            setMontoGastoFinanCodeudor(" ");
-            setMontoGastoFinanCodeudorHandler(" ");
+
+            //setMontoGastoFinanCodeudor(" ");
+            //setMontoGastoFinanCodeudorHandler(" ");
+            setRestaMontoGastosFinancieros(" ");
+            setRestaGastosFinancierosHandler(" ");
         }
-    }, [isCkeckGtoFinanCodeudor])
+    }, [isCkeckRestaGtoFinancero])
 
     /*
     useEffect(() => {
@@ -121,10 +124,11 @@ const DatosFinancieros = (props) => {
         }
     }, [props.requiereActualizar])*/
 
+    /* POR SI SE REQUIERE OCULTAR EN LA PRIMERA SIMULACION
     useEffect(() => {
         setIsHabilitadoRestaGstFinancieros(props.habilitaRestaGstFinancieros);
-    }, [props.habilitaRestaGstFinancieros])
-
+    },[props.habilitaRestaGstFinancieros])*/
+    
 
     useEffect(() => {
         if (props.gestion === "solicitud") {
@@ -143,9 +147,19 @@ const DatosFinancieros = (props) => {
     }
 
     useEffect(() => {
+
+        console.log("Datos finan Compon ", props.dataConsultFinan)
+
         setMontoIngresos(props.dataConsultFinan.montoIngresos);
         setMontoEgresos(props.dataConsultFinan.montoEgresos);
-        setMontoGastosFinancieros(props.dataConsultFinan.montoGastosFinancieros);
+
+        setRestaMontoGastosFinancieros(props.dataConsultFinan.montoRestaGstFinanciero);
+        setMontoGastoFinanCodeudor(props.dataConsultFinan.montoGastoFinaCodeudor)
+        //setMontoGastosFinancieros(props.dataConsultFinan.montoGastosFinancieros);
+        setMontoSolicitado(props.dataConsultFinan.montoSolicitado)
+
+        setIsCkeckRestaGtoFinancero(props.isCheckMontoRestaFinanciera)
+
     }, [])
 
 
@@ -181,32 +195,36 @@ const DatosFinancieros = (props) => {
                         </div>
 
                         <div className='mb-2'>
-                            <label>Gasto Financiero titular</label>
                             <div className="f-row">
-                                <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setMontoGastosFinancierosHandler} value={montoGastosFinancieros} disabled={isCamposDesactivados} max={"100000"} min={"0"} maxlength={"6"}></Input>
+                                <Input type="checkbox" setValueHandler={CkeckGtosFinancierosHandler} checked={isCkeckRestaGtoFinancero} ></Input>
+                                <label>Resta Gasto Financiero</label>
+                            </div>
+                            
+                            <div className="f-row">
+                                <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setRestaGastosFinancierosHandler} value={restaMontoGastosFinancieros} disabled={!isCkeckRestaGtoFinancero} max={"100000"} min={"0"} maxlength={"6"} ></Input>
                             </div>
                         </div>
 
                         <div className='mb-2'>
+                            {/*<div className="f-row">*/}
+                            {/*    <Input type="checkbox" setValueHandler={CkeckGtosFinancierosHandler} checked={isCkeckGtoFinanCodeudor} ></Input>*/}
+                            {/*    <label className='ml-2'>Gasto Financiero CoDeudor</label>*/}
+                            {/*</div>*/}
+                            <label>Gasto Financiero CoDeudor</label>
                             <div className="f-row">
-                                <Input type="checkbox" setValueHandler={CkeckGtosFinancierosHandler} checked={isCkeckGtoFinanCodeudor} ></Input>
-                                <label className='ml-2'>Gasto Financiero CoDeudor</label>
-                            </div>
-
-                            <div className="f-row">
-                                <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setMontoGastoFinanCodeudorHandler} value={montoGastoFinaCodeudor} disabled={!isCkeckGtoFinanCodeudor} max={"100000"} min={"0"} maxlength={"6"}></Input>
+                                <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setMontoGastoFinanCodeudorHandler} value={montoGastoFinaCodeudor} max={"100000"} min={"0"} maxlength={"6"} disabled={isCamposDesactivados} ></Input>
                             </div>
                         </div>
 
 
-                        {isHabilitadoRestaGstFinancieros &&
-                            <div className='mb-2'>
-                                <label>Resta Gasto Financiero Codeudor</label>
-                                <div className="f-row">
-                                    <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setRestaGastosFinancierosHandler} value={restaMontoGastosFinancieros}   max={"100000"} min={"0"} maxlength={"6"}></Input>
-                                </div>
-                            </div>
-                        }
+                        {/*{isHabilitadoRestaGstFinancieros &&*/}
+                        {/*    <div className='mb-2'>*/}
+                        {/*        <label>Resta Gasto Financiero Codeudor</label>*/}
+                        {/*        <div className="f-row">*/}
+                        {/*            <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setRestaGastosFinancierosHandler} value={restaMontoGastosFinancieros}   max={"100000"} min={"0"} maxlength={"6"}></Input>*/}
+                        {/*        </div>*/}
+                        {/*    </div>*/}
+                        {/*}*/}
                         <div className='mb-2'>
                             <label>Cupo solicitado</label>
                             <div className="f-row">

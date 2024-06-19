@@ -12,6 +12,8 @@ namespace Domain.Models.TarjetaCredito.GetScore
         // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
         public string file_bytes { get; set; }
         public int int_cliente { get; set; }
+        public string str_gastos_codeudor { get; set; }
+        public string str_cupo_sugerido { get; set; }
         public Response response { get; set; }
         
     }
