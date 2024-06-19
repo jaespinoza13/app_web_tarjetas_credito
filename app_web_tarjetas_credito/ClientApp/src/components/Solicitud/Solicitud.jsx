@@ -19,6 +19,7 @@ import { IconButton } from '@mui/material';
 import TableWithTextArea from '../Common/UI/TableWithTextArea';
 import ModalDinamico from '../Common/Modal/ModalDinamico';
 import { setSolicitudStateAction } from '../../redux/Solicitud/actions';
+import Paginacion from '../Common/Paginacion';
 
 
 const mapStateToProps = (state) => {
@@ -55,7 +56,18 @@ function Solicitud(props) {
     const [modalVisible, setModalVisible] = useState(false);
     const [permisoNuevaSol, setPermisoNuevaSol] = useState(false);
 
+    //Paginacion
+    const [paginaActual, setPaginaActual] = useState(1);
+    const [paginasEnVista] = useState(10); //Número de registros listados por página
+    const indexOfLastRecord = paginaActual * paginasEnVista;
+    const indexOfFirstRecord = indexOfLastRecord - paginasEnVista;
+    const [registrosPagActual, setRegistrosPagActual] = useState();
+    const [numPaginas, setNumPaginas] = useState(0);
 
+    //ACTUALIZA LA PAGINA DONDE SE QUIERE IR
+    useEffect(() => {
+        setRegistrosPagActual(lstSolicitudes.slice(indexOfFirstRecord, indexOfLastRecord));
+    }, [paginaActual])
 
     //Headers tablas Solicitudes y Prospectos
     const headerTableSolicitantes = [
@@ -137,6 +149,11 @@ function Solicitud(props) {
                 console.log(data);
                 stLstProspectos(data.prospectos);
                 stLstSolicitudes(data.solicitudes);
+
+                //Aplicacion Paginacion para Solicitudes (predeterminado)
+                setRegistrosPagActual(data.solicitudes.slice(indexOfFirstRecord, indexOfLastRecord));
+                setNumPaginas(Math.ceil(data.solicitudes.length / paginasEnVista))
+                
             }, dispatch)
             const strOficial = get(localStorage.getItem("sender_name"));
             setUsuario(strOficial);
@@ -182,6 +199,10 @@ function Solicitud(props) {
             setIsLstProspecciones(false);
             setIsLstSolicitudes(true);
         } else {
+            //Aplicacion Paginacion para Solicitudes (predeterminado)
+            setRegistrosPagActual(lstProstectos.slice(indexOfFirstRecord, indexOfLastRecord));
+            setNumPaginas(Math.ceil(lstProstectos.length / paginasEnVista))
+
             setIsLstSolicitudes(false);
             setIsLstProspecciones(true);
         }
@@ -200,7 +221,7 @@ function Solicitud(props) {
     }
 
     const moveToSolicitud = (solId) => {
-        const solicitudSeleccionada = lstSolicitudes.find((solicitud) => { return solicitud.int_id === solId });
+        const solicitudSeleccionada = registrosPagActual.find((solicitud) => { return solicitud.int_id === solId });
         if (solicitudSeleccionada.str_estado === '11138' || solicitudSeleccionada.str_estado === "10981" && rol === "ASESOR DE CRÉDITO") {
             dispatch(setSolicitudStateAction({ solicitud: solicitudSeleccionada.int_id, cedulaSocio: solicitudSeleccionada.str_identificacion, idSolicitud: solicitudSeleccionada.str_estado, rol: rol }))
             navigate.push('/solicitud/ver');
@@ -257,7 +278,7 @@ function Solicitud(props) {
                 <div id="listado_solicitudes" className="mt-2">
                     <Table headers={headerTableSolicitantes}>
                         {/*BODY*/}
-                        {lstSolicitudes && lstSolicitudes.map((solicitud) => {
+                        {registrosPagActual && registrosPagActual.map((solicitud) => {
                             return (
                                 <tr key={solicitud.int_id} onClick={() => { moveToSolicitud(solicitud.int_id) }}>
                                     <td>{solicitud.int_id}</td>
@@ -279,6 +300,7 @@ function Solicitud(props) {
                         })}
                         
                     </Table>
+                   
                 </div>
             }
             {isLstProspecciones &&
@@ -300,6 +322,16 @@ function Solicitud(props) {
 
                     </Table>
                 </div>
+            }
+
+            {(isLstSolicitudes || isLstProspecciones) && numPaginas > 1 &&
+
+                <div>
+                    <Paginacion numPaginas={numPaginas}
+                        paginaActual={paginaActual}
+                        setPaginaActual={setPaginaActual} />
+                </div>
+                
             }
             
         </div>

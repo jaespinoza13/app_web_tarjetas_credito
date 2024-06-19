@@ -21,5 +21,13 @@ namespace Domain.Models.TarjetaCredito.GetScore
         public string str_tipo_identificacion { get; set; } = string.Empty;
         public string str_identificacion { set; get; } = string.Empty;
         public int int_cliente { set; get; }
+
+        //DATOS A LLENAR CUANDO REALIZA NUEVA SIMULACION
+
+        public bool bln_cupo_sugerido { get; set; } //0 para consulta normal, 1 para nueva simulacion
+        public decimal dcm_total_ingresos { get; set; }
+        public decimal dcm_total_egresos { get; set; }
+        public decimal dcm_gastos_financieros { get; set; }
+        public decimal dcm_gastos_finan_codeudor { get; set; }
     }
 }

@@ -7,10 +7,10 @@ import Button from "../Common/UI/Button";
 
 const DatosFinancieros = (props) => {
     //Datos del socio
-    const [montoSolicitado, setMontoSolicitado] = useState(280);
-    const [montoIngresos, setMontoIngresos] = useState(2000);
-    const [montoEgresos, setMontoEgresos] = useState(1000);
-    const [montoGastosFinancieros, setMontoGastosFinancieros] = useState(300);
+    const [montoSolicitado, setMontoSolicitado] = useState(0);
+    const [montoIngresos, setMontoIngresos] = useState(0);
+    const [montoEgresos, setMontoEgresos] = useState(0);
+    const [montoGastosFinancieros, setMontoGastosFinancieros] = useState(0);
     const [montoGastoFinaCodeudor, setMontoGastoFinanCodeudor] = useState("");
     const [restaMontoGastosFinancieros, setRestaMontoGastosFinancieros] = useState("");
 
@@ -141,6 +141,13 @@ const DatosFinancieros = (props) => {
         props.requiereActualizar(true)
         //setIsCamposDesactivados(!isCamposDesactivados);
     }
+
+    useEffect(() => {
+        setMontoIngresos(props.dataConsultFinan.montoIngresos);
+        setMontoEgresos(props.dataConsultFinan.montoEgresos);
+        setMontoGastosFinancieros(props.dataConsultFinan.montoGastosFinancieros);
+    }, [])
+
 
     return (
         <>

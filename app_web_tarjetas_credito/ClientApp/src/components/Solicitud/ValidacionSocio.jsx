@@ -59,7 +59,7 @@ const ValidacionSocio = (props) => {
                     <Item xs={6} sm={6} md={6} lg={6} xl={6} className="justify-content-center">
                     <div className="f-col w-100">
                             <label>Número de cédula</label>
-                            <Input type="number" className={`mt-3 ${isCedulaValida ? '' : 'no_valido'}`} placeholder="Ej. 1105970717" readOnly={false} value={cedulaSocio} setValueHandler={setCedulaHandler} onKeyDown={atajosHandler}></Input>
+                            <Input type="number" className={`mt-3 ${isCedulaValida ? '' : 'no_valido'}`} placeholder="Ej. 1105970717" readOnly={false} value={cedulaSocio} setValueHandler={setCedulaHandler} onKeyDown={isCedulaValida? atajosHandler: ''}></Input>
                         </div>
 
                     </Item>

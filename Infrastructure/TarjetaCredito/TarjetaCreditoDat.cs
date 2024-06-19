@@ -1030,7 +1030,7 @@ namespace Infrastructure.TarjetaCredito
                 {
 
                     res = JsonSerializer.Deserialize<ResCrearSeparadores>(response.Content!)!;
-                    Console.WriteLine(res);
+                    //Console.WriteLine(res);
                 }
             }
             catch (Exception ex)
@@ -1062,6 +1062,7 @@ namespace Infrastructure.TarjetaCredito
                 request.Method = Method.Post;
                 var response = new RestResponse();
                 response = client.Post(request);
+                
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
                     res = JsonSerializer.Deserialize<ResGetReporteAval>(response.Content!)!;

@@ -4,7 +4,7 @@ namespace Domain.Models.TarjetaCredito.GetReporteAval
 {
     public class ResGetReporteAval: ResComun
     {
-        public byte[] file_bytes { get; set; } = new byte[0];
+        public string file_bytes { get; set; }
 
     }
 }

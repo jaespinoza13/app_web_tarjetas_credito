@@ -125,6 +125,8 @@ const DatosSocio = (props) => {
             setEstadoAccordionInfoSocio(true);
             setContentReadyInfoSocio(true);
             props.onInfoSocio(data);
+            console.log("DATOS DOC  ", data.lst_dir_domicilio)
+            console.log("DATOS TRa ", data.lst_dir_trabajo)
             //props.calificacionRiesgo(data.datos_cliente[0].str_calificacion_riesgo)
         }, dispatch);
         setEstadoLoadingInfoSocio(false);
@@ -165,7 +167,7 @@ const DatosSocio = (props) => {
         }, dispatch);
     }
 
-    const descargarReporte = () => {
+    const descargarReporte = async () => {
 
         /*
         const pdfUrl = "Imagenes/reporteavalhtml.pdf";
@@ -196,7 +198,7 @@ const DatosSocio = (props) => {
         }, 5000);*/
                
 
-        fetchReporteAval(189554, props.token, (data) => {
+        await fetchReporteAval(189554, props.token, (data) => {
             console.log("REPORTE AVAL ", data)
             if (data.file_bytes.length > 0) { //&& verificarPdf(data.file_bytes)) {
                 const blob = base64ToBlob(data.file_bytes, 'application/pdf');

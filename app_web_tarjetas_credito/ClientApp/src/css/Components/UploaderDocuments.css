@@ -17,12 +17,12 @@
 }
 
 p.normal {
-    font-size: 0.87rem !important;
-    font-family: 'Karbon', sans-serif !important;
+    font-size: 0.87rem;
+    font-family: 'Karbon', sans-serif;
 }
 
 p.negrita {
-    font-family: "Karbon-Bold", sans-serif !important;
+    font-family: "Karbon-Bold", sans-serif;
     margin-left: 5px;
 }
 
