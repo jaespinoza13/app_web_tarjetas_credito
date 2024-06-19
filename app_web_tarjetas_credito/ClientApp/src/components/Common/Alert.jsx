@@ -129,7 +129,8 @@ function ModalAlert(props) {
                 <DialogActions>
                     {props.btn_footer}
                     {(props.btnAceptar) ?
-                        <button className="btn_mg btn_mg__primary" innerRef={refBtnAceptar} onClick={toggleAcept}>
+                        /*<button className="btn_mg btn_mg__primary" innerRef={refBtnAceptar} onClick={toggleAcept}>*/
+                        <button className="btn_mg btn_mg__primary" ref={refBtnAceptar} onClick={toggleAcept}>
                             {props.btnAceptar}
                         </button>
                         :

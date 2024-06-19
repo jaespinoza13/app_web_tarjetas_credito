@@ -1,6 +1,7 @@
 ﻿import { useEffect, useState } from "react";
 import Button from "./UI/Button";
 import '../../css/Components/Stepper.css';
+import { Fragment } from "react";
 
 
 
@@ -49,20 +50,17 @@ const Stepper = ({ steps, setStepsVisited, setActualStep, cambioRealBool, cambio
 
                     <div className="steps-container">
                         {steps.map((step, index) => (
-                            <>
+                            <Fragment key={index }>
                                 <div key={index} className={`step ${visitedSteps.includes(index) ? 'active' : ''}`}>
                                 <span>
                                         {index + 1}
                                     </span>
-                                    <span name='span_step' style={{
-                                        position: 'absolute',
-                                        transform: "translateY(-35px)", color: "black"
-                                    }}> {currentStep === index ? step : ''} </span>
+                                    <span className='span_step'> {currentStep === index ? step : ''} </span>
 
                                     {/* SI SE ELIMINA LA SIGUIENTE LINEA, ELIMINAR LA PROPIEDAD transform DE LA CLASE step-largo-barra  */}
                                 </div>
 
-                            </>
+                            </Fragment>
 
                         ))}
                     </div>

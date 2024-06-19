@@ -806,11 +806,67 @@ export function fetchScore(strTipoDocumento, strCedula, strNombres, strLugar, st
         str_tipo_identificacion: strTipoDocumento,
         str_nombres: strNombres,
         str_lugar: strLugar,
-        str_oficial: strOficial
+        str_oficial: strOficial,
+        bln_cupo_sugerido: false
     };
-
     //console.log("SCORE BODY, ",body)
 
+    ServicioPostExecute(getScore, body, token, { dispatch: dispatch }).then((data) => {
+        if (data) {
+            console.log("SOCREE", data)
+            if (data.error) {
+                if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
+            } else {
+                if (data.str_res_codigo === "000" || data.str_res_codigo === "010") {
+                    onSucces(data);
+                } else {
+                    let codigo = data.codigo || data.str_res_codigo;
+                    let mensaje = data.mensaje || data.str_res_info_adicional;
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
+                }
+            }
+        } else {
+            if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
+        }
+    });
+}
+
+
+/**
+* Obtener los datos del buró
+* @author retorres
+* @version 1.0
+* @param {string} strCedula
+* @param {string} strTipoDocumento
+* @param {string} strLugar
+* @param {string} strNombres
+* @param {string} strOficial
+* @param {string} strCargo
+* @param {(contenido:string, nroTotalRegistros: number) => void} onSuccess
+* @param {Function} dispatch
+*/
+export function fetchNuevaSimulacionScore(strTipoDocumento, strCedula, strNombres, strLugar, strOficial, strCargo,
+    ingresos, egresos, gastosFinancieros, gastosCodeudor, 
+    token, onSucces, dispatch) {
+    if (dispatch) dispatch(setErrorRedirigir(""));
+
+    let body = {
+        str_cargo: strCargo,
+        str_identificacion: strCedula,
+        str_tipo_identificacion: strTipoDocumento,
+        str_nombres: strNombres,
+        str_lugar: strLugar,
+        str_oficial: strOficial,
+
+        bln_cupo_sugerido: true,
+        dcm_total_ingresos: Number.parseFloat(ingresos),
+        dcm_total_egresos: Number.parseFloat(egresos),
+        dcm_gastos_financieros: Number.parseFloat(gastosFinancieros),
+        dcm_gastos_finan_codeudor: Number.parseFloat(gastosCodeudor),
+            
+
+    };
+    //console.log("SCORE BODY, ",body)
 
     ServicioPostExecute(getScore, body, token, { dispatch: dispatch }).then((data) => {
         if (data) {
@@ -1661,7 +1717,7 @@ export function fetchCrearSeparadoresAxentria(separadores, token, onSucces, disp
     });
 }
 
-export function fetchReporteAval(idCliente, token, onSucces, dispatch) {
+export async function fetchReporteAval(idCliente, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
@@ -1669,7 +1725,7 @@ export function fetchReporteAval(idCliente, token, onSucces, dispatch) {
         int_id_con: -1 //NECESARIO PASAR ESE VALOR
     };
 
-    ServicioPostExecute(getReporteAval, body, token, { dispatch: dispatch }).then((data) => {
+    await ServicioPostExecute(getReporteAval, body, token, { dispatch: dispatch }).then((data) => {
         if (data) {
             console.log("Reporte AVAL", data.file_bytes)
             if (data.error) {

@@ -177,8 +177,9 @@ const NuevaProspeccion = (props) => {
     }
 
     useEffect(() => {
-        //console.log("ESTADO STEP,", step)
-        //console.log("ESTADO ShoAutorizacion,", showAutorizacion)
+        if (step === 0 && documento !== '' && !setCedulaValida) {
+            setEstadoBotonSiguiente(true);
+        }
         if (step === 1) {
             setEstadoBotonSiguiente(true);
         }
@@ -211,7 +212,9 @@ const NuevaProspeccion = (props) => {
 
 
         if (datosFinancieros.montoSolicitado > 0 && datosFinancieros.montoIngresos > 0 &&
-            datosFinancieros.montoEgresos > 0 && datosFinancieros.montoGastosFinancieros > 0) {
+            datosFinancieros.montoEgresos > 0
+            //&& datosFinancieros.montoGastosFinancieros > 0
+        ) {
             validadorOtrosMontos = true;
         }
 
@@ -341,6 +344,18 @@ const NuevaProspeccion = (props) => {
             data.celularCliente = data.str_celular
             data.correoCliente = data.str_email
             data.fechaNacimiento = data.str_fecha_nacimiento
+
+            let datosFinan = {
+                montoSolicitado: 0,
+                montoIngresos: data.dcm_total_ingresos,
+                montoEgresos: data.dcm_total_egresos,
+                montoGastosFinancieros: data.dcm_gastos_financieros,
+                montoGastoFinaCodeudor: "",
+                montoRestaGstFinanciero: "",
+            }
+            setDatosFinancieros(datosFinan);
+            console.log(`ingresos, ${data.dcm_total_ingresos}; egresos, ${data.dcm_total_egresos}; financ, ${data.dcm_gastos_financieros} `,);
+            //console.log("FINAN, ", datosFinan);
 
             //console.log("DATA ASIG, ", data)
             //setInfoSocio(informacionCliente);
@@ -653,6 +668,7 @@ const NuevaProspeccion = (props) => {
                     {(step === 3) &&
                         <div className="f-row w-100">
                             <DatosFinancieros
+                                dataConsultFinan={datosFinancieros}
                                 datosFinancieros={datosFinancierosHandler}
                                 isCkeckGtosFinancierosHandler={checkGastosFinancieroHandler}
                                 gestion={gestion}

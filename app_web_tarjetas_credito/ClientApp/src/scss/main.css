@@ -922,18 +922,18 @@ li {
 }
 
 .modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* semi-transparent background */
-    z-index: 9999; /* Ensure it appears above other content */
-    display: none;
-    justify-content: center;
-    align-items: center;
-    visibility: hidden;
-    opacity: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* semi-transparent background */
+  z-index: 9999; /* Ensure it appears above other content */
+  display: none;
+  justify-content: center;
+  align-items: center;
+  visibility: hidden;
+  opacity: 0;
 }
 
     .modal.modal-show {
@@ -979,7 +979,7 @@ button.close-modal {
     background-color: #fefefe;
     border-radius: 25px;
     border: 1px solid #D4E7FF;
-    position: relative;
+    /*position: relative;*/
     transition: all ease 0.4s;
     /*transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;*/
     flex-direction: column;
@@ -1497,7 +1497,8 @@ input:checked + .slider::before {
     }
 
 .image-wrapper {
-    /*height: 200px;*/
+    /*width: 300px;
+  height: 200px;*/
     height: 150px;
     overflow: hidden;
     display: flex;
@@ -1599,12 +1600,12 @@ input[type=radio] {
 }
 
 .visibleX {
-    transform: translateX(0%);
-    opacity: 1;
+    transform: translateX(0);
+    opacity: 1; 
 }
 
 .hiddenX {
-    transform: translateX(80%); /* Desplaza el div completamente hacia un costado */
+    transform: translateX(100%); /* Desplaza el div completamente hacia un costado */
     opacity: 0;
 }
 

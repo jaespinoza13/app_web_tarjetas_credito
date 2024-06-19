@@ -1,0 +1,86 @@
+﻿.estilo_paginacion {
+    height: 4rem;
+    background: none;
+    box-shadow: none;
+    opacity: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4rem;
+    position: none;
+    z-index: none;
+    margin-bottom: 5px;
+}
+
+.pagination {
+    display: -ms-flexbox;
+    display: flex;
+    /*padding-left: 0;*/
+    list-style: none;
+    border-radius: .25rem;
+    padding: 0.5rem 1rem;
+    border-spacing: 0 1rem;
+}
+
+    .pagination .justify-content-center {
+        justify-content: center !important;
+    }
+
+.efecto-lista {
+    border: none;
+}
+
+
+.page-item.active .page-link {
+    z-index: 1;
+    color: white;
+    background-color: #004CAC;
+    border-color: #004CAC;
+    border-radius: .25rem;
+}
+
+
+.page-item:first-child .page-link {
+    margin-left: 0;
+    border-top-left-radius: .25rem;
+    border-bottom-left-radius: .25rem;
+}
+
+.page-link {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    padding: .35rem .75rem;
+    /*margin-left: -1px;*/
+    color: black;
+    background-color: #F8F8F8;
+    /*border: 1px solid #dee2e6;    */
+    border: none;
+    font-size: 1.1rem;
+    margin-left: 3.0px;
+    margin-right: 3.0px;
+    width: 32px;
+    height: 32.42px;
+    border-radius: .25rem;
+}
+
+    .page-link:hover {
+        /*background-color: rgba(224, 224, 231, 0.5);*/
+        background-color: #004CAC;
+        border-radius: .25rem;
+        color: white;
+    }
+
+.indicador {
+    font-size: 1.8rem;
+    font-family: "Karbon-Bold", sans-serif;
+    line-height: 20px;
+    color: dimgray;
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+    background-color: transparent;
+}

@@ -151,10 +151,10 @@ const NuevaSolicitud = (props) => {
         let validadorOtrosMontos = false;
         let validaRestoMontoGstFinanciero = false;
 
-
-
         if (datosFinancieros.montoSolicitado > 0 && datosFinancieros.montoIngresos > 0 &&
-            datosFinancieros.montoEgresos > 0 && datosFinancieros.montoGastosFinancieros >0) {
+            datosFinancieros.montoEgresos > 0
+            //    && datosFinancieros.montoGastosFinancieros > 0
+        ) {
             validadorOtrosMontos = true;
         }
 
@@ -193,6 +193,17 @@ const NuevaSolicitud = (props) => {
             return false;
         }
         
+    }
+
+    const validaCamposPersonalizacion = () => {
+        let validador = false;
+
+        if (nombrePersonalTarjeta !== '' && direccionEntrega !== '' && tipoEntrega !== '') {
+            validador = true
+        }
+
+        return validador;
+
     }
 
 
@@ -251,11 +262,17 @@ const NuevaSolicitud = (props) => {
 
 
     useEffect(() => {
+        if (step === 0 && cedulaSocio !== '' && !setCedulaValida) {
+            setEstadoBotonSiguiente(true);
+        }
         if (step === 1) {
             setEstadoBotonSiguiente(false);
         }
         if (step === -1) {
             setTextoSiguiente("Volver al inicio")
+        }
+        if (step === 5 && validaCamposPersonalizacion) {
+            setEstadoBotonSiguiente(false);
         }
     }, [step]);
 
@@ -282,7 +299,7 @@ const NuevaSolicitud = (props) => {
         //setUpdGastoFinancieros(valor);
         //TODO: FALTA EDITAR PARA EXTRAER INGRESOS, EGRESOS, GASTOS FINANCIEROS TITULAR
         fetchValidacionSocio(cedulaSocio, '', props.token, (data) => {
-            console.log("SOC,",data)
+            //console.log("SOC,", data)
             const arrValidacionesOk = [...data.lst_datos_alerta_true];
             const arrValidacionesErr = [...data.lst_datos_alerta_false];
             data.cedula = cedulaSocio;
@@ -298,6 +315,19 @@ const NuevaSolicitud = (props) => {
             setApellidoPaterno(data.str_apellido_paterno);
             setApellidoMaterno(data.str_apellido_materno);
 
+            let datosFinan = {
+                montoSolicitado: 0,
+                montoIngresos: data.dcm_total_ingresos,
+                montoEgresos: data.dcm_total_egresos,
+                montoGastosFinancieros: data.dcm_gastos_financieros,
+                montoGastoFinaCodeudor: "",
+                montoRestaGstFinanciero: "",
+            }
+            setDatosFinancieros(datosFinan);
+            //console.log(`ingresos, ${data.dcm_total_ingresos}; egresos, ${data.dcm_total_egresos}; financ, ${data.dcm_gastos_financieros} `,);
+            //console.log("FINAN, ", datosFinan);
+
+
             if (data.str_res_codigo === "100") {
                 setTextoAviso("Ya se encuentra registrada una solicitud con esa cédula.")
                 setModalMensajeAviso(true);
@@ -312,7 +342,7 @@ const NuevaSolicitud = (props) => {
                     setIsVisibleBloque(true);
                     clearTimeout(retrasoEfecto);
                 }, 100);
-                setEstadoBotonSiguiente(true);
+                //setEstadoBotonSiguiente(true);
             }
             else if (data.str_nombres === "") {
                 setTextoAviso("Se requiere actualizar información personal. Intente realizar una Prospección.")
@@ -366,7 +396,7 @@ const NuevaSolicitud = (props) => {
             
         }
         if (step === 2) {
-            console.log(`SHOW AUTOR, ${showAutorizacion}`)
+            //console.log(`SHOW AUTOR, ${showAutorizacion}`)
 
             if (showAutorizacion) {
                 //console.log("CED ENVIA DOC, ", cedulaSocio)
@@ -472,6 +502,7 @@ const NuevaSolicitud = (props) => {
             setVisitadosSteps([...visitadosSteps, actualStepper + 1])
             setActualStepper(4);
             setStep(5);
+            setEstadoBotonSiguiente(true);
         }
         if (step === 5) {
 
@@ -639,7 +670,8 @@ const NuevaSolicitud = (props) => {
                     }
                     {(step === 3) &&
                          <div className="f-row w-100">
-                        <DatosFinancieros
+                            <DatosFinancieros
+                                dataConsultFinan={datosFinancieros}
                                 datosFinancieros={datosFinancierosHandler}
                                 isCkeckGtosFinancierosHandler={checkGastosFinancieroHandler}
                                 gestion={gestion}

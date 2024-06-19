@@ -5,10 +5,11 @@
 }
 
 .span_step {
-    font-family: "Karbon", sans-serif;
-    text-decoration: none;
-    font-size: 0.8rem;
-    display: inline;
+    position: absolute;
+    transform: translateY(-35px);
+    color: #004CAC;
+    font-family: "Karbon-Bold", sans-serif;
+    font-size: 1.04em;
 }
 
 .stepper-container {
@@ -30,8 +31,10 @@
     justify-content: center;
     align-items: center;
     margin: 0 10px;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.5s ease;
     z-index: 1;
+    font-family: 'Karbon', sans-serif;
+    font-size: 1.23rem;
 }
 
 .steps-progress {
@@ -45,7 +48,7 @@
 .progress-bar {
     height: 100%;
     background-color: #007bff;
-    transition: width 0.3s ease;
+    transition: width 0.5s ease;
     display: flex;
 }
 
@@ -58,7 +61,7 @@
 
 .step.active {
     background-color: #007bff;
-    color: #fff;
+    color: white;
 }
 
 .step-content {

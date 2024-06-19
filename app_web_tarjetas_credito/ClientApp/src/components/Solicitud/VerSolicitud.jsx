@@ -65,7 +65,6 @@ const VerSolicitud = (props) => {
     const [regresaSolicitud, setRegresaSolicitud] = useState([]);
     const [estadosSiguientes, setEstadosSiguientes] = useState([]);
     const [estadosSiguientesAll, setEstadosSiguientesAll] = useState([]);
-    const [archivoMostrado, setArchivoMostrado] = useState("FRMSYS-020.pdf")
 
     //DATOS DEL USUARIO
     const [datosUsuario, setDatosUsuario] = useState([]);
@@ -78,30 +77,6 @@ const VerSolicitud = (props) => {
 
     //Axentria
     const [separadores, setSeparadores] = useState([]);
-    /*
-    const estadosSol = [
-        {
-            prm_id: "11035", prm_valor_ini: "SOLICITUD CREADA"
-        },
-        {
-            prm_id: "11036", prm_valor_ini: "ANALISIS UAC"
-        },
-        {
-            prm_id: "11037", prm_valor_ini: "ANALISIS JEFE UAC"
-        },
-        {
-            prm_id: "11038", prm_valor_ini: "ANALISIS COMITE"
-        },
-        {
-            prm_id: "11039", prm_valor_ini: "APROBADA COMITE"
-        },
-        {
-            prm_id: "11040", prm_valor_ini: "NEGADA"
-        },
-        {
-            prm_id: "11042", prm_valor_ini: "ENTREGADA"
-        },
-    ];*/
     const parametros = [
         { prm_id: "10981", prm_valor_ini: "SOLICITUD CREADA" },
         { prm_id: "10982", prm_valor_ini: "ANALISIS UAC" },
@@ -130,7 +105,7 @@ const VerSolicitud = (props) => {
 
         //Obtener datos del cliente
         fetchInfoSocio(props.cedulaSocio, props.token, (data) => {
-            console.log("BUSQ SOCI AXEN ", data)
+            //console.log("BUSQ SOCI AXEN ", data)
             setDatosSocio(data.datos_cliente[0]);
         }, dispatch);
 
@@ -142,10 +117,6 @@ const VerSolicitud = (props) => {
                 const datosSolicitud = data.flujo_solicitudes.find(solFlujo => solFlujo.int_id === valorMaximo);
                 setFlujoSolId(datosSolicitud.int_id);
                 setSolicitudTarjeta(...[datosSolicitud])
-
-                //console.log("ARRA MAX SOL", arrayDeValores);
-                //console.log("MAX SOL", valorMaximo);
-                //console.log("FLUJO SOL", datosSolicitud);
             }
             
 
@@ -161,7 +132,7 @@ const VerSolicitud = (props) => {
             //console.log("Resoluciones", data);
         }, dispatch);
         fetchGetSeparadores(props.token, (data) => {
-            console.log("RES, ", data.lst_separadores)
+            //console.log("RES, ", data.lst_separadores)
             setSeparadores(data.lst_separadores);
         }, dispatch);
 
@@ -210,10 +181,6 @@ const VerSolicitud = (props) => {
             const parametro = parametros.find(param => param.prm_id === id);
             return parametro;
         }      
-    }
-
-    const setArchivo = (event) => {
-        setArchivoMostrado(event.target.value);
     }
 
     useEffect(() => {        
