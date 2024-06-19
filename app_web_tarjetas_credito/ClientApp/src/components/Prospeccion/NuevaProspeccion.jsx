@@ -317,7 +317,7 @@ const NuevaProspeccion = (props) => {
     }, [datosFinancieros, step, validaCamposSocio, validaCamposFinancieros, isCkeckGtosFinancieros, validacionesErr, archivoAutorizacion]);
     */
 
-    const refrescarInformacionHandler = (valor) => {
+    const refrescarInformacionHandler = (actualizarInfo) => {
         fetchValidacionSocio(documento, '', props.token, (data) => {
             const arrValidacionesOk = [...data.lst_datos_alerta_true];
             const arrValidacionesErr = [...data.lst_datos_alerta_false];
@@ -361,7 +361,9 @@ const NuevaProspeccion = (props) => {
             //setInfoSocio(informacionCliente);
             setInfoSocio(data);
             setEnteSocio("")
-            setStep(1);
+            if (!actualizarInfo) {
+                setStep(1);
+            }
             let retrasoEfecto =setTimeout(function () {
                 setIsVisibleBloque(true);
                 clearTimeout(retrasoEfecto);
@@ -376,7 +378,7 @@ const NuevaProspeccion = (props) => {
         if (step === 0) {
             //TODO: FALTA EDITAR PARA EXTRAER INGRESOS, EGRESOS, GASTOS FINANCIEROS TITULAR
             setIsVisibleBloque(false);
-            refrescarInformacionHandler();
+            refrescarInformacionHandler(false);
         }
         if (step === 1) {
             setStep(2);

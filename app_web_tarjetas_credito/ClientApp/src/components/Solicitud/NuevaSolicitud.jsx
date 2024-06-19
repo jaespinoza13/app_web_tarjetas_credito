@@ -295,7 +295,7 @@ const NuevaSolicitud = (props) => {
         setIsCkeckGtosFinanCodeudor(e);
     }
 
-    const refrescarInformacionHandler = (valor) => {
+    const refrescarInformacionHandler = (actualizarInfo) => {
         //setUpdGastoFinancieros(valor);
         //TODO: FALTA EDITAR PARA EXTRAER INGRESOS, EGRESOS, GASTOS FINANCIEROS TITULAR
         fetchValidacionSocio(cedulaSocio, '', props.token, (data) => {
@@ -337,7 +337,10 @@ const NuevaSolicitud = (props) => {
                 //setVisitadosSteps([...visitadosSteps, actualStep + 1])
                 //setActualStep(1);
                 //setTimeout('',2000);
-                setStep(1);
+                if (!actualizarInfo) {
+                    setStep(1);
+                }
+                
                 let retrasoEfecto = setTimeout(function () {
                     setIsVisibleBloque(true);
                     clearTimeout(retrasoEfecto);
@@ -386,7 +389,7 @@ const NuevaSolicitud = (props) => {
         //console.log("step,", step)
         if (step === 0) {            
             setIsVisibleBloque(false);
-            refrescarInformacionHandler();            
+            refrescarInformacionHandler(false);            
         }
         if (step === 1) {
             //setCambioRetorno(true)
@@ -675,7 +678,7 @@ const NuevaSolicitud = (props) => {
                                 datosFinancieros={datosFinancierosHandler}
                                 isCkeckGtosFinancierosHandler={checkGastosFinancieroHandler}
                                 gestion={gestion}
-                                habilitaRestaGstFinancieros={realizaNuevaSimulacion} 
+                                habilitaRestaGstFinancieros={realizaNuevaSimulacion}
                                 requiereActualizar={refrescarInformacionHandler}
                         >
                         </DatosFinancieros>
@@ -729,8 +732,8 @@ const NuevaSolicitud = (props) => {
                         
                     </Item>
                     <Item xs={8} sm={8} md={8} lg={8} xl={8} className="f-row justify-content-center align-content-center">
-                        {(step === 1 || step === 3 ) &&
-                            <Button className={["btn_mg btn_mg__primary mt-2 mr-2"]} onClick={refrescarInformacionHandler}>{"Actualizar"}</Button>
+                        {(step === 1 || step === 3) &&
+                            <Button className={["btn_mg btn_mg__primary mt-2 mr-2"]} onClick={()=> refrescarInformacionHandler(true)}>{"Actualizar"}</Button>
                         }                        
                         <Button className={["btn_mg btn_mg__primary mt-2 ml-2"]} disabled={estadoBotonSiguiente} onClick={()=>nextHandler(step)}>{textoSiguiente}</Button>
                     </Item>
