@@ -979,7 +979,7 @@ button.close-modal {
     background-color: #fefefe;
     border-radius: 25px;
     border: 1px solid #D4E7FF;
-    /*position: relative;*/
+    position: relative;
     transition: all ease 0.4s;
     /*transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;*/
     flex-direction: column;

@@ -1054,8 +1054,9 @@ export function fetchGetSolicitudes(token, onSucces, dispatch) {
 
 export function fetchAddSolicitud(body,token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
-
+    console.log("BODY ADD SOL ", body);
     ServicioPostExecute(addSolicitud, body, token, { dispatch: dispatch }).then((data) => {
+        console.log("RES ADD SOL", data);
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));

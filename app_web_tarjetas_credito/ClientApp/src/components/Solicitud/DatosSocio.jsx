@@ -10,6 +10,7 @@ import Input from "../Common/UI/Input";
 import Textarea from "../Common/UI/Textarea";
 import Button from "../Common/UI/Button";
 import { base64ToBlob, descargarArchivo, generarFechaHoy, verificarPdf } from "../../js/utiles";
+import { useEffect } from "react";
 
 const DatosSocio = (props) => {
     const dispatch = useDispatch();
@@ -101,33 +102,34 @@ const DatosSocio = (props) => {
         props.onComentarioAdic(e);
     }
 
+    /*
     const getInfoSocioHandler = () => {
         if (infoSocio.length > 0) {
             setEstadoAccordionInfoSocio(!estadoAccordionInfoSocio);
         } else {
             getInfoSocio();
         }
-    }
+    }*/
 
+    const getInfoAccordion = () => {
+        setEstadoAccordionInfoSocio(!estadoAccordionInfoSocio);
+    }
 
     const deseaTarjetaHandler = (value) => {
         setDeseaTarjeta(value);
     }
 
     const getInfoSocio = () => {
-        //TODO: CAMBIAR CEDULA QUEMADA
-        // PUEDA Q SE TENGA Q RETORNAR CALIFICACION RIESGO PARA HACER RECALCULO DE CUPO SUGERIDO
         setEstadoLoadingInfoSocio(true);
         fetchInfoSocio("1105970717", props.token, (data) => {
             setDirDomicilioSocio([...data.lst_dir_domicilio]);
             setDirTrabajoSocio([...data.lst_dir_trabajo]);
             setInfoSocio([...data.datos_cliente]);
-            setEstadoAccordionInfoSocio(true);
+            //setEstadoAccordionInfoSocio(true);
             setContentReadyInfoSocio(true);
             props.onInfoSocio(data);
             console.log("DATOS DOC  ", data.lst_dir_domicilio)
             console.log("DATOS TRa ", data.lst_dir_trabajo)
-            //props.calificacionRiesgo(data.datos_cliente[0].str_calificacion_riesgo)
         }, dispatch);
         setEstadoLoadingInfoSocio(false);
     }
@@ -166,6 +168,11 @@ const DatosSocio = (props) => {
             setContentReadyInfoEco(true);
         }, dispatch);
     }
+
+
+    useEffect(() => {
+        getInfoSocio();
+    }, [])
 
     const descargarReporte = async () => {
 
@@ -298,7 +305,7 @@ const DatosSocio = (props) => {
                 </Accordion>
                 {props.gestion === 'solicitud' &&
                     <Fragment>
-                        <Accordion className="mt-3" title="Datos generales" rotate={estadoAccordionInfoSocio} loading={estadoLoadingInfoSocio} toggleAccordion={() => { getInfoSocioHandler(); }} contentReady={contentReadyInfoSocio}>
+                        <Accordion className="mt-3" title="Datos generales" rotate={estadoAccordionInfoSocio} loading={estadoLoadingInfoSocio} toggleAccordion={() => { getInfoAccordion(); }} contentReady={contentReadyInfoSocio}>
                             <div style={{ display: "flex", flexDirection: "column" }}>
                                 <div style={{ display: "flex", flexDirection: "row", width: "100%" }}>
                                     <div className="m-2" style={{ display: "flex", flexDirection: "column", width: "50%", marginRight: "20px" }}>

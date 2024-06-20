@@ -4,13 +4,16 @@ import { useEffect, useState } from "react";
 
 const Personalizacion = (props) => {
     const [nombresTarjeta, setNombresTarjeta] = useState(['', '']);
+    //const [nombresTarjeta, setNombresTarjeta] = useState([]);
     const [nombreSeleccion, setNombreSeleccion] = useState("");
     const [tipoEntrega, setTipoEntrega] = useState("");
     const [direccionEntrega, setDireccionEntrega] = useState("");
     const [tiposDireccion, setTiposDireccion] = useState([]);
     
-    const tiposEntrega = [{ image: "", textPrincipal: "Retiro en agencia", textSecundario: "", key: "Retiro en agencia"},
-        { image: "", textPrincipal: "Entrega en domicilio", textSecundario: "", key: "Entrega en domicilio" }];
+    const tiposEntrega = [
+        { image: "", textPrincipal: "Retiro en agencia", textSecundario: "", key: "Retiro en agencia" },
+        { image: "", textPrincipal: "Entrega en domicilio", textSecundario: "", key: "Entrega en domicilio" }
+    ];
 
 
     //useEffect(() => {
@@ -33,7 +36,10 @@ const Personalizacion = (props) => {
     //}, []);
 
     useEffect(() => {
+        console.log("PROPS PERSON ",props)
+
         if (props.lstDomicilio && props.lstDomicilio.length > 0 && props.lstDomicilio[0].str_dir_ciudad) {
+            console.log(`DOMIC ${props.lstDomicilio}`)
             setTiposDireccion([
                 {
                     image: "",
@@ -44,6 +50,7 @@ const Personalizacion = (props) => {
             ]);
         }
         if (props.lstTrabajo && props.lstTrabajo.length > 0 && props.lstTrabajo[0].str_dir_ciudad) {
+            console.log(`DOMIC ${props.lstTrabajo}`)
             setTiposDireccion(prevState => [
                 ...prevState,
                 {
@@ -58,10 +65,15 @@ const Personalizacion = (props) => {
 
 
     useEffect(() => {
+        //const defaultEntrega = tiposEntrega[0];
         const defaultEntrega = tiposEntrega.shift(0);
         setTipoEntrega(defaultEntrega.textPrincipal);
+        //const defaultNombre = nombresTarjeta[0];
         const defaultNombre = nombresTarjeta.shift(0);
         setNombresTarjeta(defaultNombre.textPrincipal);
+
+        //console.log(`entreg ${defaultEntrega},`);//  nombreTar ${defaultNombre},`)
+
     }, []);
 
     useEffect(() => {
@@ -71,9 +83,9 @@ const Personalizacion = (props) => {
         ]);
     }, [props.nombres]);
 
-    useEffect(() => {
+    /*useEffect(() => {
         props.onNombreTarjeta(nombresTarjeta);
-    }, [nombreSeleccion]);
+    }, [nombreSeleccion]);*/
 
     useEffect(() => {
         props.onTipoEntrega(tipoEntrega);
@@ -86,10 +98,13 @@ const Personalizacion = (props) => {
     const nombreSeleccionHandler = (index) => {
         const nombreSeleccion = nombresTarjeta.find((nombre) => nombre.key === index);
         setNombreSeleccion(nombreSeleccion.textPrincipal);
-        
+        props.onNombreTarjeta(nombreSeleccion.textPrincipal);
+        console.log("CAMBI INDEX, ", index)
+        console.log("CAMBI Nombre TARJ, ", nombreSeleccion.textPrincipal)
     }
 
     const tipoEntregaHandler = (index) => {
+        console.log("CAMBI TIP ENTRE, ",index)
         const entregas = tiposEntrega.find((entrega) => entrega.key === index);
         setTipoEntrega(entregas.textPrincipal);
     }

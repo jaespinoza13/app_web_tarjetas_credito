@@ -101,7 +101,7 @@ function Solicitud(props) {
     ];
 
     const validaNombreParam = (id) => {
-        //console.log(id);
+        console.log(id);
         const parametro = parametros.find((param) => { return param.prm_id === id });
         return parametro.prm_valor_ini;
     }
