@@ -475,7 +475,7 @@ const NuevaSolicitud = (props) => {
 
             if (!realizaNuevaSimulacion.current) {
                 //console.log("PRIMERA CONSULTA BURO ")
-                await fetchScore("C", "0903325546", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, "Matriz", datosUsuario.strOficial, datosUsuario.strCargo, props.token, (data) => {
+                await fetchScore("C", "0903325546", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, "Matriz", datosUsuario[0].strOficial, datosUsuario[0].strCargo, props.token, (data) => {
                     setScore(data);
                     setIdClienteScore(data.int_cliente);
                     //console.log("SCORE, ", data.int_cliente)
@@ -499,7 +499,7 @@ const NuevaSolicitud = (props) => {
                 if (!datosFinan.montoGastoFinaCodeudor || datosFinan.montoGastoFinaCodeudor === "" || datosFinan.montoGastoFinaCodeudor === " " || IsNullOrEmpty(datosFinan.montoGastoFinaCodeudor)) datosFinan.montoGastoFinaCodeudor = 0;
 
                 //TODO CAMBIAR LA CEDULA
-                await fetchNuevaSimulacionScore("C", "0903325546", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, "Matriz", datosUsuario.strOficial, datosUsuario.strCargo, datosFinan.montoIngresos, datosFinan.montoEgresos, datosFinan.montoRestaGstFinanciero, datosFinan.montoGastoFinaCodeudor,
+                await fetchNuevaSimulacionScore("C", "0903325546", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, "Matriz", datosUsuario[0].strOficial, datosUsuario[0].strCargo, datosFinan.montoIngresos, datosFinan.montoEgresos, datosFinan.montoRestaGstFinanciero, datosFinan.montoGastoFinaCodeudor,
                     props.token, (data) => {
                    
                         //scoreStorage.montoSugerido = Number.parseFloat(nuevoCupoSugerido).toFixed(2);
@@ -535,6 +535,10 @@ const NuevaSolicitud = (props) => {
             //console.log("CONTROL NOMBRE", nombreSocio)
             //console.log("apellidoPaterno", apellidoPaterno )
             //console.log("apellidoMaterno", apellidoMaterno )
+            //TODO: revisar los campos que se envia
+            let fechaNac = infoSocio.str_fecha_nacimiento.split('-');
+            let fechaNacFormatoReq = fechaNac[2] + '-' + fechaNac[0] + '-' + fechaNac[1]
+
             let body = {
                 int_ente_aprobador: 589693,
                 str_tipo_documento: "C",
@@ -542,12 +546,12 @@ const NuevaSolicitud = (props) => {
                 str_nombres: nombreSocio, 
                 str_primer_apellido: apellidoPaterno, 
                 str_segundo_apellido: apellidoMaterno, 
-                dtt_fecha_nacimiento: infoSocio.str_fecha_nacimiento, 
+                dtt_fecha_nacimiento: fechaNacFormatoReq,//"1994-06-08",//infoSocio.str_fecha_nacimiento, 
                 str_sexo: infoSocio.str_sexo,
                 dec_cupo_solicitado: datosFinancieros.montoSolicitado, 
                 dec_cupo_sugerido: 100,
                 str_correo: correoSocio,
-                str_usuario_proc: datosUsuario.strUserOficial,
+                str_usuario_proc: datosUsuario[0].strUserOficial,//, "xnojeda1"
                 int_oficina_proc: 1, //TODO: setItem('office' aun no retorna nada 
                 str_ente: enteSocio,
                 str_denominacion_tarjeta: nombrePersonalTarjeta,

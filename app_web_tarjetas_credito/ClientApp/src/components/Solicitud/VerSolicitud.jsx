@@ -1,4 +1,5 @@
-﻿import { IsNullOrWhiteSpace, base64ToBlob, descargarArchivo, generarFechaHoy, verificarPdf } from "../../js/utiles";
+﻿/* eslint-disable react-hooks/exhaustive-deps */
+import { IsNullOrWhiteSpace, base64ToBlob, descargarArchivo, generarFechaHoy, verificarPdf } from "../../js/utiles";
 import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { useEffect, useState } from "react";
@@ -83,9 +84,10 @@ const VerSolicitud = (props) => {
         { prm_id: "10983", prm_valor_ini: "ANALISIS JEFE UAC" },
         { prm_id: "10984", prm_valor_ini: "ANALISIS COMITE" },
         { prm_id: "10985", prm_valor_ini: "APROBADA COMITE" },
+        { prm_id: "10987", prm_valor_ini: "APROBADA" },//APROBADA SOCIO
         { prm_id: "10988", prm_valor_ini: "NEGADA" },
         { prm_id: "10986", prm_valor_ini: "ANULADA COMITE" },
-        { prm_id: "11042", prm_valor_ini: "ENTREGADA" }
+        { prm_id: "11642", prm_valor_ini: "POR CONFIRMAR" }
     ];
     const seleccionAccionSolicitud = (value) => {
         const accionSelecciona = accionesSolicitud.find((element) => { return element.key === value });
@@ -109,18 +111,8 @@ const VerSolicitud = (props) => {
             setDatosSocio(data.datos_cliente[0]);
         }, dispatch);
 
+        actualizaInformaFlujoSol();
 
-        fetchGetFlujoSolicitud(props.solicitud.solicitud, props.token, (data) => {
-            if (data.flujo_solicitudes.length > 0) {
-                const arrayDeValores = data.flujo_solicitudes.map(objeto => objeto.int_id);
-                const valorMaximo = Math.max(...arrayDeValores);
-                const datosSolicitud = data.flujo_solicitudes.find(solFlujo => solFlujo.int_id === valorMaximo);
-                setFlujoSolId(datosSolicitud.int_id);
-                setSolicitudTarjeta(...[datosSolicitud])
-            }
-            
-
-        }, dispatch);
         fetchGetInforme(props.solicitud.solicitud, props.solicitud.idSolicitud, props.token, (data) => {
             setInforme(data.lst_informe);
             existeComentariosVacios(data.lst_informe);
@@ -156,7 +148,7 @@ const VerSolicitud = (props) => {
         ]);
         setEstadosSiguientesAll([
             {
-                prm_id: "10984", estados: "10985|10988"
+                prm_id: "10984", estados: "10985|10988|11642"
             }
         ]);
 
@@ -174,6 +166,22 @@ const VerSolicitud = (props) => {
 
 
     }, []);
+
+
+    const actualizaInformaFlujoSol = () => {
+        fetchGetFlujoSolicitud(props.solicitud.solicitud, props.token, (data) => {
+            if (data.flujo_solicitudes.length > 0) {
+                const arrayDeValores = data.flujo_solicitudes.map(objeto => objeto.int_id);
+                const valorMaximo = Math.max(...arrayDeValores);
+                const datosSolicitud = data.flujo_solicitudes.find(solFlujo => solFlujo.int_id === valorMaximo);
+                setFlujoSolId(datosSolicitud.int_id);
+                setSolicitudTarjeta(...[datosSolicitud]);
+                setNuevoMontoAprobado(datosSolicitud.str_cupo_solicitado);
+            }
+
+
+        }, dispatch);
+    }
 
 
     const validaNombreParam = (id) => {        
@@ -315,7 +323,7 @@ const VerSolicitud = (props) => {
     }
     const getDesicion = (event) => {
         setValorDecisionSelect(event.target.value);
-        if (event.target.value === "10985") { //APROBADO
+        if (event.target.value === "10985" || event.target.value === "11642") { //APROBADO o POR CONFIRMAR
             setIsMontodiferente(true);
         }
         else {
@@ -343,6 +351,8 @@ const VerSolicitud = (props) => {
                 setModalMonto(false);
             }
         }, dispatch);
+        actualizaInformaFlujoSol();
+
     }
 
     const nuevoMontoHandler = (value) => {
@@ -452,8 +462,10 @@ const VerSolicitud = (props) => {
 
 
     const guardarDecisionComiteHandler = () => {
-        if (valorDecisionSelect === "10985") { //APROBADO
-            fetchAddProcEspecifico(props.solicitud.solicitud, nuevoMontoAprobado, "EST_APROBADA_COMITE", comentarioSolicitud, props.token, (data) => { //APROBADO 11138
+        let validaCupo = controlMontoAprobado();
+
+        if (valorDecisionSelect === "10985" && validaCupo.estadoSig === "10985") { //APROBADO
+           fetchAddProcEspecifico(props.solicitud.solicitud, nuevoMontoAprobado, "EST_APROBADA_COMITE", comentarioSolicitud, props.token, (data) => { //APROBADO 10985
                 if (data.str_res_codigo === "000") {
                     console.log("SE APROBO SOLICITUD");
                     navigate.push('/solicitud');
@@ -463,7 +475,20 @@ const VerSolicitud = (props) => {
                 }
             }, dispatch)
 
-        } else if (valorDecisionSelect === "10988") { // ANULADA
+       }
+        if (valorDecisionSelect === "11642" && validaCupo.estadoSig === "11642") { //POR CONFIRMAR
+            fetchAddProcEspecifico(props.solicitud.solicitud, nuevoMontoAprobado, "EST_POR_CONFIRMAR", comentarioSolicitud, props.token, (data) => { //POR CONFIRMAR 11642
+                if (data.str_res_codigo === "000") {
+                    console.log("SE ENVIA POR CONFIFMAR SOLICITUD");
+                    navigate.push('/solicitud');
+                }
+                else {
+                    console.log("No cuenta con permisos ", data);
+                }
+            }, dispatch)
+
+        }
+       else if (valorDecisionSelect === "10988") { // ANULADA
             fetchAddProcEspecifico(props.solicitud.solicitud, 0, "EST_ANULADA_COMITE", "", props.token, (data) => { //ANULADA 11139
                 if (data.str_res_codigo === "000") {
                     console.log("SE NEGO SOLICITUD");
@@ -477,20 +502,46 @@ const VerSolicitud = (props) => {
     }
 
 
-    useEffect(() => {
+    const controlMontoAprobado = () => {
+        let controlBool = {
+            validador: false,
+            estadoSig: "0"
+        }
 
-        if (valorDecisionSelect === "10988") {
+        if (Number(nuevoMontoAprobado) === Number(solicitudTarjeta?.str_cupo_solicitado)) {
+            controlBool.validador = true;
+            controlBool.estadoSig = "10985" // EST_APROBADA (COMITE)
+        } else if (Number(nuevoMontoAprobado) < Number(solicitudTarjeta?.str_cupo_solicitado)) {
+            controlBool.validador = true;
+            controlBool.estadoSig = "11642" // EST_POR_CONFIRMAR (SE VA HACIA ASESOR CREDITO NUEVAMENTE)
+        } else if (Number(nuevoMontoAprobado) > Number(solicitudTarjeta?.str_cupo_solicitado)){
+            controlBool.validador = false;
+            controlBool.estadoSig = "0" // NO ES POSIBLE PASAR BANDEJA
+        }
+        return controlBool;
+    }
+
+    useEffect(() => {
+        let validaCupo = controlMontoAprobado();
+        console.log("CONTROL CUPO, ", validaCupo);
+        if (valorDecisionSelect === "10988") { //EST_RECHAZADA_SOCIO
             setIsActivoBtnDecision(false);
         }
-        else if (valorDecisionSelect !== "-1" && nuevoMontoAprobado !== 0 && comentarioSolicitud !== "") {
-            setIsActivoBtnDecision(false);
+        //TODO: REVISAR CONTROL PARA QUE NO SE PUEDA MODIFICAR CUPO APROBADO CON EL POR CONFIRMAR
+        else if (valorDecisionSelect !== "-1" && nuevoMontoAprobado !== 0 && comentarioSolicitud !== "" && validaCupo.validador) {
+            //setIsActivoBtnDecision(false);
+            if (valorDecisionSelect === "10985" && validaCupo.estadoSig === "10985") {
+                setIsActivoBtnDecision(false);
+            } else if (valorDecisionSelect === "11642" && validaCupo.estadoSig === "11642") {
+                setIsActivoBtnDecision(false);
+            } else {
+                setIsActivoBtnDecision(true);
+            }
         }
         else {
             setIsActivoBtnDecision(true);
         }
-
-
-    }, [valorDecisionSelect, nuevoMontoAprobado, comentarioSolicitud])
+    }, [valorDecisionSelect, nuevoMontoAprobado, comentarioSolicitud, controlMontoAprobado])
 
     return <div className="f-row">
         <Sidebar enlace={props.location.pathname}></Sidebar>
@@ -741,8 +792,15 @@ const VerSolicitud = (props) => {
                                 {isMontoDiferente &&
                                     <>
                                         <Card className={["mt-2"]}>
-                                            <h3>Ingrese nuevo monto de aprobado</h3>
-                                            <Input type="number" placeholder="Ej. 1000" setValueHandler={(e) => setNuevoMontoAprobado(e)} value={nuevoMontoAprobado}></Input>
+                                            <h3>Monto a aprobarse</h3>
+                                            {valorDecisionSelect !== "10985" && 
+                                                <>
+                                                <p className="mt-1 mb-1">Ingrese un monto inferior al que se encuentra en el campo</p>    
+                                                
+                                            </>
+                                            }
+                                            
+                                            <Input type="number" placeholder="Ej. 1000" disabled={valorDecisionSelect === "10985" ? true : false} setValueHandler={(e) => setNuevoMontoAprobado(e)} value={nuevoMontoAprobado}></Input>
                                         </Card>
 
                                         <Card className={["mt-2"]}>
@@ -769,7 +827,7 @@ const VerSolicitud = (props) => {
                         </div>
 
                                 <div className="mt-2 f-row justify-content-center">
-                                    {/*APROBADA O NEGADA*/}
+                                    {/*APROBADA O NEGADA POR COMITE ( 10984 EST_ANALISIS_COMITE) */}
                                     {(props.solicitud.idSolicitud === "10984") && 
                                         <Button className="btn_mg__primary" disabled={isActivoBtnDecision} onClick={guardarDecisionComiteHandler}>Enviar</Button>
                                     }

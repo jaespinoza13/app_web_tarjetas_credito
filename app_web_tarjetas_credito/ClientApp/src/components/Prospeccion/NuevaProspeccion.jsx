@@ -460,7 +460,7 @@ const NuevaProspeccion = (props) => {
                 console.log("PRIMERA CONSULTA BURO ")
 
                 //TODO: CAMBIAR LA CEDULA por "documento"
-                await fetchScore("C", "0903325546", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, "Matriz", datosUsuario.strOficial, datosUsuario.strCargo, props.token, (data) => {
+                await fetchScore("C", "0903325546", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, "Matriz", datosUsuario[0].strOficial, datosUsuario.strCargo, props.token, (data) => {
                     setScore(data);
                     setIdClienteScore(data.int_cliente);
                     //console.log("SCORE, ", data.int_cliente)
@@ -485,7 +485,7 @@ const NuevaProspeccion = (props) => {
                 if (!datosFinan.montoGastoFinaCodeudor || datosFinan.montoGastoFinaCodeudor === "" || datosFinan.montoGastoFinaCodeudor === " " || IsNullOrEmpty(datosFinan.montoGastoFinaCodeudor)) datosFinan.montoGastoFinaCodeudor = 0;
 
                 //TODO CAMBIAR LA CEDULA
-                await fetchNuevaSimulacionScore("C", "0903325546", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, "Matriz", datosUsuario.strOficial, datosUsuario.strCargo, datosFinan.montoIngresos, datosFinan.montoEgresos, datosFinan.montoRestaGstFinanciero, datosFinan.montoGastoFinaCodeudor,
+                await fetchNuevaSimulacionScore("C", "0903325546", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, "Matriz", datosUsuario[0].strOficial, datosUsuario[0].strCargo, datosFinan.montoIngresos, datosFinan.montoEgresos, datosFinan.montoRestaGstFinanciero, datosFinan.montoGastoFinaCodeudor,
                     props.token, (data) => {
 
                         //scoreStorage.montoSugerido = Number.parseFloat(nuevoCupoSugerido).toFixed(2);
