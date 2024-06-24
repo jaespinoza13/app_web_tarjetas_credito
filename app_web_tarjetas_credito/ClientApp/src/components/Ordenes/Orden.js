@@ -272,7 +272,7 @@ function Orden(props) {
 
                             <div className="m-2" style={{ display: "flex", flexDirection: "column", width: "25%", marginRight: "10px"}}>
                                 <Card >
-                                    <img style={{ width: "15%" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg"></img>
+                                    <img style={{ width: "25px" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg"></img>
                                     <h4 className="mt-2">Crear Orden de tarjetas de crédito</h4>
                                     <h5 className="mt-2">NOMINADAS</h5>
                                     <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={() => ordenPageHandler("crear",-1)}>Crear</Button>
@@ -297,7 +297,7 @@ function Orden(props) {
                                 {/*    <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false}>Crear</Button>*/}
                                 {/*</Card>*/}
                                 <Card>
-                                    <img style={{ width: "15%" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg"></img>
+                                    <img style={{ width: "25px" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg"></img>
                                     <h4 className="mt-2">Crear Orden de Entrega de tarjetas de crédito</h4>
                                     <h5 className="mt-2">Para entrega a Oficinas</h5>
                                     <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={() => ordenPageHandler("crearOrdenPedido", "")}>Crear</Button>
@@ -307,7 +307,7 @@ function Orden(props) {
                             <div className="m-2" style={{ display: "flex", flexDirection: "column", width: "25%", marginRight: "10px" }}>
 
                                 <Card>
-                                    <img style={{ width: "15%" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg"></img>
+                                    <img style={{ width: "25px" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg"></img>
                                     <h4 className="mt-2">Generar archivo para solicitudes aprobadas</h4>
                                     <h5 className="mt-2">Envío a Credencial</h5>
                                     <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={envioOrdenProvModal }>Crear</Button>

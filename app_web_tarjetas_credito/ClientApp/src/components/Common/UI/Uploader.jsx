@@ -33,7 +33,7 @@ const Uploader = (props) => {
                     <h5 className='blue strong'>
                         {props.children}
                     </h5>
-                    <h5 className='blue filename'>{filename}</h5>
+                    <h6 className='blue filename'>{filename.substring(0, 22)}</h6>
                 </div>
             </div>
             {filename && <button className='btn-close' onClick={removeItemHandler}>x</button>}
