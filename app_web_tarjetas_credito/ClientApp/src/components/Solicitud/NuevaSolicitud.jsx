@@ -602,7 +602,7 @@ const NuevaSolicitud = (props) => {
                 str_denominacion_socio: nombrePersonalTarjeta,
 
                 //TODO DECIRLE A JHONNY Q ME PASE ESA VARIABLE AL HACER CONSULTA DE INGRESOS Y EGRESOS Y GUARDARLA EN SOLICITUD
-                bl_ingreso_fijo: false,        
+                int_ingreso_fijo: false,        
                 //TODO: Validar campos q se envian
                 int_entidad_sucursal: 1,
                 str_direccion: "LOJA",

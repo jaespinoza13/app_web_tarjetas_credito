@@ -16,6 +16,6 @@ namespace Domain.Models.TarjetaCredito.AddComentarioSolicitud
         public string str_decision_sol {  get; set; } = string.Empty;
 
         //TODO DECIRLE A JHONNY Q ME PASE ESA VARIABLE AL HACER CONSULTA DE INGRESOS Y EGRESOS Y GUARDARLA EN SOLICITUD
-        public bool bl_ingreso_fijo { get; set; }
+        public int bl_ingreso_fijo { get; set; }
     }
 }

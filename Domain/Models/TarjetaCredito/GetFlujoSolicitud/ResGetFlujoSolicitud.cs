@@ -57,6 +57,6 @@ namespace Domain.Models.TarjetaCredito.GetFlujoSolicitud
         //public string slw_id_doc_adicional { get; set; } = string.Empty;  
 
         //TODO: VALIDAR QUE LLEGUE
-        public bool bl_ingreso_fijo { get; set; }
+        public int bl_ingreso_fijo { get; set; }
     }
 }

@@ -190,7 +190,7 @@ const VerSolicitud = (props) => {
 
             console.log("FLUJO SOL, ", data)
             //TODO: capturar informacion bool para enviar a sig bandeja
-            console.log("VALOR  BOOL , ", data.bl_ingreso_fijo)
+            console.log("VALOR  BOOL , ", data.int_ingreso_fijo)
             if (data.flujo_solicitudes.length > 0) {
                 const arrayDeValores = data.flujo_solicitudes.map(objeto => objeto.int_id);
                 const valorMaximo = Math.max(...arrayDeValores);
