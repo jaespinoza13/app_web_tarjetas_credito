@@ -196,7 +196,8 @@ const NuevaProspeccion = (props) => {
 
         
 
-        if (documento !== "" && nombreSocio !== "" && apellidoPaterno !== "" && apellidoMaterno !== "" && correoSocio !== "" && celularSocio !== "") {
+        if (documento !== "" && nombreSocio !== "" && apellidoPaterno !== "" && apellidoMaterno !== "" && correoSocio !== "" &&
+            (celularSocio !== "" && celularSocio.length > 0 && celularSocio.length === 10)) {
             //console.log("CAMPOS CLIENTE LLENOS")
             return true;
         }
@@ -208,47 +209,18 @@ const NuevaProspeccion = (props) => {
     //Validacion campos cuando no se edita
     const validaCamposFinancieros = () => {
         //Si esta activo el check de Gastos Financieros valida campo
-        let validadorCheck = false;
         let validadorOtrosMontos = false;
         let validaRestoMontoGstFinanciero = false;
 
 
         console.log(`montoSolicitado ${datosFinancieros.montoSolicitado}, montoEgresos ${datosFinancieros.montoIngresos},  montoEgresos ${datosFinancieros.montoEgresos} `)
-        if (datosFinancieros.montoSolicitado > 0 && datosFinancieros.montoIngresos > 0 &&
-            datosFinancieros.montoEgresos > 0
-            //&& datosFinancieros.montoGastosFinancieros > 0
+        if ((datosFinancieros.montoSolicitado > 0) &&
+            (datosFinancieros.montoIngresos > 0) &&
+            (datosFinancieros.montoEgresos > 0)
+            //    && datosFinancieros.montoGastosFinancieros > 0
         ) {
             validadorOtrosMontos = true;
-        }
-
-        //console.log(`isCkeckGtosFinancieros ${isCkeckGtosFinancieros}, GastosFinancieros ${datosFinancieros.montoGastosFinancieros}`)
-
-        /*if (isCkeckRestaGtoFinananciero === true) {
-            if (IsNullOrEmpty(datosFinancieros.montoGastoFinaCodeudor) || datosFinancieros.montoGastoFinaCodeudor === "0" || datosFinancieros.montoGastoFinaCodeudor === "" || datosFinancieros.montoGastoFinaCodeudor === " ") {
-                //console.log("GastosFinancieros, falso, ", datosFinancieros.montoGastosFinancieros)
-                validadorCheck = false;
-                return false;
-            } else {
-                validadorCheck = true;
-                //console.log("GastosFinancieros, true")
-            }
-        } else if (isCkeckRestaGtoFinananciero === false) {
-            validadorCheck = true;
-        }
-
-        //Si se vuelve a realizar la Simulacion Habilita campos
-        if (realizaNuevaSimulacion) {
-            if (IsNullOrEmpty(datosFinancieros.montoRestaGstFinanciero) || datosFinancieros.montoRestaGstFinanciero === "" || datosFinancieros.montoRestaGstFinanciero === " ") {
-                console.log("Resta Gst Financ, ", datosFinancieros.montoRestaGstFinanciero)
-                validaRestoMontoGstFinanciero = false;
-                return false;
-            } else {
-                validaRestoMontoGstFinanciero = true;
-
-            }
-        } else {
-            validaRestoMontoGstFinanciero = true;
-        }*/
+        } 
 
 
         if (isCkeckRestaGtoFinananciero === true) {

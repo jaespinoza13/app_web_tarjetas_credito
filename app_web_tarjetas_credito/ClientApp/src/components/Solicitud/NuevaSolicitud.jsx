@@ -149,51 +149,21 @@ const NuevaSolicitud = (props) => {
     
 
     //Validacion campos cuando no se edita
-    const validaCamposFinancieros = () => {
-        
+    const validaCamposFinancieros = () => {        
 
         //Si esta activo el check de Gastos Financieros valida campo
-        let validadorCheck = false;
         let validadorOtrosMontos = false;
         let validaRestoMontoGstFinanciero = false;
 
         console.log(`montoSolicitado ${datosFinancieros.montoSolicitado}, montoEgresos ${datosFinancieros.montoIngresos},  montoEgresos ${datosFinancieros.montoEgresos} `)
 
-        if (datosFinancieros.montoSolicitado > 0 && datosFinancieros.montoIngresos > 0 &&
-            datosFinancieros.montoEgresos > 0
+        if ((datosFinancieros.montoSolicitado > 0) &&
+            (datosFinancieros.montoIngresos > 0) &&
+            (datosFinancieros.montoEgresos > 0)
             //    && datosFinancieros.montoGastosFinancieros > 0
         ) {
             validadorOtrosMontos = true;
-        }
-
-        /*
-        //console.log(`isCkeckGtosFinancieros ${isCkeckGtosFinancieros}, GastosFinancieros ${datosFinancieros.montoGastosFinancieros}`)
-        if (isCkeckRestaGtoFinananciero === true) {
-            if (IsNullOrEmpty(datosFinancieros.montoGastoFinaCodeudor) || datosFinancieros.montoGastoFinaCodeudor === "0" || datosFinancieros.montoGastoFinaCodeudor === "" || datosFinancieros.montoGastoFinaCodeudor === " ") {
-                //console.log("GastosFinancieros, falso, ", datosFinancieros.montoGastosFinancieros)
-                validadorCheck = false;
-                return false;
-            } else {
-                validadorCheck = true;
-                //console.log("GastosFinancieros, true")
-            }
-        } else if (isCkeckRestaGtoFinananciero === false) {
-            validadorCheck = true;
-        }        
-
-        //Si se vuelve a realizar la Simulacion Habilita campos
-        if (realizaNuevaSimulacion) {
-            if (IsNullOrEmpty(datosFinancieros.montoRestaGstFinanciero) ||  datosFinancieros.montoRestaGstFinanciero === "" || datosFinancieros.montoRestaGstFinanciero === " ") {
-                console.log("Resta Gst Financ, ", datosFinancieros.montoRestaGstFinanciero)
-                validaRestoMontoGstFinanciero = false;
-                return false;
-            } else {
-                validaRestoMontoGstFinanciero = true;
-                
-            }
-        } else {
-            validaRestoMontoGstFinanciero = true;
-        }*/
+        } 
 
         if (isCkeckRestaGtoFinananciero === true) {
             if (IsNullOrEmpty(datosFinancieros.montoRestaGstFinanciero) || datosFinancieros.montoRestaGstFinanciero === "" || datosFinancieros.montoRestaGstFinanciero === " ") {
@@ -208,7 +178,7 @@ const NuevaSolicitud = (props) => {
             validaRestoMontoGstFinanciero = true;
         }       
 
-        console.log(`Check ${validadorCheck}, cupo ${validadorOtrosMontos},  restoGast ${validaRestoMontoGstFinanciero} `)
+        console.log(`Cupo ${validadorOtrosMontos},  restoGast ${validaRestoMontoGstFinanciero} `)
         //if (validadorCheck && validadorOtrosMontos && validaRestoMontoGstFinanciero) {
         if (validadorOtrosMontos && validaRestoMontoGstFinanciero) {
             return true;
@@ -826,7 +796,7 @@ const NuevaSolicitud = (props) => {
                         
                     </Item>
                     <Item xs={8} sm={8} md={8} lg={8} xl={8} className="f-row justify-content-center align-content-center">
-                        {(step === 1 || step === 3) &&
+                        {(step === 1 || step === 3) && 
                             <Button className={["btn_mg btn_mg__primary mt-2 mr-2"]} onClick={()=> refrescarInformacionHandler(true)}>{"Actualizar"}</Button>
                         }                        
                         <Button className={["btn_mg btn_mg__primary mt-2 ml-2"]} disabled={estadoBotonSiguiente} onClick={()=>nextHandler(step)}>{textoSiguiente}</Button>

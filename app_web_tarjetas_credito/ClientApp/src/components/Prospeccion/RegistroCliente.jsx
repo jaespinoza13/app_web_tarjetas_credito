@@ -144,6 +144,10 @@ const RegistroCliente = (props) => {
         }
     };
 
+    const updDatosHandler = () => {
+        props.requiereActualizar(true)
+    }
+
     return (
         <>
             {props.paso === 0 &&
@@ -166,6 +170,9 @@ const RegistroCliente = (props) => {
                     <Item xs={6} sm={6} md={6} lg={6} xl={6} className="justify-content-center">
                         <div className={"f-row"}>
                             <h2>Registro Datos del Cliente</h2>
+                            <Button className="btn_mg__auto " onClick={updDatosHandler}>
+                                <img src="/Imagenes/refresh.svg" style={{ transform: "scaleX(-1)" }}></img>
+                            </Button>
                         </div>
                         <Card>
                             <section>
