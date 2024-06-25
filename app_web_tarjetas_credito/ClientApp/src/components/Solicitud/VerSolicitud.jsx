@@ -914,7 +914,7 @@ const VerSolicitud = (props) => {
 
                                 {/*CAMPO PARA DEJAR COMENTARIO Y PASAR A LA SIGUIENTE BANDEJA*/}
                                 {/*{props.solicitud.idSolicitud !== "11275" &&*/}
-                                {solicitudTarjeta?.str_estado !== 'ANALISIS COMITE' &&
+                                {(solicitudTarjeta?.str_estado !== 'ANALISIS COMITE' && solicitudTarjeta?.str_estado !== 'POR CONFIRMAR') &&
                                 
                                     <div className="mt-4">
                                         <h3 className="mb-3 strong">Observaciones</h3>
@@ -933,7 +933,7 @@ const VerSolicitud = (props) => {
                                     <Button className="btn_mg__primary" disabled={isActivoBtnDecision} onClick={guardarDecisionComiteHandler}>Enviar</Button>
                                 }
                                 {/*{props.solicitud.idSolicitud !== "11275" &&*/}
-                                {(solicitudTarjeta?.str_estado !== "ANALISIS COMITE") &&
+                                {(solicitudTarjeta?.str_estado !== 'ANALISIS COMITE' && solicitudTarjeta?.str_estado !== 'POR CONFIRMAR') &&
                                     <Button className="btn_mg__primary" disabled={faltaComentariosAsesor} onClick={guardarComentarioSiguiente}>Enviar</Button>
                                 }
 

@@ -214,13 +214,13 @@ const NuevaProspeccion = (props) => {
 
 
         console.log(`montoSolicitado ${datosFinancieros.montoSolicitado}, montoEgresos ${datosFinancieros.montoIngresos},  montoEgresos ${datosFinancieros.montoEgresos} `)
-        if ((datosFinancieros.montoSolicitado > 0 && datosFinancieros.montoSolicitado <= 999999) &&
-            (datosFinancieros.montoIngresos > 0 && datosFinancieros.montoIngresos <= 999999) &&
-            (datosFinancieros.montoEgresos > 0 && datosFinancieros.montoEgresos <= 999999)
+        if ((datosFinancieros.montoSolicitado > 0) &&
+            (datosFinancieros.montoIngresos > 0) &&
+            (datosFinancieros.montoEgresos > 0)
             //    && datosFinancieros.montoGastosFinancieros > 0
         ) {
             validadorOtrosMontos = true;
-        }
+        } 
 
 
         if (isCkeckRestaGtoFinananciero === true) {
