@@ -89,7 +89,7 @@ function Menus({ listaMenus, id_perfil, token, setListas, setListaFunc, listaFun
             if (idPerfil > 0 && !IsNullOrWhiteSpace(tokeni) && validateToken(tokeni) && parametrosSistema.length === 0 && !sendedParams) {
                 setSendedParams(true); 
                 fetchGetParametrosSistema(tokeni, (data) => {
-                    console.log("PARAM, ".data)
+                    //console.log("PARAM, ".data)
                     setParametrosSistema([data.lst_parametro]);
                     dispatch(getParametrosTCStateAction({ lst_parametros: data.lst_parametros }));
                     /*const resultParametros = data.lst_parametros.map(param => ({

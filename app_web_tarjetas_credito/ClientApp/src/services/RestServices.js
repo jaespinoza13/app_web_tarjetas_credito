@@ -1577,9 +1577,9 @@ export function fetchGetMedioAprobacion(estadoSoli, idSolicitud, token, onSucces
         str_est_sol: estadoSoli,
         int_id_sol: Number(idSolicitud)
     }
-    //console.log("BOD ", body)
+    console.log("BOD ", body)
     ServicioPostExecute(getMedioAprobacion, body, token, { dispatch: dispatch }).then((data) => {
-        //console.log("MEDIO APRO,",data)
+        console.log("MEDIO APRO,",data)
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));

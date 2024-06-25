@@ -59,7 +59,7 @@ const VerSolicitud = (props) => {
     const [nuevoMontoAprobado, setNuevoMontoAprobado] = useState(0);
 
     const [comentarioCambioEstado, setComentarioCambioEstado] = useState("");
-    const [valorDecisionSelect, setValorDecisionSelect] = useState("-1");
+    const [valorDecisionSelect, setValorDecisionSelect] = useState(-1);
     const [isActivoBtnDecision, setIsActivoBtnDecision] = useState(true);
     const [isBtnDisableCambioBandeja, setIsBtnDisableCambioBandeja] = useState(true);
 
@@ -170,7 +170,7 @@ const VerSolicitud = (props) => {
         setDatosUsuario([{ strCargo: strRol, strOficial: strOficial, strUserOficial: userOficial }]);
         //console.log(`DATOS USER, ${strOficial}, ${strRol} , ${userOficial}`)
 
-        //console.log("PROPS INFO", props)
+        console.log("PROPS INFO", props.solicitud)
         
     }, []);
 
@@ -178,7 +178,7 @@ const VerSolicitud = (props) => {
     useEffect(() => {
         //console.log("PROPS parametrosTC", props.parametrosTC.lst_parametros)
         if (props.parametrosTC.lst_parametros?.length > 0) {
-            console.log("Entr", props.parametrosTC.lst_parametros)
+            //console.log("Entr", props.parametrosTC.lst_parametros)
             let ParametrosTC = props.parametrosTC.lst_parametros;
             setParametrosTC(ParametrosTC.filter(param => param.str_nombre === 'ESTADOS_SOLICITUD_TC'))
         }
@@ -188,7 +188,7 @@ const VerSolicitud = (props) => {
     const actualizaInformaFlujoSol = () => {
         fetchGetFlujoSolicitud(props.solicitud.solicitud, props.token, (data) => {
 
-            console.log("FLUJO SOL, ", data)
+            //console.log("FLUJO SOL, ", data)
             //TODO: capturar informacion bool para enviar a sig bandeja
             console.log("VALOR  BOOL , ", data.int_ingreso_fijo)
             if (data.flujo_solicitudes.length > 0) {
@@ -207,21 +207,29 @@ const VerSolicitud = (props) => {
 
 
     const validaNombreParam = (id) => {
-        if (estadosSiguientesAll.length > 0) {
-            const parametro = parametros.find(param => param.prm_id === id);
+
+        //console.log("ESTADO VALIDAR ", estadosSiguientesAll)
+        //console.log("ESTADO ENTRA ", id)
+        if (estadosSiguientes.length > 0) {
+            const parametro = parametros.find(param => Number(param.prm_id) === Number(id));
             return parametro;
         }
     }
 
     useEffect(() => {
-        const arrEstados = estadosSiguientesAll?.find((values) => values.prm_id === props.solicitud.idSolicitud);
-        if (arrEstados) {
-            const estadosSiguientes = arrEstados.estados.split('|');
-            //console.log(estadosSiguientes)
-            setEstadosSiguientes(estadosSiguientes);
-        } else {
-            // Handle the case when arrEstados is not found
-        }
+
+        if (estadosSiguientesAll.length > 0) {
+            let arrEstados = estadosSiguientesAll?.find((parametr) => Number(parametr.prm_id) === Number(props.solicitud.idSolicitud));
+            if (arrEstados) {
+                const estadosSiguientes = arrEstados.estados.split('|');
+                const conversionANumeros = estadosSiguientes.map(estado => Number(estado));
+                //console.log("CONVERSION NUM ",conversionANumeros)
+                setEstadosSiguientes(conversionANumeros);
+            } else {
+                // Handle the case when arrEstados is not found
+                setEstadosSiguientes([]);
+            }
+        }       
 
     }, [estadosSiguientesAll]);
 
@@ -249,7 +257,7 @@ const VerSolicitud = (props) => {
     }
 
     const modalHandler = () => {
-        console.log("clicked!!")
+        //console.log("clicked!!")
         setModalVisible(true);
     }
 
@@ -273,7 +281,7 @@ const VerSolicitud = (props) => {
     }
 
     const guardarComentarioSiguiente = () => {
-        console.log("ENTRAR GUARDAR COM SIG")
+        //console.log("ENTRAR GUARDAR COM SIG")
         //console.log(`${props.solicitud.solicitud} | ${comentarioSolicitud} | ${props.solicitud.idSolicitud}  `)
         //Debe guardar comentario de Resolucion
 
@@ -324,9 +332,10 @@ const VerSolicitud = (props) => {
     }
 
     const descargarMedio = (numSolicitud) => {
-        //console.log("Num Sol,", numSolicitud)
-        //TODO: ESTADO 
-        fetchGetMedioAprobacion("", props.solicitud.solicitud, props.token, (data) => {
+        console.log("Num Sol,", numSolicitud)
+        //TODO: ESTADO
+        //fetchGetMedioAprobacion("", props.solicitud.solicitud, props.token, (data) => {
+        fetchGetMedioAprobacion(solicitudTarjeta?.str_estado, props.solicitud.solicitud, props.token, (data) => {
             console.log("RESP MEDIO", data)
             if (data.str_res_codigo === "000" && verificarPdf(data.str_med_apro_bas_64)) {
                 const blob = base64ToBlob(data.str_med_apro_bas_64, 'application/pdf');
@@ -492,8 +501,8 @@ const VerSolicitud = (props) => {
     const guardarDecisionComiteHandler = () => {
         let validaCupo = controlMontoAprobado();
 
-        if (valorDecisionSelect === 11276 && validaCupo.estadoSig === 11276) { //APROBADO
-            fetchAddProcEspecifico(props.solicitud.solicitud, solicitudTarjeta.str_cupo_solicitado, "EST_APROBADA_COMITE", comentarioSolicitud, props.token, (data) => { //APROBADO 11276
+        if (valorDecisionSelect === "11276" && validaCupo.estadoSig === "11276") { //APROBADO
+            fetchAddProcEspecifico(props.solicitud.solicitud, solicitudTarjeta.str_cupo_solicitado, "EST_APROBADA", comentarioSolicitud, props.token, (data) => { //APROBADO 11276
                 if (data.str_res_codigo === "000") {
                     console.log("SE APROBO SOLICITUD");
                     navigate.push('/solicitud');
@@ -504,7 +513,7 @@ const VerSolicitud = (props) => {
             }, dispatch)
 
         }
-        if (valorDecisionSelect === 11278 && validaCupo.estadoSig === 11278) { //POR CONFIRMAR
+        if (valorDecisionSelect === "11278" && validaCupo.estadoSig === "11278") { //POR CONFIRMAR
             fetchAddProcEspecifico(props.solicitud.solicitud, nuevoMontoAprobado, "EST_POR_CONFIRMAR", comentarioSolicitud, props.token, (data) => { //POR CONFIRMAR 11278
                 if (data.str_res_codigo === "000") {
                     console.log("SE ENVIA POR CONFIFMAR SOLICITUD");
@@ -516,8 +525,8 @@ const VerSolicitud = (props) => {
             }, dispatch)
 
         }
-        else if (valorDecisionSelect === 11280) { // ANULADA
-            fetchAddProcEspecifico(props.solicitud.solicitud, 0, "EST_ANULADA_COMITE", "", props.token, (data) => { //ANULADA 11139
+        else if (valorDecisionSelect === "11277") { // ANULADA
+            fetchAddProcEspecifico(props.solicitud.solicitud, 0, "EST_RECHAZADA", "", props.token, (data) => { //EST_RECHAZADA 11277
                 if (data.str_res_codigo === "000") {
                     console.log("SE NEGO SOLICITUD");
                     navigate.push('/solicitud');
@@ -533,34 +542,35 @@ const VerSolicitud = (props) => {
     const controlMontoAprobado = () => {
         let controlBool = {
             validador: false,
-            estadoSig: 0
+            estadoSig: "0"
         }
 
         if (Number(solicitudTarjeta?.str_cupo_solicitado) !== 0 && valorDecisionSelect === "11276") {
             controlBool.validador = true;
-            controlBool.estadoSig = 11276 // EST_APROBADA (COMITE)
+            controlBool.estadoSig = "11276" // EST_APROBADA (COMITE)
         } else if (Number(nuevoMontoAprobado) < Number(solicitudTarjeta?.str_cupo_solicitado) && Number(nuevoMontoAprobado) > 0) {
             controlBool.validador = true;
-            controlBool.estadoSig = 11278 // EST_POR_CONFIRMAR (SE VA HACIA ASESOR CREDITO NUEVAMENTE)
+            controlBool.estadoSig = "11278" // EST_POR_CONFIRMAR (SE VA HACIA ASESOR CREDITO NUEVAMENTE)
         } else if (Number(nuevoMontoAprobado) > Number(solicitudTarjeta?.str_cupo_solicitado)) {
             controlBool.validador = false;
-            controlBool.estadoSig = 0 // NO ES POSIBLE PASAR BANDEJA
+            controlBool.estadoSig = "0" // NO ES POSIBLE PASAR BANDEJA
         }
         return controlBool;
     }
 
+    /* VALIDACION  */
     useEffect(() => {
         let validaCupo = controlMontoAprobado();
         console.log("CONTROL CUPO 2, ", validaCupo);
-        if (valorDecisionSelect === 11280) { //EST_RECHAZADA_SOCIO
+        if (valorDecisionSelect === "11277") { //EST_RECHAZADA
             setIsActivoBtnDecision(false);
         }
         //TODO: REVISAR CONTROL PARA QUE NO SE PUEDA MODIFICAR CUPO APROBADO CON EL POR CONFIRMAR
-        else if (valorDecisionSelect !== -1 && nuevoMontoAprobado !== 0 && comentarioSolicitud !== "" && validaCupo.validador) {
+        else if (valorDecisionSelect !== "-1" && nuevoMontoAprobado !== 0 && comentarioSolicitud !== "" && validaCupo.validador) {
             //setIsActivoBtnDecision(false);
-            if (valorDecisionSelect === 11276 && validaCupo.estadoSig === 11276) {
+            if (valorDecisionSelect === "11276" && validaCupo.estadoSig === "11276") {
                 setIsActivoBtnDecision(false);
-            } else if (valorDecisionSelect === 11278 && validaCupo.estadoSig === 11278 && nuevoMontoAprobado > 0) {
+            } else if (valorDecisionSelect === "11278" && validaCupo.estadoSig === "11278" && nuevoMontoAprobado > 0) {
                 setIsActivoBtnDecision(false);
             } else {
                 setIsActivoBtnDecision(true);
@@ -692,7 +702,7 @@ const VerSolicitud = (props) => {
                                             <h5>Cupo solicitado:</h5>
                                             <h5 className="strong f-row">
                                                 {`$ ${Number(solicitudTarjeta?.str_cupo_solicitado).toLocaleString("en-US") || Number('1000.00').toLocaleString("en-US")}`}
-                                                {props.solicitud.idSolicitud === "11272" &&
+                                                {props.solicitud.idSolicitud === 11272 &&
                                                     <Button className="btn_mg__auto ml-2" onClick={updateMonto}>
                                                         <img src="/Imagenes/edit.svg"></img>
                                                     </Button>
@@ -807,7 +817,7 @@ const VerSolicitud = (props) => {
                                         }
 
                                         {/*  EST_ANALISIS_UAC  || EST_ANALISIS_JEFE_UAC || EST_ANALISIS_COMITE    */}
-                                        {props.solicitud.idSolicitud === 11273 && props.solicitud.idSolicitud === 11274 && props.solicitud.idSolicitud === 11275 &&
+                                        {(props.solicitud.idSolicitud === 11273 || props.solicitud.idSolicitud === 11274 || props.solicitud.idSolicitud === 11275) &&
                                             <Button className="btn_mg__primary ml-2" onClick={openModalCambiarBandeja}>Retornar Solicitud</Button>
                                         }
 
@@ -855,13 +865,13 @@ const VerSolicitud = (props) => {
                                     {solicitudTarjeta?.str_estado === "ANALISIS COMITE" &&
                                         <Card>
                                             <h3>Decisión</h3>
-                                            <select disabled={isDecisionHabilitada} onChange={getDecision} defaultValue={"-1"} value={valorDecisionSelect}>
+                                            <select disabled={isDecisionHabilitada} onChange={getDecision} defaultValue={-1} value={valorDecisionSelect}>
                                                 {estadosSiguientes?.map((estados, index) => {
                                                     const resultado = validaNombreParam(estados);
                                                     if (index === 0) {
                                                         return (
                                                             <>
-                                                                <option disabled={true} value={"-1"}>Seleccione una opción</option>
+                                                                <option disabled={true} value={-1}>Seleccione una opción</option>
                                                                 <option value={resultado.prm_id}> {resultado.prm_valor_ini}</option>
                                                             </>
                                                         )
@@ -880,13 +890,13 @@ const VerSolicitud = (props) => {
                                         <>
                                             <Card className={["mt-2"]}>
                                                 <h3>Monto a aprobarse</h3>
-                                                {valorDecisionSelect !== 11276 &&
+                                                {Number(valorDecisionSelect) !== 11276 &&
                                                     <>
                                                         <h5 className="mt-1 mb-1 strong">Ingrese un monto inferior al que se encuentra en el campo</h5>
                                                         <Input type="number" placeholder="Ej. 1000" disabled={false} setValueHandler={(e) => setNuevoMontoAprobado(e)} value={nuevoMontoAprobado}></Input>
                                                     </>
                                                 }
-                                                {valorDecisionSelect === 11276 &&
+                                            {Number(valorDecisionSelect) === 11276 &&
                                                     <Input type="number" disabled={true} value={solicitudTarjeta?.str_cupo_solicitado}></Input>
                                                 }
 
@@ -1093,7 +1103,7 @@ const VerSolicitud = (props) => {
 
         <Modal
             modalIsVisible={modalCambioBandeja}
-            titulo={`Cambiar bandeja`}
+            titulo={`Retornar Solicitud`}
             onNextClick={cambioEstadoBandeja}
             onCloseClick={closeModalambioBandeja}
             isBtnDisabled={isBtnDisableCambioBandeja}
@@ -1103,7 +1113,7 @@ const VerSolicitud = (props) => {
             {modalCambioBandeja && <div>
 
 
-                {props.solicitud.idSolicitud === "11275" &&
+                {props.solicitud.idSolicitud === 11275 &&
                     <>
                         <h3 className="mt-4 mb-1">Seleccione a qué estado desea regresar la solicitud:</h3>
 
@@ -1123,7 +1133,7 @@ const VerSolicitud = (props) => {
                 <br />
 
                 <div>
-                    <h3 className="mt-2 mb-2">Comentario:</h3>
+                    <h3 className="mt-2 mb-2">Comentario: ${props.solicitud.idSolicitu }</h3>
                     <Input className="w-100" type="text" value={comentarioCambioEstado} placeholder="Ingrese comentario" setValueHandler={setComentarioCambioEstado}></Input>
                 </div>
 

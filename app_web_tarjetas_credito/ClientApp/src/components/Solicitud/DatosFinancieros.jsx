@@ -163,6 +163,23 @@ const DatosFinancieros = (props) => {
     }, [])
 
 
+    useEffect(() => {
+
+        console.log("ACT finan Compon ", props.dataConsultFinan)
+
+        setMontoIngresos(props.dataConsultFinan.montoIngresos);
+        setMontoEgresos(props.dataConsultFinan.montoEgresos);
+
+        setRestaMontoGastosFinancieros(props.dataConsultFinan.montoRestaGstFinanciero);
+        setMontoGastoFinanCodeudor(props.dataConsultFinan.montoGastoFinaCodeudor)
+        //setMontoGastosFinancieros(props.dataConsultFinan.montoGastosFinancieros);
+        setMontoSolicitado(props.dataConsultFinan.montoSolicitado)
+
+        setIsCkeckRestaGtoFinancero(props.isCheckMontoRestaFinanciera)
+
+    }, [props.dataConsultFinan])
+
+
     return (
         <>
 
@@ -171,11 +188,12 @@ const DatosFinancieros = (props) => {
                 <div className={"f-row"}>
                     <h2>Datos de Financieros</h2>
 
-                    {props.gestion === "solicitud" &&
+                    {/*{props.gestion === "solicitud" &&*/}
+
                         <Button className="btn_mg__auto" onClick={updGastosFinancieros}>
                             <img src="/Imagenes/refresh.svg" style={{ transform: "scaleX(-1)"}}></img>
                         </Button>
-                    }
+
                 </div>                
                 
                 <Card className='mt-2'>
@@ -183,14 +201,14 @@ const DatosFinancieros = (props) => {
                         <div className='mb-2'>
                             <label>Ingresos</label>
                             <div className="f-row">
-                                <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setMontoIngresosHandler} value={montoIngresos} disabled={isCamposDesactivados} max={"100000"} min={"0"} maxlength={"6"}></Input>
+                                <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setMontoIngresosHandler} value={montoIngresos} disabled={isCamposDesactivados} min={"0"} maxlength={"6"}></Input>
                             </div>
                         </div>
 
                         <div className='mb-2'>
                             <label>Egresos</label>
                             <div className="f-row">
-                                <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setMontoEgresosHandler} value={montoEgresos} disabled={isCamposDesactivados} max={"100000"} min={"0"} maxlength={"6"}></Input>
+                                <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setMontoEgresosHandler} value={montoEgresos} disabled={isCamposDesactivados} min={"0"} maxlength={"6"}></Input>
                             </div>
                         </div>
 
@@ -201,7 +219,7 @@ const DatosFinancieros = (props) => {
                             </div>
                             
                             <div className="f-row">
-                                <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setRestaGastosFinancierosHandler} value={restaMontoGastosFinancieros} disabled={!isCkeckRestaGtoFinancero} max={"100000"} min={"0"} maxlength={"6"} ></Input>
+                                <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setRestaGastosFinancierosHandler} value={restaMontoGastosFinancieros} disabled={!isCkeckRestaGtoFinancero} min={"0"} maxlength={"6"} ></Input>
                             </div>
                         </div>
 
@@ -212,7 +230,7 @@ const DatosFinancieros = (props) => {
                             {/*</div>*/}
                             <label>Gasto Financiero CoDeudor</label>
                             <div className="f-row">
-                                <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setMontoGastoFinanCodeudorHandler} value={montoGastoFinaCodeudor} max={"100000"} min={"0"} maxlength={"6"} disabled={isCamposDesactivados} ></Input>
+                                <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setMontoGastoFinanCodeudorHandler} value={montoGastoFinaCodeudor} min={"0"} maxlength={"6"} disabled={isCamposDesactivados} ></Input>
                             </div>
                         </div>
 
@@ -228,7 +246,7 @@ const DatosFinancieros = (props) => {
                         <div className='mb-2'>
                             <label>Cupo solicitado</label>
                             <div className="f-row">
-                                <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setMontoSolicitadoHandler} value={montoSolicitado} max={"100000"} min={"0"} maxlength={"6"}></Input>
+                                <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setMontoSolicitadoHandler} value={montoSolicitado} min={"0"} maxlength={"6"}></Input>
                             </div>
                         </div>
                     </section>
