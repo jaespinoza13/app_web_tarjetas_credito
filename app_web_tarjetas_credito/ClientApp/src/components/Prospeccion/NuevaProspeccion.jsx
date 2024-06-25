@@ -98,14 +98,16 @@ const NuevaProspeccion = (props) => {
 
     const [isCkeckRestaGtoFinananciero, setIsCkeckRestaGtoFinananciero] = useState(false);
 
-    // DatosSocio componente
+    // Para registro Solicitud
     const [calificacionRiesgo, setCalificacionRiesgo] = useState("");
+    const [cupoSugeridoAval, setCupoSugeridoAval] = useState(0);
+    const [cupoSugeridoCoopM, setCupoSugeridoCoopM] = useState(0);
 
 
     //Info Socio
     const [dirDocimicilioSocio, setDirDomicilioSocio] = useState([]);
     const [dirTrabajoSocio, setDirTrabajoSocio] = useState([]);
-    const getIfoSocioHandler = (data) => {
+    const getInfoSocioHandler = (data) => {
         setDirDomicilioSocio([...data.lst_dir_domicilio]);
         setDirTrabajoSocio([...data.lst_dir_trabajo]);
     }
@@ -337,17 +339,7 @@ const NuevaProspeccion = (props) => {
 
     const refrescarInformacionHandler = (actualizarInfo) => {
         fetchValidacionSocio(documento, '', props.token, (data) => {
-            const arrValidacionesOk = [...data.lst_datos_alerta_true];
-            const arrValidacionesErr = [...data.lst_datos_alerta_false];
-            setValidacionesOk(arrValidacionesOk);
-            setValidacionesErr(arrValidacionesErr);
-            const objValidaciones = {
-                "lst_validaciones_ok": [...data.lst_datos_alerta_true],
-                "lst_validaciones_err": [...data.lst_datos_alerta_false]
-            }
-            //console.log("VALIDACIONES, ", objValidaciones)
-            handleLists(objValidaciones);
-
+            console.log("PROSP ", data)
             setNombreSocio(data.str_nombres);
             setApellidoPaterno(data.str_apellido_paterno);
             setApellidoMaterno(data.str_apellido_materno);
@@ -363,6 +355,7 @@ const NuevaProspeccion = (props) => {
             data.correoCliente = data.str_email
             data.fechaNacimiento = data.str_fecha_nacimiento
 
+            //console.log(`ingresos, ${data.dcm_total_ingresos}; egresos, ${data.dcm_total_egresos}; financ, ${data.dcm_gastos_financieros} `,);
             let datosFinan = {
                 montoSolicitado: 0,
                 montoIngresos: data.dcm_total_ingresos,
@@ -372,22 +365,18 @@ const NuevaProspeccion = (props) => {
                 montoRestaGstFinanciero: "",
             }
             setDatosFinancieros(datosFinan);
-            //console.log(`ingresos, ${data.dcm_total_ingresos}; egresos, ${data.dcm_total_egresos}; financ, ${data.dcm_gastos_financieros} `,);
-            //console.log("FINAN, ", datosFinan);
 
-            //console.log("DATA ASIG, ", data)
-            //setInfoSocio(informacionCliente);
             setInfoSocio(data);
             setEnteSocio("")
             if (!actualizarInfo) {
                 setStep(1);
+                let retrasoEfecto = setTimeout(function () {
+                    setIsVisibleBloque(true);
+                    clearTimeout(retrasoEfecto);
+                }, 100);
             }
-            let retrasoEfecto =setTimeout(function () {
-                setIsVisibleBloque(true);
-                clearTimeout(retrasoEfecto);
-            }, 100);
-            //setVisitadosSteps([...visitadosSteps, actualStep + 1])
-            //setActualStep(1);
+            
+
         }, dispatch);
     }
 
@@ -402,6 +391,29 @@ const NuevaProspeccion = (props) => {
             setStep(2);
             setVisitadosSteps([...visitadosSteps, actualStepper + 1])
             setActualStepper(1);
+
+            //TODO: HACER NUEVA CONSULTA DE LAS ALERTAS ANTES DE PASAR AL 2 pasar la fecha de nacimiento
+            const objValidaciones = {
+                "lst_validaciones_ok": [
+                    { str_descripcion_alerta: "SOCIO CUENTA CON INFORMACION ACTUALIZADA" }, { str_descripcion_alerta: "SOCIO MANTIENE ACTIVA SUS CUENTAS DE AHORROS" },
+                    { str_descripcion_alerta: "SOCIO PUEDE REALIZAR LA CONSULTA AL BURO" }],
+                "lst_validaciones_err": []
+            }
+            handleLists(objValidaciones)
+
+            /*
+            const arrValidacionesOk = [...data.lst_datos_alerta_true];
+            const arrValidacionesErr = [...data.lst_datos_alerta_false];
+            setValidacionesOk(arrValidacionesOk);
+            setValidacionesErr(arrValidacionesErr);
+            const objValidaciones = {
+                "lst_validaciones_ok": [...data.lst_datos_alerta_true],
+                "lst_validaciones_err": [...data.lst_datos_alerta_false]
+            }
+            //console.log("VALIDACIONES, ", objValidaciones)
+            handleLists(objValidaciones);*/
+
+
         }
         if (step === 2) {
             //console.log("STEP 1, SHOW ", showAutorizacion)
@@ -416,6 +428,9 @@ const NuevaProspeccion = (props) => {
                             setSubirAutorizacion(false);
                             setIsUploadingAthorization(false);
                             setShowAutorizacion(false);
+
+
+                            //TODO CAMBIAR AL NUEVO METODO DE ALERTAS
                             fetchValidacionSocio(documento, '', props.token, (data) => {
                                 const arrValidacionesOk = [...data.lst_datos_alerta_true];
                                 const arrValidacionesErr = [...data.lst_datos_alerta_false];
@@ -460,7 +475,7 @@ const NuevaProspeccion = (props) => {
                 console.log("PRIMERA CONSULTA BURO ")
 
                 //TODO: CAMBIAR LA CEDULA por "documento"
-                await fetchScore("C", "0903325546", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, "Matriz", datosUsuario[0].strOficial, datosUsuario.strCargo, props.token, (data) => {
+                await fetchScore("C", "1150214375", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, "Matriz", datosUsuario[0].strOficial, datosUsuario[0].strCargo, props.token, (data) => {
                     setScore(data);
                     setIdClienteScore(data.int_cliente);
                     //console.log("SCORE, ", data.int_cliente)
@@ -485,7 +500,7 @@ const NuevaProspeccion = (props) => {
                 if (!datosFinan.montoGastoFinaCodeudor || datosFinan.montoGastoFinaCodeudor === "" || datosFinan.montoGastoFinaCodeudor === " " || IsNullOrEmpty(datosFinan.montoGastoFinaCodeudor)) datosFinan.montoGastoFinaCodeudor = 0;
 
                 //TODO CAMBIAR LA CEDULA
-                await fetchNuevaSimulacionScore("C", "0903325546", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, "Matriz", datosUsuario[0].strOficial, datosUsuario[0].strCargo, datosFinan.montoIngresos, datosFinan.montoEgresos, datosFinan.montoRestaGstFinanciero, datosFinan.montoGastoFinaCodeudor,
+                await fetchNuevaSimulacionScore("C", "1150214375", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, "Matriz", datosUsuario[0].strOficial, datosUsuario[0].strCargo, datosFinan.montoIngresos, datosFinan.montoEgresos, datosFinan.montoRestaGstFinanciero, datosFinan.montoGastoFinaCodeudor,
                     props.token, (data) => {
 
                         //scoreStorage.montoSugerido = Number.parseFloat(nuevoCupoSugerido).toFixed(2);
@@ -496,9 +511,9 @@ const NuevaProspeccion = (props) => {
                         console.log("data Score Alm ", scoreStorage.montoSugerido);
                         console.log("data FINAN ACT ", datosFinan);*/
 
-                        console.log("RES, ", data);
-                        let monto = Number.parseFloat(data.str_cupo_sugerido).toFixed(2);
-                        data.str_cupo_sugerido = monto.toString();
+                        //console.log("CUPO SUG COOPMEGO, ", data.str_cupo_sugerido_ccopmego);
+                        //setCupoSugeridoCoopM(data.str_cupo_sugerido_ccopmego);
+                        setCupoSugeridoCoopM(data.str_cupo_sugerido);
                         setScore(data);
 
                     }, dispatch);
@@ -558,10 +573,6 @@ const NuevaProspeccion = (props) => {
         }
         setDatosFinancieros(datosFinanciero)
 
-    }
-    const calificacionRiesgoHandler = (calificacion) => {
-        console.log("RETORNA CALIFICACION RIESGO, ", calificacion);
-        setCalificacionRiesgo(calificacion)
     }
 
     const datosIngresadosHandler = (e) => {
@@ -708,7 +719,7 @@ const NuevaProspeccion = (props) => {
                                 token={props.token}
                                 onAgregarComentario={agregarComentarioHandler}
                                 gestion={gestion}
-                                onInfoSocio={getIfoSocioHandler}
+                                onInfoSocio={getInfoSocioHandler}
                                 onComentario={handleComentario}
                             onComentarioAdic={handleComentarioAdic}
                             idClienteScore={idClienteScore}
@@ -740,22 +751,6 @@ const NuevaProspeccion = (props) => {
 
             </Card>
 
-            {/*<Modal*/}
-            {/*    modalIsVisible={modalVisible}*/}
-            {/*    titulo={`Información!!!`}*/}
-            {/*    onNextClick={siguientePasoHandler}*/}
-            {/*    onCloseClick={closeModalHandler}*/}
-            {/*    isBtnDisabled={isBtnDisabled}*/}
-            {/*    type="sm"*/}
-            {/*>*/}
-            {/*    {modalVisible && <div>*/}
-            {/*        <h4>{usuario}</h4>*/}
-            {/*        <p className="mt-3 mb-3">La persona con la cédula <strong>{documento}</strong> no es socio de CoopMego</p>*/}
-            {/*        <p className="mb-3">Para poder realizar una solicitud de Tarjeta de crédito, la persona solicitante debe ser socio de CoopMego.</p>*/}
-            {/*        <p className="mb-3">Presiona en continuar si deseas realizar una prospección a esta persona</p>*/}
-
-            {/*    </div>}*/}
-            {/*</Modal>*/}
 
         </div >
     )

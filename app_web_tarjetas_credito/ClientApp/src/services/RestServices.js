@@ -763,12 +763,12 @@ export function fetchValidacionSocio(strCedula, strTipoValidacion, token, onSucc
     };
     //console.log("BODY SERVICE,", body)
     ServicioPostExecute(getValidaciones, body, token, { dispatch: dispatch }).then((data) => {
-        //console.log("VALIDACION SERVICE," ,data)
+        console.log("VALIDACION SERVICE," ,data)
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
             } else {
-                if (data.str_res_codigo === "000" || data.str_res_codigo === "100") {
+                if (data.str_res_codigo === "000" || data.str_res_codigo === "003" || data.str_res_codigo === "004") {
                     onSucces(data);
                 }
                 else {
@@ -1036,6 +1036,7 @@ export function fetchGetSolicitudes(token, onSucces, dispatch) {
     }
 
     ServicioPostExecute(getSolicitudes, body, token, { dispatch: dispatch }).then((data) => {
+        console.log(data)
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
@@ -1266,10 +1267,10 @@ export function fetchAddComentarioSolicitud(idSolicitud, comentario, estadoSolic
         int_estado: estadoSolicitud,
         str_decision_sol: "APROBADO"
     }
-    //console.log(body);
+    console.log(body);
     ServicioPostExecute(addComentarioSolicitud, body, token, { dispatch: dispatch }).then((data) => {
         if (data) {
-            //console.log(data)
+            console.log(data)
             //if (data.str_res_codigo != "000") {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
@@ -1403,9 +1404,9 @@ export function fetchAddProcEspecifico(idSolicitud, cupo, estado, comentario, to
         str_estado: estado,
         dcc_cupo_aprobado: parseFloat(cupo),
     };
-    //console.log("BODY,", body);
+    console.log("BODY,", body);
     ServicioPostExecute(addProcEspecifico, body, token, { dispatch: dispatch }).then((data) => {
-        //console.log("RETORNO ", data);
+        console.log("RETOR add proc ", data);
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
@@ -1435,7 +1436,7 @@ export function fetchGetParametrosSistema(token, onSucces, dispatch) {
 
     // TARJETAS DE CRÉDITO
     let body = {
-        int_id_sis: Number("114")
+        int_id_sis: Number("100") //TODO: revisar id del sistema
     }
     ServicioPostExecute(getParametros, body, token, { dispatch: dispatch }).then((data) => {
         //console.log(data);
@@ -1692,7 +1693,6 @@ export function fetchCrearSeparadoresAxentria(separadores, token, onSucces, disp
 
     let body = {
         lst_separadores_gen: separadores
-        //lst_separadores_gen: ["1_SOLICITUD_DE_CREDITO"]
     }
     //console.log("LISTT", body)
     ServicioPostExecute(crearSeparadores, body, token, { dispatch: dispatch }).then((data) => {

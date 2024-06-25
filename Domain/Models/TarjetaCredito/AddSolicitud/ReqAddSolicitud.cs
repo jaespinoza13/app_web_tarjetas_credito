@@ -43,9 +43,9 @@ namespace Domain.Models.TarjetaCredito.AddSolicitud
 
         // tcr_solicitudes
         public string str_codigo_producto { get; set; } = string.Empty;
-        public decimal mny_cupo_solicitado { get; set; }
-        public decimal mny_cupo_sugerido_aval { get; set; }
-        public decimal mny_cupo_sugerido_coopmego { get; set; }
+        public string mny_cupo_solicitado { get; set; }
+        public string mny_cupo_sugerido_aval { get; set; }
+        public string mny_cupo_sugerido_coopmego { get; set; }
         public int int_entidad_sucursal { get; set; }
         public string str_denominacion_socio { get; set; } = string.Empty;
         public string str_direccion { get; set; } = string.Empty;
@@ -78,9 +78,9 @@ namespace Domain.Models.TarjetaCredito.AddSolicitud
         public int int_oficina_proc { get; set; }
         public int int_oficina_entrega { get; set; } = 1;
         public string str_segmento { get; set; } = string.Empty;
-        public decimal mny_total_ingresos { get; set; }
-        public decimal mny_total_egresos { get; set; }
-        public decimal mny_excedente { get; set; } = 0;
+        public string mny_total_ingresos { get; set; } = string.Empty;
+        public string mny_total_egresos { get; set; } = string.Empty;
+        public string mny_excedente { get; set; } = string.Empty;
         public int int_tasa { get; set; } = 0;
         public decimal mny_cuota_estimada { get; set; } = 0;
         public int int_estado_entregado { get; set; } = 0;
@@ -98,6 +98,8 @@ namespace Domain.Models.TarjetaCredito.AddSolicitud
         public string str_cred_vig_json { get; set; } = string.Empty;
         public string str_gar_cns_json { get; set; } = string.Empty;
 
+        //TODO DECIRLE A JHONNY Q ME PASE ESA VARIABLE AL HACER CONSULTA DE INGRESOS Y EGRESOS Y GUARDARLA EN SOLICITUD
+        public bool bl_ingreso_fijo { get; set; }
 
 
 

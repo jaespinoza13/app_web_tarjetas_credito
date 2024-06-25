@@ -130,6 +130,7 @@ const DatosSocio = (props) => {
             props.onInfoSocio(data);
             console.log("DATOS DOC  ", data.lst_dir_domicilio)
             console.log("DATOS TRa ", data.lst_dir_trabajo)
+
         }, dispatch);
         setEstadoLoadingInfoSocio(false);
     }
@@ -223,8 +224,8 @@ const DatosSocio = (props) => {
                 <img src="Imagenes/Cupo sugerido.svg"></img>
                 <div className="ml-3 datosMonto">
                     <h3 className="blue">Cupo sugerido:</h3>
-                    {/*<h2 className="strong blue">{`${props.score.montoSugerido ? Number(props.score.montoSugerido).toLocaleString('en-US') : Number('0.00').toLocaleString('en-US')}`}</h2>*/}
                     <h2 className="strong blue">{`${props.score.str_cupo_sugerido ? Number(props.score.str_cupo_sugerido).toLocaleString('en-US') : Number('0.00').toLocaleString('en-US')}`}</h2>
+                    {/*<h2 className="strong blue">{`${props.score.str_cupo_sugerido_ccopmego ? Number(props.score.str_cupo_sugerido_ccopmego).toLocaleString('en-US') : Number('0.00').toLocaleString('en-US')}`}</h2>*/}
                 </div>
             </div>
             <div className="info f-row mb-4">
@@ -255,18 +256,17 @@ const DatosSocio = (props) => {
                                     {`$ ${Number(props.informacionSocio.datosFinancieros.montoRestaGstFinanciero)}`}
                                 </h5>
                             </div>
-                            {/*<div className="values  mb-3">*/}
-                            {/*    <h5>Gastos Financieros</h5>*/}
-                            {/*    <h5 className="strong">*/}
-                            {/*        */}{/*{`$ ${Number(props.informacionSocio.montoGastosFinancieros).toLocaleString("en-US")}`}*/}
-                            {/*        {`$ ${Number(props.informacionSocio.datosFinancieros.montoGastosFinancieros)}`}*/}
-                            {/*    </h5>*/}
-                            {/*</div>*/}
                             <div className="values  mb-3">
                                 <h5>Cupo solicitado</h5>
                                 <h5 className="strong">
                                     {/* {`$ ${(props.informacionSocio.montoSolicitado).toLocaleString("en-US")}`}*/}
                                     {`$ ${(props.informacionSocio.datosFinancieros.montoSolicitado)}`}
+                                </h5>
+                            </div>
+                            <div className="values  mb-3">
+                                <h5>Cupo Sugerido Aval</h5>
+                                <h5 className="strong">
+                                    {`$ ${Number(props.score.response.result.capacidadPago[0].cupoSugerido)}`}
                                 </h5>
                             </div>
                             <div className="values  mb-3">
@@ -422,7 +422,7 @@ const DatosSocio = (props) => {
                             </div>
                         </Accordion>
                         <Accordion className="mt-3" title="Información económica" rotate={estadoAccordionInfoEco} loading={estadoLoadingInfoEco} toggleAccordion={() => { getInfoEco(); }} contentReady={contentReadyInfoEco}>
-                            <div className="f-row">
+                            <div className="f-row justify-content-center">
                                 <div className={"m-2"}>
                                     <h3>Ingresos</h3>
                                     <table>

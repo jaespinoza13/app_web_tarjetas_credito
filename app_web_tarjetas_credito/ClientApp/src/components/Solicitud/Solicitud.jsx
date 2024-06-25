@@ -175,7 +175,7 @@ function Solicitud(props) {
 
     }, [props.token]);
 
-    
+    /*
     useEffect(() => {
         console.log(`1. ${parametrosTC};`)
         console.log(` 2. ${permisoImprimirMedio}; `)
@@ -183,14 +183,14 @@ function Solicitud(props) {
         console.log(`4. ${permisoApruebaMontoMenor}; `)
         console.log(`2. ${permisoEstadosSigComite}; `)
         console.log(` 3. ${permisoEstadoHabilitarAprobarSol}`)
-    }, [permisoEstadoHabilitarAprobarSol])
+    }, [permisoEstadoHabilitarAprobarSol])*/
 
     /** OBTENER LOS PARAMETROS DEL STORAGE*/
     useEffect(() => {
         //console.log("PROPS parametrosTC", props.parametrosTC.lst_parametros)
         if (props.parametrosTC.lst_parametros?.length > 0) {
             let ParametrosTC = props.parametrosTC.lst_parametros;
-            console.log("Entr", props.parametrosTC.lst_parametros)
+            //console.log("Entr", props.parametrosTC.lst_parametros)
             //console.log("Entr", ParametrosTC.filter(param => param.str_nombre === 'IMPRIMIR_MEDIO_APROBACION_TC'))
             
             setParametrosTC(ParametrosTC.filter(param => param.str_nombre === 'ESTADOS_SOLICITUD_TC'));
