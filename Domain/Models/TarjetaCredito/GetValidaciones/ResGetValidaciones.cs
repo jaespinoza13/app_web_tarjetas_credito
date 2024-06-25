@@ -9,8 +9,8 @@ namespace Domain.Models.TarjetaCredito.GetValidaciones
 {
     public class ResGetValidaciones : ResComun
     {
-        public List<Validaciones>? lst_datos_alerta_true {  get; set; }
-        public List<Validaciones>? lst_datos_alerta_false {  get; set; }
+        //public List<Validaciones>? lst_datos_alerta_true {  get; set; }
+        //public List<Validaciones>? lst_datos_alerta_false {  get; set; }
         public string str_nombres { get; set; } = String.Empty;
         public string str_apellido_paterno { get; set; } = String.Empty;
         public string str_apellido_materno { get; set; } = String.Empty;

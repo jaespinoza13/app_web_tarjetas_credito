@@ -27,6 +27,7 @@ import RecepcionTarjetaAgencias from './components/Ordenes/RecepcionTarjetaAgenc
 import OrdenRecibirProveedor from './components/Ordenes/OrdenRecibirProveedor';
 import OrdenPedidoNueva from './components/Ordenes/OrdenPedidoNueva';
 import NuevaProspeccion from './components/Prospeccion/NuevaProspeccion';
+import { getParametrosTCStateAction } from './redux/ParametrosTC/actions';
 
 
 const mapStateToProps = (state) => {
@@ -88,7 +89,10 @@ function Menus({ listaMenus, id_perfil, token, setListas, setListaFunc, listaFun
             if (idPerfil > 0 && !IsNullOrWhiteSpace(tokeni) && validateToken(tokeni) && parametrosSistema.length === 0 && !sendedParams) {
                 setSendedParams(true); 
                 fetchGetParametrosSistema(tokeni, (data) => {
-                const resultParametros = data.lst_parametros.map(param => ({
+                    console.log("PARAM, ".data)
+                    setParametrosSistema([data.lst_parametro]);
+                    dispatch(getParametrosTCStateAction({ lst_parametros: data.lst_parametros }));
+                    /*const resultParametros = data.lst_parametros.map(param => ({
                         param_id: param.int_id_parametro,
                         param_nombre: param.str_nombre,
                         param_descripcion: param.str_descripcion,
@@ -96,9 +100,9 @@ function Menus({ listaMenus, id_perfil, token, setListas, setListaFunc, listaFun
                         param_valorInicial: param.str_valor_ini,
                         param_valorFinal: param.str_valor_fin,
                         param_error: param.str_error,
-                    }));                    
+                    }));*/                    
 
-                    setParametrosSistema(resultParametros)
+                    //setParametrosSistema(resultParametros)
                 }, dispatch)
                 
             }
@@ -120,13 +124,14 @@ function Menus({ listaMenus, id_perfil, token, setListas, setListaFunc, listaFun
                             break;
                         }
                     }
+                    console.log(lstDecode)
                     setListaFunc(lstDecode);
                     if (!match) {
                         history.push("/");
                     }
                 } else { //NO PUEDE ACCEDER SI NO TIENES FUNCIONALIDADES
                     removeSession();
-                    history.push("/auth");
+                    history.push("/logout");
                     localStorage.removeItem('sender');
                     localStorage.removeItem('remitente');
                     localStorage.removeItem('aceptar');
@@ -148,7 +153,8 @@ class App extends Component {
             idUsuario: -1,
             listaMenus: [],
             listaFunc: [],
-            listUrls: []
+            listUrls: [],
+            listaParams :[] 
         };
     }
 
@@ -177,7 +183,7 @@ class App extends Component {
 
     render() {
         return (
-            <Layout listaMenus={this.state.listaMenus} listaUrls={this.state.listUrls} >
+            <Layout listaMenus={this.state.listaMenus} listaUrls={this.state.listUrls}>
                 
                 <Menus
                     listaMenus={this.state.listaMenus}
@@ -185,7 +191,11 @@ class App extends Component {
                     token={this.props.token}
                     listaFuncionalidades={this.props.listaFuncionalidades}
                     setListaFunc={(lstFunc) => this.setState({ listaFunc: lstFunc })}
-                    setListas={(lstMenus, lstUrls) => this.setState({ listaMenus: lstMenus, listUrls: lstUrls })} />
+                    setListas={(lstMenus, lstUrls) => this.setState({ listaMenus: lstMenus, listUrls: lstUrls })}
+                    listaParametros={this.state.listaParams}
+                    setListaParametros={(listaParam) => this.setState({ listaParams: listaParam })}
+                    
+                />
                 <Switch>
                     <Route exact path='/' component={!this.state.isAuthenticated ? Login : Home} />
                     <Route path='/auth' component={Login} />

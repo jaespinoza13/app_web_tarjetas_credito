@@ -627,7 +627,8 @@ textarea.no_valido {
 .content-cards {
     max-width: 1550px;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    /*grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));*/
+    grid-template-columns: repeat(auto-fill, 240px);
     grid-gap: 10px;
     /*gap: 10px;*/
 }
@@ -801,6 +802,12 @@ li {
 
 .profile {
     position: relative;
+    display: inline-grid;
+}
+
+.text-logout {
+    font-size: 18px;
+    line-height: 12px;
 }
 
 .dropdown_mg.active {
@@ -1460,19 +1467,6 @@ input:checked + .slider::before {
     overflow-y: visible;
 }
 
-.responsive-table {
-    width: 90%;
-    border-collapse: collapse;
-    border: 1px solid #ddd;
-}
-
-    .responsive-table th,
-    .responsive-table td {
-        border: 1px solid #ddd;
-        padding: 8px;
-        text-align: left;
-    }
-
 /* CARD IMAGES*/
 .card_image {
     position: relative;
@@ -1612,17 +1606,6 @@ input[type=radio] {
 .stepper {
     margin-top: 10px;
     margin-bottom: 35px;
-}
-
-@media screen and (max-width: 600px) {
-    .responsive-table {
-        overflow-x: auto;
-    }
-
-        .responsive-table th,
-        .responsive-table td {
-            white-space: nowrap;
-        }
 }
 
 @keyframes modal-up {

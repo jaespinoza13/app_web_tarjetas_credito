@@ -14,6 +14,8 @@ namespace Domain.Models.TarjetaCredito.GetScore
         public int int_cliente { get; set; }
         public string str_gastos_codeudor { get; set; }
         public string str_cupo_sugerido { get; set; }
+        public string str_cupo_sugerido_aval { get; set; }
+        public string str_cupo_sugerido_ccopmego { get; set; }
         public Response response { get; set; }
         
     }
@@ -372,8 +374,46 @@ namespace Domain.Models.TarjetaCredito.GetScore
         public List<object> relacionEmpresas { get; set; }
         public List<object> datosContacto { get; set; }
         public List<TitularConsultado12Mese> titularConsultado12Meses { get; set; }
+        public List<modeloCoopmego> modeloCoopmego { get; set; } = new List<modeloCoopmego>();
+        public List<modeloCoopmegoDetalle> modeloCoopmegoDetalle { get; set; } = new List<modeloCoopmegoDetalle>();
+        public List<parametrosCapacidadPago> parametrosCapacidadPago { get; set; } = new List<parametrosCapacidadPago>();
+        public List<capacidad_pago> capacidadPago { get; set; } = new List<capacidad_pago>();
     }
 
+    public class modeloCoopmego
+    {
+        public string fechaEvalucion { get; set; } = string.Empty;
+        public string decisionModelo { get; set; } = string.Empty;
+        public string tipoDecision { get; set; } = string.Empty;
+    }
+
+    public class modeloCoopmegoDetalle
+    {
+        public DateTime? fechaEvaluacion { get; set; }
+        public string reglaPadre { get; set; } = string.Empty;
+        public string reglaUsada { get; set; } = string.Empty;
+        public string valorObtenido { get; set; } = string.Empty;
+        public string decisionRegla { get; set; } = string.Empty;
+        public string estadoResultado { get; set; } = string.Empty;
+    }
+
+    public class parametrosCapacidadPago
+    {
+        public decimal ingresoDigitado { get; set; }
+        public string validadorIngreso { get; set; } = string.Empty;
+        public decimal gastosPersonales { get; set; }
+        public decimal restaGastoFinanciero { get; set; }
+        public string rangoIngresos { get; set; } = string.Empty;
+    }
+
+    public class capacidad_pago
+    {
+        public decimal capacidadPago { get; set; }
+        public string tipoTarjeta { get; set; } = string.Empty;
+        public decimal cupoSugerido { get; set; }
+        public string plazo { get; set; } = string.Empty;
+        public string mensaje { get; set; } = string.Empty;
+    }
     public class Root
     {
         public string str_url_contrato { get; set; }

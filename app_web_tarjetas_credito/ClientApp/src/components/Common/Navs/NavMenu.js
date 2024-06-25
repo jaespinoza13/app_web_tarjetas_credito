@@ -139,7 +139,7 @@ function NavMenu(props) {
                             </div>
                             <button className="btn_mg btn_mg__secondary btn_mg__auto" id="logout">
                                 <NavItem>
-                                    <NavLink tag={Link} className="text-dark" to="/logout"> Salir </NavLink>
+                                    <NavLink tag={Link} className="text-dark text-logout" to="/logout"> Salir </NavLink>
                                 </NavItem>
                             </button>
                         </div>

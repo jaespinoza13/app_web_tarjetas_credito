@@ -60,8 +60,8 @@ namespace plantilla_app_web.Controllers
         [HttpPost]
         public ResCrypt Post(ReqGetValidaciones req)
         {
-            ResGetValidaciones resGetValidaciones = new ResGetValidaciones();
-            string ip = Utiles.getIP();
+            //ResGetValidaciones resGetValidaciones = new ResGetValidaciones();
+            //string ip = Utiles.getIP();
             ResGetValidaciones res = tarjetaCreditoDat.getValidaciones(req);
             return Utiles.crypt(res, Request.Headers);            
         }

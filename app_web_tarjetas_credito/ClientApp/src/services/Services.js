@@ -94,7 +94,7 @@ export const getListaSeguimiento = "FETCH_GET_LISTA_SEGUIMIENTO";
 export const getListaConexiones = "FETCH_GET_CONEXIONES";
 
 /** Tarjetas de crédito*/
-export const getValidaciones = "GET_VALIDAR_PERSONA"
+export const getValidaciones = "GET_INFORMACION_CLIENTE"
 export const getScore = "GET_SCORE"
 export const getInfoSocio = "GET_INFO_SOCIO"
 export const getInfoEco = "GET_INFORMACION_ECONOMICA"
