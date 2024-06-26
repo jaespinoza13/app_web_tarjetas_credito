@@ -190,13 +190,13 @@ const VerSolicitud = (props) => {
 
             //console.log("FLUJO SOL, ", data)
             //TODO: capturar informacion bool para enviar a sig bandeja
-            //TODO: cambiar el int_id por swl_id que es el campo mas actual
+            //TODO: cambiar el int_id por int_flujo_id que es el campo mas actual
             console.log("VALOR  BOOL , ", data.int_ingreso_fijo)
             if (data.flujo_solicitudes.length > 0) {
-                const arrayDeValores = data.flujo_solicitudes.map(objeto => objeto.int_id);
+                const arrayDeValores = data.flujo_solicitudes.map(objeto => objeto.int_flujo_id);
                 const valorMaximo = Math.max(...arrayDeValores);
-                const datosSolicitud = data.flujo_solicitudes.find(solFlujo => solFlujo.int_id === valorMaximo);
-                setFlujoSolId(datosSolicitud.int_id);
+                const datosSolicitud = data.flujo_solicitudes.find(solFlujo => solFlujo.int_flujo_id === valorMaximo);
+                setFlujoSolId(datosSolicitud.int_flujo_id);
                 setSolicitudTarjeta(...[datosSolicitud]);
                 console.log(" SOL, ", datosSolicitud)
                 setNuevoMontoAprobado(datosSolicitud.str_cupo_solicitado);
@@ -295,21 +295,6 @@ const VerSolicitud = (props) => {
         }, dispatch);
     }
 
-    /*
-    const guardarComentarioAtras = () => {
-        if (comentarioSolicitud) {
-            fetchAddComentarioSolicitud(props.solicitud.solicitud, comentarioSolicitud, props.solicitud.idSolicitud, true, props.token, (data) => {
-                if (data.str_res_codigo === "000") {
-                    setModalVisibleOk(true);
-                    setTextoModal("Su comentario se ha guardado correctamente");
-                }
-            }, dispatch);
-        }
-        else {
-            setModalVisibleOk(true);
-            setTextoModal("Debe ingresar un comentario para poder regresar la solicitud");
-        }
-    }*/
 
     function existeComentariosVacios(arregloComentarios) {
         if (arregloComentarios.find(comentario => comentario.str_detalle === "")) {
@@ -501,8 +486,12 @@ const VerSolicitud = (props) => {
 
     const guardarDecisionComiteHandler = () => {
         let validaCupo = controlMontoAprobado();
+        console.log(`Valida Cupo,`, validaCupo )
+        console.log(`valorDecisionSelect,`, valorDecisionSelect )
 
-        if (valorDecisionSelect === "11276" && validaCupo.estadoSig === "11276") { //APROBADO
+
+        
+        if (Number(valorDecisionSelect) === 11276 && Number(validaCupo.estadoSig) === 11276) { //APROBADO
             fetchAddProcEspecifico(props.solicitud.solicitud, solicitudTarjeta.str_cupo_solicitado, "EST_APROBADA", comentarioSolicitud, props.token, (data) => { //APROBADO 11276
                 if (data.str_res_codigo === "000") {
                     console.log("SE APROBO SOLICITUD");
@@ -514,7 +503,7 @@ const VerSolicitud = (props) => {
             }, dispatch)
 
         }
-        if (valorDecisionSelect === "11278" && validaCupo.estadoSig === "11278") { //POR CONFIRMAR
+        if (Number(valorDecisionSelect) === 11278 && Number(validaCupo.estadoSig) === 11278) { //POR CONFIRMAR
             console.log("nuevoMontoAprobado ", nuevoMontoAprobado)
             fetchAddProcEspecifico(props.solicitud.solicitud, nuevoMontoAprobado, "EST_POR_CONFIRMAR", comentarioSolicitud, props.token, (data) => { //POR CONFIRMAR 11278
                 if (data.str_res_codigo === "000") {
@@ -527,7 +516,7 @@ const VerSolicitud = (props) => {
             }, dispatch)
 
         }
-        else if (valorDecisionSelect === "11277") { // ANULADA
+        else if (Number(valorDecisionSelect) === 11277) { // EST_RECHAZADA
             fetchAddProcEspecifico(props.solicitud.solicitud, 0, "EST_RECHAZADA", "", props.token, (data) => { //EST_RECHAZADA 11277
                 if (data.str_res_codigo === "000") {
                     console.log("SE NEGO SOLICITUD");
@@ -567,7 +556,7 @@ const VerSolicitud = (props) => {
         if (valorDecisionSelect === "11277") { //EST_RECHAZADA
             setIsActivoBtnDecision(false);
         }
-        //TODO: REVISAR CONTROL PARA QUE NO SE PUEDA MODIFICAR CUPO APROBADO CON EL POR CONFIRMAR
+        
         else if (valorDecisionSelect !== "-1" && nuevoMontoAprobado !== 0 && comentarioSolicitud !== "" && validaCupo.validador) {
             //setIsActivoBtnDecision(false);
             if (valorDecisionSelect === "11276" && validaCupo.estadoSig === "11276") {
@@ -870,6 +859,7 @@ const VerSolicitud = (props) => {
                                             <select disabled={isDecisionHabilitada} onChange={getDecision} defaultValue={-1} value={valorDecisionSelect}>
                                                 {estadosSiguientes?.map((estados, index) => {
                                                     const resultado = validaNombreParam(estados);
+                                                    console.log("RESULT ESTADOS ", resultado )
                                                     if (index === 0) {
                                                         return (
                                                             <>

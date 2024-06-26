@@ -223,23 +223,25 @@ const NuevaProspeccion = (props) => {
         } 
 
         //TODO VALIDAR CAMPO FINANCIERO CODEUDOR CUANDO SEA NUEVO SIMULACION
-        console.log("RESTA GASTO FIN ", datosFinancieros.montoRestaGstFinanciero)
+        //console.log("RESTA GASTO FIN ", datosFinancieros.montoRestaGstFinanciero)
         if (isCkeckRestaGtoFinananciero === true) {
             if (IsNullOrEmpty(datosFinancieros.montoRestaGstFinanciero) || datosFinancieros.montoRestaGstFinanciero === "" || datosFinancieros.montoRestaGstFinanciero === " ") {
                 //console.log("Resta Gst Financ, ", datosFinancieros.montoRestaGstFinanciero)
-                console.log("Retorna 1");
+                //console.log("Retorna 1");
                 validaRestoMontoGstFinanciero = false;
                 return false;
-            } else if (Number(datosFinancieros.montoRestaGstFinanciero) < 0 && Number(datosFinancieros.montoRestaGstFinanciero) >= 100000) {
+            } else if (Number(datosFinancieros.montoRestaGstFinanciero) < 0 || Number(datosFinancieros.montoRestaGstFinanciero) >= 100000) {
                 validaRestoMontoGstFinanciero = false;
+                //console.log("Retorna 2");
                 return false;
             }
             else {
+                //console.log("Retorna 3");
                 validaRestoMontoGstFinanciero = true;
             }
         } else if (isCkeckRestaGtoFinananciero === false) {
             validaRestoMontoGstFinanciero = true;
-        }      
+        }        
 
         //console.log(`Check ${validadorCheck}, cupo ${validadorOtrosMontos},  restoGast ${validaRestoMontoGstFinanciero} `)
         //if (validadorCheck && validadorOtrosMontos && validaRestoMontoGstFinanciero) {

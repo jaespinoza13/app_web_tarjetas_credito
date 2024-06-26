@@ -85,8 +85,6 @@ const NuevaSolicitud = (props) => {
 
     //Boton siguiente
     const [estadoBotonSiguiente, setEstadoBotonSiguiente] = useState(true);
-    const [estadoBotonProspecto, setEstadoBtonProspecto] = useState(true);
-
     //Score
     const [autorizacionOk, setAutorizacionOk] = useState(false);
     const [archivoAutorizacion, setArchivoAutorizacion] = useState('');
@@ -168,17 +166,23 @@ const NuevaSolicitud = (props) => {
         if (isCkeckRestaGtoFinananciero === true) {
             if (IsNullOrEmpty(datosFinancieros.montoRestaGstFinanciero) || datosFinancieros.montoRestaGstFinanciero === "" || datosFinancieros.montoRestaGstFinanciero === " ") {
                 //console.log("Resta Gst Financ, ", datosFinancieros.montoRestaGstFinanciero)
+                //console.log("Retorna 1");
                 validaRestoMontoGstFinanciero = false;
                 return false;
-            } else {
+            } else if (Number(datosFinancieros.montoRestaGstFinanciero) < 0 || Number(datosFinancieros.montoRestaGstFinanciero) >= 100000) {
+                validaRestoMontoGstFinanciero = false;
+                //console.log("Retorna 2");
+                return false;
+            }
+            else {
+                //console.log("Retorna 3");
                 validaRestoMontoGstFinanciero = true;
-
             }
         } else if (isCkeckRestaGtoFinananciero === false) {
             validaRestoMontoGstFinanciero = true;
-        }       
+        }          
 
-        console.log(`Cupo ${validadorOtrosMontos},  restoGast ${validaRestoMontoGstFinanciero} `)
+        //console.log(`Cupo ${validadorOtrosMontos},  restoGast ${validaRestoMontoGstFinanciero} `)
         //if (validadorCheck && validadorOtrosMontos && validaRestoMontoGstFinanciero) {
         if (validadorOtrosMontos && validaRestoMontoGstFinanciero) {
             return true;
