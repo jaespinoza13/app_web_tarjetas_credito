@@ -214,23 +214,28 @@ const NuevaProspeccion = (props) => {
 
 
         console.log(`montoSolicitado ${datosFinancieros.montoSolicitado}, montoEgresos ${datosFinancieros.montoIngresos},  montoEgresos ${datosFinancieros.montoEgresos} `)
-        if ((datosFinancieros.montoSolicitado > 0) &&
-            (datosFinancieros.montoIngresos > 0) &&
-            (datosFinancieros.montoEgresos > 0)
+        if ((datosFinancieros.montoSolicitado > 0 && datosFinancieros.montoSolicitado <= 99999) &&
+            (datosFinancieros.montoIngresos > 0 && datosFinancieros.montoIngresos <= 99999) &&
+            (datosFinancieros.montoEgresos > 0 && datosFinancieros.montoEgresos <= 99999)
             //    && datosFinancieros.montoGastosFinancieros > 0
         ) {
             validadorOtrosMontos = true;
         } 
 
-
+        //TODO VALIDAR CAMPO FINANCIERO CODEUDOR CUANDO SEA NUEVO SIMULACION
+        console.log("RESTA GASTO FIN ", datosFinancieros.montoRestaGstFinanciero)
         if (isCkeckRestaGtoFinananciero === true) {
             if (IsNullOrEmpty(datosFinancieros.montoRestaGstFinanciero) || datosFinancieros.montoRestaGstFinanciero === "" || datosFinancieros.montoRestaGstFinanciero === " ") {
                 //console.log("Resta Gst Financ, ", datosFinancieros.montoRestaGstFinanciero)
+                console.log("Retorna 1");
                 validaRestoMontoGstFinanciero = false;
                 return false;
-            } else {
+            } else if (Number(datosFinancieros.montoRestaGstFinanciero) < 0 && Number(datosFinancieros.montoRestaGstFinanciero) >= 100000) {
+                validaRestoMontoGstFinanciero = false;
+                return false;
+            }
+            else {
                 validaRestoMontoGstFinanciero = true;
-
             }
         } else if (isCkeckRestaGtoFinananciero === false) {
             validaRestoMontoGstFinanciero = true;
