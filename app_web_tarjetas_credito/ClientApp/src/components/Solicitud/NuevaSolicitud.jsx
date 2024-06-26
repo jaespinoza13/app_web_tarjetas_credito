@@ -157,9 +157,9 @@ const NuevaSolicitud = (props) => {
 
         console.log(`montoSolicitado ${datosFinancieros.montoSolicitado}, montoEgresos ${datosFinancieros.montoIngresos},  montoEgresos ${datosFinancieros.montoEgresos} `)
 
-        if ((datosFinancieros.montoSolicitado > 0) &&
-            (datosFinancieros.montoIngresos > 0) &&
-            (datosFinancieros.montoEgresos > 0)
+        if ((datosFinancieros.montoSolicitado > 0 && datosFinancieros.montoSolicitado <= 99999) &&
+            (datosFinancieros.montoIngresos > 0 && datosFinancieros.montoIngresos <= 99999) &&
+            (datosFinancieros.montoEgresos > 0 && datosFinancieros.montoEgresos <= 99999)
             //    && datosFinancieros.montoGastosFinancieros > 0
         ) {
             validadorOtrosMontos = true;

@@ -190,6 +190,7 @@ const VerSolicitud = (props) => {
 
             //console.log("FLUJO SOL, ", data)
             //TODO: capturar informacion bool para enviar a sig bandeja
+            //TODO: cambiar el int_id por swl_id que es el campo mas actual
             console.log("VALOR  BOOL , ", data.int_ingreso_fijo)
             if (data.flujo_solicitudes.length > 0) {
                 const arrayDeValores = data.flujo_solicitudes.map(objeto => objeto.int_id);
@@ -514,6 +515,7 @@ const VerSolicitud = (props) => {
 
         }
         if (valorDecisionSelect === "11278" && validaCupo.estadoSig === "11278") { //POR CONFIRMAR
+            console.log("nuevoMontoAprobado ", nuevoMontoAprobado)
             fetchAddProcEspecifico(props.solicitud.solicitud, nuevoMontoAprobado, "EST_POR_CONFIRMAR", comentarioSolicitud, props.token, (data) => { //POR CONFIRMAR 11278
                 if (data.str_res_codigo === "000") {
                     console.log("SE ENVIA POR CONFIFMAR SOLICITUD");
@@ -1133,7 +1135,7 @@ const VerSolicitud = (props) => {
                 <br />
 
                 <div>
-                    <h3 className="mt-2 mb-2">Comentario: ${props.solicitud.idSolicitu }</h3>
+                    <h3 className="mt-2 mb-2">Comentario: {props.solicitud.idSolicitu }</h3>
                     <Input className="w-100" type="text" value={comentarioCambioEstado} placeholder="Ingrese comentario" setValueHandler={setComentarioCambioEstado}></Input>
                 </div>
 
