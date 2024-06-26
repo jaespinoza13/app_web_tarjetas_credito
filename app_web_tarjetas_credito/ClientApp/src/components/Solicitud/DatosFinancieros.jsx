@@ -10,7 +10,6 @@ const DatosFinancieros = (props) => {
     const [montoSolicitado, setMontoSolicitado] = useState(0);
     const [montoIngresos, setMontoIngresos] = useState(0);
     const [montoEgresos, setMontoEgresos] = useState(0);
-    //const [montoGastosFinancieros, setMontoGastosFinancieros] = useState(0);
     const [montoGastoFinaCodeudor, setMontoGastoFinanCodeudor] = useState("");
     const [restaMontoGastosFinancieros, setRestaMontoGastosFinancieros] = useState("");
 
@@ -19,10 +18,11 @@ const DatosFinancieros = (props) => {
     const [isCamposDesactivados, setIsCamposDesactivados] = useState(true);
     //const [isHabilitadoRestaGstFinancieros, setIsHabilitadoRestaGstFinancieros] = useState(false);
 
+    const [validador, setValidador] = useState(false);
 
     const setMontoSolicitadoHandler = (value) => {
         setMontoSolicitado(Number(value));
-        props.datosFinancieros({
+        props.setDatosFinancierosFunc({
             montoSolicitado: Number(value),
             montoIngresos: montoIngresos,
             montoEgresos: montoEgresos,
@@ -34,7 +34,7 @@ const DatosFinancieros = (props) => {
 
     const setMontoIngresosHandler = (value) => {
         setMontoIngresos(Number(value));
-        props.datosFinancieros({
+        props.setDatosFinancierosFunc({
             montoSolicitado: montoSolicitado,
             montoIngresos: Number(value),
             montoEgresos: montoEgresos,
@@ -46,7 +46,7 @@ const DatosFinancieros = (props) => {
 
     const setMontoEgresosHandler = (value) => {
         setMontoEgresos(Number(value));
-        props.datosFinancieros({
+        props.setDatosFinancierosFunc({
             montoSolicitado: montoSolicitado,
             montoIngresos: montoIngresos,
             montoEgresos: Number(value),
@@ -55,22 +55,10 @@ const DatosFinancieros = (props) => {
             restaGastoFinanciero: restaMontoGastosFinancieros
         })
     }
-    /*
-    const setMontoGastosFinancierosHandler = (value) => {
-        setMontoGastosFinancieros(Number(value));
-        props.datosFinancieros({
-            montoSolicitado: montoSolicitado,
-            montoIngresos: montoIngresos,
-            montoEgresos: montoEgresos,
-            montoGastosFinancieros: Number(value),
-            montoGastoFinaCodeudor: montoGastoFinaCodeudor,
-            restaGastoFinanciero: restaMontoGastosFinancieros
-        })
-    }*/
 
     const setMontoGastoFinanCodeudorHandler = (value) => {
         setMontoGastoFinanCodeudor(value);
-        props.datosFinancieros({
+        props.setDatosFinancierosFunc({
             montoSolicitado: montoSolicitado,
             montoIngresos: montoIngresos,
             montoEgresos: montoEgresos,
@@ -82,7 +70,7 @@ const DatosFinancieros = (props) => {
 
     const setRestaGastosFinancierosHandler = (value) => {
         setRestaMontoGastosFinancieros(value)
-        props.datosFinancieros({
+        props.setDatosFinancierosFunc({
             montoSolicitado: montoSolicitado,
             montoIngresos: montoIngresos,
             montoEgresos: montoEgresos,
@@ -129,7 +117,7 @@ const DatosFinancieros = (props) => {
         setIsHabilitadoRestaGstFinancieros(props.habilitaRestaGstFinancieros);
     },[props.habilitaRestaGstFinancieros])*/
     
-
+    
     useEffect(() => {
         if (props.gestion === "solicitud") {
             setIsCamposDesactivados(true);
@@ -137,7 +125,7 @@ const DatosFinancieros = (props) => {
             setIsCamposDesactivados(false);
         }
     }, [props.gestion])
-
+    
     
     const updGastosFinancieros = () => {
         //props.requiereActualizar(true)
@@ -152,15 +140,31 @@ const DatosFinancieros = (props) => {
 
         setMontoIngresos(props.dataConsultFinan.montoIngresos);
         setMontoEgresos(props.dataConsultFinan.montoEgresos);
-
         setRestaMontoGastosFinancieros(props.dataConsultFinan.montoRestaGstFinanciero);
-        setMontoGastoFinanCodeudor(props.dataConsultFinan.montoGastoFinaCodeudor)
-        //setMontoGastosFinancieros(props.dataConsultFinan.montoGastosFinancieros);
-        setMontoSolicitado(props.dataConsultFinan.montoSolicitado)
-
-        setIsCkeckRestaGtoFinancero(props.isCheckMontoRestaFinanciera)
+        setMontoGastoFinanCodeudor(props.dataConsultFinan.montoGastoFinaCodeudor);
+        setMontoSolicitado(props.dataConsultFinan.montoSolicitado);
+        setIsCkeckRestaGtoFinancero(props.isCheckMontoRestaFinanciera);
 
     }, [])
+
+    /*
+    useEffect(() => {
+
+            console.log("Datos finan Validador ", props.dataConsultFinan)
+            setMontoIngresos(props.dataConsultFinan.montoIngresos);
+            setMontoEgresos(props.dataConsultFinan.montoEgresos);
+
+            setRestaMontoGastosFinancieros(props.dataConsultFinan.montoRestaGstFinanciero);
+            setMontoGastoFinanCodeudor(props.dataConsultFinan.montoGastoFinaCodeudor)
+            setMontoSolicitado(props.dataConsultFinan.montoSolicitado)
+
+    }, [props.dataConsultFinan])*/
+
+    /*
+    useEffect(() => {
+        setIsCkeckRestaGtoFinancero(props.isCheckMontoRestaFinanciera)
+    }, [props.isCheckMontoRestaFinanciera])*/
+
 
     /*
     useEffect(() => {

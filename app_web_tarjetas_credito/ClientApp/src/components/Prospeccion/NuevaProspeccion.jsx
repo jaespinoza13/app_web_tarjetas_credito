@@ -69,11 +69,10 @@ const NuevaProspeccion = (props) => {
     const [cedulaValida, setCedulaValida] = useState(false);
 
     //const [montoSolicitado, setMontoSolicitado] = useState(0);
-    const [datosFinancieros, setDatosFinancieros] = useState({
+    const [datosFinancierosObj, setDatosFinancierosObj] = useState({
         montoSolicitado: 0,
         montoIngresos: 0,
         montoEgresos: 0,
-        //montoGastosFinancieros: 0,
         montoGastoFinaCodeudor: "",
         montoRestaGstFinanciero: "",
 
@@ -213,10 +212,10 @@ const NuevaProspeccion = (props) => {
         let validaRestoMontoGstFinanciero = false;
 
 
-        console.log(`montoSolicitado ${datosFinancieros.montoSolicitado}, montoEgresos ${datosFinancieros.montoIngresos},  montoEgresos ${datosFinancieros.montoEgresos} `)
-        if ((datosFinancieros.montoSolicitado > 0 && datosFinancieros.montoSolicitado <= 99999) &&
-            (datosFinancieros.montoIngresos > 0 && datosFinancieros.montoIngresos <= 99999) &&
-            (datosFinancieros.montoEgresos > 0 && datosFinancieros.montoEgresos <= 99999)
+        console.log(`montoSolicitado ${datosFinancierosObj.montoSolicitado}, montoEgresos ${datosFinancierosObj.montoIngresos},  montoEgresos ${datosFinancierosObj.montoEgresos} `)
+        if ((datosFinancierosObj.montoSolicitado > 0 && datosFinancierosObj.montoSolicitado <= 99999) &&
+            (datosFinancierosObj.montoIngresos > 0 && datosFinancierosObj.montoIngresos <= 99999) &&
+            (datosFinancierosObj.montoEgresos > 0 && datosFinancierosObj.montoEgresos <= 99999)
             //    && datosFinancieros.montoGastosFinancieros > 0
         ) {
             validadorOtrosMontos = true;
@@ -225,12 +224,12 @@ const NuevaProspeccion = (props) => {
         //TODO VALIDAR CAMPO FINANCIERO CODEUDOR CUANDO SEA NUEVO SIMULACION
         //console.log("RESTA GASTO FIN ", datosFinancieros.montoRestaGstFinanciero)
         if (isCkeckRestaGtoFinananciero === true) {
-            if (IsNullOrEmpty(datosFinancieros.montoRestaGstFinanciero) || datosFinancieros.montoRestaGstFinanciero === "" || datosFinancieros.montoRestaGstFinanciero === " ") {
+            if (IsNullOrEmpty(datosFinancierosObj.montoRestaGstFinanciero) || datosFinancierosObj.montoRestaGstFinanciero === "" || datosFinancierosObj.montoRestaGstFinanciero === " ") {
                 //console.log("Resta Gst Financ, ", datosFinancieros.montoRestaGstFinanciero)
                 //console.log("Retorna 1");
                 validaRestoMontoGstFinanciero = false;
                 return false;
-            } else if (Number(datosFinancieros.montoRestaGstFinanciero) < 0 || Number(datosFinancieros.montoRestaGstFinanciero) >= 100000) {
+            } else if (Number(datosFinancierosObj.montoRestaGstFinanciero) < 0 || Number(datosFinancierosObj.montoRestaGstFinanciero) >= 100000) {
                 validaRestoMontoGstFinanciero = false;
                 //console.log("Retorna 2");
                 return false;
@@ -290,7 +289,7 @@ const NuevaProspeccion = (props) => {
             }
         }
 
-    }, [datosFinancieros, step, validaCamposFinancieros, validacionesErr, isCkeckRestaGtoFinananciero])
+    }, [datosFinancierosObj, step, validaCamposFinancieros, validacionesErr, isCkeckRestaGtoFinananciero])
 
    
   
@@ -339,11 +338,11 @@ const NuevaProspeccion = (props) => {
                 montoSolicitado: 0,
                 montoIngresos: data.dcm_total_ingresos,
                 montoEgresos: data.dcm_total_egresos,
-                //montoGastosFinancieros: data.dcm_gastos_financieros,
                 montoGastoFinaCodeudor: "",
                 montoRestaGstFinanciero: "",
             }
-            setDatosFinancieros(datosFinan);
+            console.log("resf DATA , ", datosFinan)
+            setDatosFinancierosObj(datosFinan);
 
             setInfoSocio(data);
             setEnteSocio("")
@@ -353,8 +352,7 @@ const NuevaProspeccion = (props) => {
                     setIsVisibleBloque(true);
                     clearTimeout(retrasoEfecto);
                 }, 100);
-            }
-            
+            } 
 
         }, dispatch);
     }
@@ -437,18 +435,8 @@ const NuevaProspeccion = (props) => {
 
         if (step === 3) {
             const dataSocio = infoSocio;
-            dataSocio.datosFinancieros = datosFinancieros;
+            dataSocio.datosFinancieros = datosFinancierosObj;
             setInfoSocio(dataSocio);
-            //setVisitadosSteps([...visitadosSteps, actualStep + 1])
-            //setActualStep(4);
-            //setStep(4);
-
-            //const strNombreSocio = `${nombresSolicitud} ${pApellidoSolicitud} ${sApellidoSolicitud}`;
-
-            /*const strOficina = "MATRIZ";
-            //const strOficina = get(localStorage.getItem("office"));
-            const strOficial = get(localStorage.getItem("sender_name"));
-            const strCargo = get(localStorage.getItem("role"));*/
 
             if (!realizaNuevaSimulacion.current) {
                 console.log("PRIMERA CONSULTA BURO ")
@@ -462,8 +450,8 @@ const NuevaProspeccion = (props) => {
                     realizaNuevaSimulacion.current = true
                     //const scoreStorage = JSON.stringify(data);
                     //localStorage.setItem('dataPuntaje', scoreStorage.toString());
-                    datosFinancieros.montoGastoFinaCodeudor = data.str_gastos_codeudor;
-                    setDatosFinancieros(datosFinancieros)
+                    datosFinancierosObj.montoGastoFinaCodeudor = data.str_gastos_codeudor;
+                    setDatosFinancierosObj(datosFinancierosObj)
 
 
                 }, dispatch);
@@ -472,7 +460,7 @@ const NuevaProspeccion = (props) => {
 
                 console.log("NUEVA SIMULACION")
 
-                let datosFinan = datosFinancieros;
+                let datosFinan = datosFinancierosObj;
                 if (!datosFinan.montoIngresos) datosFinan.montoIngresos = 0;
                 if (!datosFinan.montoEgresos) datosFinan.montoEgresos = 0;
                 if (!datosFinan.montoRestaGstFinanciero || datosFinan.montoRestaGstFinanciero === "" || datosFinan.montoRestaGstFinanciero === " " || IsNullOrEmpty(datosFinan.montoRestaGstFinanciero)) datosFinan.montoRestaGstFinanciero = 0;
@@ -505,7 +493,7 @@ const NuevaProspeccion = (props) => {
             //REALIZA REGISTROS DE SIMULACION
             //SIMULACION GUARDADA
             console.log("STEP 4")
-            fetchAddProspecto(documento, 0, nombreSocio, apellidoPaterno + " " + apellidoMaterno, celularSocio, correoSocio, datosFinancieros.montoSolicitado, comentario, comentarioAdic, props.token, (data) => {
+            fetchAddProspecto(documento, 0, nombreSocio, apellidoPaterno + " " + apellidoMaterno, celularSocio, correoSocio, datosFinancierosObj.montoSolicitado, comentario, comentarioAdic, props.token, (data) => {
                 console.log("RESP ADD PROSP, ", data)
                 setVisitadosSteps([...visitadosSteps, actualStepper + 1])
                 setActualStepper(4);
@@ -542,15 +530,15 @@ const NuevaProspeccion = (props) => {
     }
 
     const datosFinancierosHandler = (dato) => {
+        console.log("ACTUALIZACION DT FIN ", dato)
         let datosFinanciero = {
             montoSolicitado: dato.montoSolicitado,
             montoIngresos: dato.montoIngresos,
             montoEgresos: dato.montoEgresos,
-            //montoGastosFinancieros: dato.montoGastosFinancieros,
             montoGastoFinaCodeudor: dato.montoGastoFinaCodeudor,
             montoRestaGstFinanciero: dato.restaGastoFinanciero
         }
-        setDatosFinancieros(datosFinanciero)
+        setDatosFinancierosObj(datosFinanciero)
 
     }
 
@@ -679,8 +667,8 @@ const NuevaProspeccion = (props) => {
                         /*habilitaRestaGstFinancieros={realizaNuevaSimulacion}*/
                         <div className="f-row w-100">
                             <DatosFinancieros
-                                dataConsultFinan={datosFinancieros}
-                                datosFinancieros={datosFinancierosHandler}
+                                dataConsultFinan={datosFinancierosObj}
+                                setDatosFinancierosFunc={datosFinancierosHandler}
                                 isCkeckGtosFinancierosHandler={checkGastosFinancieroHandler}
                                 gestion={gestion}
                                 requiereActualizar={refrescarInformacionHandler}

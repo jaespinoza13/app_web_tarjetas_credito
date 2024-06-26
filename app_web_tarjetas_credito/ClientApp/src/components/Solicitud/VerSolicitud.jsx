@@ -48,7 +48,7 @@ const VerSolicitud = (props) => {
     const [isBtnComentariosActivo, setIsBtnComentariosActivo] = useState(false)
     const [textoModal, setTextoModal] = useState("");
     const [isDecisionHabilitada, setIsDecisionHabilitada] = useState(false);
-    const [isMontoDiferente, setIsMontodiferente] = useState(false);
+    const [isMontoAprobarse, setIsMontoAprobarse] = useState(false);
     const [accionesSolicitud, setAccionesSolicitud] = useState([{ image: "", textPrincipal: "Información de solicitud", textSecundario: "", key: 1 },
     { image: "", textPrincipal: "Documentos", textSecundario: "", key: 2 }]);
     const [accionSeleccionada, setAccionSeleccionada] = useState(1);
@@ -56,7 +56,7 @@ const VerSolicitud = (props) => {
     const [selectCambioEstadoSol, setSelectCambioEstadoSol] = useState("-1");
     const [selectResolucionSocio, setSelectResolucionSocio] = useState("-1");
     const [flujoSolId, setFlujoSolId] = useState(0);
-    const [nuevoMontoAprobado, setNuevoMontoAprobado] = useState(0);
+    const [montoAprobado, setMontoAprobado] = useState(0);
 
     const [comentarioCambioEstado, setComentarioCambioEstado] = useState("");
     const [valorDecisionSelect, setValorDecisionSelect] = useState(-1);
@@ -92,12 +92,12 @@ const VerSolicitud = (props) => {
         { prm_id: 11273, prm_valor_ini: "ANALISIS UAC" },
         { prm_id: 11274, prm_valor_ini: "ANALISIS JEFE UAC" },
         { prm_id: 11275, prm_valor_ini: "ANALISIS COMITE" },
-        { prm_id: 11276, prm_valor_ini: "APROBADA COMITE" },
-        { prm_id: 11277, prm_valor_ini: "RECHAZADA COMITE" },
+        { prm_id: 11276, prm_valor_ini: "APROBAR" },
+        { prm_id: 11277, prm_valor_ini: "NEGAR" },
         { prm_id: 11278, prm_valor_ini: "POR CONFIRMAR" },
         { prm_id: 11279, prm_valor_ini: "APROBADA" },//APROBADA SOCIO
         { prm_id: 11280, prm_valor_ini: "NEGADA" }, //RECHAZADA SOCIO
-        { prm_id: 10934, prm_valor_ini: "ANULADA COMITE" },        
+        { prm_id: 10934, prm_valor_ini: "ANULADA COMITE" },
     ];
     const seleccionAccionSolicitud = (value) => {
         const accionSelecciona = accionesSolicitud.find((element) => { return element.key === value });
@@ -156,9 +156,15 @@ const VerSolicitud = (props) => {
                 prm_id: 11275
             }
         ]);
-        setEstadosSiguientesAll([
+        /*setEstadosSiguientesAll([
             {
                 prm_id: 11275, estados: "11276|11277|11278"
+            }
+        ]);*/
+
+        setEstadosSiguientesAll([
+            {
+                prm_id: 11275, estados: "11276|11277"
             }
         ]);
 
@@ -170,8 +176,8 @@ const VerSolicitud = (props) => {
         setDatosUsuario([{ strCargo: strRol, strOficial: strOficial, strUserOficial: userOficial }]);
         //console.log(`DATOS USER, ${strOficial}, ${strRol} , ${userOficial}`)
 
-        console.log("PROPS INFO", props.solicitud)
-        
+        //console.log("PROPS INFO", props.solicitud)
+
     }, []);
 
     /** OBTENER LOS PARAMETROS DEL STORAGE*/
@@ -199,7 +205,7 @@ const VerSolicitud = (props) => {
                 setFlujoSolId(datosSolicitud.int_flujo_id);
                 setSolicitudTarjeta(...[datosSolicitud]);
                 console.log(" SOL, ", datosSolicitud)
-                setNuevoMontoAprobado(datosSolicitud.str_cupo_solicitado);
+                setMontoAprobado(datosSolicitud.str_cupo_solicitado);
             }
 
 
@@ -230,7 +236,7 @@ const VerSolicitud = (props) => {
                 // Handle the case when arrEstados is not found
                 setEstadosSiguientes([]);
             }
-        }       
+        }
 
     }, [estadosSiguientesAll]);
 
@@ -287,7 +293,7 @@ const VerSolicitud = (props) => {
         //Debe guardar comentario de Resolucion
 
         fetchAddComentarioSolicitud(props.solicitud.solicitud, comentarioSolicitud, props.solicitud.idSolicitud, false, props.token, (data) => {
-            console.log("BANJ COMENT ",data)
+            console.log("BANJ COMENT ", data)
             if (data.str_res_codigo === "000") {
                 setModalVisibleOk(true);
                 setTextoModal("Su comentario se ha guardado correctamente");
@@ -345,11 +351,11 @@ const VerSolicitud = (props) => {
     }
     const getDecision = (event) => {
         setValorDecisionSelect(event.target.value);
-        if (Number(event.target.value) === 11276 || Number(event.target.value) === 11278) { //APROBADO o POR CONFIRMAR
-            setIsMontodiferente(true);
+        if (Number(event.target.value) === 11276) {// || Number(event.target.value) === 11278) { //APROBADO o POR CONFIRMAR
+            setIsMontoAprobarse(true);
         }
         else {
-            setIsMontodiferente(false);
+            setIsMontoAprobarse(false);
         }
     }
 
@@ -457,8 +463,6 @@ const VerSolicitud = (props) => {
     const [trimed, setTrimed] = useState(false);
 
     const verMas = (index) => {
-        // const newElemente = event.target.parentElement;
-        // newElemente.parentElement;
         setTrimed(prevState => ({
             ...prevState,
             [index]: !prevState[index]
@@ -486,12 +490,27 @@ const VerSolicitud = (props) => {
 
     const guardarDecisionComiteHandler = () => {
         let validaCupo = controlMontoAprobado();
-        console.log(`Valida Cupo,`, validaCupo )
-        console.log(`valorDecisionSelect,`, valorDecisionSelect )
+        console.log(`Valida Cupo,`, validaCupo)
+        console.log(`valorDecisionSelect,`, valorDecisionSelect)
 
+        if (Number(valorDecisionSelect) === 11277) { // EST_RECHAZADA
+            fetchAddProcEspecifico(props.solicitud.solicitud, 0, "EST_RECHAZADA", "", props.token, (data) => { //EST_RECHAZADA 11277
+                if (data.str_res_codigo === "000") {
+                    console.log("SE NEGO SOLICITUD");
+                    navigate.push('/solicitud');
+                }
+                else {
+                    console.log("No cuenta con permisos ", data);
+                }
+            }, dispatch)
+        }
 
-        
+        console.log(`Contr montoAprobado ${montoAprobado} cupo_solicitado ${solicitudTarjeta?.str_cupo_solicitado}`)
+
+        /*VALIDACIONES PARA CUANDO ES APROBADA*/
+        //Si cupo que se va aprobar es el mismo que el socio solicito
         if (Number(valorDecisionSelect) === 11276 && Number(validaCupo.estadoSig) === 11276) { //APROBADO
+            console.log("PASS1")
             fetchAddProcEspecifico(props.solicitud.solicitud, solicitudTarjeta.str_cupo_solicitado, "EST_APROBADA", comentarioSolicitud, props.token, (data) => { //APROBADO 11276
                 if (data.str_res_codigo === "000") {
                     console.log("SE APROBO SOLICITUD");
@@ -503,23 +522,13 @@ const VerSolicitud = (props) => {
             }, dispatch)
 
         }
-        if (Number(valorDecisionSelect) === 11278 && Number(validaCupo.estadoSig) === 11278) { //POR CONFIRMAR
-            console.log("nuevoMontoAprobado ", nuevoMontoAprobado)
-            fetchAddProcEspecifico(props.solicitud.solicitud, nuevoMontoAprobado, "EST_POR_CONFIRMAR", comentarioSolicitud, props.token, (data) => { //POR CONFIRMAR 11278
+        //Si cupo que se va aprobar es menor al que solicita el socio
+        else if (Number(valorDecisionSelect) === 11276 && Number(validaCupo.estadoSig) === 11278) { //POR CONFIRMAR
+            console.log("PASS2")
+            console.log("nuevoMontoAprobado ", montoAprobado)
+            fetchAddProcEspecifico(props.solicitud.solicitud, Number.parseFloat(montoAprobado).toFixed(2), "EST_POR_CONFIRMAR", comentarioSolicitud, props.token, (data) => { //POR CONFIRMAR 11278
                 if (data.str_res_codigo === "000") {
                     console.log("SE ENVIA POR CONFIFMAR SOLICITUD");
-                    navigate.push('/solicitud');
-                }
-                else {
-                    console.log("No cuenta con permisos ", data);
-                }
-            }, dispatch)
-
-        }
-        else if (Number(valorDecisionSelect) === 11277) { // EST_RECHAZADA
-            fetchAddProcEspecifico(props.solicitud.solicitud, 0, "EST_RECHAZADA", "", props.token, (data) => { //EST_RECHAZADA 11277
-                if (data.str_res_codigo === "000") {
-                    console.log("SE NEGO SOLICITUD");
                     navigate.push('/solicitud');
                 }
                 else {
@@ -536,13 +545,13 @@ const VerSolicitud = (props) => {
             estadoSig: "0"
         }
 
-        if (Number(solicitudTarjeta?.str_cupo_solicitado) !== 0 && valorDecisionSelect === "11276") {
+        if ((Number.parseFloat(solicitudTarjeta?.str_cupo_solicitado) === Number.parseFloat(montoAprobado)) && valorDecisionSelect === "11276") {
             controlBool.validador = true;
             controlBool.estadoSig = "11276" // EST_APROBADA (COMITE)
-        } else if (Number(nuevoMontoAprobado) < Number(solicitudTarjeta?.str_cupo_solicitado) && Number(nuevoMontoAprobado) > 0) {
+        } else if (Number.parseFloat(montoAprobado) > 0 && (Number.parseFloat(montoAprobado) < Number.parseFloat(solicitudTarjeta?.str_cupo_solicitado)) && valorDecisionSelect === "11276") {
             controlBool.validador = true;
             controlBool.estadoSig = "11278" // EST_POR_CONFIRMAR (SE VA HACIA ASESOR CREDITO NUEVAMENTE)
-        } else if (Number(nuevoMontoAprobado) > Number(solicitudTarjeta?.str_cupo_solicitado)) {
+        } else if (Number.parseFloat(montoAprobado) > Number.parseFloat(solicitudTarjeta?.str_cupo_solicitado)) {
             controlBool.validador = false;
             controlBool.estadoSig = "0" // NO ES POSIBLE PASAR BANDEJA
         }
@@ -553,24 +562,27 @@ const VerSolicitud = (props) => {
     useEffect(() => {
         let validaCupo = controlMontoAprobado();
         console.log("CONTROL CUPO 2, ", validaCupo);
+
+        if (Number.parseFloat(montoAprobado) > Number.parseFloat(solicitudTarjeta?.str_cupo_solicitado) || montoAprobado.length > 9) {
+            setIsActivoBtnDecision(true);
+            return
+        }
         if (valorDecisionSelect === "11277") { //EST_RECHAZADA
             setIsActivoBtnDecision(false);
         }
-        
-        else if (valorDecisionSelect !== "-1" && nuevoMontoAprobado !== 0 && comentarioSolicitud !== "" && validaCupo.validador) {
-            //setIsActivoBtnDecision(false);
-            if (valorDecisionSelect === "11276" && validaCupo.estadoSig === "11276") {
+
+        else if (valorDecisionSelect !== "-1" && montoAprobado > 0 && comentarioSolicitud !== "" && validaCupo.validador) {
+            if (valorDecisionSelect === "11276" && validaCupo.estadoSig === "11276") {// EST_APROBADA 11276
                 setIsActivoBtnDecision(false);
-            } else if (valorDecisionSelect === "11278" && validaCupo.estadoSig === "11278" && nuevoMontoAprobado > 0) {
+            } else if (valorDecisionSelect === "11276" && validaCupo.estadoSig === "11278") { //EST_POR_CONFIRMAR 11278 por cupo inferior 
                 setIsActivoBtnDecision(false);
             } else {
                 setIsActivoBtnDecision(true);
             }
-        }
-        else {
+        } else {
             setIsActivoBtnDecision(true);
         }
-    }, [valorDecisionSelect, nuevoMontoAprobado, comentarioSolicitud, controlMontoAprobado])
+    }, [valorDecisionSelect, montoAprobado, comentarioSolicitud, controlMontoAprobado])
 
 
     const openModalResolucionSocio = () => {
@@ -801,7 +813,12 @@ const VerSolicitud = (props) => {
                                 {/*SECCION DE BOTONES DE ACCIONES POR PERFIL*/}
                                 <Card className={["f-col"]}>
                                     <div className={["f-row"]}>
-                                        <Button className="btn_mg__primary" onClick={modalHandler}>Agregar comentario</Button>
+
+                                        {/*TODO VALIDAR QUE SOLO SEA PARA ESE PERFIL*/}
+                                        {props.solicitud.idSolicitud === 11273 &&
+                                            <Button className="btn_mg__primary" onClick={modalHandler}>Análisis 3C's</Button>
+                                        }
+
                                         {/*  EST_ANALISIS_UAC  || EST_ANALISIS_JEFE_UAC    */}
                                         {(props.solicitud.idSolicitud === 11273 || props.solicitud.idSolicitud === 11274) &&
                                             <Button className="btn_mg__primary ml-2" onClick={() => descargarMedio(props.solicitud.solicitud)}>Imprimir medio aprobación</Button>
@@ -859,7 +876,6 @@ const VerSolicitud = (props) => {
                                             <select disabled={isDecisionHabilitada} onChange={getDecision} defaultValue={-1} value={valorDecisionSelect}>
                                                 {estadosSiguientes?.map((estados, index) => {
                                                     const resultado = validaNombreParam(estados);
-                                                    console.log("RESULT ESTADOS ", resultado )
                                                     if (index === 0) {
                                                         return (
                                                             <>
@@ -878,22 +894,11 @@ const VerSolicitud = (props) => {
                                             <br />
                                         </Card>
                                     }
-                                    {isMontoDiferente &&
+                                    {isMontoAprobarse &&
                                         <>
                                             <Card className={["mt-2"]}>
                                                 <h3>Monto a aprobarse</h3>
-                                                {Number(valorDecisionSelect) !== 11276 &&
-                                                    <>
-                                                        <h5 className="mt-1 mb-1 strong">Ingrese un monto inferior al que se encuentra en el campo</h5>
-                                                        <Input type="number" placeholder="Ej. 1000" disabled={false} setValueHandler={(e) => setNuevoMontoAprobado(e)} value={nuevoMontoAprobado}></Input>
-                                                    </>
-                                                }
-                                            {Number(valorDecisionSelect) === 11276 &&
-                                                    <Input type="number" disabled={true} value={solicitudTarjeta?.str_cupo_solicitado}></Input>
-                                                }
-
-
-                                                {/*<Input type="number" placeholder="Ej. 1000" disabled={valorDecisionSelect === "11276" ? true : false} setValueHandler={(e) => setNuevoMontoAprobado(e)} value={nuevoMontoAprobado}></Input>*/}
+                                                <Input type="number" placeholder="Ej. 1000" disabled={false} setValueHandler={(e) => setMontoAprobado(e)} value={montoAprobado}></Input>
                                             </Card>
 
                                             <Card className={["mt-2"]}>
@@ -907,7 +912,7 @@ const VerSolicitud = (props) => {
                                 {/*CAMPO PARA DEJAR COMENTARIO Y PASAR A LA SIGUIENTE BANDEJA*/}
                                 {/*{props.solicitud.idSolicitud !== "11275" &&*/}
                                 {(solicitudTarjeta?.str_estado !== 'ANALISIS COMITE' && solicitudTarjeta?.str_estado !== 'POR CONFIRMAR') &&
-                                
+
                                     <div className="mt-4">
                                         <h3 className="mb-3 strong">Observaciones</h3>
                                         <Textarea placeholder="Ingrese su comentario" onChange={getComentarioSolicitudHandler} esRequerido={true}></Textarea>
@@ -1070,7 +1075,7 @@ const VerSolicitud = (props) => {
 
 
 
-               
+
 
                 <br />
 
@@ -1112,7 +1117,7 @@ const VerSolicitud = (props) => {
                         <select className='w-100' defaultValue={"-1"} onChange={cambiarEstadoSolHandler} value={selectCambioEstadoSol}>
                             <option disabled={true} value="-1">Seleccione algún estado</option>
 
-                        {solicitudTarjeta?.str_estado === "ANALISIS COMITE" &&
+                            {solicitudTarjeta?.str_estado === "ANALISIS COMITE" &&
                                 <>
                                     <option value="EST_SOL_CREADA">SOLICITUD CREADA</option>
                                     <option value="EST_ANALISIS_UAC">ANALISIS UAC</option>
@@ -1125,7 +1130,7 @@ const VerSolicitud = (props) => {
                 <br />
 
                 <div>
-                    <h3 className="mt-2 mb-2">Comentario: {props.solicitud.idSolicitu }</h3>
+                    <h3 className="mt-2 mb-2">Comentario: {props.solicitud.idSolicitu}</h3>
                     <Input className="w-100" type="text" value={comentarioCambioEstado} placeholder="Ingrese comentario" setValueHandler={setComentarioCambioEstado}></Input>
                 </div>
 

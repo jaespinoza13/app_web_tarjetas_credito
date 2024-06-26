@@ -272,6 +272,7 @@ const DatosSocio = (props) => {
                             <div className="values  mb-3">
                                 <h5>Score</h5>
                                 <h5 className="strong">
+                                    {/* TODO REVISAR EL 800 Q ESTA QUEMADAO */}
                                     {props.score.response.result && props.score.response.result.scoreFinanciero && props.score.response.result.scoreFinanciero[0] && props.score.response.result.scoreFinanciero[0].score ? props.score.response.result.scoreFinanciero[0].score : 800}
                                 </h5>
                             </div>

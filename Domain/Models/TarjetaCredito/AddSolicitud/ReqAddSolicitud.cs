@@ -100,6 +100,7 @@ namespace Domain.Models.TarjetaCredito.AddSolicitud
 
         //TODO DECIRLE A JHONNY Q ME PASE ESA VARIABLE AL HACER CONSULTA DE INGRESOS Y EGRESOS Y GUARDARLA EN SOLICITUD
         public int bl_ingreso_fijo { get; set; }
+        public string str_calificacion_buro { get; set; } = string.Empty;
 
 
 
