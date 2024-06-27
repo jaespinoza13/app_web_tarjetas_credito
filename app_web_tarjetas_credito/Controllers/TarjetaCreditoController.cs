@@ -36,6 +36,7 @@ using Domain.Models.TarjetaCredito.Axentria.AddDocumentos;
 using Domain.Models.TarjetaCredito.Axentria.ObtenerDocumentos;
 using Domain.Models.TarjetaCredito.Axentria.CrearSeparadores;
 using Domain.Models.TarjetaCredito.GetReporteAval;
+using Domain.Models.TarjetaCredito.GetAlertasCliente;
 
 namespace plantilla_app_web.Controllers
 {
@@ -63,6 +64,17 @@ namespace plantilla_app_web.Controllers
             //ResGetValidaciones resGetValidaciones = new ResGetValidaciones();
             //string ip = Utiles.getIP();
             ResGetValidaciones res = tarjetaCreditoDat.getValidaciones(req);
+            return Utiles.crypt(res, Request.Headers);            
+        }
+
+        [Route("getAlertasCliente")]
+        [ServiceFilter(typeof(CryptoFilter))]
+        [HttpPost]
+        public ResCrypt Post(ReqGetAlertasCliente req)
+        {
+            //ResGetValidaciones resGetValidaciones = new ResGetValidaciones();
+            //string ip = Utiles.getIP();
+            ResGetAlertasCliente res = tarjetaCreditoDat.getAlertasCliente(req);
             return Utiles.crypt(res, Request.Headers);            
         }
 

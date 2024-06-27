@@ -10,7 +10,7 @@ import ValidacionSocio from './ValidacionSocio';
 import Item from '../Common/UI/Item';
 import ValidacionesGenerales from './ValidacionesGenerales';
 import DatosSocio from './DatosSocio';
-import { fetchScore, fetchValidacionSocio, fetchAddAutorizacion, fetchAddSolicitud, fetchInfoSocio, fetchNuevaSimulacionScore } from '../../services/RestServices';
+import { fetchScore, fetchValidacionSocio, fetchAddAutorizacion, fetchAddSolicitud, fetchInfoSocio, fetchNuevaSimulacionScore, fetchGetAlertasCliente } from '../../services/RestServices';
 import { get } from '../../js/crypt';
 import Modal from '../Common/Modal/Modal';
 import Personalizacion from './Personalizacion';
@@ -47,11 +47,10 @@ const NuevaSolicitud = (props) => {
     //Global
     const [textoSiguiente, setTextoSiguiente] = useState("Continuar");
 
-    const [datosFinancieros, setDatosFinancieros] = useState({
+    const [datosFinancierosObj, setDatosFinancierosObj] = useState({
         montoSolicitado: 0,
         montoIngresos: 0,
         montoEgresos: 0,
-        //montoGastosFinancieros: 0,
         montoGastoFinaCodeudor: "",
         montoRestaGstFinanciero: "",
 
@@ -71,6 +70,7 @@ const NuevaSolicitud = (props) => {
     const [apellidoPaterno, setApellidoPaterno] = useState('');
     const [apellidoMaterno, setApellidoMaterno] = useState('');
     const [estadoCivil, setEstadoCivil] = useState('');
+    const [fechaNacimiento, setFechaNacimiento] = useState('');
 
     const [datosFaltan, setDatosFaltan] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
@@ -85,8 +85,6 @@ const NuevaSolicitud = (props) => {
 
     //Boton siguiente
     const [estadoBotonSiguiente, setEstadoBotonSiguiente] = useState(true);
-    const [estadoBotonProspecto, setEstadoBtonProspecto] = useState(true);
-
     //Score
     const [autorizacionOk, setAutorizacionOk] = useState(false);
     const [archivoAutorizacion, setArchivoAutorizacion] = useState('');
@@ -96,7 +94,7 @@ const NuevaSolicitud = (props) => {
     const [idClienteScore, setIdClienteScore] = useState(0);
 
     // Para registro Solicitud
-    //const [calificacionRiesgo, setCalificacionRiesgo] = useState("");
+    const [calificacionRiesgo, setCalificacionRiesgo] = useState("");
     const [cupoSugeridoAval, setCupoSugeridoAval] = useState(0);
     const [cupoSugeridoCoopM, setCupoSugeridoCoopM] = useState(0);
 
@@ -155,30 +153,36 @@ const NuevaSolicitud = (props) => {
         let validadorOtrosMontos = false;
         let validaRestoMontoGstFinanciero = false;
 
-        console.log(`montoSolicitado ${datosFinancieros.montoSolicitado}, montoEgresos ${datosFinancieros.montoIngresos},  montoEgresos ${datosFinancieros.montoEgresos} `)
+        console.log(`montoSolicitado ${datosFinancierosObj.montoSolicitado}, montoEgresos ${datosFinancierosObj.montoIngresos},  montoEgresos ${datosFinancierosObj.montoEgresos} `)
 
-        if ((datosFinancieros.montoSolicitado > 0 && datosFinancieros.montoSolicitado <= 99999) &&
-            (datosFinancieros.montoIngresos > 0 && datosFinancieros.montoIngresos <= 99999) &&
-            (datosFinancieros.montoEgresos > 0 && datosFinancieros.montoEgresos <= 99999)
+        if ((datosFinancierosObj.montoSolicitado > 0 && datosFinancierosObj.montoSolicitado <= 99999) &&
+            (datosFinancierosObj.montoIngresos > 0 && datosFinancierosObj.montoIngresos <= 99999) &&
+            (datosFinancierosObj.montoEgresos > 0 && datosFinancierosObj.montoEgresos <= 99999)
             //    && datosFinancieros.montoGastosFinancieros > 0
         ) {
             validadorOtrosMontos = true;
         } 
 
         if (isCkeckRestaGtoFinananciero === true) {
-            if (IsNullOrEmpty(datosFinancieros.montoRestaGstFinanciero) || datosFinancieros.montoRestaGstFinanciero === "" || datosFinancieros.montoRestaGstFinanciero === " ") {
+            if (IsNullOrEmpty(datosFinancierosObj.montoRestaGstFinanciero) || datosFinancierosObj.montoRestaGstFinanciero === "" || datosFinancierosObj.montoRestaGstFinanciero === " ") {
                 //console.log("Resta Gst Financ, ", datosFinancieros.montoRestaGstFinanciero)
+                //console.log("Retorna 1");
                 validaRestoMontoGstFinanciero = false;
                 return false;
-            } else {
+            } else if (Number(datosFinancierosObj.montoRestaGstFinanciero) < 0 || Number(datosFinancierosObj.montoRestaGstFinanciero) >= 100000) {
+                validaRestoMontoGstFinanciero = false;
+                //console.log("Retorna 2");
+                return false;
+            }
+            else {
+                //console.log("Retorna 3");
                 validaRestoMontoGstFinanciero = true;
-
             }
         } else if (isCkeckRestaGtoFinananciero === false) {
             validaRestoMontoGstFinanciero = true;
-        }       
+        }          
 
-        console.log(`Cupo ${validadorOtrosMontos},  restoGast ${validaRestoMontoGstFinanciero} `)
+        //console.log(`Cupo ${validadorOtrosMontos},  restoGast ${validaRestoMontoGstFinanciero} `)
         //if (validadorCheck && validadorOtrosMontos && validaRestoMontoGstFinanciero) {
         if (validadorOtrosMontos && validaRestoMontoGstFinanciero) {
             return true;
@@ -216,8 +220,7 @@ const NuevaSolicitud = (props) => {
 
     useEffect(() => {
         if (step === 3) {
-            //setDatosFinancieros(datosFinancieros);
-            const index = validacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" && validacion.str_estado_alerta);
+            const index = validacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_090" && validacion.str_estado_alerta === "False");
             if (validaCamposFinancieros() && !index) {
                 setEstadoBotonSiguiente(false);
             } else {
@@ -225,14 +228,14 @@ const NuevaSolicitud = (props) => {
             }
         }
 
-    }, [datosFinancieros, step, validaCamposFinancieros])
+    }, [datosFinancierosObj, step, validaCamposFinancieros])
 
+
+    // Controles para pasar a la consulta al score Comp DatosSocio. Valida que todas las alertas esten OK
     useEffect(() => {
-        const index = validacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" && validacion.str_estado_alerta);
+        const index = validacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_090" && validacion.str_estado_alerta === "False");
         const validacionesErrorTotal = validacionesErr.length;
-        //console.log("TOTAL validaciones ok, ", validacionesErrorTotal);
-
-        // Controles para pasar a la consulta al score. Valida que todas las alertas esten OK
+        //console.log("TOTAL validaciones ok, ", validacionesErrorTotal);        
         if (step === 2 && showAutorizacion === false) {
             if (!index && validacionesErrorTotal === 0) {
                 setEstadoBotonSiguiente(false);
@@ -302,6 +305,7 @@ const NuevaSolicitud = (props) => {
             setApellidoPaterno(data.str_apellido_paterno);
             setApellidoMaterno(data.str_apellido_materno);
             setEstadoCivil(data.str_estado_civil);
+            setFechaNacimiento(data.str_fecha_nacimiento)
 
             let datosFinan = {
                 montoSolicitado: 0,
@@ -310,7 +314,7 @@ const NuevaSolicitud = (props) => {
                 montoGastoFinaCodeudor: "",
                 montoRestaGstFinanciero: "",
             }
-            setDatosFinancieros(datosFinan);
+            setDatosFinancierosObj(datosFinan);
 
             console.log(`ingresos, ${data.dcm_total_ingresos}; egresos, ${data.dcm_total_egresos}; financ, ${data.dcm_gastos_financieros} `,);
             //console.log("FINAN, ", datosFinan);
@@ -323,17 +327,18 @@ const NuevaSolicitud = (props) => {
             if (data.str_res_codigo === "000") {
                 if (!actualizarInfo) {
                     setStep(1);
-                                    let retrasoEfecto = setTimeout(function () {
-                    setIsVisibleBloque(true);
-                    clearTimeout(retrasoEfecto);
-                }, 100);
-                }                
+                    let retrasoEfecto = setTimeout(function () {
+                        setIsVisibleBloque(true);
+                        clearTimeout(retrasoEfecto);
+                    }, 100);
+                }
 
             }
             if (data.str_res_codigo === "003") {
                 setTextoAviso(data.str_res_info_adicional ? data.str_res_info_adicional : "Se requiere actualizar información personal. Intente realizar una Prospección.")
                 setModalMensajeAviso(true);
             }           
+            
         }, dispatch);
 
     }
@@ -362,20 +367,67 @@ const NuevaSolicitud = (props) => {
         setStep(step - 1)
     }
 
+
+    const consultaAlertas = async (seguirAlSigPaso) => {
+        await fetchGetAlertasCliente(cedulaSocio, '', fechaNacimiento, props.token, (data) => {
+            let alertasIniciales_Validas = [...data.alertas_iniciales.lst_datos_alerta_true];
+            let alertasIniciales_Invalidas = [...data.alertas_iniciales.lst_datos_alerta_false];
+            let alertasRestriccion_Validas = [...data.alertas_restriccion.lst_datos_alerta_true];
+            let alertasRestriccion_Invalidas = [...data.alertas_restriccion.lst_datos_alerta_false];
+
+            let lst_validaciones_ok = [];
+            if (alertasIniciales_Validas.length > 0) {
+                alertasIniciales_Validas.forEach(alertaN1 => {
+                    lst_validaciones_ok.push(alertaN1)
+                });
+            }
+            if (alertasRestriccion_Validas.length > 0) {
+                alertasRestriccion_Validas.forEach(alertaN2 => {
+                    lst_validaciones_ok.push(alertaN2)
+                });
+            }
+
+            let lst_validaciones_err = [];            
+            if (alertasIniciales_Invalidas.length > 0) {
+                alertasIniciales_Invalidas.forEach(alertaN3 => {
+                    lst_validaciones_err.push(alertaN3)
+                });
+            }
+            if (alertasRestriccion_Invalidas.length > 0) {
+                alertasRestriccion_Invalidas.forEach(alertaN4 => {
+                    lst_validaciones_err.push(alertaN4)
+                });
+            }
+          
+            const objValidaciones = {
+                lst_validaciones_ok: [...lst_validaciones_ok],
+                lst_validaciones_err: [...lst_validaciones_err]
+            }
+
+            setValidacionesOk(lst_validaciones_ok);
+            setValidacionesErr(lst_validaciones_err);
+            handleLists(objValidaciones);
+
+            if (seguirAlSigPaso) {
+                setStep(2);
+                setVisitadosSteps([...visitadosSteps, actualStepper + 1])
+                setActualStepper(1);
+            }       
+        }, dispatch);
+    }
+
     const nextHandler = async () => {
 
         //console.log("step,", step)
         if (step === 0) {            
             setIsVisibleBloque(false);
-            refrescarInformacionHandler(false);            
+            refrescarInformacionHandler(false);      
+            
         }
         if (step === 1) {
-            //setCambioRetorno(true)
-            setStep(2);
-            setVisitadosSteps([...visitadosSteps, actualStepper + 1])
-            setActualStepper(1);
+            await consultaAlertas(true);        
 
-
+            /*
             //TODO: HACER NUEVA CONSULTA DE LAS ALERTAS ANTES DE PASAR AL 2 pasar la fecha de nacimiento
             const objValidaciones = {
                 "lst_validaciones_ok": [
@@ -383,7 +435,7 @@ const NuevaSolicitud = (props) => {
                     { str_descripcion_alerta: "SOCIO PUEDE REALIZAR LA CONSULTA AL BURO" }],
                 "lst_validaciones_err": []
             }
-            handleLists(objValidaciones)
+            handleLists(objValidaciones)*/
 
             //console.log("SOC,", data) TODO: INCLUIR EN LAS ALERTAS DE JHONNY
             /*const arrValidacionesOk = [...data.lst_datos_alerta_true];
@@ -408,13 +460,15 @@ const NuevaSolicitud = (props) => {
                 fetchAddAutorizacion("C", 1, "F", cedulaSocio, nombreSocio, apellidoPaterno, apellidoMaterno, archivoAutorizacion, props.token, (data) => {
                     //console.log("AUTOR, ", data);
                     if (data.str_res_codigo === "000") {
-                        const estadoAutorizacion = validacionesErr.find((validacion) => { return validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" })
-                        estadoAutorizacion.str_estado_alerta = "True";
+                        //const estadoAutorizacion = validacionesErr.find((validacion) => { return validacion.str_nemonico === "ALERTA_SOLICITUD_TC_090" })
+                        //estadoAutorizacion.str_estado_alerta = "True";
                         setSubirAutorizacion(false);
                         setIsUploadingAthorization(false);
                         setShowAutorizacion(false);
 
+                        consultaAlertas(false);
 
+                        /*
                         //TODO CAMBIAR AL NUEVO METODO DE ALERTAS
                         fetchValidacionSocio(cedulaSocio, '', props.token, (data) => {
                             const arrValidacionesOk = [...data.lst_datos_alerta_true];
@@ -427,13 +481,12 @@ const NuevaSolicitud = (props) => {
                             handleLists(objValidaciones);
                             setAutorizacionOk(false);
                             setValidacionesErr(arrValidacionesErr);
-                        }, dispatch);
+                        }, dispatch);*/
 
                     }
                 }, dispatch);
                 return;
             } else {
-                //setCambioRetorno(true)
                 setActualStepper(2);
                 setVisitadosSteps([...visitadosSteps, actualStepper + 1])
                 setStep(3)
@@ -447,7 +500,7 @@ const NuevaSolicitud = (props) => {
             //DATOS FINANCIEROS SE GUARDA EN VARIABLES           
             
             const dataSocio = infoSocio;
-            dataSocio.datosFinancieros = datosFinancieros;
+            dataSocio.datosFinancieros = datosFinancierosObj;
             setInfoSocio(dataSocio);
 
             /*
@@ -471,14 +524,15 @@ const NuevaSolicitud = (props) => {
                     setCupoSugeridoAval(data.response.result?.capacidadPago[0].cupoSugerido.toString());
                     
                     realizaNuevaSimulacion.current = true
-                    datosFinancieros.montoGastoFinaCodeudor = data.str_gastos_codeudor;
-                    setDatosFinancieros(datosFinancieros)
+                    datosFinancierosObj.montoGastoFinaCodeudor = data.str_gastos_codeudor;
+                    setDatosFinancierosObj(datosFinancierosObj)
 
 
                     //TODO VALIDAR ESA INFO
                     //Calificacion riesgo
-                    //console.log("CALIFICACION RIESGO, ", data.str_calificacion_riesgo);
-                    //setCalificacionRiesgo(data.str_calificacion_riesgo)
+                    //console.log("SCORE ", data.response.result);
+                    console.log("CALIFICACION RIESGO COOP, ", data.response.result.modeloCoopmego[0].decisionModelo);
+                    setCalificacionRiesgo(data.response.result.modeloCoopmego[0].decisionModelo)
 
 
                 }, dispatch);
@@ -486,7 +540,7 @@ const NuevaSolicitud = (props) => {
             } else if (realizaNuevaSimulacion.current) {
                 console.log("NUEVA SIMULACION")
 
-                let datosFinan = datosFinancieros;
+                let datosFinan = datosFinancierosObj;
                 if (!datosFinan.montoIngresos) datosFinan.montoIngresos = 0;
                 if (!datosFinan.montoEgresos) datosFinan.montoEgresos = 0;
                 if (!datosFinan.montoRestaGstFinanciero || datosFinan.montoRestaGstFinanciero === "" || datosFinan.montoRestaGstFinanciero === " " || IsNullOrEmpty(datosFinan.montoRestaGstFinanciero)) datosFinan.montoRestaGstFinanciero = 0;
@@ -563,12 +617,12 @@ const NuevaSolicitud = (props) => {
                 str_comentario_proceso: comentario,
                 str_comentario_adicional: comentarioAdic,
                 int_oficina_proc: 1, //TODO: setItem('office' aun no retorna nada                 
-                mny_cupo_solicitado: datosFinancieros.montoSolicitado.toString(),
+                mny_cupo_solicitado: datosFinancierosObj.montoSolicitado.toString(),
                 mny_cupo_sugerido_aval: cupoSugeridoAval,
                 mny_cupo_sugerido_coopmego: cupoSugeridoCoopM.toString(),
                 str_estado_civil: estadoCivil,
-                mny_total_ingresos: datosFinancieros.montoIngresos.toString(),
-                mny_total_egresos: datosFinancieros.montoEgresos.toString(),
+                mny_total_ingresos: datosFinancierosObj.montoIngresos.toString(),
+                mny_total_egresos: datosFinancierosObj.montoEgresos.toString(),
                 str_denominacion_socio: nombrePersonalTarjeta,
 
                 //TODO DECIRLE A JHONNY Q ME PASE ESA VARIABLE AL HACER CONSULTA DE INGRESOS Y EGRESOS Y GUARDARLA EN SOLICITUD
@@ -597,6 +651,7 @@ const NuevaSolicitud = (props) => {
                 mny_cuota_estimada: 0,
                 int_estado: 0,
                 str_segmento: "",
+                str_calificacion_buro: calificacionRiesgo
                 
             }
 
@@ -682,7 +737,7 @@ const NuevaSolicitud = (props) => {
             montoGastoFinaCodeudor: dato.montoGastoFinaCodeudor,
             montoRestaGstFinanciero: dato.restaGastoFinanciero
         }
-        setDatosFinancieros(datosFinanciero)
+        setDatosFinancierosObj(datosFinanciero)
 
     }
 
@@ -739,8 +794,8 @@ const NuevaSolicitud = (props) => {
                         /*habilitaRestaGstFinancieros={realizaNuevaSimulacion}*/
                          <div className="f-row w-100">
                             <DatosFinancieros
-                                dataConsultFinan={datosFinancieros}
-                                datosFinancieros={datosFinancierosHandler}
+                                dataConsultFinan={datosFinancierosObj}
+                                setDatosFinancierosFunc={datosFinancierosHandler}
                                 isCkeckGtosFinancierosHandler={checkGastosFinancieroHandler}
                                 gestion={gestion}
                                 requiereActualizar={refrescarInformacionHandler}

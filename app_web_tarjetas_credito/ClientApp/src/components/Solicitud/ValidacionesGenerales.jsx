@@ -14,7 +14,7 @@ const ValidacionesGenerales = (props) => {
     const [archivoAutorizacion, setArchivoAutorizacion] = useState('');
     const [isDocCargado, setIsDocCargado] = useState(false);
 
- 
+
 
     //useEffect(() => {
     //    if (isGenerandoAutorizacion) {

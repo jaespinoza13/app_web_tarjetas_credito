@@ -9,7 +9,7 @@ import { useState, useEffect, useRef } from 'react';
 import Item from '../Common/UI/Item';
 import ValidacionesGenerales from '../Solicitud/ValidacionesGenerales';
 import DatosSocio from '../Solicitud/DatosSocio';
-import { fetchScore, fetchValidacionSocio, fetchAddAutorizacion, fetchAddProspecto, fetchInfoSocio, fetchNuevaSimulacionScore } from '../../services/RestServices';
+import { fetchScore, fetchValidacionSocio, fetchAddAutorizacion, fetchAddProspecto, fetchInfoSocio, fetchNuevaSimulacionScore, fetchGetAlertasCliente } from '../../services/RestServices';
 import { get, set } from '../../js/crypt';
 import Modal from '../Common/Modal/Modal';
 import FinProceso from '../Solicitud/FinProceso';
@@ -69,11 +69,10 @@ const NuevaProspeccion = (props) => {
     const [cedulaValida, setCedulaValida] = useState(false);
 
     //const [montoSolicitado, setMontoSolicitado] = useState(0);
-    const [datosFinancieros, setDatosFinancieros] = useState({
+    const [datosFinancierosObj, setDatosFinancierosObj] = useState({
         montoSolicitado: 0,
         montoIngresos: 0,
         montoEgresos: 0,
-        //montoGastosFinancieros: 0,
         montoGastoFinaCodeudor: "",
         montoRestaGstFinanciero: "",
 
@@ -146,34 +145,6 @@ const NuevaProspeccion = (props) => {
         }
     }, [score]);
 
-     /*
-    useEffect(() => {
-        const index = validacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" && validacion.str_estado_alerta);
-
-        //console.log("index,", index)
-        //console.log("Autorizacion,", autorizacionOk)
-        //console.log("Step,", step)
-
-        //Si no se encuentra alerta, no debe subise la autorizacion para consulta al buro, caso contrario si
-        if (!index && step === 1) {
-        //if ((!index && step === 1) || (!index && step === 2)) {
-            setEstadoBotonSiguiente(false);
-            setAutorizacionOk(true);
-            setGestion("prospeccion")
-        }
-        else {
-            setAutorizacionOk(false);
-            setSubirAutorizacion(false);
-            setEstadoBotonSiguiente(false);
-            setGestion("prospeccion")
-        }
-        if (validacionesErr.length === 10) {
-            setEstadoBotonSiguiente(true);
-            //setEstadoBtonProspecto(true);
-        }    
-        console.log("Autorizacion,", autorizacionOk)
-    }, [validacionesErr]);*/
-
 
     const agregarComentarioHandler = (e) => {
 
@@ -213,33 +184,35 @@ const NuevaProspeccion = (props) => {
         let validaRestoMontoGstFinanciero = false;
 
 
-        console.log(`montoSolicitado ${datosFinancieros.montoSolicitado}, montoEgresos ${datosFinancieros.montoIngresos},  montoEgresos ${datosFinancieros.montoEgresos} `)
-        if ((datosFinancieros.montoSolicitado > 0 && datosFinancieros.montoSolicitado <= 99999) &&
-            (datosFinancieros.montoIngresos > 0 && datosFinancieros.montoIngresos <= 99999) &&
-            (datosFinancieros.montoEgresos > 0 && datosFinancieros.montoEgresos <= 99999)
+        console.log(`montoSolicitado ${datosFinancierosObj.montoSolicitado}, montoEgresos ${datosFinancierosObj.montoIngresos},  montoEgresos ${datosFinancierosObj.montoEgresos} `)
+        if ((datosFinancierosObj.montoSolicitado > 0 && datosFinancierosObj.montoSolicitado <= 99999) &&
+            (datosFinancierosObj.montoIngresos > 0 && datosFinancierosObj.montoIngresos <= 99999) &&
+            (datosFinancierosObj.montoEgresos > 0 && datosFinancierosObj.montoEgresos <= 99999)
             //    && datosFinancieros.montoGastosFinancieros > 0
         ) {
             validadorOtrosMontos = true;
         } 
 
         //TODO VALIDAR CAMPO FINANCIERO CODEUDOR CUANDO SEA NUEVO SIMULACION
-        console.log("RESTA GASTO FIN ", datosFinancieros.montoRestaGstFinanciero)
+        //console.log("RESTA GASTO FIN ", datosFinancieros.montoRestaGstFinanciero)
         if (isCkeckRestaGtoFinananciero === true) {
-            if (IsNullOrEmpty(datosFinancieros.montoRestaGstFinanciero) || datosFinancieros.montoRestaGstFinanciero === "" || datosFinancieros.montoRestaGstFinanciero === " ") {
+            if (IsNullOrEmpty(datosFinancierosObj.montoRestaGstFinanciero) || datosFinancierosObj.montoRestaGstFinanciero === "" || datosFinancierosObj.montoRestaGstFinanciero === " ") {
                 //console.log("Resta Gst Financ, ", datosFinancieros.montoRestaGstFinanciero)
-                console.log("Retorna 1");
+                //console.log("Retorna 1");
                 validaRestoMontoGstFinanciero = false;
                 return false;
-            } else if (Number(datosFinancieros.montoRestaGstFinanciero) < 0 && Number(datosFinancieros.montoRestaGstFinanciero) >= 100000) {
+            } else if (Number(datosFinancierosObj.montoRestaGstFinanciero) < 0 || Number(datosFinancierosObj.montoRestaGstFinanciero) >= 100000) {
                 validaRestoMontoGstFinanciero = false;
+                //console.log("Retorna 2");
                 return false;
             }
             else {
+                //console.log("Retorna 3");
                 validaRestoMontoGstFinanciero = true;
             }
         } else if (isCkeckRestaGtoFinananciero === false) {
             validaRestoMontoGstFinanciero = true;
-        }      
+        }        
 
         //console.log(`Check ${validadorCheck}, cupo ${validadorOtrosMontos},  restoGast ${validaRestoMontoGstFinanciero} `)
         //if (validadorCheck && validadorOtrosMontos && validaRestoMontoGstFinanciero) {
@@ -279,8 +252,7 @@ const NuevaProspeccion = (props) => {
 
     useEffect(() => {
         if (step === 3) {
-            //setDatosFinancieros(datosFinancieros);
-            const index = validacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" && validacion.str_estado_alerta);
+            const index = validacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_090" && validacion.str_estado_alerta === "False");
             if (validaCamposFinancieros() && !index) {
                 setEstadoBotonSiguiente(false);
             } else {
@@ -288,31 +260,28 @@ const NuevaProspeccion = (props) => {
             }
         }
 
-    }, [datosFinancieros, step, validaCamposFinancieros, validacionesErr, isCkeckRestaGtoFinananciero])
+    }, [datosFinancierosObj, step, validaCamposFinancieros, validacionesErr, isCkeckRestaGtoFinananciero])
 
    
   
-    /*
+    
+    // Controles para pasar a la consulta al score Comp DatosSocio. Valida que todas las alertas esten OK
     useEffect(() => {
-        const index = validacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" && validacion.str_estado_alerta);
-
-        //console.log("index,", index)
-        // console.log("VALIDACION DE CAMPOS,", step);
-        // Controles para pasar a la consulta al score. Valida que no exista Alerta Consulta buro
+        const index = validacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_090" && validacion.str_estado_alerta === "False");
+        //TODO: SE QUITO LA VALIDACION, solo este la alerta del buro
+        //const validacionesErrorTotal = validacionesErr.length;
+        //console.log("TOTAL validaciones ok, ", validacionesErrorTotal);        
         if (step === 2 && showAutorizacion === false) {
-            if (validaCamposSocio()) {
-                if (validaCamposFinancieros() && !index) {
-                    setEstadoBotonSiguiente(false);
-                } else {
-                    setEstadoBotonSiguiente(true);
-                }
-            }
-            else {
+            if (!index) {
+                setEstadoBotonSiguiente(false);
+            } else {
                 setEstadoBotonSiguiente(true);
             }
         }
-    }, [datosFinancieros, step, validaCamposSocio, validaCamposFinancieros, isCkeckGtosFinancieros, validacionesErr, archivoAutorizacion]);
-    */
+    }, [step, validacionesErr, archivoAutorizacion]);
+    
+
+
 
     const refrescarInformacionHandler = (actualizarInfo) => {
         fetchValidacionSocio(documento, '', props.token, (data) => {
@@ -337,11 +306,11 @@ const NuevaProspeccion = (props) => {
                 montoSolicitado: 0,
                 montoIngresos: data.dcm_total_ingresos,
                 montoEgresos: data.dcm_total_egresos,
-                //montoGastosFinancieros: data.dcm_gastos_financieros,
                 montoGastoFinaCodeudor: "",
                 montoRestaGstFinanciero: "",
             }
-            setDatosFinancieros(datosFinan);
+            console.log("resf DATA , ", datosFinan)
+            setDatosFinancierosObj(datosFinan);
 
             setInfoSocio(data);
             setEnteSocio("")
@@ -351,9 +320,56 @@ const NuevaProspeccion = (props) => {
                     setIsVisibleBloque(true);
                     clearTimeout(retrasoEfecto);
                 }, 100);
-            }
-            
+            } 
 
+        }, dispatch);
+    }
+
+    const consultaAlertas = async (seguirAlSigPaso) => {
+        await fetchGetAlertasCliente(documento, '', fechaNacimiento, props.token, (data) => {
+            let alertasIniciales_Validas = [...data.alertas_iniciales.lst_datos_alerta_true];
+            let alertasIniciales_Invalidas = [...data.alertas_iniciales.lst_datos_alerta_false];
+            let alertasRestriccion_Validas = [...data.alertas_restriccion.lst_datos_alerta_true];
+            let alertasRestriccion_Invalidas = [...data.alertas_restriccion.lst_datos_alerta_false];
+
+            let lst_validaciones_ok = [];
+            if (alertasIniciales_Validas.length > 0) {
+                alertasIniciales_Validas.forEach(alertaN1 => {
+                    lst_validaciones_ok.push(alertaN1)
+                });
+            }
+            if (alertasRestriccion_Validas.length > 0) {
+                alertasRestriccion_Validas.forEach(alertaN2 => {
+                    lst_validaciones_ok.push(alertaN2)
+                });
+            }
+
+            let lst_validaciones_err = [];
+            if (alertasIniciales_Invalidas.length > 0) {
+                alertasIniciales_Invalidas.forEach(alertaN3 => {
+                    lst_validaciones_err.push(alertaN3)
+                });
+            }
+            if (alertasRestriccion_Invalidas.length > 0) {
+                alertasRestriccion_Invalidas.forEach(alertaN4 => {
+                    lst_validaciones_err.push(alertaN4)
+                });
+            }
+
+            const objValidaciones = {
+                lst_validaciones_ok: [...lst_validaciones_ok],
+                lst_validaciones_err: [...lst_validaciones_err]
+            }
+
+            setValidacionesOk(lst_validaciones_ok);
+            setValidacionesErr(lst_validaciones_err);
+            handleLists(objValidaciones);
+
+            if (seguirAlSigPaso) {
+                setStep(2);
+                setVisitadosSteps([...visitadosSteps, actualStepper + 1])
+                setActualStepper(1);
+            }
         }, dispatch);
     }
 
@@ -365,10 +381,9 @@ const NuevaProspeccion = (props) => {
             refrescarInformacionHandler(false);
         }
         if (step === 1) {
-            setStep(2);
-            setVisitadosSteps([...visitadosSteps, actualStepper + 1])
-            setActualStepper(1);
+            await consultaAlertas(true);    
 
+            /*
             //TODO: HACER NUEVA CONSULTA DE LAS ALERTAS ANTES DE PASAR AL 2 pasar la fecha de nacimiento
             const objValidaciones = {
                 "lst_validaciones_ok": [
@@ -378,7 +393,7 @@ const NuevaProspeccion = (props) => {
             }
             handleLists(objValidaciones)
 
-            /*
+            
             const arrValidacionesOk = [...data.lst_datos_alerta_true];
             const arrValidacionesErr = [...data.lst_datos_alerta_false];
             setValidacionesOk(arrValidacionesOk);
@@ -400,13 +415,15 @@ const NuevaProspeccion = (props) => {
                     archivoAutorizacion, props.token, (data) => {
                         //console.log("AUTOR, ", data);
                         if (data.str_res_codigo === "000") {
-                            const estadoAutorizacion = validacionesErr.find((validacion) => { return validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" })
-                            estadoAutorizacion.str_estado_alerta = "True";
+                            //const estadoAutorizacion = validacionesErr.find((validacion) => { return validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" })
+                            //estadoAutorizacion.str_estado_alerta = "True";
                             setSubirAutorizacion(false);
                             setIsUploadingAthorization(false);
                             setShowAutorizacion(false);
 
+                            consultaAlertas(false);
 
+                            /*
                             //TODO CAMBIAR AL NUEVO METODO DE ALERTAS
                             fetchValidacionSocio(documento, '', props.token, (data) => {
                                 const arrValidacionesOk = [...data.lst_datos_alerta_true];
@@ -419,7 +436,7 @@ const NuevaProspeccion = (props) => {
                                 handleLists(objValidaciones);
                                 setAutorizacionOk(false);
                                 setValidacionesErr(arrValidacionesErr);
-                            }, dispatch);
+                            }, dispatch);*/
                         }
                     }, dispatch);
                 return;
@@ -428,25 +445,13 @@ const NuevaProspeccion = (props) => {
                 setVisitadosSteps([...visitadosSteps, actualStepper + 1])
                 setStep(3)
             }
-            
-            
 
         }
 
         if (step === 3) {
             const dataSocio = infoSocio;
-            dataSocio.datosFinancieros = datosFinancieros;
+            dataSocio.datosFinancieros = datosFinancierosObj;
             setInfoSocio(dataSocio);
-            //setVisitadosSteps([...visitadosSteps, actualStep + 1])
-            //setActualStep(4);
-            //setStep(4);
-
-            //const strNombreSocio = `${nombresSolicitud} ${pApellidoSolicitud} ${sApellidoSolicitud}`;
-
-            /*const strOficina = "MATRIZ";
-            //const strOficina = get(localStorage.getItem("office"));
-            const strOficial = get(localStorage.getItem("sender_name"));
-            const strCargo = get(localStorage.getItem("role"));*/
 
             if (!realizaNuevaSimulacion.current) {
                 console.log("PRIMERA CONSULTA BURO ")
@@ -460,8 +465,8 @@ const NuevaProspeccion = (props) => {
                     realizaNuevaSimulacion.current = true
                     //const scoreStorage = JSON.stringify(data);
                     //localStorage.setItem('dataPuntaje', scoreStorage.toString());
-                    datosFinancieros.montoGastoFinaCodeudor = data.str_gastos_codeudor;
-                    setDatosFinancieros(datosFinancieros)
+                    datosFinancierosObj.montoGastoFinaCodeudor = data.str_gastos_codeudor;
+                    setDatosFinancierosObj(datosFinancierosObj)
 
 
                 }, dispatch);
@@ -470,7 +475,7 @@ const NuevaProspeccion = (props) => {
 
                 console.log("NUEVA SIMULACION")
 
-                let datosFinan = datosFinancieros;
+                let datosFinan = datosFinancierosObj;
                 if (!datosFinan.montoIngresos) datosFinan.montoIngresos = 0;
                 if (!datosFinan.montoEgresos) datosFinan.montoEgresos = 0;
                 if (!datosFinan.montoRestaGstFinanciero || datosFinan.montoRestaGstFinanciero === "" || datosFinan.montoRestaGstFinanciero === " " || IsNullOrEmpty(datosFinan.montoRestaGstFinanciero)) datosFinan.montoRestaGstFinanciero = 0;
@@ -503,7 +508,7 @@ const NuevaProspeccion = (props) => {
             //REALIZA REGISTROS DE SIMULACION
             //SIMULACION GUARDADA
             console.log("STEP 4")
-            fetchAddProspecto(documento, 0, nombreSocio, apellidoPaterno + " " + apellidoMaterno, celularSocio, correoSocio, datosFinancieros.montoSolicitado, comentario, comentarioAdic, props.token, (data) => {
+            fetchAddProspecto(documento, 0, nombreSocio, apellidoPaterno + " " + apellidoMaterno, celularSocio, correoSocio, datosFinancierosObj.montoSolicitado, comentario, comentarioAdic, props.token, (data) => {
                 console.log("RESP ADD PROSP, ", data)
                 setVisitadosSteps([...visitadosSteps, actualStepper + 1])
                 setActualStepper(4);
@@ -540,15 +545,15 @@ const NuevaProspeccion = (props) => {
     }
 
     const datosFinancierosHandler = (dato) => {
+        console.log("ACTUALIZACION DT FIN ", dato)
         let datosFinanciero = {
             montoSolicitado: dato.montoSolicitado,
             montoIngresos: dato.montoIngresos,
             montoEgresos: dato.montoEgresos,
-            //montoGastosFinancieros: dato.montoGastosFinancieros,
             montoGastoFinaCodeudor: dato.montoGastoFinaCodeudor,
             montoRestaGstFinanciero: dato.restaGastoFinanciero
         }
-        setDatosFinancieros(datosFinanciero)
+        setDatosFinancierosObj(datosFinanciero)
 
     }
 
@@ -677,8 +682,8 @@ const NuevaProspeccion = (props) => {
                         /*habilitaRestaGstFinancieros={realizaNuevaSimulacion}*/
                         <div className="f-row w-100">
                             <DatosFinancieros
-                                dataConsultFinan={datosFinancieros}
-                                datosFinancieros={datosFinancierosHandler}
+                                dataConsultFinan={datosFinancierosObj}
+                                setDatosFinancierosFunc={datosFinancierosHandler}
                                 isCkeckGtosFinancierosHandler={checkGastosFinancieroHandler}
                                 gestion={gestion}
                                 requiereActualizar={refrescarInformacionHandler}
