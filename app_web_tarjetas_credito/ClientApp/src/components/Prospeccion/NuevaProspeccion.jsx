@@ -9,7 +9,7 @@ import { useState, useEffect, useRef } from 'react';
 import Item from '../Common/UI/Item';
 import ValidacionesGenerales from '../Solicitud/ValidacionesGenerales';
 import DatosSocio from '../Solicitud/DatosSocio';
-import { fetchScore, fetchValidacionSocio, fetchAddAutorizacion, fetchAddProspecto, fetchInfoSocio, fetchNuevaSimulacionScore } from '../../services/RestServices';
+import { fetchScore, fetchValidacionSocio, fetchAddAutorizacion, fetchAddProspecto, fetchInfoSocio, fetchNuevaSimulacionScore, fetchGetAlertasCliente } from '../../services/RestServices';
 import { get, set } from '../../js/crypt';
 import Modal from '../Common/Modal/Modal';
 import FinProceso from '../Solicitud/FinProceso';
@@ -145,34 +145,6 @@ const NuevaProspeccion = (props) => {
         }
     }, [score]);
 
-     /*
-    useEffect(() => {
-        const index = validacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" && validacion.str_estado_alerta);
-
-        //console.log("index,", index)
-        //console.log("Autorizacion,", autorizacionOk)
-        //console.log("Step,", step)
-
-        //Si no se encuentra alerta, no debe subise la autorizacion para consulta al buro, caso contrario si
-        if (!index && step === 1) {
-        //if ((!index && step === 1) || (!index && step === 2)) {
-            setEstadoBotonSiguiente(false);
-            setAutorizacionOk(true);
-            setGestion("prospeccion")
-        }
-        else {
-            setAutorizacionOk(false);
-            setSubirAutorizacion(false);
-            setEstadoBotonSiguiente(false);
-            setGestion("prospeccion")
-        }
-        if (validacionesErr.length === 10) {
-            setEstadoBotonSiguiente(true);
-            //setEstadoBtonProspecto(true);
-        }    
-        console.log("Autorizacion,", autorizacionOk)
-    }, [validacionesErr]);*/
-
 
     const agregarComentarioHandler = (e) => {
 
@@ -280,8 +252,7 @@ const NuevaProspeccion = (props) => {
 
     useEffect(() => {
         if (step === 3) {
-            //setDatosFinancieros(datosFinancieros);
-            const index = validacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" && validacion.str_estado_alerta);
+            const index = validacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_090" && validacion.str_estado_alerta === "False");
             if (validaCamposFinancieros() && !index) {
                 setEstadoBotonSiguiente(false);
             } else {
@@ -293,27 +264,24 @@ const NuevaProspeccion = (props) => {
 
    
   
-    /*
+    
+    // Controles para pasar a la consulta al score Comp DatosSocio. Valida que todas las alertas esten OK
     useEffect(() => {
-        const index = validacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" && validacion.str_estado_alerta);
-
-        //console.log("index,", index)
-        // console.log("VALIDACION DE CAMPOS,", step);
-        // Controles para pasar a la consulta al score. Valida que no exista Alerta Consulta buro
+        const index = validacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_090" && validacion.str_estado_alerta === "False");
+        //TODO: SE QUITO LA VALIDACION, solo este la alerta del buro
+        //const validacionesErrorTotal = validacionesErr.length;
+        //console.log("TOTAL validaciones ok, ", validacionesErrorTotal);        
         if (step === 2 && showAutorizacion === false) {
-            if (validaCamposSocio()) {
-                if (validaCamposFinancieros() && !index) {
-                    setEstadoBotonSiguiente(false);
-                } else {
-                    setEstadoBotonSiguiente(true);
-                }
-            }
-            else {
+            if (!index) {
+                setEstadoBotonSiguiente(false);
+            } else {
                 setEstadoBotonSiguiente(true);
             }
         }
-    }, [datosFinancieros, step, validaCamposSocio, validaCamposFinancieros, isCkeckGtosFinancieros, validacionesErr, archivoAutorizacion]);
-    */
+    }, [step, validacionesErr, archivoAutorizacion]);
+    
+
+
 
     const refrescarInformacionHandler = (actualizarInfo) => {
         fetchValidacionSocio(documento, '', props.token, (data) => {
@@ -357,6 +325,54 @@ const NuevaProspeccion = (props) => {
         }, dispatch);
     }
 
+    const consultaAlertas = async (seguirAlSigPaso) => {
+        await fetchGetAlertasCliente(documento, '', fechaNacimiento, props.token, (data) => {
+            let alertasIniciales_Validas = [...data.alertas_iniciales.lst_datos_alerta_true];
+            let alertasIniciales_Invalidas = [...data.alertas_iniciales.lst_datos_alerta_false];
+            let alertasRestriccion_Validas = [...data.alertas_restriccion.lst_datos_alerta_true];
+            let alertasRestriccion_Invalidas = [...data.alertas_restriccion.lst_datos_alerta_false];
+
+            let lst_validaciones_ok = [];
+            if (alertasIniciales_Validas.length > 0) {
+                alertasIniciales_Validas.forEach(alertaN1 => {
+                    lst_validaciones_ok.push(alertaN1)
+                });
+            }
+            if (alertasRestriccion_Validas.length > 0) {
+                alertasRestriccion_Validas.forEach(alertaN2 => {
+                    lst_validaciones_ok.push(alertaN2)
+                });
+            }
+
+            let lst_validaciones_err = [];
+            if (alertasIniciales_Invalidas.length > 0) {
+                alertasIniciales_Invalidas.forEach(alertaN3 => {
+                    lst_validaciones_err.push(alertaN3)
+                });
+            }
+            if (alertasRestriccion_Invalidas.length > 0) {
+                alertasRestriccion_Invalidas.forEach(alertaN4 => {
+                    lst_validaciones_err.push(alertaN4)
+                });
+            }
+
+            const objValidaciones = {
+                lst_validaciones_ok: [...lst_validaciones_ok],
+                lst_validaciones_err: [...lst_validaciones_err]
+            }
+
+            setValidacionesOk(lst_validaciones_ok);
+            setValidacionesErr(lst_validaciones_err);
+            handleLists(objValidaciones);
+
+            if (seguirAlSigPaso) {
+                setStep(2);
+                setVisitadosSteps([...visitadosSteps, actualStepper + 1])
+                setActualStepper(1);
+            }
+        }, dispatch);
+    }
+
     const nextHandler = async () => {
         console.log("STEPPP ", step)
         if (step === 0) {
@@ -365,10 +381,9 @@ const NuevaProspeccion = (props) => {
             refrescarInformacionHandler(false);
         }
         if (step === 1) {
-            setStep(2);
-            setVisitadosSteps([...visitadosSteps, actualStepper + 1])
-            setActualStepper(1);
+            await consultaAlertas(true);    
 
+            /*
             //TODO: HACER NUEVA CONSULTA DE LAS ALERTAS ANTES DE PASAR AL 2 pasar la fecha de nacimiento
             const objValidaciones = {
                 "lst_validaciones_ok": [
@@ -378,7 +393,7 @@ const NuevaProspeccion = (props) => {
             }
             handleLists(objValidaciones)
 
-            /*
+            
             const arrValidacionesOk = [...data.lst_datos_alerta_true];
             const arrValidacionesErr = [...data.lst_datos_alerta_false];
             setValidacionesOk(arrValidacionesOk);
@@ -400,13 +415,15 @@ const NuevaProspeccion = (props) => {
                     archivoAutorizacion, props.token, (data) => {
                         //console.log("AUTOR, ", data);
                         if (data.str_res_codigo === "000") {
-                            const estadoAutorizacion = validacionesErr.find((validacion) => { return validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" })
-                            estadoAutorizacion.str_estado_alerta = "True";
+                            //const estadoAutorizacion = validacionesErr.find((validacion) => { return validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" })
+                            //estadoAutorizacion.str_estado_alerta = "True";
                             setSubirAutorizacion(false);
                             setIsUploadingAthorization(false);
                             setShowAutorizacion(false);
 
+                            consultaAlertas(false);
 
+                            /*
                             //TODO CAMBIAR AL NUEVO METODO DE ALERTAS
                             fetchValidacionSocio(documento, '', props.token, (data) => {
                                 const arrValidacionesOk = [...data.lst_datos_alerta_true];
@@ -419,7 +436,7 @@ const NuevaProspeccion = (props) => {
                                 handleLists(objValidaciones);
                                 setAutorizacionOk(false);
                                 setValidacionesErr(arrValidacionesErr);
-                            }, dispatch);
+                            }, dispatch);*/
                         }
                     }, dispatch);
                 return;
@@ -428,8 +445,6 @@ const NuevaProspeccion = (props) => {
                 setVisitadosSteps([...visitadosSteps, actualStepper + 1])
                 setStep(3)
             }
-            
-            
 
         }
 

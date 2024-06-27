@@ -400,7 +400,8 @@ const VerSolicitud = (props) => {
 
     const cambioEstadoBandeja = () => {
         //Comite retorna a un estado de bandeja especifica
-        if (props.solicitud.idSolicitud === 11275) { //ANALISIS COMITE
+        //if (props.solicitud.idSolicitud === 11275) { //ANALISIS COMITE
+        if (solicitudTarjeta?.str_estado === "ANALISIS COMITE") {
             fetchAddProcEspecifico(props.solicitud.solicitud, 0, selectCambioEstadoSol, comentarioCambioEstado, props.token, (data) => {
                 if (data.str_res_codigo === "000") {
                     //Ir a pagina anterior
@@ -631,7 +632,9 @@ const VerSolicitud = (props) => {
                 accionSeleccionada === 1 &&
                 <>
 
-                    {props.solicitud.idSolicitud === 11276
+                    {
+                        /*props.solicitud.idSolicitud === 11276*/
+                        solicitudTarjeta?.str_estado === "APROBADA"
                         ?
                         <Card className={["w-100 justify-content-space-between align-content-center"]}>
                             <div>
@@ -705,7 +708,8 @@ const VerSolicitud = (props) => {
                                             <h5>Cupo solicitado:</h5>
                                             <h5 className="strong f-row">
                                                 {`$ ${Number(solicitudTarjeta?.str_cupo_solicitado).toLocaleString("en-US") || Number('1000.00').toLocaleString("en-US")}`}
-                                                {props.solicitud.idSolicitud === 11272 &&
+                                                    {/*{props.solicitud.idSolicitud === 11272 &&*/}
+                                                    {solicitudTarjeta?.str_estado === "SOLICITUD CREADA" &&
                                                     <Button className="btn_mg__auto ml-2" onClick={updateMonto}>
                                                         <img src="/Imagenes/edit.svg"></img>
                                                     </Button>
@@ -783,8 +787,8 @@ const VerSolicitud = (props) => {
                                             <h5>Cupo solicitado:</h5>
                                             <h5 className="strong f-row">
                                                 {`$ ${solicitudTarjeta?.str_cupo_solicitado || Number('0.00').toLocaleString("en-US")}`}
-                                                {props.solicitud.idSolicitud === 11272 &&
-
+                                                    {/*{props.solicitud.idSolicitud === 11272 &&*/}
+                                                    {solicitudTarjeta?.str_estado === "SOLICITUD CREADA" &&
                                                     <Button className="btn_mg__auto ml-2" onClick={updateMonto}>
                                                         <img src="/Imagenes/edit.svg"></img>
                                                     </Button>
@@ -815,23 +819,23 @@ const VerSolicitud = (props) => {
                                     <div className={["f-row"]}>
 
                                         {/*TODO VALIDAR QUE SOLO SEA PARA ESE PERFIL*/}
-                                        {props.solicitud.idSolicitud === 11273 &&
+                                        {(solicitudTarjeta?.str_estado === "ANALISIS UAC" || solicitudTarjeta?.str_estado === "ANALISIS JEFE UAC" )&&
                                             <Button className="btn_mg__primary" onClick={modalHandler}>Análisis 3C's</Button>
                                         }
 
                                         {/*  EST_ANALISIS_UAC  || EST_ANALISIS_JEFE_UAC    */}
-                                        {(props.solicitud.idSolicitud === 11273 || props.solicitud.idSolicitud === 11274) &&
+                                        {(solicitudTarjeta?.str_estado === "ANALISIS UAC" || solicitudTarjeta?.str_estado === "ANALISIS JEFE UAC") &&
                                             <Button className="btn_mg__primary ml-2" onClick={() => descargarMedio(props.solicitud.solicitud)}>Imprimir medio aprobación</Button>
                                         }
 
-                                        {/*  EST_ANALISIS_UAC  || EST_ANALISIS_JEFE_UAC || EST_ANALISIS_COMITE    */}
-                                        {(props.solicitud.idSolicitud === 11273 || props.solicitud.idSolicitud === 11274 || props.solicitud.idSolicitud === 11275) &&
+                                        {/*  EST_ANALISIS_UAC  || EST_ANALISIS_JEFE_UAC || EST_ANALISIS_COMITE   TODO FALTA EL ESTADO NUEVA BANDEJA */}
+                                        {(solicitudTarjeta?.str_estado === "ANALISIS UAC" || solicitudTarjeta?.str_estado === "ANALISIS JEFE UAC" || solicitudTarjeta?.str_estado === "ANALISIS COMITE") &&
                                             <Button className="btn_mg__primary ml-2" onClick={openModalCambiarBandeja}>Retornar Solicitud</Button>
                                         }
 
 
                                         {/* EST_POR_CONFIRMAR */}
-                                        {/*{props.solicitud.idSolicitud === "11278" &&*/}
+                                        {/*{solicitudTarjeta?.str_estado === "11278" &&*/}
                                         {solicitudTarjeta?.str_estado === "POR CONFIRMAR" &&
                                             <>
                                                 <div className="values ml-1 mb-3">
@@ -1110,7 +1114,8 @@ const VerSolicitud = (props) => {
             {modalCambioBandeja && <div>
 
 
-                {props.solicitud.idSolicitud === 11275 &&
+                {/*{props.solicitud.idSolicitud === 11275 &&*/}
+                {solicitudTarjeta?.str_estado === "ANALISIS COMITE" &&
                     <>
                         <h3 className="mt-4 mb-1">Seleccione a qué estado desea regresar la solicitud:</h3>
 

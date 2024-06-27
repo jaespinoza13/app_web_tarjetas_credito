@@ -10,7 +10,7 @@ import ValidacionSocio from './ValidacionSocio';
 import Item from '../Common/UI/Item';
 import ValidacionesGenerales from './ValidacionesGenerales';
 import DatosSocio from './DatosSocio';
-import { fetchScore, fetchValidacionSocio, fetchAddAutorizacion, fetchAddSolicitud, fetchInfoSocio, fetchNuevaSimulacionScore } from '../../services/RestServices';
+import { fetchScore, fetchValidacionSocio, fetchAddAutorizacion, fetchAddSolicitud, fetchInfoSocio, fetchNuevaSimulacionScore, fetchGetAlertasCliente } from '../../services/RestServices';
 import { get } from '../../js/crypt';
 import Modal from '../Common/Modal/Modal';
 import Personalizacion from './Personalizacion';
@@ -70,6 +70,7 @@ const NuevaSolicitud = (props) => {
     const [apellidoPaterno, setApellidoPaterno] = useState('');
     const [apellidoMaterno, setApellidoMaterno] = useState('');
     const [estadoCivil, setEstadoCivil] = useState('');
+    const [fechaNacimiento, setFechaNacimiento] = useState('');
 
     const [datosFaltan, setDatosFaltan] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
@@ -219,8 +220,7 @@ const NuevaSolicitud = (props) => {
 
     useEffect(() => {
         if (step === 3) {
-            //setDatosFinancieros(datosFinancieros);
-            const index = validacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" && validacion.str_estado_alerta);
+            const index = validacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_090" && validacion.str_estado_alerta === "False");
             if (validaCamposFinancieros() && !index) {
                 setEstadoBotonSiguiente(false);
             } else {
@@ -230,12 +230,12 @@ const NuevaSolicitud = (props) => {
 
     }, [datosFinancierosObj, step, validaCamposFinancieros])
 
-    useEffect(() => {
-        const index = validacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" && validacion.str_estado_alerta);
-        const validacionesErrorTotal = validacionesErr.length;
-        //console.log("TOTAL validaciones ok, ", validacionesErrorTotal);
 
-        // Controles para pasar a la consulta al score. Valida que todas las alertas esten OK
+    // Controles para pasar a la consulta al score Comp DatosSocio. Valida que todas las alertas esten OK
+    useEffect(() => {
+        const index = validacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_090" && validacion.str_estado_alerta === "False");
+        const validacionesErrorTotal = validacionesErr.length;
+        //console.log("TOTAL validaciones ok, ", validacionesErrorTotal);        
         if (step === 2 && showAutorizacion === false) {
             if (!index && validacionesErrorTotal === 0) {
                 setEstadoBotonSiguiente(false);
@@ -305,6 +305,7 @@ const NuevaSolicitud = (props) => {
             setApellidoPaterno(data.str_apellido_paterno);
             setApellidoMaterno(data.str_apellido_materno);
             setEstadoCivil(data.str_estado_civil);
+            setFechaNacimiento(data.str_fecha_nacimiento)
 
             let datosFinan = {
                 montoSolicitado: 0,
@@ -337,6 +338,7 @@ const NuevaSolicitud = (props) => {
                 setTextoAviso(data.str_res_info_adicional ? data.str_res_info_adicional : "Se requiere actualizar información personal. Intente realizar una Prospección.")
                 setModalMensajeAviso(true);
             }           
+            
         }, dispatch);
 
     }
@@ -365,20 +367,67 @@ const NuevaSolicitud = (props) => {
         setStep(step - 1)
     }
 
+
+    const consultaAlertas = async (seguirAlSigPaso) => {
+        await fetchGetAlertasCliente(cedulaSocio, '', fechaNacimiento, props.token, (data) => {
+            let alertasIniciales_Validas = [...data.alertas_iniciales.lst_datos_alerta_true];
+            let alertasIniciales_Invalidas = [...data.alertas_iniciales.lst_datos_alerta_false];
+            let alertasRestriccion_Validas = [...data.alertas_restriccion.lst_datos_alerta_true];
+            let alertasRestriccion_Invalidas = [...data.alertas_restriccion.lst_datos_alerta_false];
+
+            let lst_validaciones_ok = [];
+            if (alertasIniciales_Validas.length > 0) {
+                alertasIniciales_Validas.forEach(alertaN1 => {
+                    lst_validaciones_ok.push(alertaN1)
+                });
+            }
+            if (alertasRestriccion_Validas.length > 0) {
+                alertasRestriccion_Validas.forEach(alertaN2 => {
+                    lst_validaciones_ok.push(alertaN2)
+                });
+            }
+
+            let lst_validaciones_err = [];            
+            if (alertasIniciales_Invalidas.length > 0) {
+                alertasIniciales_Invalidas.forEach(alertaN3 => {
+                    lst_validaciones_err.push(alertaN3)
+                });
+            }
+            if (alertasRestriccion_Invalidas.length > 0) {
+                alertasRestriccion_Invalidas.forEach(alertaN4 => {
+                    lst_validaciones_err.push(alertaN4)
+                });
+            }
+          
+            const objValidaciones = {
+                lst_validaciones_ok: [...lst_validaciones_ok],
+                lst_validaciones_err: [...lst_validaciones_err]
+            }
+
+            setValidacionesOk(lst_validaciones_ok);
+            setValidacionesErr(lst_validaciones_err);
+            handleLists(objValidaciones);
+
+            if (seguirAlSigPaso) {
+                setStep(2);
+                setVisitadosSteps([...visitadosSteps, actualStepper + 1])
+                setActualStepper(1);
+            }       
+        }, dispatch);
+    }
+
     const nextHandler = async () => {
 
         //console.log("step,", step)
         if (step === 0) {            
             setIsVisibleBloque(false);
-            refrescarInformacionHandler(false);            
+            refrescarInformacionHandler(false);      
+            
         }
         if (step === 1) {
-            //setCambioRetorno(true)
-            setStep(2);
-            setVisitadosSteps([...visitadosSteps, actualStepper + 1])
-            setActualStepper(1);
+            await consultaAlertas(true);        
 
-
+            /*
             //TODO: HACER NUEVA CONSULTA DE LAS ALERTAS ANTES DE PASAR AL 2 pasar la fecha de nacimiento
             const objValidaciones = {
                 "lst_validaciones_ok": [
@@ -386,7 +435,7 @@ const NuevaSolicitud = (props) => {
                     { str_descripcion_alerta: "SOCIO PUEDE REALIZAR LA CONSULTA AL BURO" }],
                 "lst_validaciones_err": []
             }
-            handleLists(objValidaciones)
+            handleLists(objValidaciones)*/
 
             //console.log("SOC,", data) TODO: INCLUIR EN LAS ALERTAS DE JHONNY
             /*const arrValidacionesOk = [...data.lst_datos_alerta_true];
@@ -411,13 +460,15 @@ const NuevaSolicitud = (props) => {
                 fetchAddAutorizacion("C", 1, "F", cedulaSocio, nombreSocio, apellidoPaterno, apellidoMaterno, archivoAutorizacion, props.token, (data) => {
                     //console.log("AUTOR, ", data);
                     if (data.str_res_codigo === "000") {
-                        const estadoAutorizacion = validacionesErr.find((validacion) => { return validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" })
-                        estadoAutorizacion.str_estado_alerta = "True";
+                        //const estadoAutorizacion = validacionesErr.find((validacion) => { return validacion.str_nemonico === "ALERTA_SOLICITUD_TC_090" })
+                        //estadoAutorizacion.str_estado_alerta = "True";
                         setSubirAutorizacion(false);
                         setIsUploadingAthorization(false);
                         setShowAutorizacion(false);
 
+                        consultaAlertas(false);
 
+                        /*
                         //TODO CAMBIAR AL NUEVO METODO DE ALERTAS
                         fetchValidacionSocio(cedulaSocio, '', props.token, (data) => {
                             const arrValidacionesOk = [...data.lst_datos_alerta_true];
@@ -430,13 +481,12 @@ const NuevaSolicitud = (props) => {
                             handleLists(objValidaciones);
                             setAutorizacionOk(false);
                             setValidacionesErr(arrValidacionesErr);
-                        }, dispatch);
+                        }, dispatch);*/
 
                     }
                 }, dispatch);
                 return;
             } else {
-                //setCambioRetorno(true)
                 setActualStepper(2);
                 setVisitadosSteps([...visitadosSteps, actualStepper + 1])
                 setStep(3)

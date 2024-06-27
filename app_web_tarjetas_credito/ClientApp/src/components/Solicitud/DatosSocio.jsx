@@ -128,8 +128,8 @@ const DatosSocio = (props) => {
             //setEstadoAccordionInfoSocio(true);
             setContentReadyInfoSocio(true);
             props.onInfoSocio(data);
-            console.log("DATOS DOC  ", data.lst_dir_domicilio)
-            console.log("DATOS TRa ", data.lst_dir_trabajo)
+            //console.log("DATOS DOC  ", data.lst_dir_domicilio)
+            //console.log("DATOS TRa ", data.lst_dir_trabajo)
 
         }, dispatch);
         setEstadoLoadingInfoSocio(false);
@@ -148,7 +148,7 @@ const DatosSocio = (props) => {
 
     const seleccionComentarioAfirma = (value) => {
         const comentarioSeleccionado = comentariosPositivos.find((element) => { return element.key === value });
-        console.log(comentarioSeleccionado);
+        //console.log(comentarioSeleccionado);
         props.onComentario(comentarioSeleccionado.textPrincipal);
     }
     const seleccionComentarioNega = (value) => {
@@ -188,7 +188,7 @@ const DatosSocio = (props) => {
 
         //TODO: REVISAR PRIMER PARAMETRO intCliente reporta del metodo Score
 
-        console.log("SCORE ID CLI ", props.idClienteScore)
+       // console.log("SCORE ID CLI ", props.idClienteScore)
         //fetchReporteAval(props.idClienteScore, props.token, (data) => { //TODO: DEJAR ESTA LINEA PARA PRODUCCION
 
         /*
@@ -222,11 +222,11 @@ const DatosSocio = (props) => {
         <div className="f-col w-100">
             <div id="montoSugerido" className="f-row w-100 ">
                 <img src="Imagenes/Cupo sugerido.svg"></img>
-                <div className="ml-3 datosMonto">
-                    <h3 className="blue">Cupo sugerido:</h3>
-                    <h2 className="strong blue">{`${props.score.str_cupo_sugerido ? Number(props.score.str_cupo_sugerido).toLocaleString('en-US') : Number('0.00').toLocaleString('en-US')}`}</h2>
-                    {/*<h2 className="strong blue">{`${props.score.str_cupo_sugerido_ccopmego ? Number(props.score.str_cupo_sugerido_ccopmego).toLocaleString('en-US') : Number('0.00').toLocaleString('en-US')}`}</h2>*/}
-                </div>
+                    <div className="ml-3 datosMonto">
+                        <h3 className="blue">Cupo Sugerido Coopmego: </h3>
+                        <h2 className="strong blue">{`${props.score.str_cupo_sugerido ? Number(props.score.str_cupo_sugerido).toLocaleString('en-US') : Number('0.00').toLocaleString('en-US')}`}</h2>
+                        {/*<h2 className="strong blue">{`${props.score.str_cupo_sugerido_ccopmego ? Number(props.score.str_cupo_sugerido_ccopmego).toLocaleString('en-US') : Number('0.00').toLocaleString('en-US')}`}</h2>*/}
+                    </div>
             </div>
             <div className="info f-row mb-4">
                 <h3 className="strong">{props.score.response.result.identificacionTitular[0]?.nombreRazonSocial}</h3>

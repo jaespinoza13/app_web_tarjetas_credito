@@ -11,6 +11,7 @@ using Domain.Models.TarjetaCredito.Axentria.AddDocumentos;
 using Domain.Models.TarjetaCredito.Axentria.CrearSeparadores;
 using Domain.Models.TarjetaCredito.Axentria.GetSeparadores;
 using Domain.Models.TarjetaCredito.Axentria.ObtenerDocumentos;
+using Domain.Models.TarjetaCredito.GetAlertasCliente;
 using Domain.Models.TarjetaCredito.GetComentarios;
 using Domain.Models.TarjetaCredito.GetContrato;
 using Domain.Models.TarjetaCredito.GetContratos;
@@ -80,6 +81,42 @@ namespace Infrastructure.TarjetaCredito
                     res = JsonSerializer.Deserialize<ResGetValidaciones>(response.Content!)!;
                 }
             } catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            return res;
+        }
+
+        public ResGetAlertasCliente getAlertasCliente(ReqGetAlertasCliente req)
+        {
+            ResGetAlertasCliente res = new ResGetAlertasCliente();
+            try
+            {
+                req.llenarDatosConfig(_settings);
+                req.str_id_servicio = "REQ_" + _settings.service_get_alertas_cliente;
+                var options = new RestClientOptions(_settings.ws_personas + _settings.service_get_alertas_cliente)
+                {
+                    ThrowOnAnyError = true,
+                    MaxTimeout = _settings.time_out
+                };
+                var client = new RestClient(options);
+
+                string auth_basic = Convert.ToBase64String(ASCIIEncoding.ASCII.GetBytes(_settings.auth_user_ws_personas + ":" + _settings.auth_pass_ws_personas));
+
+                var request = new RestRequest();
+                request.AddHeader("Authorization", "Basic " + auth_basic);
+                request.AddHeader("Content-Type", "application/json");
+                request.AddParameter("application/json", req, ParameterType.RequestBody);
+
+                request.Method = Method.Post;
+                var response = new RestResponse();
+                response = client.Post(request);
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    res = JsonSerializer.Deserialize<ResGetAlertasCliente>(response.Content!)!;
+                }
+            }
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
             }

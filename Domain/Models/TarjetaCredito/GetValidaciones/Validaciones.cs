@@ -8,6 +8,7 @@ namespace Domain.Models.TarjetaCredito.GetValidaciones
 {
     public class Validaciones
     {
+        public int int_num_alerta { get; set; }
         public string str_nemonico {  get; set; } = String.Empty;
         public string str_descripcion_alerta {  get; set; } = String.Empty;
         public string str_estado_alerta { get; set; } = String.Empty;

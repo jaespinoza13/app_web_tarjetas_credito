@@ -54,7 +54,8 @@ const context = [
     '/tarjetacredito/crearSeparadores',
     '/tarjetacredito/addDocumentosAxentria',
     '/tarjetacredito/getDocumentosAxentria',
-    '/tarjetacredito/getReporteAval'
+    '/tarjetacredito/getReporteAval',
+    '/tarjetacredito/getAlertasCliente'
 ];
 
 module.exports = function(app) {
