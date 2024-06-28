@@ -5,7 +5,7 @@ import Modal from './Modal/Modal';
 import { fetchCrearSeparadoresAxentria, fetchAddDocumentosAxentria, fetchInfoSocio } from "../../services/RestServices";
 import { useDispatch } from 'react-redux';
 import { element } from 'prop-types';
-import { base64ToBlob, verificarPdf, descargarArchivo } from '../../js/utiles';
+import { base64ToBlob, verificarPdf, descargarArchivo, conversionBase64 } from '../../js/utiles';
 
 const UploadDocumentos = (props) => {
 
@@ -299,14 +299,16 @@ const UploadDocumentos = (props) => {
 
     }, [validadorCambio])
 
+    const [archivosCargados, setCarchivosCargados] = useState([]);
 
     const cargarArchivosHandler = (event) => {
 
         let archivosLimpieza = [...event.target.files];
         archivosLimpieza = archivosLimpieza.filter(doc => doc.type === "application/pdf")
-        //console.log(archivosLimpieza)
+        console.log(archivosLimpieza)
 
         //TODO: Falta obtener archivo en base64
+        let arregloArchivos = [];
 
         if (archivosLimpieza.length > 0) {
 
@@ -316,37 +318,35 @@ const UploadDocumentos = (props) => {
                 //console.log(indexArchivo);
                 tablaContenido[indexArchivo].str_ruta_arc = element.webkitRelativePath;
                 tablaContenido[indexArchivo].str_login_carga = "dvvasquez";
+
+                arregloArchivos.push({ id_separador: tablaContenido[indexArchivo].int_id_separador, archivo: element });
+
             })
+            console.log("ARREGLO ARCHIVOS OBJ ", arregloArchivos)
             setValidadorCambio(true);
-            setTablaContenido([...tablaContenido]);
+            setTablaContenido([...tablaContenido]);          
+            setCarchivosCargados([...arregloArchivos]);
         }
 
     }
 
-    /*
-    export function fetchAddDocumentosAxentria(requiereSeparar, requierePublicar, rutaArchivo, nombreArchivo, identificacionSocio, usuCarga, nombreSocio, nombreGrupo, referencia, token, onSucces, dispatch) {
-    if (dispatch) dispatch(setErrorRedirigir(""));
 
-    let body = {
-        bln_separar: requiereSeparar,
-        bln_publicar: requierePublicar,
-        str_ruta_arc: rutaArchivo,
-        str_nombre_arc: nombreArchivo,
-        str_identificacion: identificacionSocio,
-        str_login_carga: usuCarga,
-        str_nombre_socio: nombreSocio,
-        str_nombre_grupo: nombreGrupo,
-        str_referencia: referencia
+    const convertorArchivo = async (archivoSub) => {
+        let base64Archivo = await conversionBase64(archivoSub);
+        console.log(base64Archivo.split(',')[1]);
+        return base64Archivo.split(',')[1];
     }
-    */
 
-    const publicarDocumentos = () => {
-        console.log(separadorCheckBox)
-        console.log(publicadorCheckBox)
+    const publicarDocumentos = async () => {
+        //console.log(separadorCheckBox)
+        //console.log(publicadorCheckBox)
 
         //function fetchAddDocumentosAxentria(requiereSeparar, rutaArchivo, nombreArchivo, identificacionSocio, usuCarga, nombreSocio, nombreGrupo, referencia, token,
 
         const docsCargados = tablaContenido.filter(docum => docum.str_ruta_arc !== "");
+
+        console.log(docsCargados)
+
 
         docsCargados.forEach(grupo => {
             let validarSeparador = separadorCheckBox.includes(grupo.int_id_separador);
@@ -356,7 +356,18 @@ const UploadDocumentos = (props) => {
 
             if (validarPublicacion) {
                 //Obtener el archivo en base64
-                /*fetchAddDocumentosAxentria(validarSeparador, grupo.str_ruta_ar,  props.token, (data) => {
+                let busquedaArchivo = archivosCargados.find(arch => arch.id_separador === grupo.int_id_separador);
+                
+                let archivoABase64 = convertorArchivo(busquedaArchivo.archivo)
+                console.log("BUSQ ARCH PUB ", busquedaArchivo);
+
+                //TODO: VALIDAR
+
+                // (requiereSeparar, rutaArchivo, nombreArchivo, identificacionSocio, usuCarga, nombreSocio, nombreGrupo, referencia, archivo, token, onSucces, 
+                /*
+                fetchAddDocumentosAxentria(validarSeparador, grupo.str_ruta_ar, grupo.str_nombre_separador, props.cedulaSocio, 'xnojeda1',
+                    props.datosSocio?.str_nombres + ' ' + props.datosSocio?.str_apellido_paterno + ' ' + props.datosSocio?.str_apellido_materno,
+                    grupo.str_separador, '', archivoABase64, props.token, (data) => {
 
 
                 }, dispatch);*/

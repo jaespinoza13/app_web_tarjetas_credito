@@ -809,7 +809,7 @@ export function fetchScore(strTipoDocumento, strCedula, strNombres, strLugar, st
         str_oficial: strOficial,
         bln_cupo_sugerido: false
     };
-    console.log("SCORE BODY, ",body)
+    //console.log("SCORE BODY, ",body)
 
     ServicioPostExecute(getScore, body, token, { dispatch: dispatch }).then((data) => {
         if (data) {
@@ -1624,7 +1624,7 @@ export function fetchGetSeparadores( token, onSucces, dispatch) {
     });
 }
 
-export function fetchAddDocumentosAxentria(requiereSeparar, rutaArchivo, nombreArchivo, identificacionSocio, usuCarga, nombreSocio, nombreGrupo, referencia, token, onSucces, dispatch) {
+export function fetchAddDocumentosAxentria(requiereSeparar, rutaArchivo, nombreArchivo, identificacionSocio, usuCarga, nombreSocio, nombreGrupo, referencia, archivo, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
@@ -1636,8 +1636,12 @@ export function fetchAddDocumentosAxentria(requiereSeparar, rutaArchivo, nombreA
         str_login_carga: usuCarga,
         str_nombre_socio: nombreSocio,
         str_nombre_grupo: nombreGrupo,
-        str_referencia: referencia
+        str_referencia: referencia,
+        loadfile: {
+            file: archivo
+        }
     }
+    console.log("BODY ADD ARC ", body)
 
     ServicioPostExecute(addDocumentosAxentria, body, token, { dispatch: dispatch }).then((data) => {
         console.log("Add Doc Axe,", data);
