@@ -15,6 +15,7 @@ import Input from "../Common/UI/Input";
 import Toggler from "../Common/UI/Toggler";
 import UploadDocumentos from "../Common/UploaderDocuments";
 import { get } from "../../js/crypt";
+import { useRef } from "react";
 
 const mapStateToProps = (state) => {
     //console.log(state);
@@ -59,15 +60,14 @@ const VerSolicitud = (props) => {
     const [montoAprobado, setMontoAprobado] = useState(0);
 
     const [comentarioCambioEstado, setComentarioCambioEstado] = useState("");
-    const [valorDecisionSelect, setValorDecisionSelect] = useState(-1);
+    const [valorDecisionSelect, setValorDecisionSelect] = useState("-1");
     const [isActivoBtnDecision, setIsActivoBtnDecision] = useState(true);
     const [isBtnDisableCambioBandeja, setIsBtnDisableCambioBandeja] = useState(true);
 
     //Se debe implementar con parametros
     const [imprimeMedio, setImprimeMedio] = useState([]);
     const [regresaSolicitud, setRegresaSolicitud] = useState([]);
-    const [estadosSiguientes, setEstadosSiguientes] = useState([]);
-    const [estadosSiguientesAll, setEstadosSiguientesAll] = useState([]);
+
 
     //DATOS DEL USUARIO
     const [datosUsuario, setDatosUsuario] = useState([]);
@@ -80,14 +80,31 @@ const VerSolicitud = (props) => {
 
     //Axentria
     const [separadores, setSeparadores] = useState([]);
+
+
+    //PARAMETROS REQUERIDOS
     const [parametrosTC, setParametrosTC] = useState([]); // cambiar prm_valor_ini por str_valor_ini
+    const [bandejaApruebaSol, setBandejaApruebaSol] = useState([]);
+    const [estadosDecisionComite, setEstadosDecisionComite] = useState([]);
+    const [estadosDecBanjComiteAll, setEstadosDecBanjComiteAll] = useState([]);
+
+    const [estadosRetornaBandejaComite, setEstadosRetornaBandejaComite] = useState([]);
+    const [estadosRetornaComiteAll, setEstadosRetornaComiteAll] = useState([]);
+
     const [permisoImprimirMedio, setPermisoImprimirMedio] = useState([]);
+    const [permisoImprimirMedioAll, setPermisoImprimirMedioAll] = useState([]);
+
+
+    const [estadosSigConfirmPorMontoMenor, setEstadosSigConfirmPorMontoMenor] = useState([]);
+    const [estadosSigConfirmPorMontoMenorAll, setEstadosSigConfirmPorMontoMenorAll] = useState([]);
+
+
     const [permisoRetornarBandeja, setPermisoRetornarBandeja] = useState([]);
-    const [permisoApruebaMontoMenor, setPermisoApruebaMontoMenor] = useState([]);
+    
     const [permisoEstadosSigComite, setPermisoEstadosSigComite] = useState([]);
     const [permisoEstadoHabilitarAprobarSol, setPermisoEstadoHabilitarAprobarSol] = useState([]);
 
-    const parametros = [
+    /*const parametros = [
         { prm_id: 11272, prm_valor_ini: "SOLICITUD CREADA" },
         { prm_id: 11273, prm_valor_ini: "ANALISIS UAC" },
         { prm_id: 11274, prm_valor_ini: "ANALISIS JEFE UAC" },
@@ -98,7 +115,8 @@ const VerSolicitud = (props) => {
         { prm_id: 11279, prm_valor_ini: "APROBADA" },//APROBADA SOCIO
         { prm_id: 11280, prm_valor_ini: "NEGADA" }, //RECHAZADA SOCIO
         { prm_id: 10934, prm_valor_ini: "ANULADA COMITE" },
-    ];
+    ];*/
+
     const seleccionAccionSolicitud = (value) => {
         const accionSelecciona = accionesSolicitud.find((element) => { return element.key === value });
         //console.log(accionSelecciona);
@@ -113,15 +131,34 @@ const VerSolicitud = (props) => {
         { nombre: 'Usuario', key: 3 }, { nombre: 'Fecha actualización', key: 4 }, { nombre: "Comentario", key: 6 }
     ];
 
+    const estadoSolicitud = useRef('');
+
+    useEffect(() => {
+        console.log("VAL CURR ", estadoSolicitud.current)
+    }, [estadoSolicitud])
+
     useEffect(() => {
 
         //Obtener datos del cliente
-        fetchInfoSocio(props.cedulaSocio, props.token, (data) => {
-            //console.log("BUSQ SOCI AXEN ", data)
+        fetchInfoSocio(props.solicitud.cedulaPersona, props.token, (data) => {
+
+            console.log("BUSQ SOCI AXEN ", props.solicitud.cedulaPersona)
+            //console.log("CEDULA ", prop)
             setDatosSocio(data.datos_cliente[0]);
         }, dispatch);
 
-        actualizaInformaFlujoSol();
+
+        fetchGetFlujoSolicitud(props.solicitud.solicitud, props.token, (data) => {
+            if (data.flujo_solicitudes.length > 0) {
+                const arrayDeValores = data.flujo_solicitudes.map(objeto => objeto.int_flujo_id);
+                const valorMaximo = Math.max(...arrayDeValores);
+                const datosSolicitud = data.flujo_solicitudes.find(solFlujo => solFlujo.int_flujo_id === valorMaximo);
+                setFlujoSolId(datosSolicitud.int_flujo_id);
+                setSolicitudTarjeta(...[datosSolicitud]);
+                setMontoAprobado(datosSolicitud.str_cupo_solicitado);
+                estadoSolicitud.current = datosSolicitud.str_estado;
+            }
+        }, dispatch);
 
         fetchGetInforme(props.solicitud.solicitud, props.solicitud.idSolicitud, props.token, (data) => {
             setInforme(data.lst_informe);
@@ -156,40 +193,82 @@ const VerSolicitud = (props) => {
                 prm_id: 11275
             }
         ]);
-        /*setEstadosSiguientesAll([
-            {
-                prm_id: 11275, estados: "11276|11277|11278"
-            }
-        ]);*/
 
-        setEstadosSiguientesAll([
-            {
-                prm_id: 11275, estados: "11276|11277"
-            }
-        ]);
-
+        //console.log("PROPS, ", props)
 
         //OBTENER DATOS DEL USUARIO
         const strOficial = get(localStorage.getItem("sender_name"));
         const strRol = get(localStorage.getItem("role"));
         const userOficial = get(localStorage.getItem('sender'));
         setDatosUsuario([{ strCargo: strRol, strOficial: strOficial, strUserOficial: userOficial }]);
-        //console.log(`DATOS USER, ${strOficial}, ${strRol} , ${userOficial}`)
 
-        //console.log("PROPS INFO", props.solicitud)
 
-    }, []);
-
-    /** OBTENER LOS PARAMETROS DEL STORAGE*/
-    useEffect(() => {
         //console.log("PROPS parametrosTC", props.parametrosTC.lst_parametros)
         if (props.parametrosTC.lst_parametros?.length > 0) {
             //console.log("Entr", props.parametrosTC.lst_parametros)
             let ParametrosTC = props.parametrosTC.lst_parametros;
-            setParametrosTC(ParametrosTC.filter(param => param.str_nombre === 'ESTADOS_SOLICITUD_TC'))
+            setParametrosTC(ParametrosTC
+                .filter(param => param.str_nombre === 'ESTADOS_SOLICITUD_TC')
+                .map(estado => ({
+                    prm_id: estado.int_id_parametro,
+                    prm_nombre: estado.str_nombre,
+                    prm_nemonico: estado.str_nemonico,
+                    prm_valor_ini: estado.str_valor_ini,
+                    prm_valor_fin: estado.str_valor_fin
+                })));
+
+            /* ESTADOS PARA DECISION FINAL DEL COMITE */
+            setEstadosDecBanjComiteAll(ParametrosTC
+                .filter(param => param.str_nombre === 'HABILITA_DECISION_APRUEBA_SOLICITUD')
+                .map(estado => ({
+                    prm_id: estado.int_id_parametro,
+                    prm_valor_ini: estado.str_valor_ini,
+                    estados: estado.str_valor_fin
+                })));
+
+            /* ESTADOS PARA RETORNAR BANDEJA PARA EL COMITE */
+            setEstadosRetornaComiteAll(ParametrosTC
+                .filter(param => param.str_nombre === 'RETORNO_ESTADO_BANDEJA_TC')
+                .map(estado => ({
+                    prm_id: estado.int_id_parametro,
+                    prm_valor_ini: estado.str_valor_ini,
+                    estados: estado.str_valor_fin
+                })));
+
+            /* PERMISOS EN ESTADOS PARA IMPRIMIR MEDIO DE APROBACION */
+            setPermisoImprimirMedioAll(ParametrosTC
+                .filter(param => param.str_nombre === 'IMPRIMIR_MEDIO_APROBACION_TC')
+                .map(estado => ({
+                    prm_id: estado.int_id_parametro,
+                    prm_valor_ini: estado.str_valor_ini,
+                    //estados: estado.str_valor_fin
+                })));
+
+            /* ESTADOS SIGUIENTES CUANDO SOLICITUD ESTA EN POR CONFIRMAR SOCIO POR MONTO MENOR APROBADO */
+            setEstadosSigConfirmPorMontoMenorAll(ParametrosTC
+                .filter(param => param.str_nombre === 'APROBACION_SOLICITUD_MONTO_MENOR')
+                .map(estado => ({
+                    prm_id: estado.int_id_parametro,
+                    prm_valor_ini: estado.str_valor_ini,
+                    estados: estado.str_valor_fin
+                })));
+
+            /*
+        setBandejaApruebaSol(ParametrosTC
+            .filter(param => param.str_nemonico === 'EST_SIG_ANA_COM')
+            .map(estado => ({
+                prm_id: estado.int_id_parametro,
+                prm_valor_ini: estado.str_valor_ini,
+                estados: estado.str_valor_fin
+            })));*/
+
+
+
         }
 
-    }, [props.parametrosTC])
+
+    }, []);
+
 
     const actualizaInformaFlujoSol = () => {
         fetchGetFlujoSolicitud(props.solicitud.solicitud, props.token, (data) => {
@@ -197,14 +276,14 @@ const VerSolicitud = (props) => {
             //console.log("FLUJO SOL, ", data)
             //TODO: capturar informacion bool para enviar a sig bandeja
             //TODO: cambiar el int_id por int_flujo_id que es el campo mas actual
-            console.log("VALOR  BOOL , ", data.int_ingreso_fijo)
+            //console.log("VALOR  BOOL , ", data.int_ingreso_fijo)
             if (data.flujo_solicitudes.length > 0) {
                 const arrayDeValores = data.flujo_solicitudes.map(objeto => objeto.int_flujo_id);
                 const valorMaximo = Math.max(...arrayDeValores);
                 const datosSolicitud = data.flujo_solicitudes.find(solFlujo => solFlujo.int_flujo_id === valorMaximo);
                 setFlujoSolId(datosSolicitud.int_flujo_id);
                 setSolicitudTarjeta(...[datosSolicitud]);
-                console.log(" SOL, ", datosSolicitud)
+                //console.log(" SOL, ", datosSolicitud)
                 setMontoAprobado(datosSolicitud.str_cupo_solicitado);
             }
 
@@ -213,38 +292,88 @@ const VerSolicitud = (props) => {
     }
 
 
-    const validaNombreParam = (id) => {
+    const validaNombreParam = (estadoNombre) => {
 
-        //console.log("ESTADO VALIDAR ", estadosSiguientesAll)
-        //console.log("ESTADO ENTRA ", id)
-        if (estadosSiguientes.length > 0) {
-            const parametro = parametros.find(param => Number(param.prm_id) === Number(id));
+        //console.log("ESTADO ENTRA ", estadoNombre)
+        if (estadosDecisionComite.length > 0 && parametrosTC.length > 0) {
+            //const parametro = parametros.find(param => Number(param.prm_id) === Number(id));
+            let parametro = parametrosTC.find(param => param.prm_valor_ini === estadoNombre);
             return parametro;
+        } else {
+            window.alert("ERROR EN CARGA DE PARAMETROS, COMUNICATE CON EL ADMINISTRADOR");
         }
     }
 
-    useEffect(() => {
 
-        if (estadosSiguientesAll.length > 0) {
-            let arrEstados = estadosSiguientesAll?.find((parametr) => Number(parametr.prm_id) === Number(props.solicitud.idSolicitud));
+    /** SECCION OBTENER LOS PARAMETROS DEL STORAGE */
+    useEffect(() => {
+        if (estadosDecBanjComiteAll.length > 0) {
+            //console.log(estadosDecBanjComiteAll)
+            let arrEstados = estadosDecBanjComiteAll.find((parametr) => (parametr.prm_valor_ini) === props.solicitud.estado)
+            //console.log("ARR_EST ", arrEstados)
             if (arrEstados) {
                 const estadosSiguientes = arrEstados.estados.split('|');
-                const conversionANumeros = estadosSiguientes.map(estado => Number(estado));
-                //console.log("CONVERSION NUM ",conversionANumeros)
-                setEstadosSiguientes(conversionANumeros);
+                setEstadosDecisionComite(estadosSiguientes);
+                //console.log("RESP ", estadosSiguientes)
             } else {
                 // Handle the case when arrEstados is not found
-                setEstadosSiguientes([]);
+                setEstadosDecisionComite([]);
+                setIsDecisionHabilitada(true);
             }
         }
+    }, [estadosDecBanjComiteAll])
 
-    }, [estadosSiguientesAll]);
+    
+    useEffect(() => {
+        if (estadosRetornaComiteAll.length > 0) {
+            //console.log(estadosRetornaComiteAll)
+            let arrEstados = estadosRetornaComiteAll.find((parametr) => (parametr.prm_valor_ini) === props.solicitud.estado)
+            //console.log("ARR_EST ", arrEstados)
+            if (arrEstados) {
+                const estadosSiguientes = arrEstados.estados.split('|');
+                setEstadosRetornaBandejaComite(estadosSiguientes);
+              //  console.log("RESP ", estadosSiguientes)
+            } else {
+                setEstadosRetornaBandejaComite([]);
+            }
+        }
+    }, [estadosRetornaComiteAll])
+
+
+    /*
+    useEffect(() => {
+        if (permisoImprimirMedioAll.length > 0) {
+            console.log(permisoImprimirMedioAll)
+            //let arrEstados = permisoImprimirMedioAll.find((parametr) => (parametr.prm_valor_ini) === props.solicitud.estado)
+            //console.log("ARR_EST ", arrEstados)
+            //if (arrEstados) {
+            const estadosImprimirMedio = permisoImprimirMedioAll.prm_valor_ini.split('|');
+            setEstadosRetornaBandejaComite(estadosImprimirMedio);
+            console.log("RESP ", estadosImprimirMedio)
+            //} else {
+            //    setEstadosRetornaBandejaComite([]);
+            //}
+        }
+    }, [permisoImprimirMedioAll])
 
     useEffect(() => {
-        if (estadosSiguientes.length === 1) {
-            setIsDecisionHabilitada(true);
+        if (estadosSigConfirmPorMontoMenorAll.length > 0) {
+            console.log(estadosSigConfirmPorMontoMenorAll)
+            let arrEstados = estadosSigConfirmPorMontoMenorAll.find((parametr) => (parametr.prm_valor_ini) === props.solicitud.estado)
+            console.log("ARR_EST ", arrEstados)
+            if (arrEstados) {
+                const estadosSiguientes = arrEstados.estados.split('|');
+                setEstadosSigConfirmPorMontoMenor(estadosSiguientes);
+                console.log("RESP ", estadosSiguientes)
+            } else {
+                setEstadosSigConfirmPorMontoMenor([]);
+            }
         }
-    }, [estadosSiguientes]);
+    }, [estadosSigConfirmPorMontoMenorAll])
+
+    */
+
+    /** FIN SECCION OBTENER LOS PARAMETROS DEL STORAGE */
 
     const comentarioAdicionalHanlder = (data, event) => {
         const id = informe.findIndex((comentario) => { return comentario.int_id_parametro === event });
@@ -288,8 +417,6 @@ const VerSolicitud = (props) => {
     }
 
     const guardarComentarioSiguiente = () => {
-        //console.log("ENTRAR GUARDAR COM SIG")
-        //console.log(`${props.solicitud.solicitud} | ${comentarioSolicitud} | ${props.solicitud.idSolicitud}  `)
         //Debe guardar comentario de Resolucion
 
         fetchAddComentarioSolicitud(props.solicitud.solicitud, comentarioSolicitud, props.solicitud.idSolicitud, false, props.token, (data) => {
@@ -313,20 +440,19 @@ const VerSolicitud = (props) => {
 
     }
 
-    const descargarReporte = () => {
-        const pdfUrl = "Imagenes/reporteavalhtml.pdf";
-        const link = document.createElement("a");
-        link.href = pdfUrl;
-        link.download = "document.pdf"; // specify the filename
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
+    //const descargarReporte = () => {
+    //    const pdfUrl = "Imagenes/reporteavalhtml.pdf";
+    //    const link = document.createElement("a");
+    //    link.href = pdfUrl;
+    //    link.download = "document.pdf"; // specify the filename
+    //    document.body.appendChild(link);
+    //    link.click();
+    //    document.body.removeChild(link);
+    //}
 
     const descargarMedio = (numSolicitud) => {
         console.log("Num Sol,", numSolicitud)
         //TODO: ESTADO
-        //fetchGetMedioAprobacion("", props.solicitud.solicitud, props.token, (data) => {
         fetchGetMedioAprobacion(solicitudTarjeta?.str_estado, props.solicitud.solicitud, props.token, (data) => {
             console.log("RESP MEDIO", data)
             if (data.str_res_codigo === "000" && verificarPdf(data.str_med_apro_bas_64)) {
@@ -351,7 +477,7 @@ const VerSolicitud = (props) => {
     }
     const getDecision = (event) => {
         setValorDecisionSelect(event.target.value);
-        if (Number(event.target.value) === 11276) {// || Number(event.target.value) === 11278) { //APROBADO o POR CONFIRMAR
+        if (event.target.value === "EST_APROBADA") {// || Number(event.target.value) === 11278) { //APROBADO o POR CONFIRMAR
             setIsMontoAprobarse(true);
         }
         else {
@@ -389,9 +515,6 @@ const VerSolicitud = (props) => {
     }
 
 
-    const guardarRechazo = () => {
-        rechazaTarjeta();
-    }
 
 
     const cambiarEstadoSolHandler = (e) => {
@@ -399,8 +522,7 @@ const VerSolicitud = (props) => {
     }
 
     const cambioEstadoBandeja = () => {
-        //Comite retorna a un estado de bandeja especifica
-        //if (props.solicitud.idSolicitud === 11275) { //ANALISIS COMITE
+        //Comite retorna a un estado de bandeja especifica para ANALISIS COMITE
         if (solicitudTarjeta?.str_estado === "ANALISIS COMITE") {
             fetchAddProcEspecifico(props.solicitud.solicitud, 0, selectCambioEstadoSol, comentarioCambioEstado, props.token, (data) => {
                 if (data.str_res_codigo === "000") {
@@ -430,25 +552,11 @@ const VerSolicitud = (props) => {
 
     }
 
-    const openModalRechazo = () => {
-        setModalRechazo(true);
-    }
-
     const closeModalResolucionSocio = () => {
         setModalResolucionSocio(false);
     }
 
 
-    const rechazaTarjeta = () => {
-        fetchAddProcEspecifico(props.solicitud.idSolicitud, 0, "EST_RECHAZADA_SOCIO", "", props.token, (data) => {
-            if (data.str_res_codigo === "000") {
-                //Ir a pagina anterior
-                setModalRechazo(false);
-                navigate.push('/solicitud');
-            }
-            console.log("RECHAZ ", data)
-        }, dispatch)
-    }
 
     const closeModalRechazo = () => {
         setModalRechazo(false);
@@ -489,29 +597,38 @@ const VerSolicitud = (props) => {
     }, [comentarioSolicitud])
 
 
+
+    const rechazarSolicitudHandler = () => {
+        console.log("ENTRA A RECHAZAR")
+        fetchAddProcEspecifico(props.solicitud.solicitud, 0, "EST_RECHAZADA", "", props.token, (data) => { //EST_RECHAZADA 11277
+            if (data.str_res_codigo === "000") {
+                console.log("SE NEGO SOLICITUD");
+                setModalRechazo(false);
+                navigate.push('/solicitud');
+            }
+            else {
+                console.log("No cuenta con permisos ", data);
+            }
+        }, dispatch)
+    }
+
+
     const guardarDecisionComiteHandler = () => {
         let validaCupo = controlMontoAprobado();
         console.log(`Valida Cupo,`, validaCupo)
         console.log(`valorDecisionSelect,`, valorDecisionSelect)
 
-        if (Number(valorDecisionSelect) === 11277) { // EST_RECHAZADA
-            fetchAddProcEspecifico(props.solicitud.solicitud, 0, "EST_RECHAZADA", "", props.token, (data) => { //EST_RECHAZADA 11277
-                if (data.str_res_codigo === "000") {
-                    console.log("SE NEGO SOLICITUD");
-                    navigate.push('/solicitud');
-                }
-                else {
-                    console.log("No cuenta con permisos ", data);
-                }
-            }, dispatch)
+        if (valorDecisionSelect === "EST_RECHAZADA") { // EST_RECHAZADA
+            setModalRechazo(true);
+            return;
         }
 
         console.log(`Contr montoAprobado ${montoAprobado} cupo_solicitado ${solicitudTarjeta?.str_cupo_solicitado}`)
 
         /*VALIDACIONES PARA CUANDO ES APROBADA*/
         //Si cupo que se va aprobar es el mismo que el socio solicito
-        if (Number(valorDecisionSelect) === 11276 && Number(validaCupo.estadoSig) === 11276) { //APROBADO
-            console.log("PASS1")
+        if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_APROBADA") { //APROBADO
+
             fetchAddProcEspecifico(props.solicitud.solicitud, solicitudTarjeta.str_cupo_solicitado, "EST_APROBADA", comentarioSolicitud, props.token, (data) => { //APROBADO 11276
                 if (data.str_res_codigo === "000") {
                     console.log("SE APROBO SOLICITUD");
@@ -524,9 +641,7 @@ const VerSolicitud = (props) => {
 
         }
         //Si cupo que se va aprobar es menor al que solicita el socio
-        else if (Number(valorDecisionSelect) === 11276 && Number(validaCupo.estadoSig) === 11278) { //POR CONFIRMAR
-            console.log("PASS2")
-            console.log("nuevoMontoAprobado ", montoAprobado)
+        else if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_POR_CONFIRMAR") { //POR CONFIRMAR
             fetchAddProcEspecifico(props.solicitud.solicitud, Number.parseFloat(montoAprobado).toFixed(2), "EST_POR_CONFIRMAR", comentarioSolicitud, props.token, (data) => { //POR CONFIRMAR 11278
                 if (data.str_res_codigo === "000") {
                     console.log("SE ENVIA POR CONFIFMAR SOLICITUD");
@@ -546,12 +661,12 @@ const VerSolicitud = (props) => {
             estadoSig: "0"
         }
 
-        if ((Number.parseFloat(solicitudTarjeta?.str_cupo_solicitado) === Number.parseFloat(montoAprobado)) && valorDecisionSelect === "11276") {
+        if ((Number.parseFloat(solicitudTarjeta?.str_cupo_solicitado) === Number.parseFloat(montoAprobado)) && valorDecisionSelect === "EST_APROBADA") {
             controlBool.validador = true;
-            controlBool.estadoSig = "11276" // EST_APROBADA (COMITE)
-        } else if (Number.parseFloat(montoAprobado) > 0 && (Number.parseFloat(montoAprobado) < Number.parseFloat(solicitudTarjeta?.str_cupo_solicitado)) && valorDecisionSelect === "11276") {
+            controlBool.estadoSig = "EST_APROBADA" // EST_APROBADA (COMITE)
+        } else if (Number.parseFloat(montoAprobado) > 0 && (Number.parseFloat(montoAprobado) < Number.parseFloat(solicitudTarjeta?.str_cupo_solicitado)) && valorDecisionSelect === "EST_APROBADA") {
             controlBool.validador = true;
-            controlBool.estadoSig = "11278" // EST_POR_CONFIRMAR (SE VA HACIA ASESOR CREDITO NUEVAMENTE)
+            controlBool.estadoSig = "EST_POR_CONFIRMAR" // EST_POR_CONFIRMAR (SE VA HACIA ASESOR CREDITO NUEVAMENTE)
         } else if (Number.parseFloat(montoAprobado) > Number.parseFloat(solicitudTarjeta?.str_cupo_solicitado)) {
             controlBool.validador = false;
             controlBool.estadoSig = "0" // NO ES POSIBLE PASAR BANDEJA
@@ -562,20 +677,20 @@ const VerSolicitud = (props) => {
     /* VALIDACION  */
     useEffect(() => {
         let validaCupo = controlMontoAprobado();
-        console.log("CONTROL CUPO 2, ", validaCupo);
+        //console.log("CONTROL CUPO 2, ", validaCupo);
 
         if (Number.parseFloat(montoAprobado) > Number.parseFloat(solicitudTarjeta?.str_cupo_solicitado) || montoAprobado.length > 9) {
             setIsActivoBtnDecision(true);
             return
         }
-        if (valorDecisionSelect === "11277") { //EST_RECHAZADA
+        if (valorDecisionSelect === "EST_RECHAZADA") { //EST_RECHAZADA
             setIsActivoBtnDecision(false);
         }
 
         else if (valorDecisionSelect !== "-1" && montoAprobado > 0 && comentarioSolicitud !== "" && validaCupo.validador) {
-            if (valorDecisionSelect === "11276" && validaCupo.estadoSig === "11276") {// EST_APROBADA 11276
+            if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_APROBADA") {// EST_APROBADA 11276
                 setIsActivoBtnDecision(false);
-            } else if (valorDecisionSelect === "11276" && validaCupo.estadoSig === "11278") { //EST_POR_CONFIRMAR 11278 por cupo inferior 
+            } else if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_POR_CONFIRMAR") { //EST_POR_CONFIRMAR 11278 por cupo inferior 
                 setIsActivoBtnDecision(false);
             } else {
                 setIsActivoBtnDecision(true);
@@ -607,14 +722,14 @@ const VerSolicitud = (props) => {
                 }
             }, dispatch)
 
-        } else if (selectResolucionSocio === "EST_RECHAZADA_SOCIO") {
-            fetchAddProcEspecifico(props.solicitud.solicitud, 0, "EST_RECHAZADA_SOCIO", "", props.token, (data) => { //EST_RECHAZADA_SOCIO 11280
+        } else if (selectResolucionSocio === "EST_RECHAZADA") {
+            fetchAddProcEspecifico(props.solicitud.solicitud, 0, "EST_RECHAZADA", "", props.token, (data) => { //EST_RECHAZADA 11277
                 if (data.str_res_codigo === "000") {
                     console.log("SE NEGO SOLICITUD POR SOCIO");
                     navigate.push('/solicitud');
                 }
                 else {
-                    console.log("No cuenta con permisos EST_RECHAZADA_SOCIO ", data);
+                    console.log("No cuenta con permisos EST_RECHAZADA ", data);
                 }
             }, dispatch)
         }
@@ -633,315 +748,292 @@ const VerSolicitud = (props) => {
                 <>
 
                     {
-                        /*props.solicitud.idSolicitud === 11276*/
                         solicitudTarjeta?.str_estado === "APROBADA"
-                        ?
-                        <Card className={["w-100 justify-content-space-between align-content-center"]}>
-                            <div>
+                            ?
+                            <Card className={["w-100 justify-content-space-between align-content-center"]}>
+                                <div>
 
-                                <h3 className="mb-3 strong">Información de la solicitud</h3>
-                                <Card className={["f-row"]}>
-                                    <Item xs={6} sm={6} md={6} lg={6} xl={6}>
-                                        <div className="values  mb-3">
-                                            <h5>Socio:</h5>
-                                            <h5 className="strong">
-                                                {datosSocio?.str_nombres} {datosSocio?.str_apellido_paterno} {datosSocio?.str_apellido_materno}
-                                                {/*{`$ ${props.montoSugerido || Number('10000.00').toLocaleString("en-US")}`}*/}
-                                            </h5>
-                                        </div>
-                                        <div className="values  mb-3">
-                                            <h5>Tipo Documento:</h5>
-                                            <h5 className="strong">
-                                                {`Cédula`}
-                                            </h5>
-                                        </div>
-                                        <div className="values  mb-3">
-                                            <h5>Oficina:</h5>
-                                            <h5 className="strong">
-                                                {`EL VALLE`}
-                                            </h5>
-                                        </div>
-                                        <div className="values  mb-3">
-                                            <h5>Oficial:</h5>
-                                            <h5 className="strong">
-                                                {`${solicitudTarjeta?.str_usuario_proc}`}
-                                            </h5>
-                                        </div>
+                                    <h3 className="mb-3 strong">Información de la solicitud</h3>
+                                    <Card className={["f-row"]}>
+                                        <Item xs={6} sm={6} md={6} lg={6} xl={6}>
+                                            <div className="values  mb-3">
+                                                <h5>Socio:</h5>
+                                                <h5 className="strong">
+                                                    {datosSocio?.str_nombres} {datosSocio?.str_apellido_paterno} {datosSocio?.str_apellido_materno}
+                                                    {/*{`$ ${props.montoSugerido || Number('10000.00').toLocaleString("en-US")}`}*/}
+                                                </h5>
+                                            </div>
+                                            <div className="values  mb-3">
+                                                <h5>Tipo Documento:</h5>
+                                                <h5 className="strong">
+                                                    {`Cédula`}
+                                                </h5>
+                                            </div>
+                                            <div className="values  mb-3">
+                                                <h5>Oficina:</h5>
+                                                <h5 className="strong">
+                                                    {`EL VALLE`}
+                                                </h5>
+                                            </div>
+                                            <div className="values  mb-3">
+                                                <h5>Oficial:</h5>
+                                                <h5 className="strong">
+                                                    {`${solicitudTarjeta?.str_usuario_proc}`}
+                                                </h5>
+                                            </div>
 
-                                        <div className="values  mb-3">
-                                            <h5>Estado de la solicitud:</h5>
-                                            <h5 className="strong">
-                                                {`${solicitudTarjeta?.str_estado}`}
-                                            </h5>
-                                        </div>
+                                            <div className="values  mb-3">
+                                                <h5>Estado de la solicitud:</h5>
+                                                <h5 className="strong">
+                                                    {`${solicitudTarjeta?.str_estado}`}
+                                                </h5>
+                                            </div>
 
-                                        {/* TODO REVISAR SI VA BOTONES PARA EST_APROBADA */}
-                                        {/*{props.solicitud.idSolicitud === "11276" */}
-                                        {/*        ? */}
-                                        {/*        <>*/}
-                                        {/*            <div className="values  mb-3">*/}
-                                        {/*                <Button className={["btn_mg btn_mg__primary"]} disabled={false} onClick={descargarReporte}>Descargar reporte</Button>*/}
-                                        {/*            </div>*/}
-                                        {/*            <div className="values  mb-3">*/}
-                                        {/*                <Button className="btn_mg__primary" type="" onClick={modalHandler}>Agregar comentarios</Button>*/}
-                                        {/*            </div>*/}
-                                        {/*        </>*/}
-                                        {/*        :*/}
-                                        {/*        <div className="values  mb-3">*/}
-                                        {/*            <Button className={["btn_mg btn_mg__primary"]} disabled={false} onClick={openModalRechazo}>Rechaza tarjeta</Button>*/}
-                                        {/*        </div>*/}
-                                        {/*}*/}
-                                    </Item>
+                                        </Item>
 
-                                    <Item xs={6} sm={6} md={6} lg={6} xl={6}>
+                                        <Item xs={6} sm={6} md={6} lg={6} xl={6}>
+                                            <div className="values  mb-3">
+                                                <h5>Solicitud Nro:</h5>
+                                                <h5 className="strong">
+                                                    {`${props.solicitud.solicitud || Number('10000.00').toLocaleString("en-US")}`}
+                                                </h5>
+                                            </div>
 
-
-                                        <div className="values  mb-3">
-                                            <h5>Solicitud Nro:</h5>
-                                            <h5 className="strong">
-                                                {`${props.solicitud.solicitud || Number('10000.00').toLocaleString("en-US")}`}
-                                            </h5>
-                                        </div>
-
-
-                                        <div className="values  mb-3">
-                                            <h5>Cupo solicitado:</h5>
-                                            <h5 className="strong f-row">
-                                                {`$ ${Number(solicitudTarjeta?.str_cupo_solicitado).toLocaleString("en-US") || Number('1000.00').toLocaleString("en-US")}`}
+                                            <div className="values  mb-3">
+                                                <h5>Cupo solicitado:</h5>
+                                                <h5 className="strong f-row">
+                                                    {`$ ${Number(solicitudTarjeta?.str_cupo_solicitado).toLocaleString("en-US") || Number('1000.00').toLocaleString("en-US")}`}
                                                     {/*{props.solicitud.idSolicitud === 11272 &&*/}
                                                     {solicitudTarjeta?.str_estado === "SOLICITUD CREADA" &&
-                                                    <Button className="btn_mg__auto ml-2" onClick={updateMonto}>
-                                                        <img src="/Imagenes/edit.svg"></img>
-                                                    </Button>
-                                                }
-                                            </h5>
-                                        </div>
-                                        <div className="values  mb-3">
-                                            <h5>Cupo sugerido:</h5>
-                                            <h5 className="strong">
-                                                {`$ ${Number(solicitudTarjeta?.srt_cupo_sugerido).toLocaleString("en-US") || Number('10000.00').toLocaleString("en-US")}`}
-                                            </h5>
-                                        </div>
+                                                        <Button className="btn_mg__auto ml-2" onClick={updateMonto}>
+                                                            <img src="/Imagenes/edit.svg"></img>
+                                                        </Button>
+                                                    }
+                                                </h5>
+                                            </div>
+                                            <div className="values  mb-3">
+                                                <h5>Cupo sugerido:</h5>
+                                                <h5 className="strong">
+                                                    {`$ ${Number(solicitudTarjeta?.srt_cupo_sugerido).toLocaleString("en-US") || Number('10000.00').toLocaleString("en-US")}`}
+                                                </h5>
+                                            </div>
 
-                                        <div className="values  mb-3">
-                                            <h5>Cupo aprobado:</h5>
-                                            <h5 className="strong">
-                                                {`$ ${Number(solicitudTarjeta?.str_cupo_aprobado).toLocaleString("en-US") || Number('10000.00').toLocaleString("en-US")}`}
-                                            </h5>
-                                        </div>
-                                    </Item>
-                                </Card>
-                            </div>
-                        </Card>
-                        :
-                        <Card className={["w-100 justify-content-space-between align-content-center"]}>
-                            <div>
-                                <h3 className="mb-3 strong">Análisis y aprobación de crédito</h3>
-                                <Card className={["f-row"]}>
-                                    <Item xs={6} sm={6} md={6} lg={6} xl={6}>
-                                        <div className="values  mb-3">
-                                            <h5>Socio:</h5>
-                                            <h5 className="strong">
-                                                {datosSocio?.str_nombres} {datosSocio?.str_apellido_paterno} {datosSocio?.str_apellido_materno}
-                                            </h5>
-                                        </div>
-                                        <div className="values  mb-3">
-                                            <h5>Tipo Documento:</h5>
-                                            <h5 className="strong">
-                                                {`Cédula`}
-                                            </h5>
-                                        </div>
-                                        <div className="values  mb-3">
-                                            <h5>Oficina:</h5>
-                                            <h5 className="strong">
-                                                {`EL VALLE`}
-                                            </h5>
-                                        </div>
-                                        <div className="values  mb-3">
-                                            <h5>Oficial:</h5>
-                                            <h5 className="strong">
-                                                {`${solicitudTarjeta?.str_usuario_proc}`}
-                                            </h5>
-                                        </div>
+                                            <div className="values  mb-3">
+                                                <h5>Cupo aprobado:</h5>
+                                                <h5 className="strong">
+                                                    {`$ ${Number(solicitudTarjeta?.str_cupo_aprobado).toLocaleString("en-US") || Number('10000.00').toLocaleString("en-US")}`}
+                                                </h5>
+                                            </div>
+                                        </Item>
+                                    </Card>
+                                </div>
+                            </Card>
+                            :
+                            <Card className={["w-100 justify-content-space-between align-content-center"]}>
+                                <div>
+                                    <h3 className="mb-3 strong">Análisis y aprobación de crédito</h3>
+                                    <Card className={["f-row"]}>
+                                        <Item xs={6} sm={6} md={6} lg={6} xl={6}>
+                                            <div className="values  mb-3">
+                                                <h5>Socio:</h5>
+                                                <h5 className="strong">
+                                                    {datosSocio?.str_nombres} {datosSocio?.str_apellido_paterno} {datosSocio?.str_apellido_materno}
+                                                </h5>
+                                            </div>
+                                            <div className="values  mb-3">
+                                                <h5>Tipo Documento:</h5>
+                                                <h5 className="strong">
+                                                    {`Cédula`}
+                                                </h5>
+                                            </div>
+                                            <div className="values  mb-3">
+                                                <h5>Oficina:</h5>
+                                                <h5 className="strong">
+                                                    {`EL VALLE`}
+                                                </h5>
+                                            </div>
+                                            <div className="values  mb-3">
+                                                <h5>Oficial:</h5>
+                                                <h5 className="strong">
+                                                    {`${solicitudTarjeta?.str_usuario_proc}`}
+                                                </h5>
+                                            </div>
 
-                                        <div className="values  mb-3">
-                                            <h5>Estado de la solicitud:</h5>
-                                            <h5 className="strong">
-                                                {`${solicitudTarjeta?.str_estado}`}
-                                            </h5>
-                                        </div>
-                                    </Item>
+                                            <div className="values  mb-3">
+                                                <h5>Estado de la solicitud:</h5>
+                                                <h5 className="strong">
+                                                    {`${solicitudTarjeta?.str_estado}`}
+                                                </h5>
+                                            </div>
+                                        </Item>
 
-                                    <Item xs={6} sm={6} md={6} lg={6} xl={6}>
+                                        <Item xs={6} sm={6} md={6} lg={6} xl={6}>
 
-                                        <div className="values  mb-3">
-                                            <h5>Solicitud Nro:</h5>
-                                            <h5 className="strong">
-                                                {`${props.solicitud.solicitud}`}
-                                            </h5>
-                                        </div>
+                                            <div className="values  mb-3">
+                                                <h5>Solicitud Nro:</h5>
+                                                <h5 className="strong">
+                                                    {`${props.solicitud.solicitud}`}
+                                                </h5>
+                                            </div>
 
 
-                                        <div className="values  mb-3">
+                                            <div className="values  mb-3">
 
-                                            <h5>Cupo solicitado:</h5>
-                                            <h5 className="strong f-row">
-                                                {`$ ${solicitudTarjeta?.str_cupo_solicitado || Number('0.00').toLocaleString("en-US")}`}
+                                                <h5>Cupo solicitado:</h5>
+                                                <h5 className="strong f-row">
+                                                    {`$ ${solicitudTarjeta?.str_cupo_solicitado || Number('0.00').toLocaleString("en-US")}`}
                                                     {/*{props.solicitud.idSolicitud === 11272 &&*/}
                                                     {solicitudTarjeta?.str_estado === "SOLICITUD CREADA" &&
-                                                    <Button className="btn_mg__auto ml-2" onClick={updateMonto}>
-                                                        <img src="/Imagenes/edit.svg"></img>
-                                                    </Button>
-                                                }
-                                            </h5>
+                                                        <Button className="btn_mg__auto ml-2" onClick={updateMonto}>
+                                                            <img src="/Imagenes/edit.svg"></img>
+                                                        </Button>
+                                                    }
+                                                </h5>
+                                            </div>
+                                            <div className="values  mb-3">
+                                                <h5>Cupo sugerido:</h5>
+                                                <h5 className="strong">
+                                                    {`$ ${solicitudTarjeta?.srt_cupo_sugerido || Number('0.00').toLocaleString("en-US")}`}
+                                                </h5>
+                                            </div>
+
+
+                                            <div className="values  mb-3">
+                                                <h5>Cupo aprobado:</h5>
+                                                <h5 className="strong">
+                                                    {`$ ${Number(solicitudTarjeta?.str_cupo_aprobado).toLocaleString("en-US") || Number('0.00').toLocaleString("en-US")}`}
+                                                </h5>
+                                            </div>
+
+
+                                        </Item>
+                                    </Card>
+
+                                    {/*SECCION DE BOTONES DE ACCIONES POR PERFIL*/}
+                                    <Card className={["f-col"]}>
+                                        <div className={["f-row"]}>
+
+                                            {/*TODO VALIDAR QUE SOLO SEA PARA ESE PERFIL*/}
+                                            {(solicitudTarjeta?.str_estado === "ANALISIS UAC" || solicitudTarjeta?.str_estado === "ANALISIS JEFE UAC") &&
+                                                <Button className="btn_mg__primary" onClick={modalHandler}>Análisis 3C's</Button>
+                                            }
+
+                                            {/*  EST_ANALISIS_UAC  || EST_ANALISIS_JEFE_UAC    */}
+                                            {(solicitudTarjeta?.str_estado === "ANALISIS UAC" || solicitudTarjeta?.str_estado === "ANALISIS JEFE UAC") &&
+                                                <Button className="btn_mg__primary ml-2" onClick={() => descargarMedio(props.solicitud.solicitud)}>Imprimir medio aprobación</Button>
+                                            }
+
+                                            {/*  EST_ANALISIS_UAC  || EST_ANALISIS_JEFE_UAC || EST_ANALISIS_COMITE   TODO FALTA EL ESTADO NUEVA BANDEJA */}
+                                            {(solicitudTarjeta?.str_estado === "ANALISIS UAC" || solicitudTarjeta?.str_estado === "ANALISIS JEFE UAC"
+                                                || solicitudTarjeta?.str_estado === "ANALISIS COMITE" || solicitudTarjeta?.str_estado === "OPERATIVO NEGOCIOS") &&
+                                                <Button className="btn_mg__primary ml-2" onClick={openModalCambiarBandeja}>Retornar Solicitud</Button>
+                                            }
+
+
+                                            {/* EST_POR_CONFIRMAR */}
+                                            {solicitudTarjeta?.str_estado === "POR CONFIRMAR" &&
+                                                <>
+                                                    <div className="values ml-1 mb-3">
+                                                        <Button className={["btn_mg btn_mg__primary"]} onClick={openModalResolucionSocio}>Resolución socio </Button>
+                                                    </div>
+                                                </>
+                                            }
                                         </div>
-                                        <div className="values  mb-3">
-                                            <h5>Cupo sugerido:</h5>
-                                            <h5 className="strong">
-                                                {`$ ${solicitudTarjeta?.srt_cupo_sugerido || Number('0.00').toLocaleString("en-US")}`}
-                                            </h5>
-                                        </div>
+                                        <Table headers={headerTableResoluciones}>
+                                            {
+                                                resoluciones.map((resolucion, index) => {
+                                                    return (
+                                                        <tr key={resolucion.int_rss_id}>
+                                                            <td>{resolucion.str_usuario_proc}</td>
+                                                            <td> {resolucion.dtt_fecha_actualizacion}</td>
 
+                                                            <td style={{ width: "60%", justifyContent: "left" }} id={index}>
+                                                                <div style={{ display: "ruby" }}>
+                                                                    {trimed[index] ?
+                                                                        <div>
+                                                                            {`${resolucion?.str_comentario_proceso}`}
+                                                                        </div>
+                                                                        :
+                                                                        <div>
+                                                                            {`${resolucion?.str_comentario_proceso.substring(0, 40)}`}
+                                                                        </div>
+                                                                    }
+                                                                    {resolucion?.str_comentario_proceso.length > 36 && <a className='see-more' onClick={() => { verMas(index) }}>{trimed[index] ? " Ver menos..." : " Ver mas..."}</a>}
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    );
+                                                })
+                                            }
+                                        </Table>
 
-                                        <div className="values  mb-3">
-                                            <h5>Cupo aprobado:</h5>
-                                            <h5 className="strong">
-                                                {`$ ${Number(solicitudTarjeta?.str_cupo_aprobado).toLocaleString("en-US") || Number('0.00').toLocaleString("en-US")}`}
-                                            </h5>
-                                        </div>
-
-
-                                    </Item>
-                                </Card>
-
-                                {/*SECCION DE BOTONES DE ACCIONES POR PERFIL*/}
-                                <Card className={["f-col"]}>
-                                    <div className={["f-row"]}>
-
-                                        {/*TODO VALIDAR QUE SOLO SEA PARA ESE PERFIL*/}
-                                        {(solicitudTarjeta?.str_estado === "ANALISIS UAC" || solicitudTarjeta?.str_estado === "ANALISIS JEFE UAC" )&&
-                                            <Button className="btn_mg__primary" onClick={modalHandler}>Análisis 3C's</Button>
+                                        {/* DECISION A TOMAR POR ANALISIS COMITE 11275 */}
+                                        {solicitudTarjeta?.str_estado === "ANALISIS COMITE" &&
+                                            <Card>
+                                                <h3>Decisión</h3>
+                                                <select disabled={isDecisionHabilitada} onChange={getDecision} defaultValue={"-1"} value={valorDecisionSelect}>
+                                                    {estadosDecisionComite.length > 0
+                                                        && estadosDecisionComite?.map((estado, index) => {
+                                                            const resultado = validaNombreParam(estado);
+                                                            if (index === 0) {
+                                                                return (
+                                                                    <>
+                                                                        <option disabled={true} value={"-1"}>Seleccione una opción</option>
+                                                                        <option value={resultado.prm_nemonico}> {resultado.prm_valor_ini}</option>
+                                                                    </>
+                                                                )
+                                                            }
+                                                            else {
+                                                                return (
+                                                                    <option value={resultado.prm_nemonico}> {resultado.prm_valor_ini}</option>
+                                                                )
+                                                            }
+                                                        })}
+                                                </select>
+                                                <br />
+                                            </Card>
                                         }
-
-                                        {/*  EST_ANALISIS_UAC  || EST_ANALISIS_JEFE_UAC    */}
-                                        {(solicitudTarjeta?.str_estado === "ANALISIS UAC" || solicitudTarjeta?.str_estado === "ANALISIS JEFE UAC") &&
-                                            <Button className="btn_mg__primary ml-2" onClick={() => descargarMedio(props.solicitud.solicitud)}>Imprimir medio aprobación</Button>
-                                        }
-
-                                        {/*  EST_ANALISIS_UAC  || EST_ANALISIS_JEFE_UAC || EST_ANALISIS_COMITE   TODO FALTA EL ESTADO NUEVA BANDEJA */}
-                                        {(solicitudTarjeta?.str_estado === "ANALISIS UAC" || solicitudTarjeta?.str_estado === "ANALISIS JEFE UAC" || solicitudTarjeta?.str_estado === "ANALISIS COMITE") &&
-                                            <Button className="btn_mg__primary ml-2" onClick={openModalCambiarBandeja}>Retornar Solicitud</Button>
-                                        }
-
-
-                                        {/* EST_POR_CONFIRMAR */}
-                                        {/*{solicitudTarjeta?.str_estado === "11278" &&*/}
-                                        {solicitudTarjeta?.str_estado === "POR CONFIRMAR" &&
+                                        {isMontoAprobarse &&
                                             <>
-                                                <div className="values ml-1 mb-3">
-                                                    <Button className={["btn_mg btn_mg__primary"]} onClick={openModalResolucionSocio}>Resolución socio </Button>
-                                                </div>
+                                                <Card className={["mt-2"]}>
+                                                    <h3>Monto a aprobarse</h3>
+                                                    <Input type="number" placeholder="Ej. 1000" disabled={false} setValueHandler={(e) => setMontoAprobado(e)} value={montoAprobado}></Input>
+                                                </Card>
+
+                                                <Card className={["mt-2"]}>
+                                                    <h3>Comentario</h3>
+                                                    <Textarea placeholder="Ingrese su comentario" onChange={getComentarioSolicitudHandler} esRequerido={true} value={comentarioSolicitud}></Textarea>
+                                                </Card>
                                             </>
                                         }
-                                    </div>
-                                    <Table headers={headerTableResoluciones}>
-                                        {
-                                            resoluciones.map((resolucion, index) => {
-                                                return (
-                                                    <tr key={resolucion.int_rss_id}>
-                                                        <td>{resolucion.str_usuario_proc}</td>
-                                                        <td> {resolucion.dtt_fecha_actualizacion}</td>
+                                    </Card>
 
-                                                        <td style={{ width: "60%", justifyContent: "left" }} id={index}>
-                                                            <div style={{ display: "ruby" }}>
-                                                                {trimed[index] ?
-                                                                    <div>
-                                                                        {`${resolucion?.str_comentario_proceso}`}
-                                                                    </div>
-                                                                    :
-                                                                    <div>
-                                                                        {`${resolucion?.str_comentario_proceso.substring(0, 40)}`}
-                                                                    </div>
-                                                                }
-                                                                {resolucion?.str_comentario_proceso.length > 36 && <a className='see-more' onClick={() => { verMas(index) }}>{trimed[index] ? " Ver menos..." : " Ver mas..."}</a>}
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                );
-                                            })
-                                        }
-                                    </Table>
+                                    {/*CAMPO PARA DEJAR COMENTARIO Y PASAR A LA SIGUIENTE BANDEJA*/}
+                                    {(solicitudTarjeta?.str_estado !== 'ANALISIS COMITE' && solicitudTarjeta?.str_estado !== 'POR CONFIRMAR') &&
 
-                                    {/* DECISION A TOMAR POR ANALISIS COMITE 11275 */}
-                                    {/*{props.solicitud.idSolicitud === "11275" &&*/}
-                                    {solicitudTarjeta?.str_estado === "ANALISIS COMITE" &&
-                                        <Card>
-                                            <h3>Decisión</h3>
-                                            <select disabled={isDecisionHabilitada} onChange={getDecision} defaultValue={-1} value={valorDecisionSelect}>
-                                                {estadosSiguientes?.map((estados, index) => {
-                                                    const resultado = validaNombreParam(estados);
-                                                    if (index === 0) {
-                                                        return (
-                                                            <>
-                                                                <option disabled={true} value={-1}>Seleccione una opción</option>
-                                                                <option value={resultado.prm_id}> {resultado.prm_valor_ini}</option>
-                                                            </>
-                                                        )
-                                                    }
-                                                    else {
-                                                        return (
-                                                            <option value={resultado.prm_id}> {resultado.prm_valor_ini}</option>
-                                                        )
-                                                    }
-                                                })}
-                                            </select>
-                                            <br />
-                                        </Card>
+                                        <div className="mt-4">
+                                            <h3 className="mb-3 strong">Observaciones</h3>
+                                            <Textarea placeholder="Ingrese su comentario" onChange={getComentarioSolicitudHandler} esRequerido={true}></Textarea>
+                                        </div>
                                     }
-                                    {isMontoAprobarse &&
-                                        <>
-                                            <Card className={["mt-2"]}>
-                                                <h3>Monto a aprobarse</h3>
-                                                <Input type="number" placeholder="Ej. 1000" disabled={false} setValueHandler={(e) => setMontoAprobado(e)} value={montoAprobado}></Input>
-                                            </Card>
 
-                                            <Card className={["mt-2"]}>
-                                                <h3>Comentario</h3>
-                                                <Textarea placeholder="Ingrese su comentario" onChange={getComentarioSolicitudHandler} esRequerido={true} value={comentarioSolicitud}></Textarea>
-                                            </Card>
-                                        </>
+
+
+                                </div>
+
+                                <div className="mt-2 f-row justify-content-center">
+                                    {/*APROBADA O NEGADA POR COMITE ( 11275 EST_ANALISIS_COMITE) */}
+                                    {(solicitudTarjeta?.str_estado === "ANALISIS COMITE") &&
+                                        <Button className="btn_mg__primary" disabled={isActivoBtnDecision} onClick={guardarDecisionComiteHandler}>Enviar</Button>
                                     }
-                                </Card>
+                                    {(solicitudTarjeta?.str_estado !== 'ANALISIS COMITE' && solicitudTarjeta?.str_estado !== 'POR CONFIRMAR') &&
+                                        <Button className="btn_mg__primary" disabled={faltaComentariosAsesor} onClick={guardarComentarioSiguiente}>Enviar</Button>
+                                    }
 
-                                {/*CAMPO PARA DEJAR COMENTARIO Y PASAR A LA SIGUIENTE BANDEJA*/}
-                                {/*{props.solicitud.idSolicitud !== "11275" &&*/}
-                                {(solicitudTarjeta?.str_estado !== 'ANALISIS COMITE' && solicitudTarjeta?.str_estado !== 'POR CONFIRMAR') &&
-
-                                    <div className="mt-4">
-                                        <h3 className="mb-3 strong">Observaciones</h3>
-                                        <Textarea placeholder="Ingrese su comentario" onChange={getComentarioSolicitudHandler} esRequerido={true}></Textarea>
-                                    </div>
-                                }
+                                </div>
 
 
-
-                            </div>
-
-                            <div className="mt-2 f-row justify-content-center">
-                                {/*APROBADA O NEGADA POR COMITE ( 11275 EST_ANALISIS_COMITE) */}
-                                {/*{(props.solicitud.idSolicitud === "11275") &&*/}
-                                {(solicitudTarjeta?.str_estado === "ANALISIS COMITE") &&
-                                    <Button className="btn_mg__primary" disabled={isActivoBtnDecision} onClick={guardarDecisionComiteHandler}>Enviar</Button>
-                                }
-                                {/*{props.solicitud.idSolicitud !== "11275" &&*/}
-                                {(solicitudTarjeta?.str_estado !== 'ANALISIS COMITE' && solicitudTarjeta?.str_estado !== 'POR CONFIRMAR') &&
-                                    <Button className="btn_mg__primary" disabled={faltaComentariosAsesor} onClick={guardarComentarioSiguiente}>Enviar</Button>
-                                }
-
-                            </div>
-
-
-                        </Card>
+                            </Card>
                     }
                 </>
 
@@ -950,14 +1042,15 @@ const VerSolicitud = (props) => {
             {accionSeleccionada !== 1 && accionSeleccionada === 2 &&
                 <Card className={["w-100 justify-content-space-between align-content-center"]}>
                     <h3 className="mb-3 strong">Documentos digitalizados</h3>
-                    <Button className="mt-3 mb-3 btn_mg__primary" onClick={abrirTodos}>Abrir archivos</Button>
-                    <div className="select-item">
-                        <a onClick={() => { downloadArchivo("/Imagenes/FRMSYS-020.pdf") }}>Cédula de ciudadania</a>
-                    </div>
-                    <div className="select-item">
-                        <Input type="checkbox"></Input>
-                        <a onClick={() => { downloadArchivo("/Imagenes/archivo.pdf") }}>Autorizacion de consulta al buró</a>
-                    </div>
+
+                    {/*<Button className="mt-3 mb-3 btn_mg__primary" onClick={abrirTodos}>Abrir archivos</Button>*/}
+                    {/*<div className="select-item">*/}
+                    {/*    <a onClick={() => { downloadArchivo("/Imagenes/FRMSYS-020.pdf") }}>Cédula de ciudadania</a>*/}
+                    {/*</div>*/}
+                    {/*<div className="select-item">*/}
+                    {/*    <Input type="checkbox"></Input>*/}
+                    {/*    <a onClick={() => { downloadArchivo("/Imagenes/archivo.pdf") }}>Autorizacion de consulta al buró</a>*/}
+                    {/*</div>*/}
 
 
                     <div className="mt-3">
@@ -965,7 +1058,7 @@ const VerSolicitud = (props) => {
                             grupoDocumental={separadores}
                             contenido={separadores}
                             token={props.token}
-                            cedulaSocio={props.solicitud.cedulaSocio}
+                            cedulaSocio={props.solicitud.cedulaPersona}
                             solicitud={props.solicitud.solicitud}
                             datosSocio={datosSocio}
                             datosUsuario={datosUsuario}
@@ -1013,10 +1106,6 @@ const VerSolicitud = (props) => {
                         })
                     }
                 </Table>
-                {/*<div className="mt-4">*/}
-                {/*    <h3 className="mb-3 strong">Comentario del Asesor</h3>*/}
-                {/*    <Textarea placeholder="Ingrese su comentario" onChange={getComentarioSolicitudHandler} esRequerido={true}></Textarea>*/}
-                {/*</div>*/}
             </div>}
         </Modal>
         <Modal
@@ -1063,7 +1152,7 @@ const VerSolicitud = (props) => {
                     {solicitudTarjeta?.str_estado === "POR CONFIRMAR" &&
                         <>
                             <option value="EST_APROBADA_SOCIO">APRUEBA SOCIO</option>
-                            <option value="EST_RECHAZADA_SOCIO">RECHAZA SOCIO</option>
+                            <option value="EST_RECHAZADA">RECHAZA</option>
                         </>
                     }
                 </select>
@@ -1076,21 +1165,14 @@ const VerSolicitud = (props) => {
                         <Input className="w-100" type="text" value={comentarioCambioEstado} placeholder="Ingrese comentario" setValueHandler={setComentarioCambioEstado}></Input>
                     </div>
                 }
-
-
-
-
-
                 <br />
-
-
             </div>}
         </Modal>
 
         <Modal
             modalIsVisible={modalRechazo}
             titulo={`Aviso!!!`}
-            onNextClick={guardarRechazo}
+            onNextClick={rechazarSolicitudHandler}
             onCloseClick={closeModalRechazo}
             isBtnDisabled={false}
             type="sm"
@@ -1113,24 +1195,34 @@ const VerSolicitud = (props) => {
         >
             {modalCambioBandeja && <div>
 
-
-                {/*{props.solicitud.idSolicitud === 11275 &&*/}
                 {solicitudTarjeta?.str_estado === "ANALISIS COMITE" &&
                     <>
                         <h3 className="mt-4 mb-1">Seleccione a qué estado desea regresar la solicitud:</h3>
 
                         <select className='w-100' defaultValue={"-1"} onChange={cambiarEstadoSolHandler} value={selectCambioEstadoSol}>
-                            <option disabled={true} value="-1">Seleccione algún estado</option>
+                            {estadosRetornaBandejaComite.length > 0
+                                && estadosRetornaBandejaComite?.map((estado, index) => {
+                                    const resultado = validaNombreParam(estado);
+                                    if (index === 0) {
+                                        return (
+                                            <>
+                                                <option disabled={true} value={"-1"}>Seleccione una opción</option>
+                                                <option value={resultado.prm_nemonico}> {resultado.prm_valor_ini}</option>
+                                            </>
+                                        )
+                                    }
+                                    else {
+                                        return (
+                                            <option value={resultado.prm_nemonico}> {resultado.prm_valor_ini}</option>
+                                        )
+                                    }
+                                })}
 
-                            {solicitudTarjeta?.str_estado === "ANALISIS COMITE" &&
-                                <>
-                                    <option value="EST_SOL_CREADA">SOLICITUD CREADA</option>
-                                    <option value="EST_ANALISIS_UAC">ANALISIS UAC</option>
-                                    <option value="EST_ANALISIS_JEFE_UAC">ANALISIS JEFE UAC</option>
-                                </>
-                            }
                         </select>
                     </>
+                }
+                {solicitudTarjeta?.str_estado !== "ANALISIS COMITE" &&
+                    <h3 className="mt-4 mb-1">Error en la obtención de parámetros. Consulte con el administrador</h3>
                 }
                 <br />
 

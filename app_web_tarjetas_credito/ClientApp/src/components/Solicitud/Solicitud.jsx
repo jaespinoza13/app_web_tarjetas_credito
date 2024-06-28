@@ -102,7 +102,8 @@ function Solicitud(props) {
         { prm_id: 11277, prm_valor_ini: "RECHAZADA COMITE" },
         { prm_id: 11278, prm_valor_ini: "POR CONFIRMAR" },
         { prm_id: 11279, prm_valor_ini: "APROBADA" },//APROBADA SOCIO
-        { prm_id: 11280, prm_valor_ini: "NEGADA" }, //RECHAZADA SOCIO
+        //{ prm_id: 11280, prm_valor_ini: "NEGADA" }, //RECHAZADA SOCIO
+        { prm_id: 11280, prm_valor_ini: "OPERATIVO NEGOCIOS" }, //RECHAZADA SOCIO
         { prm_id: 10934, prm_valor_ini: "ANULADA COMITE" },        
     ];
 
@@ -277,14 +278,16 @@ function Solicitud(props) {
     const moveToSolicitud = (solId) => {
         //console.log(solId)
         const solicitudSeleccionada = registrosPagActual.find((solicitud) => { return solicitud.int_id === solId });
-        // 11276 EST_APROBADA_COMITE || 11272 EST_SOL_CREADA
+        /* PARA VER SOLICITUD POR PARTE DEL ASESOR DE NEGOCIOS*/ 
+        // 11276 EST_APROBADA_COMITE || 11272 EST_SOL_CREADA || 11278 EST_POR_CONFIRMAR
         console.log(solicitudSeleccionada)
         if ((solicitudSeleccionada.int_estado === 11276 || solicitudSeleccionada.int_estado === 11272 || solicitudSeleccionada.int_estado === 11278) && rol === "ASESOR DE CRÉDITO") { 
-            dispatch(setSolicitudStateAction({ solicitud: solicitudSeleccionada.int_id, cedulaSocio: solicitudSeleccionada.str_identificacion, idSolicitud: solicitudSeleccionada.int_estado, rol: rol }))
+            dispatch(setSolicitudStateAction({ solicitud: solicitudSeleccionada.int_id, cedulaPersona: solicitudSeleccionada.str_identificacion, idSolicitud: solicitudSeleccionada.int_estado, rol: rol, estado: solicitudSeleccionada.str_estado }))
             navigate.push('/solicitud/ver');
         }
-        else if ((rol === "ANALISTA CREDITO" || rol === "JEFE DE UAC" || rol === "DIRECTOR DE NEGOCIOS") && solicitudSeleccionada.int_estado !== 11272) {
-            dispatch(setSolicitudStateAction({ solicitud: solicitudSeleccionada.int_id, cedulaSocio: solicitudSeleccionada.str_identificacion, idSolicitud: solicitudSeleccionada.int_estado, rol: rol }))
+        /* PARA QUE PUEDAN HACER EL PASO DE BANDEJA CADA PERFIL */ 
+        else if ((rol === "ANALISTA CREDITO" || rol === "JEFE DE UAC" || rol === "DIRECTOR DE NEGOCIOS" || rol === "OPERATIVO DE NEGOCIOS" ) && solicitudSeleccionada.int_estado !== 11272) {
+            dispatch(setSolicitudStateAction({ solicitud: solicitudSeleccionada.int_id, cedulaPersona: solicitudSeleccionada.str_identificacion, idSolicitud: solicitudSeleccionada.int_estado, rol: rol, estado: solicitudSeleccionada.str_estado }))
             navigate.push('/solicitud/ver');
         }
         else {

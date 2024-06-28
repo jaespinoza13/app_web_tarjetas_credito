@@ -326,6 +326,7 @@ const NuevaSolicitud = (props) => {
             }
             if (data.str_res_codigo === "000") {
                 if (!actualizarInfo) {
+                    //TODO: DEJAR EN 1
                     setStep(1);
                     let retrasoEfecto = setTimeout(function () {
                         setIsVisibleBloque(true);

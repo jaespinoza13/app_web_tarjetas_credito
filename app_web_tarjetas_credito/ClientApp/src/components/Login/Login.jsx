@@ -230,8 +230,8 @@ function Login(props) {
                 <img src="/Imagenes/abejaSaluda.png" alt="abeja saludando" width="232px" />
                 {/*<h2>Sistema de Pagos y Transferencias</h2>*/}
                 {/*<h3>Sistema para soporte técnico, impresión de documentos en Plataforma de Servicios, reportes para departamento de Operaciones, switch lógico para servicio Windows de monitoreo de cobranzas, administraci</h3>*/}
-                <h2>Sistemas Internos</h2>
-                <h3>{toCapitalize(props.nombreSistema)}</h3>
+                {/*<h2>Sistemas Internos</h2>*/}
+                <h2>{toCapitalize(props.nombreSistema)}</h2>
                 <SizedBox height={50} />
                 <img src="/Imagenes/logo.png" alt="logo coopmego" width="133px" />
             </div>

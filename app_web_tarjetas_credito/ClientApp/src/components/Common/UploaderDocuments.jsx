@@ -5,7 +5,7 @@ import Modal from './Modal/Modal';
 import { fetchCrearSeparadoresAxentria, fetchAddDocumentosAxentria, fetchInfoSocio } from "../../services/RestServices";
 import { useDispatch } from 'react-redux';
 import { element } from 'prop-types';
-import { base64ToBlob, verificarPdf, descargarArchivo } from '../../js/utiles';
+import { base64ToBlob, verificarPdf, descargarArchivo, conversionBase64 } from '../../js/utiles';
 
 const UploadDocumentos = (props) => {
 
@@ -16,40 +16,9 @@ const UploadDocumentos = (props) => {
 
     const [tablaContenido, setTablaContenido] = useState([]);
     const dispatch = useDispatch();
-    const [generarSeparador, setGenerarSeparador] = useState([]);
 
-    /*
-    const [tablaContenido, setTablaContenido] = useState([
-        { int_id_separador: 0, str_actor: "T", str_ord: "", str_separador: "SOLICITUD DE CREDITO", str_ruta_arc: "VASQUEZ DANNY", ruta: "", str_login_carga: "", dtt_fecha_sube: "", str_version: "", str_nombre_separador: "1_SOLICITUD_DE_CREDITO" },
-        { int_id_separador: 1, str_actor: "G", str_ord: "1", str_separador: "DOCUMENTOS DE IDENTIDAD", str_ruta_arc: "VASQUEZ DANNY", ruta: "", str_login_carga: "", dtt_fecha_sube: "", str_version: "", str_nombre_separador: "3_DOCUMENTOS_DE_IDENTIDAD" },
-        { int_id_separador: 2, str_actor: "T", str_ord: "", str_separador: "SUSTENTO DE CAPACIDAD DE PAGO", str_ruta_arc: "VASQUEZ DANNY", ruta: "", str_login_carga: "", dtt_fecha_sube: "", str_version: "", str_nombre_separador: "7_SUSTENTO_DE_CAPACIDAD_DE_PAGO" },
-    ])
-    /*
-    const grupoDocumental = [
-        { id: 0, actor: "T", ord: "", grupo_documental: "SOLICITUD DE CREDITO", nombre_archivo: "1_SOLICITUD_DE_CREDITO" },
-        { id: 1, actor: "T", ord: "", grupo_documental: "DOCUMENTOS DE IDENTIDAD", nombre_archivo: "3_DOCUMENTOS_DE_IDENTIDAD" },
-        { id: 2, actor: "T", ord: "", grupo_documental: "SUSTENTO DE CAPACIDAD DE PAGO", nombre_archivo: "7_SUSTENTO_DE_CAPACIDAD_DE_PAGO" },
-    ]
-    */
 
-   /*
-    useEffect(() => {
-        //if (props.contenido > 0) {
 
-        /*
-        //TODO: eliminar el id no corresponde
-        let result = props.contenido;
-
-            result.forEach((elem, index) => {
-                result[index].int_id_separador = index;
-            })
-            
-
-        
-        //}
-    }, [])
-    */
-    const separadoresAx = ["1_SOLICITUD_DE_CREDITO", "2_EXCEPCIONES"]
     const [base64SeparadorGenerado, setBase64SeparadorGenerado] = useState("");
 
     const generarSeparadores = () => {
@@ -299,14 +268,16 @@ const UploadDocumentos = (props) => {
 
     }, [validadorCambio])
 
+    const [archivosCargados, setCarchivosCargados] = useState([]);
 
     const cargarArchivosHandler = (event) => {
 
         let archivosLimpieza = [...event.target.files];
         archivosLimpieza = archivosLimpieza.filter(doc => doc.type === "application/pdf")
-        //console.log(archivosLimpieza)
+        console.log(archivosLimpieza)
 
         //TODO: Falta obtener archivo en base64
+        let arregloArchivos = [];
 
         if (archivosLimpieza.length > 0) {
 
@@ -316,37 +287,35 @@ const UploadDocumentos = (props) => {
                 //console.log(indexArchivo);
                 tablaContenido[indexArchivo].str_ruta_arc = element.webkitRelativePath;
                 tablaContenido[indexArchivo].str_login_carga = "dvvasquez";
+
+                arregloArchivos.push({ id_separador: tablaContenido[indexArchivo].int_id_separador, archivo: element });
+
             })
+            console.log("ARREGLO ARCHIVOS OBJ ", arregloArchivos)
             setValidadorCambio(true);
-            setTablaContenido([...tablaContenido]);
+            setTablaContenido([...tablaContenido]);          
+            setCarchivosCargados([...arregloArchivos]);
         }
 
     }
 
-    /*
-    export function fetchAddDocumentosAxentria(requiereSeparar, requierePublicar, rutaArchivo, nombreArchivo, identificacionSocio, usuCarga, nombreSocio, nombreGrupo, referencia, token, onSucces, dispatch) {
-    if (dispatch) dispatch(setErrorRedirigir(""));
 
-    let body = {
-        bln_separar: requiereSeparar,
-        bln_publicar: requierePublicar,
-        str_ruta_arc: rutaArchivo,
-        str_nombre_arc: nombreArchivo,
-        str_identificacion: identificacionSocio,
-        str_login_carga: usuCarga,
-        str_nombre_socio: nombreSocio,
-        str_nombre_grupo: nombreGrupo,
-        str_referencia: referencia
+    const convertorArchivo = async (archivoSub) => {
+        let base64Archivo = await conversionBase64(archivoSub);
+        //console.log(base64Archivo.split(',')[1]);
+        return base64Archivo.split(',')[1];
     }
-    */
 
-    const publicarDocumentos = () => {
-        console.log(separadorCheckBox)
-        console.log(publicadorCheckBox)
+    const publicarDocumentos = async () => {
+        //console.log(separadorCheckBox)
+        //console.log(publicadorCheckBox)
 
         //function fetchAddDocumentosAxentria(requiereSeparar, rutaArchivo, nombreArchivo, identificacionSocio, usuCarga, nombreSocio, nombreGrupo, referencia, token,
 
         const docsCargados = tablaContenido.filter(docum => docum.str_ruta_arc !== "");
+
+        console.log(docsCargados)
+
 
         docsCargados.forEach(grupo => {
             let validarSeparador = separadorCheckBox.includes(grupo.int_id_separador);
@@ -356,19 +325,30 @@ const UploadDocumentos = (props) => {
 
             if (validarPublicacion) {
                 //Obtener el archivo en base64
-                /*fetchAddDocumentosAxentria(validarSeparador, grupo.str_ruta_ar,  props.token, (data) => {
+                let busquedaArchivo = archivosCargados.find(arch => arch.id_separador === grupo.int_id_separador);
+                
+                //let archivoABase64 = convertorArchivo(busquedaArchivo.archivo)
+                //console.log("BUSQ ARCH PUB ", archivoABase64);
 
+                convertorArchivo(busquedaArchivo.archivo).then(
+                    archivoABase64 => {
+                        publicarAxentriaHandler(validarSeparador, grupo.str_ruta_ar, grupo.str_nombre_separador, grupo.str_separador, archivoABase64)
 
-                }, dispatch);*/
+                    }
+                )
             }
            
         })
-
-
     }
 
+    const publicarAxentriaHandler = async (validarSeparador, rutaArchivo, nombreSeparador, grupoSeparador, archivoABase64) => {
+        await fetchAddDocumentosAxentria(validarSeparador, rutaArchivo, nombreSeparador, props.cedulaSocio, 'xnojeda1',
+            props.datosSocio?.str_nombres + ' ' + props.datosSocio?.str_apellido_paterno + ' ' + props.datosSocio?.str_apellido_materno,
+            grupoSeparador, '', archivoABase64, props.token, (data) => {
+                console.log("RESULTADO PUB ", data)
 
-
+            }, dispatch);
+    }
 
     return (
         <div className="content_uploader">
