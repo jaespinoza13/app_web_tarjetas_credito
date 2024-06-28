@@ -84,16 +84,23 @@ const VerSolicitud = (props) => {
 
     //PARAMETROS REQUERIDOS
     const [parametrosTC, setParametrosTC] = useState([]); // cambiar prm_valor_ini por str_valor_ini
-    const [bandejaApruebaSol, setBandejaApruebaSol] = useState([]); 
-    const [estadosDecisionComite, setEstadosDecisionComite] = useState([]); 
-    const [estadosDecBanjComiteAll, setEstadosDecBanjComiteAll] = useState([]); 
-    const [bandejasRetornanAntEstado, setBandejasRetornanAntEstado] = useState([]); 
+    const [bandejaApruebaSol, setBandejaApruebaSol] = useState([]);
+    const [estadosDecisionComite, setEstadosDecisionComite] = useState([]);
+    const [estadosDecBanjComiteAll, setEstadosDecBanjComiteAll] = useState([]);
 
-
+    const [estadosRetornaBandejaComite, setEstadosRetornaBandejaComite] = useState([]);
+    const [estadosRetornaComiteAll, setEstadosRetornaComiteAll] = useState([]);
 
     const [permisoImprimirMedio, setPermisoImprimirMedio] = useState([]);
+    const [permisoImprimirMedioAll, setPermisoImprimirMedioAll] = useState([]);
+
+
+    const [estadosSigConfirmPorMontoMenor, setEstadosSigConfirmPorMontoMenor] = useState([]);
+    const [estadosSigConfirmPorMontoMenorAll, setEstadosSigConfirmPorMontoMenorAll] = useState([]);
+
+
     const [permisoRetornarBandeja, setPermisoRetornarBandeja] = useState([]);
-    const [permisoApruebaMontoMenor, setPermisoApruebaMontoMenor] = useState([]);
+    
     const [permisoEstadosSigComite, setPermisoEstadosSigComite] = useState([]);
     const [permisoEstadoHabilitarAprobarSol, setPermisoEstadoHabilitarAprobarSol] = useState([]);
 
@@ -133,8 +140,10 @@ const VerSolicitud = (props) => {
     useEffect(() => {
 
         //Obtener datos del cliente
-        fetchInfoSocio(props.cedulaSocio, props.token, (data) => {
-            //console.log("BUSQ SOCI AXEN ", data)
+        fetchInfoSocio(props.solicitud.cedulaPersona, props.token, (data) => {
+
+            console.log("BUSQ SOCI AXEN ", props.solicitud.cedulaPersona)
+            //console.log("CEDULA ", prop)
             setDatosSocio(data.datos_cliente[0]);
         }, dispatch);
 
@@ -207,31 +216,54 @@ const VerSolicitud = (props) => {
                     prm_valor_ini: estado.str_valor_ini,
                     prm_valor_fin: estado.str_valor_fin
                 })));
-            
+
+            /* ESTADOS PARA DECISION FINAL DEL COMITE */
             setEstadosDecBanjComiteAll(ParametrosTC
-                .filter(param => param.str_nemonico === 'HAB_DEC_APR_SOL')
+                .filter(param => param.str_nombre === 'HABILITA_DECISION_APRUEBA_SOLICITUD')
                 .map(estado => ({
                     prm_id: estado.int_id_parametro,
                     prm_valor_ini: estado.str_valor_ini,
                     estados: estado.str_valor_fin
                 })));
 
-                /*
-            setBandejaApruebaSol(ParametrosTC
-                .filter(param => param.str_nemonico === 'EST_SIG_ANA_COM')
+            /* ESTADOS PARA RETORNAR BANDEJA PARA EL COMITE */
+            setEstadosRetornaComiteAll(ParametrosTC
+                .filter(param => param.str_nombre === 'RETORNO_ESTADO_BANDEJA_TC')
                 .map(estado => ({
                     prm_id: estado.int_id_parametro,
                     prm_valor_ini: estado.str_valor_ini,
                     estados: estado.str_valor_fin
-                })));*/
+                })));
 
-            
-            setBandejasRetornanAntEstado(ParametrosTC
-                .filter(param => param.str_nemonico === 'RET_EST_BAND_TC')
+            /* PERMISOS EN ESTADOS PARA IMPRIMIR MEDIO DE APROBACION */
+            setPermisoImprimirMedioAll(ParametrosTC
+                .filter(param => param.str_nombre === 'IMPRIMIR_MEDIO_APROBACION_TC')
                 .map(estado => ({
                     prm_id: estado.int_id_parametro,
-                    estados: estado.str_valor_ini
+                    prm_valor_ini: estado.str_valor_ini,
+                    //estados: estado.str_valor_fin
                 })));
+
+            /* ESTADOS SIGUIENTES CUANDO SOLICITUD ESTA EN POR CONFIRMAR SOCIO POR MONTO MENOR APROBADO */
+            setEstadosSigConfirmPorMontoMenorAll(ParametrosTC
+                .filter(param => param.str_nombre === 'APROBACION_SOLICITUD_MONTO_MENOR')
+                .map(estado => ({
+                    prm_id: estado.int_id_parametro,
+                    prm_valor_ini: estado.str_valor_ini,
+                    estados: estado.str_valor_fin
+                })));
+
+            /*
+        setBandejaApruebaSol(ParametrosTC
+            .filter(param => param.str_nemonico === 'EST_SIG_ANA_COM')
+            .map(estado => ({
+                prm_id: estado.int_id_parametro,
+                prm_valor_ini: estado.str_valor_ini,
+                estados: estado.str_valor_fin
+            })));*/
+
+
+
         }
 
 
@@ -273,15 +305,16 @@ const VerSolicitud = (props) => {
     }
 
 
-    /** OBTENER LOS PARAMETROS DEL STORAGE */
+    /** SECCION OBTENER LOS PARAMETROS DEL STORAGE */
     useEffect(() => {
         if (estadosDecBanjComiteAll.length > 0) {
+            //console.log(estadosDecBanjComiteAll)
             let arrEstados = estadosDecBanjComiteAll.find((parametr) => (parametr.prm_valor_ini) === props.solicitud.estado)
             //console.log("ARR_EST ", arrEstados)
             if (arrEstados) {
                 const estadosSiguientes = arrEstados.estados.split('|');
-                setEstadosDecisionComite(estadosSiguientes);                
-                console.log("RESP ", estadosSiguientes)
+                setEstadosDecisionComite(estadosSiguientes);
+                //console.log("RESP ", estadosSiguientes)
             } else {
                 // Handle the case when arrEstados is not found
                 setEstadosDecisionComite([]);
@@ -289,6 +322,58 @@ const VerSolicitud = (props) => {
             }
         }
     }, [estadosDecBanjComiteAll])
+
+    
+    useEffect(() => {
+        if (estadosRetornaComiteAll.length > 0) {
+            //console.log(estadosRetornaComiteAll)
+            let arrEstados = estadosRetornaComiteAll.find((parametr) => (parametr.prm_valor_ini) === props.solicitud.estado)
+            //console.log("ARR_EST ", arrEstados)
+            if (arrEstados) {
+                const estadosSiguientes = arrEstados.estados.split('|');
+                setEstadosRetornaBandejaComite(estadosSiguientes);
+              //  console.log("RESP ", estadosSiguientes)
+            } else {
+                setEstadosRetornaBandejaComite([]);
+            }
+        }
+    }, [estadosRetornaComiteAll])
+
+
+    /*
+    useEffect(() => {
+        if (permisoImprimirMedioAll.length > 0) {
+            console.log(permisoImprimirMedioAll)
+            //let arrEstados = permisoImprimirMedioAll.find((parametr) => (parametr.prm_valor_ini) === props.solicitud.estado)
+            //console.log("ARR_EST ", arrEstados)
+            //if (arrEstados) {
+            const estadosImprimirMedio = permisoImprimirMedioAll.prm_valor_ini.split('|');
+            setEstadosRetornaBandejaComite(estadosImprimirMedio);
+            console.log("RESP ", estadosImprimirMedio)
+            //} else {
+            //    setEstadosRetornaBandejaComite([]);
+            //}
+        }
+    }, [permisoImprimirMedioAll])
+
+    useEffect(() => {
+        if (estadosSigConfirmPorMontoMenorAll.length > 0) {
+            console.log(estadosSigConfirmPorMontoMenorAll)
+            let arrEstados = estadosSigConfirmPorMontoMenorAll.find((parametr) => (parametr.prm_valor_ini) === props.solicitud.estado)
+            console.log("ARR_EST ", arrEstados)
+            if (arrEstados) {
+                const estadosSiguientes = arrEstados.estados.split('|');
+                setEstadosSigConfirmPorMontoMenor(estadosSiguientes);
+                console.log("RESP ", estadosSiguientes)
+            } else {
+                setEstadosSigConfirmPorMontoMenor([]);
+            }
+        }
+    }, [estadosSigConfirmPorMontoMenorAll])
+
+    */
+
+    /** FIN SECCION OBTENER LOS PARAMETROS DEL STORAGE */
 
     const comentarioAdicionalHanlder = (data, event) => {
         const id = informe.findIndex((comentario) => { return comentario.int_id_parametro === event });
@@ -472,7 +557,7 @@ const VerSolicitud = (props) => {
     }
 
 
-   
+
     const closeModalRechazo = () => {
         setModalRechazo(false);
     }
@@ -543,7 +628,7 @@ const VerSolicitud = (props) => {
         /*VALIDACIONES PARA CUANDO ES APROBADA*/
         //Si cupo que se va aprobar es el mismo que el socio solicito
         if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_APROBADA") { //APROBADO
-            
+
             fetchAddProcEspecifico(props.solicitud.solicitud, solicitudTarjeta.str_cupo_solicitado, "EST_APROBADA", comentarioSolicitud, props.token, (data) => { //APROBADO 11276
                 if (data.str_res_codigo === "000") {
                     console.log("SE APROBO SOLICITUD");
@@ -664,291 +749,291 @@ const VerSolicitud = (props) => {
 
                     {
                         solicitudTarjeta?.str_estado === "APROBADA"
-                        ?
-                        <Card className={["w-100 justify-content-space-between align-content-center"]}>
-                            <div>
+                            ?
+                            <Card className={["w-100 justify-content-space-between align-content-center"]}>
+                                <div>
 
-                                <h3 className="mb-3 strong">Información de la solicitud</h3>
-                                <Card className={["f-row"]}>
-                                    <Item xs={6} sm={6} md={6} lg={6} xl={6}>
-                                        <div className="values  mb-3">
-                                            <h5>Socio:</h5>
-                                            <h5 className="strong">
-                                                {datosSocio?.str_nombres} {datosSocio?.str_apellido_paterno} {datosSocio?.str_apellido_materno}
-                                                {/*{`$ ${props.montoSugerido || Number('10000.00').toLocaleString("en-US")}`}*/}
-                                            </h5>
-                                        </div>
-                                        <div className="values  mb-3">
-                                            <h5>Tipo Documento:</h5>
-                                            <h5 className="strong">
-                                                {`Cédula`}
-                                            </h5>
-                                        </div>
-                                        <div className="values  mb-3">
-                                            <h5>Oficina:</h5>
-                                            <h5 className="strong">
-                                                {`EL VALLE`}
-                                            </h5>
-                                        </div>
-                                        <div className="values  mb-3">
-                                            <h5>Oficial:</h5>
-                                            <h5 className="strong">
-                                                {`${solicitudTarjeta?.str_usuario_proc}`}
-                                            </h5>
-                                        </div>
+                                    <h3 className="mb-3 strong">Información de la solicitud</h3>
+                                    <Card className={["f-row"]}>
+                                        <Item xs={6} sm={6} md={6} lg={6} xl={6}>
+                                            <div className="values  mb-3">
+                                                <h5>Socio:</h5>
+                                                <h5 className="strong">
+                                                    {datosSocio?.str_nombres} {datosSocio?.str_apellido_paterno} {datosSocio?.str_apellido_materno}
+                                                    {/*{`$ ${props.montoSugerido || Number('10000.00').toLocaleString("en-US")}`}*/}
+                                                </h5>
+                                            </div>
+                                            <div className="values  mb-3">
+                                                <h5>Tipo Documento:</h5>
+                                                <h5 className="strong">
+                                                    {`Cédula`}
+                                                </h5>
+                                            </div>
+                                            <div className="values  mb-3">
+                                                <h5>Oficina:</h5>
+                                                <h5 className="strong">
+                                                    {`EL VALLE`}
+                                                </h5>
+                                            </div>
+                                            <div className="values  mb-3">
+                                                <h5>Oficial:</h5>
+                                                <h5 className="strong">
+                                                    {`${solicitudTarjeta?.str_usuario_proc}`}
+                                                </h5>
+                                            </div>
 
-                                        <div className="values  mb-3">
-                                            <h5>Estado de la solicitud:</h5>
-                                            <h5 className="strong">
-                                                {`${solicitudTarjeta?.str_estado}`}
-                                            </h5>
-                                        </div>
+                                            <div className="values  mb-3">
+                                                <h5>Estado de la solicitud:</h5>
+                                                <h5 className="strong">
+                                                    {`${solicitudTarjeta?.str_estado}`}
+                                                </h5>
+                                            </div>
 
-                                    </Item>
+                                        </Item>
 
-                                    <Item xs={6} sm={6} md={6} lg={6} xl={6}>
-                                        <div className="values  mb-3">
-                                            <h5>Solicitud Nro:</h5>
-                                            <h5 className="strong">
-                                                {`${props.solicitud.solicitud || Number('10000.00').toLocaleString("en-US")}`}
-                                            </h5>
-                                        </div>
+                                        <Item xs={6} sm={6} md={6} lg={6} xl={6}>
+                                            <div className="values  mb-3">
+                                                <h5>Solicitud Nro:</h5>
+                                                <h5 className="strong">
+                                                    {`${props.solicitud.solicitud || Number('10000.00').toLocaleString("en-US")}`}
+                                                </h5>
+                                            </div>
 
-                                        <div className="values  mb-3">
-                                            <h5>Cupo solicitado:</h5>
-                                            <h5 className="strong f-row">
-                                                {`$ ${Number(solicitudTarjeta?.str_cupo_solicitado).toLocaleString("en-US") || Number('1000.00').toLocaleString("en-US")}`}
+                                            <div className="values  mb-3">
+                                                <h5>Cupo solicitado:</h5>
+                                                <h5 className="strong f-row">
+                                                    {`$ ${Number(solicitudTarjeta?.str_cupo_solicitado).toLocaleString("en-US") || Number('1000.00').toLocaleString("en-US")}`}
                                                     {/*{props.solicitud.idSolicitud === 11272 &&*/}
                                                     {solicitudTarjeta?.str_estado === "SOLICITUD CREADA" &&
-                                                    <Button className="btn_mg__auto ml-2" onClick={updateMonto}>
-                                                        <img src="/Imagenes/edit.svg"></img>
-                                                    </Button>
-                                                }
-                                            </h5>
-                                        </div>
-                                        <div className="values  mb-3">
-                                            <h5>Cupo sugerido:</h5>
-                                            <h5 className="strong">
-                                                {`$ ${Number(solicitudTarjeta?.srt_cupo_sugerido).toLocaleString("en-US") || Number('10000.00').toLocaleString("en-US")}`}
-                                            </h5>
-                                        </div>
+                                                        <Button className="btn_mg__auto ml-2" onClick={updateMonto}>
+                                                            <img src="/Imagenes/edit.svg"></img>
+                                                        </Button>
+                                                    }
+                                                </h5>
+                                            </div>
+                                            <div className="values  mb-3">
+                                                <h5>Cupo sugerido:</h5>
+                                                <h5 className="strong">
+                                                    {`$ ${Number(solicitudTarjeta?.srt_cupo_sugerido).toLocaleString("en-US") || Number('10000.00').toLocaleString("en-US")}`}
+                                                </h5>
+                                            </div>
 
-                                        <div className="values  mb-3">
-                                            <h5>Cupo aprobado:</h5>
-                                            <h5 className="strong">
-                                                {`$ ${Number(solicitudTarjeta?.str_cupo_aprobado).toLocaleString("en-US") || Number('10000.00').toLocaleString("en-US")}`}
-                                            </h5>
-                                        </div>
-                                    </Item>
-                                </Card>
-                            </div>
-                        </Card>
-                        :
-                        <Card className={["w-100 justify-content-space-between align-content-center"]}>
-                            <div>
-                                <h3 className="mb-3 strong">Análisis y aprobación de crédito</h3>
-                                <Card className={["f-row"]}>
-                                    <Item xs={6} sm={6} md={6} lg={6} xl={6}>
-                                        <div className="values  mb-3">
-                                            <h5>Socio:</h5>
-                                            <h5 className="strong">
-                                                {datosSocio?.str_nombres} {datosSocio?.str_apellido_paterno} {datosSocio?.str_apellido_materno}
-                                            </h5>
-                                        </div>
-                                        <div className="values  mb-3">
-                                            <h5>Tipo Documento:</h5>
-                                            <h5 className="strong">
-                                                {`Cédula`}
-                                            </h5>
-                                        </div>
-                                        <div className="values  mb-3">
-                                            <h5>Oficina:</h5>
-                                            <h5 className="strong">
-                                                {`EL VALLE`}
-                                            </h5>
-                                        </div>
-                                        <div className="values  mb-3">
-                                            <h5>Oficial:</h5>
-                                            <h5 className="strong">
-                                                {`${solicitudTarjeta?.str_usuario_proc}`}
-                                            </h5>
-                                        </div>
+                                            <div className="values  mb-3">
+                                                <h5>Cupo aprobado:</h5>
+                                                <h5 className="strong">
+                                                    {`$ ${Number(solicitudTarjeta?.str_cupo_aprobado).toLocaleString("en-US") || Number('10000.00').toLocaleString("en-US")}`}
+                                                </h5>
+                                            </div>
+                                        </Item>
+                                    </Card>
+                                </div>
+                            </Card>
+                            :
+                            <Card className={["w-100 justify-content-space-between align-content-center"]}>
+                                <div>
+                                    <h3 className="mb-3 strong">Análisis y aprobación de crédito</h3>
+                                    <Card className={["f-row"]}>
+                                        <Item xs={6} sm={6} md={6} lg={6} xl={6}>
+                                            <div className="values  mb-3">
+                                                <h5>Socio:</h5>
+                                                <h5 className="strong">
+                                                    {datosSocio?.str_nombres} {datosSocio?.str_apellido_paterno} {datosSocio?.str_apellido_materno}
+                                                </h5>
+                                            </div>
+                                            <div className="values  mb-3">
+                                                <h5>Tipo Documento:</h5>
+                                                <h5 className="strong">
+                                                    {`Cédula`}
+                                                </h5>
+                                            </div>
+                                            <div className="values  mb-3">
+                                                <h5>Oficina:</h5>
+                                                <h5 className="strong">
+                                                    {`EL VALLE`}
+                                                </h5>
+                                            </div>
+                                            <div className="values  mb-3">
+                                                <h5>Oficial:</h5>
+                                                <h5 className="strong">
+                                                    {`${solicitudTarjeta?.str_usuario_proc}`}
+                                                </h5>
+                                            </div>
 
-                                        <div className="values  mb-3">
-                                            <h5>Estado de la solicitud:</h5>
-                                            <h5 className="strong">
-                                                {`${solicitudTarjeta?.str_estado}`}
-                                            </h5>
-                                        </div>
-                                    </Item>
+                                            <div className="values  mb-3">
+                                                <h5>Estado de la solicitud:</h5>
+                                                <h5 className="strong">
+                                                    {`${solicitudTarjeta?.str_estado}`}
+                                                </h5>
+                                            </div>
+                                        </Item>
 
-                                    <Item xs={6} sm={6} md={6} lg={6} xl={6}>
+                                        <Item xs={6} sm={6} md={6} lg={6} xl={6}>
 
-                                        <div className="values  mb-3">
-                                            <h5>Solicitud Nro:</h5>
-                                            <h5 className="strong">
-                                                {`${props.solicitud.solicitud}`}
-                                            </h5>
-                                        </div>
+                                            <div className="values  mb-3">
+                                                <h5>Solicitud Nro:</h5>
+                                                <h5 className="strong">
+                                                    {`${props.solicitud.solicitud}`}
+                                                </h5>
+                                            </div>
 
 
-                                        <div className="values  mb-3">
+                                            <div className="values  mb-3">
 
-                                            <h5>Cupo solicitado:</h5>
-                                            <h5 className="strong f-row">
-                                                {`$ ${solicitudTarjeta?.str_cupo_solicitado || Number('0.00').toLocaleString("en-US")}`}
+                                                <h5>Cupo solicitado:</h5>
+                                                <h5 className="strong f-row">
+                                                    {`$ ${solicitudTarjeta?.str_cupo_solicitado || Number('0.00').toLocaleString("en-US")}`}
                                                     {/*{props.solicitud.idSolicitud === 11272 &&*/}
                                                     {solicitudTarjeta?.str_estado === "SOLICITUD CREADA" &&
-                                                    <Button className="btn_mg__auto ml-2" onClick={updateMonto}>
-                                                        <img src="/Imagenes/edit.svg"></img>
-                                                    </Button>
-                                                }
-                                            </h5>
-                                        </div>
-                                        <div className="values  mb-3">
-                                            <h5>Cupo sugerido:</h5>
-                                            <h5 className="strong">
-                                                {`$ ${solicitudTarjeta?.srt_cupo_sugerido || Number('0.00').toLocaleString("en-US")}`}
-                                            </h5>
-                                        </div>
+                                                        <Button className="btn_mg__auto ml-2" onClick={updateMonto}>
+                                                            <img src="/Imagenes/edit.svg"></img>
+                                                        </Button>
+                                                    }
+                                                </h5>
+                                            </div>
+                                            <div className="values  mb-3">
+                                                <h5>Cupo sugerido:</h5>
+                                                <h5 className="strong">
+                                                    {`$ ${solicitudTarjeta?.srt_cupo_sugerido || Number('0.00').toLocaleString("en-US")}`}
+                                                </h5>
+                                            </div>
 
 
-                                        <div className="values  mb-3">
-                                            <h5>Cupo aprobado:</h5>
-                                            <h5 className="strong">
-                                                {`$ ${Number(solicitudTarjeta?.str_cupo_aprobado).toLocaleString("en-US") || Number('0.00').toLocaleString("en-US")}`}
-                                            </h5>
-                                        </div>
+                                            <div className="values  mb-3">
+                                                <h5>Cupo aprobado:</h5>
+                                                <h5 className="strong">
+                                                    {`$ ${Number(solicitudTarjeta?.str_cupo_aprobado).toLocaleString("en-US") || Number('0.00').toLocaleString("en-US")}`}
+                                                </h5>
+                                            </div>
 
 
-                                    </Item>
-                                </Card>
+                                        </Item>
+                                    </Card>
 
-                                {/*SECCION DE BOTONES DE ACCIONES POR PERFIL*/}
-                                <Card className={["f-col"]}>
-                                    <div className={["f-row"]}>
+                                    {/*SECCION DE BOTONES DE ACCIONES POR PERFIL*/}
+                                    <Card className={["f-col"]}>
+                                        <div className={["f-row"]}>
 
-                                        {/*TODO VALIDAR QUE SOLO SEA PARA ESE PERFIL*/}
-                                        {(solicitudTarjeta?.str_estado === "ANALISIS UAC" || solicitudTarjeta?.str_estado === "ANALISIS JEFE UAC" )&&
-                                            <Button className="btn_mg__primary" onClick={modalHandler}>Análisis 3C's</Button>
-                                        }
+                                            {/*TODO VALIDAR QUE SOLO SEA PARA ESE PERFIL*/}
+                                            {(solicitudTarjeta?.str_estado === "ANALISIS UAC" || solicitudTarjeta?.str_estado === "ANALISIS JEFE UAC") &&
+                                                <Button className="btn_mg__primary" onClick={modalHandler}>Análisis 3C's</Button>
+                                            }
 
-                                        {/*  EST_ANALISIS_UAC  || EST_ANALISIS_JEFE_UAC    */}
-                                        {(solicitudTarjeta?.str_estado === "ANALISIS UAC" || solicitudTarjeta?.str_estado === "ANALISIS JEFE UAC") &&
-                                            <Button className="btn_mg__primary ml-2" onClick={() => descargarMedio(props.solicitud.solicitud)}>Imprimir medio aprobación</Button>
-                                        }
+                                            {/*  EST_ANALISIS_UAC  || EST_ANALISIS_JEFE_UAC    */}
+                                            {(solicitudTarjeta?.str_estado === "ANALISIS UAC" || solicitudTarjeta?.str_estado === "ANALISIS JEFE UAC") &&
+                                                <Button className="btn_mg__primary ml-2" onClick={() => descargarMedio(props.solicitud.solicitud)}>Imprimir medio aprobación</Button>
+                                            }
 
-                                        {/*  EST_ANALISIS_UAC  || EST_ANALISIS_JEFE_UAC || EST_ANALISIS_COMITE   TODO FALTA EL ESTADO NUEVA BANDEJA */}
+                                            {/*  EST_ANALISIS_UAC  || EST_ANALISIS_JEFE_UAC || EST_ANALISIS_COMITE   TODO FALTA EL ESTADO NUEVA BANDEJA */}
                                             {(solicitudTarjeta?.str_estado === "ANALISIS UAC" || solicitudTarjeta?.str_estado === "ANALISIS JEFE UAC"
                                                 || solicitudTarjeta?.str_estado === "ANALISIS COMITE" || solicitudTarjeta?.str_estado === "OPERATIVO NEGOCIOS") &&
-                                            <Button className="btn_mg__primary ml-2" onClick={openModalCambiarBandeja}>Retornar Solicitud</Button>
-                                        }
+                                                <Button className="btn_mg__primary ml-2" onClick={openModalCambiarBandeja}>Retornar Solicitud</Button>
+                                            }
 
 
-                                        {/* EST_POR_CONFIRMAR */}
-                                        {solicitudTarjeta?.str_estado === "POR CONFIRMAR" &&
-                                            <>
-                                                <div className="values ml-1 mb-3">
-                                                    <Button className={["btn_mg btn_mg__primary"]} onClick={openModalResolucionSocio}>Resolución socio </Button>
-                                                </div>
-                                            </>
-                                        }
-                                    </div>
-                                    <Table headers={headerTableResoluciones}>
-                                        {
-                                            resoluciones.map((resolucion, index) => {
-                                                return (
-                                                    <tr key={resolucion.int_rss_id}>
-                                                        <td>{resolucion.str_usuario_proc}</td>
-                                                        <td> {resolucion.dtt_fecha_actualizacion}</td>
+                                            {/* EST_POR_CONFIRMAR */}
+                                            {solicitudTarjeta?.str_estado === "POR CONFIRMAR" &&
+                                                <>
+                                                    <div className="values ml-1 mb-3">
+                                                        <Button className={["btn_mg btn_mg__primary"]} onClick={openModalResolucionSocio}>Resolución socio </Button>
+                                                    </div>
+                                                </>
+                                            }
+                                        </div>
+                                        <Table headers={headerTableResoluciones}>
+                                            {
+                                                resoluciones.map((resolucion, index) => {
+                                                    return (
+                                                        <tr key={resolucion.int_rss_id}>
+                                                            <td>{resolucion.str_usuario_proc}</td>
+                                                            <td> {resolucion.dtt_fecha_actualizacion}</td>
 
-                                                        <td style={{ width: "60%", justifyContent: "left" }} id={index}>
-                                                            <div style={{ display: "ruby" }}>
-                                                                {trimed[index] ?
-                                                                    <div>
-                                                                        {`${resolucion?.str_comentario_proceso}`}
-                                                                    </div>
-                                                                    :
-                                                                    <div>
-                                                                        {`${resolucion?.str_comentario_proceso.substring(0, 40)}`}
-                                                                    </div>
-                                                                }
-                                                                {resolucion?.str_comentario_proceso.length > 36 && <a className='see-more' onClick={() => { verMas(index) }}>{trimed[index] ? " Ver menos..." : " Ver mas..."}</a>}
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                );
-                                            })
-                                        }
-                                    </Table>
+                                                            <td style={{ width: "60%", justifyContent: "left" }} id={index}>
+                                                                <div style={{ display: "ruby" }}>
+                                                                    {trimed[index] ?
+                                                                        <div>
+                                                                            {`${resolucion?.str_comentario_proceso}`}
+                                                                        </div>
+                                                                        :
+                                                                        <div>
+                                                                            {`${resolucion?.str_comentario_proceso.substring(0, 40)}`}
+                                                                        </div>
+                                                                    }
+                                                                    {resolucion?.str_comentario_proceso.length > 36 && <a className='see-more' onClick={() => { verMas(index) }}>{trimed[index] ? " Ver menos..." : " Ver mas..."}</a>}
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    );
+                                                })
+                                            }
+                                        </Table>
 
-                                    {/* DECISION A TOMAR POR ANALISIS COMITE 11275 */}
-                                    {solicitudTarjeta?.str_estado === "ANALISIS COMITE" &&
-                                        <Card>
-                                            <h3>Decisión</h3>
+                                        {/* DECISION A TOMAR POR ANALISIS COMITE 11275 */}
+                                        {solicitudTarjeta?.str_estado === "ANALISIS COMITE" &&
+                                            <Card>
+                                                <h3>Decisión</h3>
                                                 <select disabled={isDecisionHabilitada} onChange={getDecision} defaultValue={"-1"} value={valorDecisionSelect}>
                                                     {estadosDecisionComite.length > 0
                                                         && estadosDecisionComite?.map((estado, index) => {
-                                                    const resultado = validaNombreParam(estado);
-                                                    if (index === 0) {
-                                                        return (
-                                                            <>
-                                                                <option disabled={true} value={"-1"}>Seleccione una opción</option>
-                                                                <option value={resultado.prm_nemonico}> {resultado.prm_valor_ini}</option>
-                                                            </>
-                                                        )
-                                                    }
-                                                    else {
-                                                        return (
-                                                            <option value={resultado.prm_nemonico}> {resultado.prm_valor_ini}</option>
-                                                        )
-                                                    }
-                                                })}
-                                            </select>
-                                            <br />
-                                        </Card>
-                                    }
-                                    {isMontoAprobarse &&
-                                        <>
-                                            <Card className={["mt-2"]}>
-                                                <h3>Monto a aprobarse</h3>
-                                                <Input type="number" placeholder="Ej. 1000" disabled={false} setValueHandler={(e) => setMontoAprobado(e)} value={montoAprobado}></Input>
+                                                            const resultado = validaNombreParam(estado);
+                                                            if (index === 0) {
+                                                                return (
+                                                                    <>
+                                                                        <option disabled={true} value={"-1"}>Seleccione una opción</option>
+                                                                        <option value={resultado.prm_nemonico}> {resultado.prm_valor_ini}</option>
+                                                                    </>
+                                                                )
+                                                            }
+                                                            else {
+                                                                return (
+                                                                    <option value={resultado.prm_nemonico}> {resultado.prm_valor_ini}</option>
+                                                                )
+                                                            }
+                                                        })}
+                                                </select>
+                                                <br />
                                             </Card>
+                                        }
+                                        {isMontoAprobarse &&
+                                            <>
+                                                <Card className={["mt-2"]}>
+                                                    <h3>Monto a aprobarse</h3>
+                                                    <Input type="number" placeholder="Ej. 1000" disabled={false} setValueHandler={(e) => setMontoAprobado(e)} value={montoAprobado}></Input>
+                                                </Card>
 
-                                            <Card className={["mt-2"]}>
-                                                <h3>Comentario</h3>
-                                                <Textarea placeholder="Ingrese su comentario" onChange={getComentarioSolicitudHandler} esRequerido={true} value={comentarioSolicitud}></Textarea>
-                                            </Card>
-                                        </>
+                                                <Card className={["mt-2"]}>
+                                                    <h3>Comentario</h3>
+                                                    <Textarea placeholder="Ingrese su comentario" onChange={getComentarioSolicitudHandler} esRequerido={true} value={comentarioSolicitud}></Textarea>
+                                                </Card>
+                                            </>
+                                        }
+                                    </Card>
+
+                                    {/*CAMPO PARA DEJAR COMENTARIO Y PASAR A LA SIGUIENTE BANDEJA*/}
+                                    {(solicitudTarjeta?.str_estado !== 'ANALISIS COMITE' && solicitudTarjeta?.str_estado !== 'POR CONFIRMAR') &&
+
+                                        <div className="mt-4">
+                                            <h3 className="mb-3 strong">Observaciones</h3>
+                                            <Textarea placeholder="Ingrese su comentario" onChange={getComentarioSolicitudHandler} esRequerido={true}></Textarea>
+                                        </div>
                                     }
-                                </Card>
-
-                                {/*CAMPO PARA DEJAR COMENTARIO Y PASAR A LA SIGUIENTE BANDEJA*/}
-                                {(solicitudTarjeta?.str_estado !== 'ANALISIS COMITE' && solicitudTarjeta?.str_estado !== 'POR CONFIRMAR') &&
-
-                                    <div className="mt-4">
-                                        <h3 className="mb-3 strong">Observaciones</h3>
-                                        <Textarea placeholder="Ingrese su comentario" onChange={getComentarioSolicitudHandler} esRequerido={true}></Textarea>
-                                    </div>
-                                }
 
 
 
-                            </div>
+                                </div>
 
-                            <div className="mt-2 f-row justify-content-center">
-                                {/*APROBADA O NEGADA POR COMITE ( 11275 EST_ANALISIS_COMITE) */}
-                                {(solicitudTarjeta?.str_estado === "ANALISIS COMITE") &&
-                                    <Button className="btn_mg__primary" disabled={isActivoBtnDecision} onClick={guardarDecisionComiteHandler}>Enviar</Button>
-                                }
-                                {(solicitudTarjeta?.str_estado !== 'ANALISIS COMITE' && solicitudTarjeta?.str_estado !== 'POR CONFIRMAR') &&
-                                    <Button className="btn_mg__primary" disabled={faltaComentariosAsesor} onClick={guardarComentarioSiguiente}>Enviar</Button>
-                                }
+                                <div className="mt-2 f-row justify-content-center">
+                                    {/*APROBADA O NEGADA POR COMITE ( 11275 EST_ANALISIS_COMITE) */}
+                                    {(solicitudTarjeta?.str_estado === "ANALISIS COMITE") &&
+                                        <Button className="btn_mg__primary" disabled={isActivoBtnDecision} onClick={guardarDecisionComiteHandler}>Enviar</Button>
+                                    }
+                                    {(solicitudTarjeta?.str_estado !== 'ANALISIS COMITE' && solicitudTarjeta?.str_estado !== 'POR CONFIRMAR') &&
+                                        <Button className="btn_mg__primary" disabled={faltaComentariosAsesor} onClick={guardarComentarioSiguiente}>Enviar</Button>
+                                    }
 
-                            </div>
+                                </div>
 
 
-                        </Card>
+                            </Card>
                     }
                 </>
 
@@ -973,7 +1058,7 @@ const VerSolicitud = (props) => {
                             grupoDocumental={separadores}
                             contenido={separadores}
                             token={props.token}
-                            cedulaSocio={props.solicitud.cedulaSocio}
+                            cedulaSocio={props.solicitud.cedulaPersona}
                             solicitud={props.solicitud.solicitud}
                             datosSocio={datosSocio}
                             datosUsuario={datosUsuario}
@@ -1067,7 +1152,7 @@ const VerSolicitud = (props) => {
                     {solicitudTarjeta?.str_estado === "POR CONFIRMAR" &&
                         <>
                             <option value="EST_APROBADA_SOCIO">APRUEBA SOCIO</option>
-                        <option value="EST_RECHAZADA">RECHAZA</option>
+                            <option value="EST_RECHAZADA">RECHAZA</option>
                         </>
                     }
                 </select>
@@ -1115,18 +1200,29 @@ const VerSolicitud = (props) => {
                         <h3 className="mt-4 mb-1">Seleccione a qué estado desea regresar la solicitud:</h3>
 
                         <select className='w-100' defaultValue={"-1"} onChange={cambiarEstadoSolHandler} value={selectCambioEstadoSol}>
-                            <option disabled={true} value="-1">Seleccione algún estado</option>
+                            {estadosRetornaBandejaComite.length > 0
+                                && estadosRetornaBandejaComite?.map((estado, index) => {
+                                    const resultado = validaNombreParam(estado);
+                                    if (index === 0) {
+                                        return (
+                                            <>
+                                                <option disabled={true} value={"-1"}>Seleccione una opción</option>
+                                                <option value={resultado.prm_nemonico}> {resultado.prm_valor_ini}</option>
+                                            </>
+                                        )
+                                    }
+                                    else {
+                                        return (
+                                            <option value={resultado.prm_nemonico}> {resultado.prm_valor_ini}</option>
+                                        )
+                                    }
+                                })}
 
-                            {solicitudTarjeta?.str_estado === "ANALISIS COMITE" &&
-                                <>
-                                    <option value="EST_SOL_CREADA">SOLICITUD CREADA</option>
-                                    <option value="EST_ANALISIS_UAC">ANALISIS UAC</option>
-                                    <option value="EST_ANALISIS_JEFE_UAC">ANALISIS JEFE UAC</option>
-                                    <option value="EST_OPERATIVO_NEGOCIOS">OPERATIVO NEGOCIOS</option>
-                                </>
-                            }
                         </select>
                     </>
+                }
+                {solicitudTarjeta?.str_estado !== "ANALISIS COMITE" &&
+                    <h3 className="mt-4 mb-1">Error en la obtención de parámetros. Consulte con el administrador</h3>
                 }
                 <br />
 

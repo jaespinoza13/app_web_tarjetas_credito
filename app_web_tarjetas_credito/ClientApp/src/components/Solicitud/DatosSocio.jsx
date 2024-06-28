@@ -123,6 +123,7 @@ const DatosSocio = (props) => {
 
     const getInfoSocio = () => {
         setEstadoLoadingInfoSocio(true);
+        //TODO: cambiar cedula
         fetchInfoSocio("1105970717", props.token, (data) => {
             setDirDomicilioSocio([...data.lst_dir_domicilio]);
             setDirTrabajoSocio([...data.lst_dir_trabajo]);

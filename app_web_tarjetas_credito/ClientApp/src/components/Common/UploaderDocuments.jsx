@@ -16,40 +16,9 @@ const UploadDocumentos = (props) => {
 
     const [tablaContenido, setTablaContenido] = useState([]);
     const dispatch = useDispatch();
-    const [generarSeparador, setGenerarSeparador] = useState([]);
 
-    /*
-    const [tablaContenido, setTablaContenido] = useState([
-        { int_id_separador: 0, str_actor: "T", str_ord: "", str_separador: "SOLICITUD DE CREDITO", str_ruta_arc: "VASQUEZ DANNY", ruta: "", str_login_carga: "", dtt_fecha_sube: "", str_version: "", str_nombre_separador: "1_SOLICITUD_DE_CREDITO" },
-        { int_id_separador: 1, str_actor: "G", str_ord: "1", str_separador: "DOCUMENTOS DE IDENTIDAD", str_ruta_arc: "VASQUEZ DANNY", ruta: "", str_login_carga: "", dtt_fecha_sube: "", str_version: "", str_nombre_separador: "3_DOCUMENTOS_DE_IDENTIDAD" },
-        { int_id_separador: 2, str_actor: "T", str_ord: "", str_separador: "SUSTENTO DE CAPACIDAD DE PAGO", str_ruta_arc: "VASQUEZ DANNY", ruta: "", str_login_carga: "", dtt_fecha_sube: "", str_version: "", str_nombre_separador: "7_SUSTENTO_DE_CAPACIDAD_DE_PAGO" },
-    ])
-    /*
-    const grupoDocumental = [
-        { id: 0, actor: "T", ord: "", grupo_documental: "SOLICITUD DE CREDITO", nombre_archivo: "1_SOLICITUD_DE_CREDITO" },
-        { id: 1, actor: "T", ord: "", grupo_documental: "DOCUMENTOS DE IDENTIDAD", nombre_archivo: "3_DOCUMENTOS_DE_IDENTIDAD" },
-        { id: 2, actor: "T", ord: "", grupo_documental: "SUSTENTO DE CAPACIDAD DE PAGO", nombre_archivo: "7_SUSTENTO_DE_CAPACIDAD_DE_PAGO" },
-    ]
-    */
 
-   /*
-    useEffect(() => {
-        //if (props.contenido > 0) {
 
-        /*
-        //TODO: eliminar el id no corresponde
-        let result = props.contenido;
-
-            result.forEach((elem, index) => {
-                result[index].int_id_separador = index;
-            })
-            
-
-        
-        //}
-    }, [])
-    */
-    const separadoresAx = ["1_SOLICITUD_DE_CREDITO", "2_EXCEPCIONES"]
     const [base64SeparadorGenerado, setBase64SeparadorGenerado] = useState("");
 
     const generarSeparadores = () => {
@@ -333,7 +302,7 @@ const UploadDocumentos = (props) => {
 
     const convertorArchivo = async (archivoSub) => {
         let base64Archivo = await conversionBase64(archivoSub);
-        console.log(base64Archivo.split(',')[1]);
+        //console.log(base64Archivo.split(',')[1]);
         return base64Archivo.split(',')[1];
     }
 
@@ -358,28 +327,28 @@ const UploadDocumentos = (props) => {
                 //Obtener el archivo en base64
                 let busquedaArchivo = archivosCargados.find(arch => arch.id_separador === grupo.int_id_separador);
                 
-                let archivoABase64 = convertorArchivo(busquedaArchivo.archivo)
-                console.log("BUSQ ARCH PUB ", busquedaArchivo);
+                //let archivoABase64 = convertorArchivo(busquedaArchivo.archivo)
+                //console.log("BUSQ ARCH PUB ", archivoABase64);
 
-                //TODO: VALIDAR
+                convertorArchivo(busquedaArchivo.archivo).then(
+                    archivoABase64 => {
+                        publicarAxentriaHandler(validarSeparador, grupo.str_ruta_ar, grupo.str_nombre_separador, grupo.str_separador, archivoABase64)
 
-                // (requiereSeparar, rutaArchivo, nombreArchivo, identificacionSocio, usuCarga, nombreSocio, nombreGrupo, referencia, archivo, token, onSucces, 
-                
-                fetchAddDocumentosAxentria(validarSeparador, grupo.str_ruta_ar, grupo.str_nombre_separador, props.cedulaSocio, 'xnojeda1',
-                    props.datosSocio?.str_nombres + ' ' + props.datosSocio?.str_apellido_paterno + ' ' + props.datosSocio?.str_apellido_materno,
-                    grupo.str_separador, '', archivoABase64, props.token, (data) => {
-
-
-                }, dispatch);
+                    }
+                )
             }
            
         })
-
-
     }
 
+    const publicarAxentriaHandler = async (validarSeparador, rutaArchivo, nombreSeparador, grupoSeparador, archivoABase64) => {
+        await fetchAddDocumentosAxentria(validarSeparador, rutaArchivo, nombreSeparador, props.cedulaSocio, 'xnojeda1',
+            props.datosSocio?.str_nombres + ' ' + props.datosSocio?.str_apellido_paterno + ' ' + props.datosSocio?.str_apellido_materno,
+            grupoSeparador, '', archivoABase64, props.token, (data) => {
+                console.log("RESULTADO PUB ", data)
 
-
+            }, dispatch);
+    }
 
     return (
         <div className="content_uploader">

@@ -1624,7 +1624,7 @@ export function fetchGetSeparadores( token, onSucces, dispatch) {
     });
 }
 
-export function fetchAddDocumentosAxentria(requiereSeparar, rutaArchivo, nombreArchivo, identificacionSocio, usuCarga, nombreSocio, nombreGrupo, referencia, archivo, token, onSucces, dispatch) {
+export async function fetchAddDocumentosAxentria(requiereSeparar, rutaArchivo, nombreArchivo, identificacionSocio, usuCarga, nombreSocio, nombreGrupo, referencia, archivo, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
@@ -1638,11 +1638,11 @@ export function fetchAddDocumentosAxentria(requiereSeparar, rutaArchivo, nombreA
         str_referencia: referencia,
         loadfile: {
             file: archivo
-        }
+        } 
     }
-    //console.log("BODY ADD ARC ", body)
+    console.log("BODY ADD ARC ", body)
     
-    ServicioPostExecute(addDocumentosAxentria, body, token, { dispatch: dispatch }).then((data) => {
+    await ServicioPostExecute(addDocumentosAxentria, body, token, { dispatch: dispatch }).then((data) => {
         console.log("Add Doc Axe,", data);
         if (data) {
             if (data.error) {
