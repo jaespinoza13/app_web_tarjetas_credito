@@ -282,12 +282,12 @@ function Solicitud(props) {
         // 11276 EST_APROBADA_COMITE || 11272 EST_SOL_CREADA || 11278 EST_POR_CONFIRMAR
         console.log(solicitudSeleccionada)
         if ((solicitudSeleccionada.int_estado === 11276 || solicitudSeleccionada.int_estado === 11272 || solicitudSeleccionada.int_estado === 11278) && rol === "ASESOR DE CRÉDITO") { 
-            dispatch(setSolicitudStateAction({ solicitud: solicitudSeleccionada.int_id, cedulaSocio: solicitudSeleccionada.str_identificacion, idSolicitud: solicitudSeleccionada.int_estado, rol: rol }))
+            dispatch(setSolicitudStateAction({ solicitud: solicitudSeleccionada.int_id, cedulaSocio: solicitudSeleccionada.str_identificacion, idSolicitud: solicitudSeleccionada.int_estado, rol: rol, estado: solicitudSeleccionada.str_estado }))
             navigate.push('/solicitud/ver');
         }
         /* PARA QUE PUEDAN HACER EL PASO DE BANDEJA CADA PERFIL */ 
         else if ((rol === "ANALISTA CREDITO" || rol === "JEFE DE UAC" || rol === "DIRECTOR DE NEGOCIOS" || rol === "OPERATIVO DE NEGOCIOS" ) && solicitudSeleccionada.int_estado !== 11272) {
-            dispatch(setSolicitudStateAction({ solicitud: solicitudSeleccionada.int_id, cedulaSocio: solicitudSeleccionada.str_identificacion, idSolicitud: solicitudSeleccionada.int_estado, rol: rol }))
+            dispatch(setSolicitudStateAction({ solicitud: solicitudSeleccionada.int_id, cedulaSocio: solicitudSeleccionada.str_identificacion, idSolicitud: solicitudSeleccionada.int_estado, rol: rol, estado: solicitudSeleccionada.str_estado }))
             navigate.push('/solicitud/ver');
         }
         else {

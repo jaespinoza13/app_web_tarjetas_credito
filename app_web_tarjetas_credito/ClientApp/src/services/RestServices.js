@@ -1629,7 +1629,6 @@ export function fetchAddDocumentosAxentria(requiereSeparar, rutaArchivo, nombreA
 
     let body = {
         bln_separar: requiereSeparar,
-        bln_publicar: true,
         str_ruta_arc: rutaArchivo,
         str_nombre_arc: nombreArchivo,
         str_identificacion: identificacionSocio,
@@ -1641,8 +1640,8 @@ export function fetchAddDocumentosAxentria(requiereSeparar, rutaArchivo, nombreA
             file: archivo
         }
     }
-    console.log("BODY ADD ARC ", body)
-
+    //console.log("BODY ADD ARC ", body)
+    
     ServicioPostExecute(addDocumentosAxentria, body, token, { dispatch: dispatch }).then((data) => {
         console.log("Add Doc Axe,", data);
         if (data) {

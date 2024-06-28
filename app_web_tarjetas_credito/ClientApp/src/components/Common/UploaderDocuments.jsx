@@ -364,13 +364,13 @@ const UploadDocumentos = (props) => {
                 //TODO: VALIDAR
 
                 // (requiereSeparar, rutaArchivo, nombreArchivo, identificacionSocio, usuCarga, nombreSocio, nombreGrupo, referencia, archivo, token, onSucces, 
-                /*
+                
                 fetchAddDocumentosAxentria(validarSeparador, grupo.str_ruta_ar, grupo.str_nombre_separador, props.cedulaSocio, 'xnojeda1',
                     props.datosSocio?.str_nombres + ' ' + props.datosSocio?.str_apellido_paterno + ' ' + props.datosSocio?.str_apellido_materno,
                     grupo.str_separador, '', archivoABase64, props.token, (data) => {
 
 
-                }, dispatch);*/
+                }, dispatch);
             }
            
         })

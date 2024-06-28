@@ -60,15 +60,14 @@ const VerSolicitud = (props) => {
     const [montoAprobado, setMontoAprobado] = useState(0);
 
     const [comentarioCambioEstado, setComentarioCambioEstado] = useState("");
-    const [valorDecisionSelect, setValorDecisionSelect] = useState(-1);
+    const [valorDecisionSelect, setValorDecisionSelect] = useState("-1");
     const [isActivoBtnDecision, setIsActivoBtnDecision] = useState(true);
     const [isBtnDisableCambioBandeja, setIsBtnDisableCambioBandeja] = useState(true);
 
     //Se debe implementar con parametros
     const [imprimeMedio, setImprimeMedio] = useState([]);
     const [regresaSolicitud, setRegresaSolicitud] = useState([]);
-    const [estadosSiguientes, setEstadosSiguientes] = useState([]);
-    const [estadosSiguientesAll, setEstadosSiguientesAll] = useState([]);
+
 
     //DATOS DEL USUARIO
     const [datosUsuario, setDatosUsuario] = useState([]);
@@ -81,10 +80,13 @@ const VerSolicitud = (props) => {
 
     //Axentria
     const [separadores, setSeparadores] = useState([]);
+
+
+    //PARAMETROS REQUERIDOS
     const [parametrosTC, setParametrosTC] = useState([]); // cambiar prm_valor_ini por str_valor_ini
     const [bandejaApruebaSol, setBandejaApruebaSol] = useState([]); 
     const [estadosDecisionComite, setEstadosDecisionComite] = useState([]); 
-    const [estadosDecBandejaComiteAll, setEstadosDecBandejaComiteAll] = useState([]); 
+    const [estadosDecBanjComiteAll, setEstadosDecBanjComiteAll] = useState([]); 
     const [bandejasRetornanAntEstado, setBandejasRetornanAntEstado] = useState([]); 
 
 
@@ -136,7 +138,7 @@ const VerSolicitud = (props) => {
             setDatosSocio(data.datos_cliente[0]);
         }, dispatch);
 
-        
+
         fetchGetFlujoSolicitud(props.solicitud.solicitud, props.token, (data) => {
             if (data.flujo_solicitudes.length > 0) {
                 const arrayDeValores = data.flujo_solicitudes.map(objeto => objeto.int_flujo_id);
@@ -182,18 +184,8 @@ const VerSolicitud = (props) => {
                 prm_id: 11275
             }
         ]);
-        /*setEstadosSiguientesAll([
-            {
-                prm_id: 11275, estados: "11276|11277|11278"
-            }
-        ]);*/
-        
-        setEstadosSiguientesAll([
-            {
-                prm_id: 11275, estados: "11276|11277"
-            }
-        ]);
 
+        //console.log("PROPS, ", props)
 
         //OBTENER DATOS DEL USUARIO
         const strOficial = get(localStorage.getItem("sender_name"));
@@ -204,7 +196,7 @@ const VerSolicitud = (props) => {
 
         //console.log("PROPS parametrosTC", props.parametrosTC.lst_parametros)
         if (props.parametrosTC.lst_parametros?.length > 0) {
-            console.log("Entr", props.parametrosTC.lst_parametros)
+            //console.log("Entr", props.parametrosTC.lst_parametros)
             let ParametrosTC = props.parametrosTC.lst_parametros;
             setParametrosTC(ParametrosTC
                 .filter(param => param.str_nombre === 'ESTADOS_SOLICITUD_TC')
@@ -216,7 +208,7 @@ const VerSolicitud = (props) => {
                     prm_valor_fin: estado.str_valor_fin
                 })));
             
-            setEstadosDecBandejaComiteAll(ParametrosTC
+            setEstadosDecBanjComiteAll(ParametrosTC
                 .filter(param => param.str_nemonico === 'HAB_DEC_APR_SOL')
                 .map(estado => ({
                     prm_id: estado.int_id_parametro,
@@ -245,12 +237,6 @@ const VerSolicitud = (props) => {
 
     }, []);
 
-    /*
-    useEffect(() => {
-        if (parametrosTC.length> 0)console.log("PROPS parametrosTC", parametrosTC)
-        
-    }, [parametrosTC])*/
-
 
     const actualizaInformaFlujoSol = () => {
         fetchGetFlujoSolicitud(props.solicitud.solicitud, props.token, (data) => {
@@ -274,58 +260,35 @@ const VerSolicitud = (props) => {
     }
 
 
-    const validaNombreParam = (id) => {
-        //console.log("ESTADOS SIG BAN COMITE ", estadosSigBandejaComite)
-        //console.log("ESTADO VALIDAR ", estadosSiguientesAll)
-        console.log("ESTADO ENTRA ", id)
-        if (estadosSiguientes.length > 0) {
+    const validaNombreParam = (estadoNombre) => {
+
+        //console.log("ESTADO ENTRA ", estadoNombre)
+        if (estadosDecisionComite.length > 0 && parametrosTC.length > 0) {
             //const parametro = parametros.find(param => Number(param.prm_id) === Number(id));
-            const parametro = parametrosTC.find(param => Number(param.prm_id) === Number(id));
+            let parametro = parametrosTC.find(param => param.prm_valor_ini === estadoNombre);
             return parametro;
+        } else {
+            window.alert("ERROR EN CARGA DE PARAMETROS, COMUNICATE CON EL ADMINISTRADOR");
         }
     }
 
 
-    /** OBTENER LOS PARAMETROS DEL STORAGE
+    /** OBTENER LOS PARAMETROS DEL STORAGE */
     useEffect(() => {
-        if (estadosDecBandejaComiteAll.length > 0) { //&& estadoSolicitud.current !== undefined) {
-            //TODO REVISAR
-            /*let arrEstados = estadosDecBandejaComiteAll.find((parametr) => (parametr.prm_valor_ini) === 'ANALISIS COMITE')//estadoSolicitud.current);
-            console.log("ARR_EST ", arrEstados)
-            //console.log("estadoSolicitud ", estadoSolicitud.current)
+        if (estadosDecBanjComiteAll.length > 0) {
+            let arrEstados = estadosDecBanjComiteAll.find((parametr) => (parametr.prm_valor_ini) === props.solicitud.estado)
+            //console.log("ARR_EST ", arrEstados)
             if (arrEstados) {
-                const estadosSiguientes = arrEstados[0].estados.split('|');
-                //setEstadosDecisionComite(estadosSiguientes);
+                const estadosSiguientes = arrEstados.estados.split('|');
+                setEstadosDecisionComite(estadosSiguientes);                
                 console.log("RESP ", estadosSiguientes)
             } else {
                 // Handle the case when arrEstados is not found
                 setEstadosDecisionComite([]);
+                setIsDecisionHabilitada(true);
             }
         }
-    }, [estadosDecBandejaComiteAll])*/
-  
-    useEffect(() => {
-
-        if (estadosSiguientesAll.length > 0) {
-            let arrEstados = estadosSiguientesAll?.find((parametr) => Number(parametr.prm_id) === Number(props.solicitud.idSolicitud));
-            if (arrEstados) {
-                const estadosSiguientes = arrEstados.estados.split('|');
-                const conversionANumeros = estadosSiguientes.map(estado => Number(estado));
-                //console.log("CONVERSION NUM ",conversionANumeros)
-                setEstadosSiguientes(conversionANumeros);
-            } else {
-                // Handle the case when arrEstados is not found
-                setEstadosSiguientes([]);
-            }
-        }
-
-    }, [estadosSiguientesAll]);
-
-    useEffect(() => {
-        if (estadosSiguientes.length === 1) {
-            setIsDecisionHabilitada(true);
-        }
-    }, [estadosSiguientes]);
+    }, [estadosDecBanjComiteAll])
 
     const comentarioAdicionalHanlder = (data, event) => {
         const id = informe.findIndex((comentario) => { return comentario.int_id_parametro === event });
@@ -369,8 +332,6 @@ const VerSolicitud = (props) => {
     }
 
     const guardarComentarioSiguiente = () => {
-        //console.log("ENTRAR GUARDAR COM SIG")
-        //console.log(`${props.solicitud.solicitud} | ${comentarioSolicitud} | ${props.solicitud.idSolicitud}  `)
         //Debe guardar comentario de Resolucion
 
         fetchAddComentarioSolicitud(props.solicitud.solicitud, comentarioSolicitud, props.solicitud.idSolicitud, false, props.token, (data) => {
@@ -394,20 +355,19 @@ const VerSolicitud = (props) => {
 
     }
 
-    const descargarReporte = () => {
-        const pdfUrl = "Imagenes/reporteavalhtml.pdf";
-        const link = document.createElement("a");
-        link.href = pdfUrl;
-        link.download = "document.pdf"; // specify the filename
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
+    //const descargarReporte = () => {
+    //    const pdfUrl = "Imagenes/reporteavalhtml.pdf";
+    //    const link = document.createElement("a");
+    //    link.href = pdfUrl;
+    //    link.download = "document.pdf"; // specify the filename
+    //    document.body.appendChild(link);
+    //    link.click();
+    //    document.body.removeChild(link);
+    //}
 
     const descargarMedio = (numSolicitud) => {
         console.log("Num Sol,", numSolicitud)
         //TODO: ESTADO
-        //fetchGetMedioAprobacion("", props.solicitud.solicitud, props.token, (data) => {
         fetchGetMedioAprobacion(solicitudTarjeta?.str_estado, props.solicitud.solicitud, props.token, (data) => {
             console.log("RESP MEDIO", data)
             if (data.str_res_codigo === "000" && verificarPdf(data.str_med_apro_bas_64)) {
@@ -432,7 +392,7 @@ const VerSolicitud = (props) => {
     }
     const getDecision = (event) => {
         setValorDecisionSelect(event.target.value);
-        if (Number(event.target.value) === 11276) {// || Number(event.target.value) === 11278) { //APROBADO o POR CONFIRMAR
+        if (event.target.value === "EST_APROBADA") {// || Number(event.target.value) === 11278) { //APROBADO o POR CONFIRMAR
             setIsMontoAprobarse(true);
         }
         else {
@@ -470,9 +430,6 @@ const VerSolicitud = (props) => {
     }
 
 
-    const guardarRechazo = () => {
-        rechazaTarjeta();
-    }
 
 
     const cambiarEstadoSolHandler = (e) => {
@@ -480,8 +437,7 @@ const VerSolicitud = (props) => {
     }
 
     const cambioEstadoBandeja = () => {
-        //Comite retorna a un estado de bandeja especifica
-        //if (props.solicitud.idSolicitud === 11275) { //ANALISIS COMITE
+        //Comite retorna a un estado de bandeja especifica para ANALISIS COMITE
         if (solicitudTarjeta?.str_estado === "ANALISIS COMITE") {
             fetchAddProcEspecifico(props.solicitud.solicitud, 0, selectCambioEstadoSol, comentarioCambioEstado, props.token, (data) => {
                 if (data.str_res_codigo === "000") {
@@ -511,26 +467,12 @@ const VerSolicitud = (props) => {
 
     }
 
-    const openModalRechazo = () => {
-        setModalRechazo(true);
-    }
-
     const closeModalResolucionSocio = () => {
         setModalResolucionSocio(false);
     }
 
 
-    const rechazaTarjeta = () => {
-        fetchAddProcEspecifico(props.solicitud.idSolicitud, 0, "EST_RECHAZADA", "", props.token, (data) => {
-            if (data.str_res_codigo === "000") {
-                //Ir a pagina anterior
-                setModalRechazo(false);
-                navigate.push('/solicitud');
-            }
-            console.log("RECHAZ ", data)
-        }, dispatch)
-    }
-
+   
     const closeModalRechazo = () => {
         setModalRechazo(false);
     }
@@ -570,29 +512,38 @@ const VerSolicitud = (props) => {
     }, [comentarioSolicitud])
 
 
+
+    const rechazarSolicitudHandler = () => {
+        console.log("ENTRA A RECHAZAR")
+        fetchAddProcEspecifico(props.solicitud.solicitud, 0, "EST_RECHAZADA", "", props.token, (data) => { //EST_RECHAZADA 11277
+            if (data.str_res_codigo === "000") {
+                console.log("SE NEGO SOLICITUD");
+                setModalRechazo(false);
+                navigate.push('/solicitud');
+            }
+            else {
+                console.log("No cuenta con permisos ", data);
+            }
+        }, dispatch)
+    }
+
+
     const guardarDecisionComiteHandler = () => {
         let validaCupo = controlMontoAprobado();
         console.log(`Valida Cupo,`, validaCupo)
         console.log(`valorDecisionSelect,`, valorDecisionSelect)
 
-        if (Number(valorDecisionSelect) === 11277) { // EST_RECHAZADA
-            fetchAddProcEspecifico(props.solicitud.solicitud, 0, "EST_RECHAZADA", "", props.token, (data) => { //EST_RECHAZADA 11277
-                if (data.str_res_codigo === "000") {
-                    console.log("SE NEGO SOLICITUD");
-                    navigate.push('/solicitud');
-                }
-                else {
-                    console.log("No cuenta con permisos ", data);
-                }
-            }, dispatch)
+        if (valorDecisionSelect === "EST_RECHAZADA") { // EST_RECHAZADA
+            setModalRechazo(true);
+            return;
         }
 
         console.log(`Contr montoAprobado ${montoAprobado} cupo_solicitado ${solicitudTarjeta?.str_cupo_solicitado}`)
 
         /*VALIDACIONES PARA CUANDO ES APROBADA*/
         //Si cupo que se va aprobar es el mismo que el socio solicito
-        if (Number(valorDecisionSelect) === 11276 && Number(validaCupo.estadoSig) === 11276) { //APROBADO
-            console.log("PASS1")
+        if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_APROBADA") { //APROBADO
+            
             fetchAddProcEspecifico(props.solicitud.solicitud, solicitudTarjeta.str_cupo_solicitado, "EST_APROBADA", comentarioSolicitud, props.token, (data) => { //APROBADO 11276
                 if (data.str_res_codigo === "000") {
                     console.log("SE APROBO SOLICITUD");
@@ -605,9 +556,7 @@ const VerSolicitud = (props) => {
 
         }
         //Si cupo que se va aprobar es menor al que solicita el socio
-        else if (Number(valorDecisionSelect) === 11276 && Number(validaCupo.estadoSig) === 11278) { //POR CONFIRMAR
-            console.log("PASS2")
-            console.log("nuevoMontoAprobado ", montoAprobado)
+        else if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_POR_CONFIRMAR") { //POR CONFIRMAR
             fetchAddProcEspecifico(props.solicitud.solicitud, Number.parseFloat(montoAprobado).toFixed(2), "EST_POR_CONFIRMAR", comentarioSolicitud, props.token, (data) => { //POR CONFIRMAR 11278
                 if (data.str_res_codigo === "000") {
                     console.log("SE ENVIA POR CONFIFMAR SOLICITUD");
@@ -627,12 +576,12 @@ const VerSolicitud = (props) => {
             estadoSig: "0"
         }
 
-        if ((Number.parseFloat(solicitudTarjeta?.str_cupo_solicitado) === Number.parseFloat(montoAprobado)) && valorDecisionSelect === "11276") {
+        if ((Number.parseFloat(solicitudTarjeta?.str_cupo_solicitado) === Number.parseFloat(montoAprobado)) && valorDecisionSelect === "EST_APROBADA") {
             controlBool.validador = true;
-            controlBool.estadoSig = "11276" // EST_APROBADA (COMITE)
-        } else if (Number.parseFloat(montoAprobado) > 0 && (Number.parseFloat(montoAprobado) < Number.parseFloat(solicitudTarjeta?.str_cupo_solicitado)) && valorDecisionSelect === "11276") {
+            controlBool.estadoSig = "EST_APROBADA" // EST_APROBADA (COMITE)
+        } else if (Number.parseFloat(montoAprobado) > 0 && (Number.parseFloat(montoAprobado) < Number.parseFloat(solicitudTarjeta?.str_cupo_solicitado)) && valorDecisionSelect === "EST_APROBADA") {
             controlBool.validador = true;
-            controlBool.estadoSig = "11278" // EST_POR_CONFIRMAR (SE VA HACIA ASESOR CREDITO NUEVAMENTE)
+            controlBool.estadoSig = "EST_POR_CONFIRMAR" // EST_POR_CONFIRMAR (SE VA HACIA ASESOR CREDITO NUEVAMENTE)
         } else if (Number.parseFloat(montoAprobado) > Number.parseFloat(solicitudTarjeta?.str_cupo_solicitado)) {
             controlBool.validador = false;
             controlBool.estadoSig = "0" // NO ES POSIBLE PASAR BANDEJA
@@ -649,14 +598,14 @@ const VerSolicitud = (props) => {
             setIsActivoBtnDecision(true);
             return
         }
-        if (valorDecisionSelect === "11277") { //EST_RECHAZADA
+        if (valorDecisionSelect === "EST_RECHAZADA") { //EST_RECHAZADA
             setIsActivoBtnDecision(false);
         }
 
         else if (valorDecisionSelect !== "-1" && montoAprobado > 0 && comentarioSolicitud !== "" && validaCupo.validador) {
-            if (valorDecisionSelect === "11276" && validaCupo.estadoSig === "11276") {// EST_APROBADA 11276
+            if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_APROBADA") {// EST_APROBADA 11276
                 setIsActivoBtnDecision(false);
-            } else if (valorDecisionSelect === "11276" && validaCupo.estadoSig === "11278") { //EST_POR_CONFIRMAR 11278 por cupo inferior 
+            } else if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_POR_CONFIRMAR") { //EST_POR_CONFIRMAR 11278 por cupo inferior 
                 setIsActivoBtnDecision(false);
             } else {
                 setIsActivoBtnDecision(true);
@@ -714,7 +663,6 @@ const VerSolicitud = (props) => {
                 <>
 
                     {
-                        /*props.solicitud.idSolicitud === 11276*/
                         solicitudTarjeta?.str_estado === "APROBADA"
                         ?
                         <Card className={["w-100 justify-content-space-between align-content-center"]}>
@@ -756,34 +704,15 @@ const VerSolicitud = (props) => {
                                             </h5>
                                         </div>
 
-                                        {/* TODO REVISAR SI VA BOTONES PARA EST_APROBADA */}
-                                        {/*{props.solicitud.idSolicitud === "11276" */}
-                                        {/*        ? */}
-                                        {/*        <>*/}
-                                        {/*            <div className="values  mb-3">*/}
-                                        {/*                <Button className={["btn_mg btn_mg__primary"]} disabled={false} onClick={descargarReporte}>Descargar reporte</Button>*/}
-                                        {/*            </div>*/}
-                                        {/*            <div className="values  mb-3">*/}
-                                        {/*                <Button className="btn_mg__primary" type="" onClick={modalHandler}>Agregar comentarios</Button>*/}
-                                        {/*            </div>*/}
-                                        {/*        </>*/}
-                                        {/*        :*/}
-                                        {/*        <div className="values  mb-3">*/}
-                                        {/*            <Button className={["btn_mg btn_mg__primary"]} disabled={false} onClick={openModalRechazo}>Rechaza tarjeta</Button>*/}
-                                        {/*        </div>*/}
-                                        {/*}*/}
                                     </Item>
 
                                     <Item xs={6} sm={6} md={6} lg={6} xl={6}>
-
-
                                         <div className="values  mb-3">
                                             <h5>Solicitud Nro:</h5>
                                             <h5 className="strong">
                                                 {`${props.solicitud.solicitud || Number('10000.00').toLocaleString("en-US")}`}
                                             </h5>
                                         </div>
-
 
                                         <div className="values  mb-3">
                                             <h5>Cupo solicitado:</h5>
@@ -917,7 +846,6 @@ const VerSolicitud = (props) => {
 
 
                                         {/* EST_POR_CONFIRMAR */}
-                                        {/*{solicitudTarjeta?.str_estado === "11278" &&*/}
                                         {solicitudTarjeta?.str_estado === "POR CONFIRMAR" &&
                                             <>
                                                 <div className="values ml-1 mb-3">
@@ -955,26 +883,24 @@ const VerSolicitud = (props) => {
                                     </Table>
 
                                     {/* DECISION A TOMAR POR ANALISIS COMITE 11275 */}
-                                    {/*{props.solicitud.idSolicitud === "11275" &&*/}
                                     {solicitudTarjeta?.str_estado === "ANALISIS COMITE" &&
                                         <Card>
                                             <h3>Decisión</h3>
-                                                <select disabled={isDecisionHabilitada} onChange={getDecision} defaultValue={-1} value={valorDecisionSelect}>
-                                                    {/*{estadosSiguientes.length > 0*/}
-                                                    {/*    && estadosSiguientes?.map((estados, index) => {*/}
-                                                    {estadosSiguientes?.map((estados, index) => {
-                                                    const resultado = validaNombreParam(estados);
+                                                <select disabled={isDecisionHabilitada} onChange={getDecision} defaultValue={"-1"} value={valorDecisionSelect}>
+                                                    {estadosDecisionComite.length > 0
+                                                        && estadosDecisionComite?.map((estado, index) => {
+                                                    const resultado = validaNombreParam(estado);
                                                     if (index === 0) {
                                                         return (
                                                             <>
-                                                                <option disabled={true} value={-1}>Seleccione una opción</option>
-                                                                <option value={resultado.prm_id}> {resultado.prm_valor_ini}</option>
+                                                                <option disabled={true} value={"-1"}>Seleccione una opción</option>
+                                                                <option value={resultado.prm_nemonico}> {resultado.prm_valor_ini}</option>
                                                             </>
                                                         )
                                                     }
                                                     else {
                                                         return (
-                                                            <option value={resultado.prm_id}> {resultado.prm_valor_ini}</option>
+                                                            <option value={resultado.prm_nemonico}> {resultado.prm_valor_ini}</option>
                                                         )
                                                     }
                                                 })}
@@ -998,7 +924,6 @@ const VerSolicitud = (props) => {
                                 </Card>
 
                                 {/*CAMPO PARA DEJAR COMENTARIO Y PASAR A LA SIGUIENTE BANDEJA*/}
-                                {/*{props.solicitud.idSolicitud !== "11275" &&*/}
                                 {(solicitudTarjeta?.str_estado !== 'ANALISIS COMITE' && solicitudTarjeta?.str_estado !== 'POR CONFIRMAR') &&
 
                                     <div className="mt-4">
@@ -1013,11 +938,9 @@ const VerSolicitud = (props) => {
 
                             <div className="mt-2 f-row justify-content-center">
                                 {/*APROBADA O NEGADA POR COMITE ( 11275 EST_ANALISIS_COMITE) */}
-                                {/*{(props.solicitud.idSolicitud === "11275") &&*/}
                                 {(solicitudTarjeta?.str_estado === "ANALISIS COMITE") &&
                                     <Button className="btn_mg__primary" disabled={isActivoBtnDecision} onClick={guardarDecisionComiteHandler}>Enviar</Button>
                                 }
-                                {/*{props.solicitud.idSolicitud !== "11275" &&*/}
                                 {(solicitudTarjeta?.str_estado !== 'ANALISIS COMITE' && solicitudTarjeta?.str_estado !== 'POR CONFIRMAR') &&
                                     <Button className="btn_mg__primary" disabled={faltaComentariosAsesor} onClick={guardarComentarioSiguiente}>Enviar</Button>
                                 }
@@ -1034,14 +957,15 @@ const VerSolicitud = (props) => {
             {accionSeleccionada !== 1 && accionSeleccionada === 2 &&
                 <Card className={["w-100 justify-content-space-between align-content-center"]}>
                     <h3 className="mb-3 strong">Documentos digitalizados</h3>
-                    <Button className="mt-3 mb-3 btn_mg__primary" onClick={abrirTodos}>Abrir archivos</Button>
-                    <div className="select-item">
-                        <a onClick={() => { downloadArchivo("/Imagenes/FRMSYS-020.pdf") }}>Cédula de ciudadania</a>
-                    </div>
-                    <div className="select-item">
-                        <Input type="checkbox"></Input>
-                        <a onClick={() => { downloadArchivo("/Imagenes/archivo.pdf") }}>Autorizacion de consulta al buró</a>
-                    </div>
+
+                    {/*<Button className="mt-3 mb-3 btn_mg__primary" onClick={abrirTodos}>Abrir archivos</Button>*/}
+                    {/*<div className="select-item">*/}
+                    {/*    <a onClick={() => { downloadArchivo("/Imagenes/FRMSYS-020.pdf") }}>Cédula de ciudadania</a>*/}
+                    {/*</div>*/}
+                    {/*<div className="select-item">*/}
+                    {/*    <Input type="checkbox"></Input>*/}
+                    {/*    <a onClick={() => { downloadArchivo("/Imagenes/archivo.pdf") }}>Autorizacion de consulta al buró</a>*/}
+                    {/*</div>*/}
 
 
                     <div className="mt-3">
@@ -1097,10 +1021,6 @@ const VerSolicitud = (props) => {
                         })
                     }
                 </Table>
-                {/*<div className="mt-4">*/}
-                {/*    <h3 className="mb-3 strong">Comentario del Asesor</h3>*/}
-                {/*    <Textarea placeholder="Ingrese su comentario" onChange={getComentarioSolicitudHandler} esRequerido={true}></Textarea>*/}
-                {/*</div>*/}
             </div>}
         </Modal>
         <Modal
@@ -1160,21 +1080,14 @@ const VerSolicitud = (props) => {
                         <Input className="w-100" type="text" value={comentarioCambioEstado} placeholder="Ingrese comentario" setValueHandler={setComentarioCambioEstado}></Input>
                     </div>
                 }
-
-
-
-
-
                 <br />
-
-
             </div>}
         </Modal>
 
         <Modal
             modalIsVisible={modalRechazo}
             titulo={`Aviso!!!`}
-            onNextClick={guardarRechazo}
+            onNextClick={rechazarSolicitudHandler}
             onCloseClick={closeModalRechazo}
             isBtnDisabled={false}
             type="sm"
