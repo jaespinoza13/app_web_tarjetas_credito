@@ -37,6 +37,7 @@ using Domain.Models.TarjetaCredito.Axentria.ObtenerDocumentos;
 using Domain.Models.TarjetaCredito.Axentria.CrearSeparadores;
 using Domain.Models.TarjetaCredito.GetReporteAval;
 using Domain.Models.TarjetaCredito.GetAlertasCliente;
+using Domain.Models.TarjetaCredito.GetMotivos;
 
 namespace plantilla_app_web.Controllers
 {
@@ -343,6 +344,15 @@ namespace plantilla_app_web.Controllers
         public ResCrypt Post(ReqGetParametrosSistema req)
         {
             ResGetParametrosSistema res = tarjetaCreditoDat.getParametros(req);
+            return Utiles.crypt(res, Request.Headers);
+        }
+
+        [Route("getMotivos")]
+        [ServiceFilter(typeof(CryptoFilter))]
+        [HttpPost]
+        public ResCrypt Post(ReqGetMotivos req)
+        {
+            ResGetMotivos res = tarjetaCreditoDat.getMotivos(req);
             return Utiles.crypt(res, Request.Headers);
         }
 

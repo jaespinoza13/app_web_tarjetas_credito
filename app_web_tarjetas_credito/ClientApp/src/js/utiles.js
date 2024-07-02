@@ -707,7 +707,7 @@ export function conversionBase64(file) {
         }
     })
 }
-
+/*
 export function getBase64(file, cb) {
     let reader = new FileReader();
     reader.readAsDataURL(file);
@@ -717,4 +717,4 @@ export function getBase64(file, cb) {
     reader.onerror = function (error) {
         console.log('Error al convertir a base64: ', error);
     };
-}
+}*/

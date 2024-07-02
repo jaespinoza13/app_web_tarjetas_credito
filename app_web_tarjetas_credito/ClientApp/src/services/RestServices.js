@@ -1,4 +1,4 @@
-import { ServicioGetExecute, getMenuPrincipal, getPreguntaUsuario, ServicioPostExecute, getValidarPreguntaUsuario, setResetPassword, getLogin, getLoginPerfil, getPreguntas, setPreguntas, setPassword, setPasswordPrimeraVez, getListaBases, getListaConexiones, setConexion, addConexion, getListaSeguimiento, getListaDocumentos, getListaColecciones, getDescargarLogsTexto, getLogsTexto, getContenidoLogsTexto, getValidaciones, getScore, getInfoSocio, getInfoEco, addAutorizacion, getSolicitudes, addSolicitud, getContrato, getInfoFinan, addProspecto, getFlujoSolicitud, addComentarioAsesor, addComentarioSolicitud, updResolucion, addResolucion, getResolucion, addProcEspecifico, updSolicitud, getParametros, getReporteOrden, getOrdenes, getTarjetasCredito, getInforme, getMedioAprobacion, getSeparadores, addDocumentosAxentria, getDocumentosAxentria, crearSeparadores, getReporteAval, getAlertasCliente } from './Services';
+import { ServicioGetExecute, getMenuPrincipal, getPreguntaUsuario, ServicioPostExecute, getValidarPreguntaUsuario, setResetPassword, getLogin, getLoginPerfil, getPreguntas, setPreguntas, setPassword, setPasswordPrimeraVez, getListaBases, getListaConexiones, setConexion, addConexion, getListaSeguimiento, getListaDocumentos, getListaColecciones, getDescargarLogsTexto, getLogsTexto, getContenidoLogsTexto, getValidaciones, getScore, getInfoSocio, getInfoEco, addAutorizacion, getSolicitudes, addSolicitud, getContrato, getInfoFinan, addProspecto, getFlujoSolicitud, addComentarioAsesor, addComentarioSolicitud, updResolucion, addResolucion, getResolucion, addProcEspecifico, updSolicitud, getParametros, getReporteOrden, getOrdenes, getTarjetasCredito, getInforme, getMedioAprobacion, getSeparadores, addDocumentosAxentria, getDocumentosAxentria, crearSeparadores, getReporteAval, getAlertasCliente, getMotivos } from './Services';
 import { setAlertText, setErrorRedirigir } from "../redux/Alert/actions";
 import hex_md5 from '../js/md5';
 import { desencriptar, generate, get, set } from '../js/crypt';
@@ -1457,6 +1457,29 @@ export function fetchGetParametrosSistema(token, onSucces, dispatch) {
     });
 }
 
+export function fetchGetMotivos(token, onSucces, dispatch) {
+    if (dispatch) dispatch(setErrorRedirigir(""));
+    let body = {
+
+    }
+    ServicioPostExecute(getMotivos, body, token, { dispatch: dispatch }).then((data) => {
+        console.log(data);
+
+        if (data) {
+            if (data.error) {
+                if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
+            } else {
+                if (data.str_res_estado_transaccion === "OK") {
+                    onSucces(data);
+                } else {
+                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                }
+            }
+        } else {
+            if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
+        }
+    });
+}
 
 
 /**
@@ -1750,13 +1773,15 @@ export async function fetchReporteAval(idCliente, token, onSucces, dispatch) {
     });
 }
 
-export async function fetchGetAlertasCliente(strCedula, strTipoValidacion, strFechaNacimiento, token, onSucces, dispatch) {
+export async function fetchGetAlertasCliente(strCedula, strTipoValidacion, strFechaNacimiento, nombresCliente,  apellidosCliente, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
         str_identificacion: strCedula,
         str_nemonico_alerta: strTipoValidacion,
-        dtt_fecha_nacimiento: strFechaNacimiento
+        dtt_fecha_nacimiento: strFechaNacimiento,
+        str_nombres: nombresCliente,
+        str_apellidos: apellidosCliente
     };
     //console.log("BODY ALERTAS,", body)
     await ServicioPostExecute(getAlertasCliente, body, token, { dispatch: dispatch }).then((data) => {

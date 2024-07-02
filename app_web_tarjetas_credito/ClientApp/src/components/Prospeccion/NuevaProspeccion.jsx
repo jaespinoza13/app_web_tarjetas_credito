@@ -326,7 +326,7 @@ const NuevaProspeccion = (props) => {
     }
 
     const consultaAlertas = async (seguirAlSigPaso) => {
-        await fetchGetAlertasCliente(documento, '', fechaNacimiento, props.token, (data) => {
+        await fetchGetAlertasCliente(documento, '', fechaNacimiento, nombreSocio, apellidoPaterno + " " +apellidoMaterno, props.token, (data) => {
             let alertasIniciales_Validas = [...data.alertas_iniciales.lst_datos_alerta_true];
             let alertasIniciales_Invalidas = [...data.alertas_iniciales.lst_datos_alerta_false];
             let alertasRestriccion_Validas = [...data.alertas_restriccion.lst_datos_alerta_true];
