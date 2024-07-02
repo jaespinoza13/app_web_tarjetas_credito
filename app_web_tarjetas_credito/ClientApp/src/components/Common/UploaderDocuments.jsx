@@ -1,10 +1,9 @@
-﻿import { Fragment, createRef, useEffect, useState } from 'react';
+﻿import { Fragment, createRef, useEffect, useRef, useState } from 'react';
 import '../../css/Components/UploaderDocuments.css';
 import Input from './UI/Input';
 import Modal from './Modal/Modal';
-import { fetchCrearSeparadoresAxentria, fetchAddDocumentosAxentria, fetchInfoSocio } from "../../services/RestServices";
+import { fetchCrearSeparadoresAxentria, fetchAddDocumentosAxentria, fetchGetDocumentosAxentria } from "../../services/RestServices";
 import { useDispatch } from 'react-redux';
-import { element } from 'prop-types';
 import { base64ToBlob, verificarPdf, descargarArchivo, conversionBase64 } from '../../js/utiles';
 
 const UploadDocumentos = (props) => {
@@ -16,10 +15,61 @@ const UploadDocumentos = (props) => {
 
     const [tablaContenido, setTablaContenido] = useState([]);
     const dispatch = useDispatch();
-
-
-
+    const inputCargaRef = createRef(null);
+    const contadorPublicacion = useRef(0);
     const [base64SeparadorGenerado, setBase64SeparadorGenerado] = useState("");
+    const [lstArchivosParaPublicar, setLstArchivosParaPublicar] = useState([]);
+
+
+    const [totalRegistros, setTotalRegistros] = useState(0);
+
+    //Check para seleccionar si tiene o no separadores
+    const [isSelectAllSeparador, setIsSelectAllSeparador] = useState(false);
+    const [separadorCheckBox, setSeparadorCheckBox] = useState([]);
+
+    //Check para publicacion de archivos
+    const [isSelectAllPublicar, setIsSelectAllPublicar] = useState(false);
+    const [publicadorCheckBox, setPublicadorCheckBox] = useState([]);
+
+
+    //Propiedades para modal para descargar Separadores
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isSelectAllDocumental, setIsSelectAllDocumental] = useState(false);
+    const [documentalCheckBox, setDocumentalheckBox] = useState([]);
+
+    // Activacion modal para busqueda de documentos
+    const [isModalBusqVisible, setIsModalBusqVisible] = useState(false);
+
+
+    //Control de archivos subidos
+    //const [controlArchivosSubidosOK, setControlArchivosSubidosOK] = useState([]);
+    const controlArchivosSubidosOK = useRef([]);
+    const controlArchivosSubidosErr = useState([]);
+    const controlTerminaSubirDocs = useRef(false);
+
+    //Input para modal de busqueda
+    const [inputSolicitud, setInputSolicitud] = useState("");
+
+
+    const resetCargarArchivos = () => {
+        //console.log("RESETEAR")
+        //console.log(controlArchivosSubidosOK)
+
+        setIsSelectAllSeparador(false);
+        setIsSelectAllPublicar(false);
+        setSeparadorCheckBox([]);
+        setPublicadorCheckBox([]);
+        controlArchivosSubidosOK.current = []
+        controlArchivosSubidosErr.current = []
+        //setLstArchivosParaPublicar([]);
+        //contadorPublicacion.current = 0;
+        //console.log(props.contenido)
+        //console.log(tablaContenido)
+        //console.log(tablaContenido === props.contenido)
+        let resultaSeparadores = structuredClone(props.contenido)
+        setTablaContenido([...resultaSeparadores])
+
+    }
 
     const generarSeparadores = () => {
 
@@ -30,44 +80,29 @@ const UploadDocumentos = (props) => {
         });
 
         fetchCrearSeparadoresAxentria(resum, props.token, (data) => {
-            console.log("SEPARADORES, ", data.separadores)
+            //console.log("SEPARADORES, ", data.separadores)
             setBase64SeparadorGenerado(data.separadores);
         }, dispatch);
     }
 
 
+    //Inicializador
+    useEffect(() => {
+        if (props.solicitud) {
+            setInputSolicitud(props.solicitud)
+        }
+    }, [])
+
+    
     useEffect(() => {
         if (base64SeparadorGenerado !== "" && verificarPdf(base64SeparadorGenerado)) {
             const blob = base64ToBlob(base64SeparadorGenerado, 'application/pdf');
             descargarArchivo(blob, "Separadores", 'pdf');
         }
-
-        /*
-        if (data.file_bytes.length > 0 && verificarPdf(data.file_bytes)) {
-            const blob = base64ToBlob(data.file_bytes, 'application/pdf');
-            let fechaHoy = generarFechaHoy();
-            const nombreArchivo = `AprobacionConsultaBuro_${(fechaHoy)}`;
-            descargarArchivo(blob, nombreArchivo, 'pdf');
-
-        }*/
-
     }, [base64SeparadorGenerado])
 
 
-    const [docsBase64, setDocsBase64] = useState("");
-    const [totalRegistros, setTotalRegistros] = useState(0);
-    const [isSelectAllSeparador, setIsSelectAllSeparador] = useState(false);
-    const [separadorCheckBox, setSeparadorCheckBox] = useState([]);
 
-    const [isSelectAllPublicar, setIsSelectAllPublicar] = useState(false);
-    const [publicadorCheckBox, setPublicadorCheckBox] = useState([]);
-
-    const [isModalVisible, setIsModalVisible] = useState(false);
-    const [isModalBusqVisible, setIsModalBusqVisible] = useState(false);
-    const [isSelectAllDocumental, setIsSelectAllDocumental] = useState(false);
-    const [documentalCheckBox, setDocumentalheckBox] = useState([]);
-
-    const inputCargaRef = createRef(null);
 
 
     const openModalSeparadores = () => {
@@ -98,7 +133,7 @@ const UploadDocumentos = (props) => {
             const resultado = tablaContenido.map((doc, indexOrden) => {
                 return doc.int_id_separador
             }).flat();
-            console.log("RESULT SEPAR ", resultado)
+            //console.log("RESULT SEPAR ", resultado)
             setSeparadorCheckBox(resultado);
         } else {
             setSeparadorCheckBox([]);
@@ -124,8 +159,8 @@ const UploadDocumentos = (props) => {
     }
     useEffect(() => {
         //console.log(`${separadorCheckBox} -->  ${separadorCheckBox.length} `)
-        console.log("TOTAL R", totalRegistros)
-        console.log("Separador Check ", separadorCheckBox.length)
+        //console.log("TOTAL R", totalRegistros)
+        //console.log("Separador Check ", separadorCheckBox.length)
         setIsSelectAllSeparador(separadorCheckBox.length === totalRegistros && separadorCheckBox.length !== 0);
     }, [separadorCheckBox]);
 
@@ -212,28 +247,23 @@ const UploadDocumentos = (props) => {
 
 
     //////SEPARADORES
-
-    const [filename, setFilename] = useState();
-
     const handleUpload = (event) => {
         //console.log("Arch", event)
         inputCargaRef.current.click();
 
     }
 
-    useEffect(() => {
-        if (docsBase64 !== "") {
-            console.log(docsBase64?.split(',')[1]);
-        }
-
-    }, [docsBase64])
-
 
     useEffect(() => {
         const conteoRegistros = props.contenido.length;
         //console.log("TOTAL REG ",conteoRegistros)
         setTotalRegistros(conteoRegistros);
-        setTablaContenido(props.contenido);
+        //setTablaContenido([...props.contenido]);
+
+        //Se realiza una clonacion del objeto para no modificar el original
+        let resultaSeparadores = structuredClone(props.contenido)
+        setTablaContenido([...resultaSeparadores]);
+
         /* EN caso se requiera solo seleccionar las filas q tenga cargado el archivo
         let checkDocCargados = filasDocsCargados();
         if(checkDocCargados.length > 0){
@@ -241,7 +271,7 @@ const UploadDocumentos = (props) => {
         }
         */
 
-        console.log(props.solicitudTarjeta)
+        //console.log(props.solicitudTarjeta)
 
     }, [])
 
@@ -271,32 +301,31 @@ const UploadDocumentos = (props) => {
     const [archivosCargados, setCarchivosCargados] = useState([]);
 
     const cargarArchivosHandler = (event) => {
+        //REALIZAR LA LIMPIEZA DE TABLA PARA EVITAR ERRORES EN LOS CHECK
+        //resetCargarArchivos();
 
         let archivosLimpieza = [...event.target.files];
         archivosLimpieza = archivosLimpieza.filter(doc => doc.type === "application/pdf")
-        console.log(archivosLimpieza)
+        //console.log(archivosLimpieza)
 
-        //TODO: Falta obtener archivo en base64
         let arregloArchivos = [];
-
         if (archivosLimpieza.length > 0) {
-
             archivosLimpieza.forEach(element => {
                 let indexArchivo;
                 indexArchivo = tablaContenido.findIndex(fila => fila.str_nombre_separador === element.name.split('.')[0])
                 //console.log(indexArchivo);
                 tablaContenido[indexArchivo].str_ruta_arc = element.webkitRelativePath;
-                tablaContenido[indexArchivo].str_login_carga = "dvvasquez";
-
+                //tablaContenido[indexArchivo].str_login_carga = "dvvasquez";
+                tablaContenido[indexArchivo].str_login_carga = props.datosUsuario[0].strUserOficial;
                 arregloArchivos.push({ id_separador: tablaContenido[indexArchivo].int_id_separador, archivo: element });
-
             })
-            console.log("ARREGLO ARCHIVOS OBJ ", arregloArchivos)
+            //console.log("ARREGLO ARCHIVOS OBJ ", arregloArchivos)
             setValidadorCambio(true);
-            setTablaContenido([...tablaContenido]);          
+            setTablaContenido([...tablaContenido]);
             setCarchivosCargados([...arregloArchivos]);
         }
-
+        //Se obtiene el arreglo final donde constan los documentos que estan cargados.
+        setLstArchivosParaPublicar(tablaContenido.filter(docum => docum.str_ruta_arc !== ""));
     }
 
 
@@ -307,47 +336,131 @@ const UploadDocumentos = (props) => {
     }
 
     const publicarDocumentos = async () => {
-        //console.log(separadorCheckBox)
-        //console.log(publicadorCheckBox)
 
-        //function fetchAddDocumentosAxentria(requiereSeparar, rutaArchivo, nombreArchivo, identificacionSocio, usuCarga, nombreSocio, nombreGrupo, referencia, token,
+        //Obtener secuencia de publicacion
+        let CheckPublidadorId = publicadorCheckBox[contadorPublicacion.current];
+        let archivoPub = lstArchivosParaPublicar.filter(documento => documento.int_id_separador === CheckPublidadorId)[0];
+        //console.log("CONTADOR ", contadorPublicacion.current);
+        //console.log("lstArchivosParaPublicar ", lstArchivosParaPublicar.length);
+        //console.log("CheckPublidadorId ", CheckPublidadorId);
+        //console.log("CheckPublidadorId ", CheckPublidadorId);
+        //console.log("archivoPub ", informacionArchivosLimpia);
 
-        const docsCargados = tablaContenido.filter(docum => docum.str_ruta_arc !== "");
 
-        console.log(docsCargados)
+        if (contadorPublicacion.current === publicadorCheckBox.length && publicadorCheckBox.length !== 0) {
+            //console.log("ENTRA RESET 1")
+            controlTerminaSubirDocs.current = true;
 
+            if (contadorPublicacion.current === controlArchivosSubidosOK.current.length && controlArchivosSubidosOK.current.length > 0 && controlTerminaSubirDocs.current === true) {
 
-        docsCargados.forEach(grupo => {
-            let validarSeparador = separadorCheckBox.includes(grupo.int_id_separador);
-            let validarPublicacion = publicadorCheckBox.includes(grupo.int_id_separador);
+                let mensaje_ok = '';
+                controlArchivosSubidosOK.current.map(doc => {
+                    return (
+                        mensaje_ok += doc.documento.toString() + '\n'
+                    )
+                });  
+                let mensaje = 'SE SUBIERON CORRECTAMENTE LOS ARCHIVOS:';               
 
-            console.log(` VCHECK ${validarSeparador} | VPUBLIC ${validarPublicacion}`)
+                //console.log("mensaje ", mensaje)
+                window.alert(mensaje);
+
+                //Se resetea
+                contadorPublicacion.current = 0;
+                controlTerminaSubirDocs.current = false;
+            } else if (controlArchivosSubidosErr.current.length > 0 && controlTerminaSubirDocs.current === true) {
+
+                let mensaje_error = '';
+                controlArchivosSubidosOK.current.map(error => {
+                    return (
+                        mensaje_error += error.documento.toString() + '\n'
+                    )
+                })
+                let mensaje = 'LOS SIGUIENTES ARCHIVOS TUVIERON ERROR AL SUBIRLOS: \n' + mensaje_error;
+
+                console.log("mensaje ", mensaje)
+                window.alert(mensaje);
+
+                //Se resetea
+                contadorPublicacion.current = 0;
+                controlTerminaSubirDocs.current = false;
+            }
+
+            resetCargarArchivos();
+            return;
+        }
+
+        if (contadorPublicacion.current < lstArchivosParaPublicar.length && CheckPublidadorId !== undefined && archivoPub !== undefined) {
+            let validarSeparador = separadorCheckBox.includes(archivoPub.int_id_separador);
+            let validarPublicacion = publicadorCheckBox.includes(archivoPub.int_id_separador);
+
+            //console.log("CONT SP", archivoPub);
+            //console.log("validarPublicacion", publicadorCheckBox);
+            //console.log(` VCHECK ${validarSeparador} | VPUBLIC ${validarPublicacion}`)
 
             if (validarPublicacion) {
                 //Obtener el archivo en base64
-                let busquedaArchivo = archivosCargados.find(arch => arch.id_separador === grupo.int_id_separador);
-                
-                //let archivoABase64 = convertorArchivo(busquedaArchivo.archivo)
-                //console.log("BUSQ ARCH PUB ", archivoABase64);
-
+                let busquedaArchivo = archivosCargados.find(arch => arch.id_separador === archivoPub.int_id_separador);
                 convertorArchivo(busquedaArchivo.archivo).then(
                     archivoABase64 => {
-                        publicarAxentriaHandler(validarSeparador, grupo.str_ruta_ar, grupo.str_nombre_separador, grupo.str_separador, archivoABase64)
+                            publicarAxentriaHandler(validarSeparador, archivoPub.str_ruta_ar, archivoPub.str_nombre_separador, archivoPub.str_separador, archivoABase64).then(data  => {
+                            //console.log("RESTTTT ", data)
+
+                            if (data?.str_res_codigo === "000") {
+                                let archivoOK = [{
+                                    documento: archivoPub.str_separador,
+                                    codigo: '',
+                                    informacionAdicional: ''
+                                }]
+                                let lstOk = [...controlArchivosSubidosOK.current, ...archivoOK]
+                                //console.log("lstOk ", lstOk)
+                                controlArchivosSubidosOK.current= lstOk;
+                            }
+                            else {
+                                let archivoErr = {
+                                    documento: archivoPub.str_separador,
+                                    codigo: data.str_res_codigo, 
+                                    informacionAdicional: data.str_res_info_adicional                                   
+                                }
+                                //setControlArchivosSubidosErr([...controlArchivosSubidosErr, archivoErr]);
+                                let lstErr = [...controlArchivosSubidosOK.current, ...archivoErr]
+                                console.log("lstErr ", lstErr)
+                                controlArchivosSubidosOK.current = lstErr;
+                            }
+
+                            contadorPublicacion.current = contadorPublicacion.current + 1;
+                            publicarDocumentos();
+                        })
 
                     }
                 )
             }
-           
-        })
+        } else {
+            contadorPublicacion.current = 0;
+            return;
+        }
     }
 
     const publicarAxentriaHandler = async (validarSeparador, rutaArchivo, nombreSeparador, grupoSeparador, archivoABase64) => {
-        await fetchAddDocumentosAxentria(validarSeparador, rutaArchivo, nombreSeparador, props.cedulaSocio, 'xnojeda1',
+        let respuesta = null;
+        await fetchAddDocumentosAxentria(validarSeparador, rutaArchivo, nombreSeparador, props.cedulaSocio, props.datosUsuario[0].strUserOficial,
             props.datosSocio?.str_nombres + ' ' + props.datosSocio?.str_apellido_paterno + ' ' + props.datosSocio?.str_apellido_materno,
             grupoSeparador, '', archivoABase64, props.token, (data) => {
-                console.log("RESULTADO PUB ", data)
-
+                respuesta = data;
             }, dispatch);
+        return respuesta;
+    }
+
+    
+    const obtenerDocumentosAxentriaHandler = () => {
+        fetchGetDocumentosAxentria(inputSolicitud, props.token, (data) => {
+            console.log("INFORM ", data)
+        }, dispatch);        
+    }
+
+    const descargarDocAxentriaHandler = () => {
+
+      
+        
     }
 
     return (
@@ -481,7 +594,7 @@ const UploadDocumentos = (props) => {
                                             <td style={{ width: "20%", justifyContent: "left" }} >
                                                 {documentacion.str_nombre_socio}
                                             </td>
-                                            <td style={{ width: "10%", wordBreak: "break-word", fontSize: "10px"}} > 
+                                            <td style={{ width: "10%", wordBreak: "break-word", fontSize: "10px" }} >
                                                 {documentacion.str_ruta_arc}
                                             </td>
                                             <td style={{ width: "10%", justifyContent: "left" }} >
@@ -619,21 +732,21 @@ const UploadDocumentos = (props) => {
             </Modal>
 
 
-            <Modal modalIsVisible={isModalBusqVisible} type="md" onCloseClick={hideModalBusqueda} onNextClick={(e) => console.log("Sig Generar")} mainText="Buscar" titulo="Buscar">
+            <Modal modalIsVisible={isModalBusqVisible} type="md" onCloseClick={hideModalBusqueda} onNextClick={obtenerDocumentosAxentriaHandler} mainText="Buscar" titulo="Buscar">
 
                 <section className="elements_two_column mt-2 mb-2">
-                    <div style={{ display: "flex", alignItems: "center" }}>
-                        <p>IDENTIFICACION: </p>
-                        <Input className="w-60 ml-2" id='identificacion' name='identificacion' esRequerido={true} type="text" placeholder="1150214375"></Input>
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center" }}>
-                        <p>ENTE: </p>
-                        <Input className="w-60 ml-2" id='ente' name='ente' esRequerido={true} type="text" placeholder="455428"></Input>
-                    </div>
+                    {/*<div style={{ display: "flex", alignItems: "center" }}>*/}
+                    {/*    <p>IDENTIFICACION: </p>*/}
+                    {/*    <Input className="w-60 ml-2" id='identificacion' name='identificacion' esRequerido={true} type="text" placeholder="1150214375"></Input>*/}
+                    {/*</div>*/}
+                    {/*<div style={{ display: "flex", alignItems: "center" }}>*/}
+                    {/*    <p>ENTE: </p>*/}
+                    {/*    <Input className="w-60 ml-2" id='ente' name='ente' esRequerido={true} type="text" placeholder="455428"></Input>*/}
+                    {/*</div>*/}
 
                     <div style={{ display: "flex", alignItems: "center" }}>
                         <p style={{ marginRight: "42px" }}>SOLICITUD: </p>
-                        <Input className="w-60" id='flujo' name='flujo' esRequerido={true} type="text"></Input>
+                        <Input className="w-60" id='flujo' name='flujo' esRequerido={true} type="text" value={inputSolicitud} onChange={(e) => setInputSolicitud(e.target.value)} />
                     </div>
 
                 </section>
@@ -643,7 +756,7 @@ const UploadDocumentos = (props) => {
                         <tr>
                             <th style={{ width: "30px" }}  >Nombre Archivo</th>
                             <th style={{ width: "15%", justifyContent: "left" }} >Usuario Carga</th>
-                            <th style={{ width: "15%", justifyContent: "left" }} >Solicitud</th>
+                    {/*        <th style={{ width: "15%", justifyContent: "left" }} >Solicitud</th>*/}
                             <th style={{ width: "10%", justifyContent: "left" }} >Version</th>
                             <th style={{ width: "15%", justifyContent: "left" }} >Ult. Modificación</th>
                             <th style={{ width: "15%", justifyContent: "left" }} >Ver Documento</th>
@@ -659,23 +772,26 @@ const UploadDocumentos = (props) => {
                                     <td style={{ justifyContent: "left" }} >
                                         {separador.str_separador}
                                     </td>
-                                    <td style={{ ustifyContent: "left" }} >
+                                    <td style={{ justifyContent: "left" }} >
                                         dvvasquez
                                     </td>
-                                    <td style={{ ustifyContent: "left" }} >
-                                        4866846
-                                    </td>
-                                    <td style={{ ustifyContent: "left" }} >
+                                    {/*<td style={{ ustifyContent: "left" }} >*/}
+                                    {/*    4866846*/}
+                                    {/*</td>*/}
+                                    <td style={{ justifyContent: "left" }} >
                                         1
                                     </td>
-                                    <td style={{ ustifyContent: "left" }} >
+                                    <td style={{ justifyContent: "left" }} >
                                         06/11/2024
                                     </td>
-                                    <div className="f-row justify-content-center align-content-center">
-                                        <button className="btn_mg_icons custom-icon-button" onClick={(e) => { console.log("VISUALIZADOR DOC") }} title="Visualizar Documento">
-                                            <img className="img-icons-acciones" src="Imagenes/view.svg" alt="Visualizar Documento"></img>
-                                        </button>
-                                    </div>
+                                    <td style={{ justifyContent: "left" }} >
+                                        <div className="f-row justify-content-center align-content-center">
+                                            <button className="btn_mg_icons custom-icon-button" onClick={ descargarDocAxentriaHandler }        title="Visualizar Documento">
+                                                <img className="img-icons-acciones" src="Imagenes/view.svg" alt="Visualizar Documento"></img>
+                                            </button>
+                                        </div>
+                                    </td>
+                                    
                                 </tr>
                             )
                         })}

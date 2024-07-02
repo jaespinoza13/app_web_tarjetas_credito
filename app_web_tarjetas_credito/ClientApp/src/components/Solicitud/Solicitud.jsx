@@ -150,9 +150,9 @@ function Solicitud(props) {
     //Carga de solicitudes (SE MODIFICA PARA QUE APAREZCA PRIMERA PANTALLA COMO PREDETERMINADA AL LOGUEARSE)
     useEffect(() => {
         if (props.token && !controlConsultaCargaComp) {
-            console.log("TOKEN", props.token);
+            //console.log("TOKEN", props.token);
             fetchGetSolicitudes(props.token, (data) => {
-                console.log("ENTRA SOLICITUDES");
+                //console.log("ENTRA SOLICITUDES");
                 console.log(data);
                 stLstProspectos(data.prospectos);
                 stLstSolicitudes(data.solicitudes);

@@ -1,4 +1,4 @@
-import { ServicioGetExecute, getMenuPrincipal, getPreguntaUsuario, ServicioPostExecute, getValidarPreguntaUsuario, setResetPassword, getLogin, getLoginPerfil, getPreguntas, setPreguntas, setPassword, setPasswordPrimeraVez, getListaBases, getListaConexiones, setConexion, addConexion, getListaSeguimiento, getListaDocumentos, getListaColecciones, getDescargarLogsTexto, getLogsTexto, getContenidoLogsTexto, getValidaciones, getScore, getInfoSocio, getInfoEco, addAutorizacion, getSolicitudes, addSolicitud, getContrato, getInfoFinan, addProspecto, getFlujoSolicitud, addComentarioAsesor, addComentarioSolicitud, updResolucion, addResolucion, getResolucion, addProcEspecifico, updSolicitud, getParametros, getReporteOrden, getOrdenes, getTarjetasCredito, getInforme, getMedioAprobacion, getSeparadores, addDocumentosAxentria, getDocumentosAxentria, crearSeparadores, getReporteAval, getAlertasCliente } from './Services';
+import { ServicioGetExecute, getMenuPrincipal, getPreguntaUsuario, ServicioPostExecute, getValidarPreguntaUsuario, setResetPassword, getLogin, getLoginPerfil, getPreguntas, setPreguntas, setPassword, setPasswordPrimeraVez, getListaBases, getListaConexiones, setConexion, addConexion, getListaSeguimiento, getListaDocumentos, getListaColecciones, getDescargarLogsTexto, getLogsTexto, getContenidoLogsTexto, getValidaciones, getScore, getInfoSocio, getInfoEco, addAutorizacion, getSolicitudes, addSolicitud, getContrato, getInfoFinan, addProspecto, getFlujoSolicitud, addComentarioAsesor, addComentarioSolicitud, updResolucion, addResolucion, getResolucion, addProcEspecifico, updSolicitud, getParametros, getReporteOrden, getOrdenes, getTarjetasCredito, getInforme, getMedioAprobacion, getSeparadores, addDocumentosAxentria, getDocumentosAxentria, crearSeparadores, getReporteAval, getAlertasCliente, getMotivos } from './Services';
 import { setAlertText, setErrorRedirigir } from "../redux/Alert/actions";
 import hex_md5 from '../js/md5';
 import { desencriptar, generate, get, set } from '../js/crypt';
@@ -1036,7 +1036,7 @@ export function fetchGetSolicitudes(token, onSucces, dispatch) {
     }
 
     ServicioPostExecute(getSolicitudes, body, token, { dispatch: dispatch }).then((data) => {
-        console.log(data)
+        //console.log(data)
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
@@ -1327,15 +1327,25 @@ export function fetchGetResolucion(idSolicitud, token, onSucces, dispatch) {
 * @param {(contenido:string, nroTotalRegistros: number) => void} onSuccess
 * @param {Function} dispatch
 */
-export function fetchAddResolucion(idSolicitud, comentario, estadoSolicitud, token, onSucces, dispatch) {
+export function fetchAddResolucion(idSolicitud, cupo_solicitado, cupo_sugerido, usuario_proc, decision_solicitud, comentario_proceso, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
+        int_id_sol: Number(idSolicitud),
+        dec_cupo_solicitado: parseFloat(cupo_solicitado),
+        dec_cupo_sugerido: parseFloat(cupo_sugerido),
+        str_usuario_proc: usuario_proc,
+        dtt_fecha_actualizacion: new Date().toISOString(),
+        str_decision_solicitud: decision_solicitud,
+        str_comentario_proceso: comentario_proceso,
+    }
+
+    /*let body = {
         int_id_solicitud: idSolicitud,
         bl_regresa_estado: false,
         str_comentario: comentario,
-        int_estado: estadoSolicitud
-    }
+        int_estado: Number(estadoSolicitud)
+    }*/
     //console.log(body);
     ServicioPostExecute(addResolucion, body, token, { dispatch: dispatch }).then((data) => {
         if (data) {
@@ -1457,6 +1467,29 @@ export function fetchGetParametrosSistema(token, onSucces, dispatch) {
     });
 }
 
+export function fetchGetMotivos(token, onSucces, dispatch) {
+    if (dispatch) dispatch(setErrorRedirigir(""));
+    let body = {
+
+    }
+    ServicioPostExecute(getMotivos, body, token, { dispatch: dispatch }).then((data) => {
+        //console.log(data);
+
+        if (data) {
+            if (data.error) {
+                if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
+            } else {
+                if (data.str_res_estado_transaccion === "OK") {
+                    onSucces(data);
+                } else {
+                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                }
+            }
+        } else {
+            if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
+        }
+    });
+}
 
 
 /**
@@ -1662,16 +1695,18 @@ export async function fetchAddDocumentosAxentria(requiereSeparar, rutaArchivo, n
     });
 }
 
-export function fetchGetDocumentosAxentria(intIdDocumento, intIdSolicitud, intIdFlujo, token, onSucces, dispatch) {
+//export function fetchGetDocumentosAxentria(intIdDocumento, intIdSolicitud, intIdFlujo, token, onSucces, dispatch) {
+export function fetchGetDocumentosAxentria(intIdSolicitud, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
-        id_documento: intIdDocumento,
+        //id_documento: intIdDocumento,
         id_solicitud: intIdSolicitud,
-        id_flujo: intIdFlujo
+        //id_flujo: intIdFlujo
     }
+    console.log("Get Docs BODY,", body);
     ServicioPostExecute(getDocumentosAxentria, body, token, { dispatch: dispatch }).then((data) => {
-        console.log("Get Doc Axe,", data);
+        console.log("Get Docs Axe,", data);
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
@@ -1750,13 +1785,15 @@ export async function fetchReporteAval(idCliente, token, onSucces, dispatch) {
     });
 }
 
-export async function fetchGetAlertasCliente(strCedula, strTipoValidacion, strFechaNacimiento, token, onSucces, dispatch) {
+export async function fetchGetAlertasCliente(strCedula, strTipoValidacion, strFechaNacimiento, nombresCliente,  apellidosCliente, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
         str_identificacion: strCedula,
         str_nemonico_alerta: strTipoValidacion,
-        dtt_fecha_nacimiento: strFechaNacimiento
+        dtt_fecha_nacimiento: strFechaNacimiento,
+        str_nombres: nombresCliente,
+        str_apellidos: apellidosCliente
     };
     //console.log("BODY ALERTAS,", body)
     await ServicioPostExecute(getAlertasCliente, body, token, { dispatch: dispatch }).then((data) => {

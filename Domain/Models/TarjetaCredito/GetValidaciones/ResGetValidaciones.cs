@@ -22,7 +22,7 @@ namespace Domain.Models.TarjetaCredito.GetValidaciones
         public string str_estado_civil { get; set;} = String.Empty;
         public decimal dcm_total_ingresos { get; set;}
         public decimal dcm_total_egresos { get; set;}
-        public decimal dcm_gastos_financieros { get; set;}
+        //public decimal dcm_gastos_financieros { get; set;}
 
 
     }

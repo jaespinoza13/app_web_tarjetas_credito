@@ -316,7 +316,7 @@ const NuevaSolicitud = (props) => {
             }
             setDatosFinancierosObj(datosFinan);
 
-            console.log(`ingresos, ${data.dcm_total_ingresos}; egresos, ${data.dcm_total_egresos}; financ, ${data.dcm_gastos_financieros} `,);
+            console.log(`ingresos, ${data.dcm_total_ingresos}; egresos, ${data.dcm_total_egresos}; `,);
             //console.log("FINAN, ", datosFinan);
                         
             if (data.str_res_codigo === "004") {
@@ -370,7 +370,7 @@ const NuevaSolicitud = (props) => {
 
 
     const consultaAlertas = async (seguirAlSigPaso) => {
-        await fetchGetAlertasCliente(cedulaSocio, '', fechaNacimiento, props.token, (data) => {
+        await fetchGetAlertasCliente(cedulaSocio, '', fechaNacimiento, nombreSocio, apellidoPaterno +" " +apellidoMaterno, props.token, (data) => {
             let alertasIniciales_Validas = [...data.alertas_iniciales.lst_datos_alerta_true];
             let alertasIniciales_Invalidas = [...data.alertas_iniciales.lst_datos_alerta_false];
             let alertasRestriccion_Validas = [...data.alertas_restriccion.lst_datos_alerta_true];
