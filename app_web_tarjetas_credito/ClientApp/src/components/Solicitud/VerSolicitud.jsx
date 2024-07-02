@@ -58,6 +58,7 @@ const VerSolicitud = (props) => {
     const [selectCambioEstadoSol, setSelectCambioEstadoSol] = useState("-1");
     const [selectMotivoRetornoBanj, setSelectMotivoRetornoBanj] = useState("-1");
     const [selectMotivoNiegaSolComite, setSelectMotivoNiegaSolComite] = useState("-1");
+    const [selectMotivoNiegaSocio, setSelectMotivoNiegaSocio] = useState("-1");
 
     const [selectResolucionSocio, setSelectResolucionSocio] = useState("-1");
     const [flujoSolId, setFlujoSolId] = useState(0);
@@ -88,28 +89,28 @@ const VerSolicitud = (props) => {
 
     //PARAMETROS REQUERIDOS
     const [parametrosTC, setParametrosTC] = useState([]); // cambiar prm_valor_ini por str_valor_ini
-    const [bandejaApruebaSol, setBandejaApruebaSol] = useState([]);
+
     const [estadosDecisionComite, setEstadosDecisionComite] = useState([]);
     const [estadosDecBanjComiteAll, setEstadosDecBanjComiteAll] = useState([]);
-
     const [estadosRetornaBandejaComite, setEstadosRetornaBandejaComite] = useState([]);
     const [estadosRetornaComiteAll, setEstadosRetornaComiteAll] = useState([]);
-
-    const [permisoImprimirMedio, setPermisoImprimirMedio] = useState([]);
-    const [permisoImprimirMedioAll, setPermisoImprimirMedioAll] = useState([]);
-
-
     const [estadosSigConfirmPorMontoMenor, setEstadosSigConfirmPorMontoMenor] = useState([]);
     const [estadosSigConfirmPorMontoMenorAll, setEstadosSigConfirmPorMontoMenorAll] = useState([]);
 
+    const [permisoAccionAnalisis3CsAll, setPermisoAccionAnalisis3CsAll] = useState([]);
+    const [permisoAccionAnalisis3Cs, setPermisoAccionAnalisis3Cs] = useState([]);
 
-    const [permisoRetornarBandeja, setPermisoRetornarBandeja] = useState([]);
+    //const [permisoEstadosSigComite, setPermisoEstadosSigComite] = useState([]);
+    //const [permisoEstadoHabilitarAprobarSol, setPermisoEstadoHabilitarAprobarSol] = useState([]);
 
-    const [permisoEstadosSigComite, setPermisoEstadosSigComite] = useState([]);
-    const [permisoEstadoHabilitarAprobarSol, setPermisoEstadoHabilitarAprobarSol] = useState([]);
+
+    const [permisoImprimirMedio, setPermisoImprimirMedio] = useState([]);
+    const [permisoImprimirMedioAll, setPermisoImprimirMedioAll] = useState([]);
+    
 
     const [motivosNegacionComite, setMotivosNegacionComite] = useState([]);
     const [motivosRegresaAntBandeja, setMotivosRegresaAntBandeja] = useState([]);
+    const [motivosNegacionSocio, setMotivosNegacionSocio] = useState([]);
 
     /*const parametros = [
         { prm_id: 11272, prm_valor_ini: "SOLICITUD CREADA" },
@@ -149,7 +150,7 @@ const VerSolicitud = (props) => {
         //Obtener datos del cliente
         fetchInfoSocio(props.solicitud.cedulaPersona, props.token, (data) => {
 
-            console.log("BUSQ SOCI AXEN ", props.solicitud.cedulaPersona)
+            //console.log("BUSQ SOCI AXEN ", props.solicitud.cedulaPersona)
             //console.log("CEDULA ", prop)
             setDatosSocio(data.datos_cliente[0]);
         }, dispatch);
@@ -247,8 +248,7 @@ const VerSolicitud = (props) => {
                 .filter(param => param.str_nombre === 'IMPRIMIR_MEDIO_APROBACION_TC')
                 .map(estado => ({
                     prm_id: estado.int_id_parametro,
-                    prm_valor_ini: estado.str_valor_ini,
-                    //estados: estado.str_valor_fin
+                    prm_valor_ini: estado.str_valor_ini
                 })));
 
             /* ESTADOS SIGUIENTES CUANDO SOLICITUD ESTA EN POR CONFIRMAR SOCIO POR MONTO MENOR APROBADO */
@@ -260,21 +260,19 @@ const VerSolicitud = (props) => {
                     estados: estado.str_valor_fin
                 })));
 
-            /*
-        setBandejaApruebaSol(ParametrosTC
-            .filter(param => param.str_nemonico === 'EST_SIG_ANA_COM')
-            .map(estado => ({
-                prm_id: estado.int_id_parametro,
-                prm_valor_ini: estado.str_valor_ini,
-                estados: estado.str_valor_fin
-            })));*/
-
-            //   ""
-
+            
+            setPermisoAccionAnalisis3CsAll(ParametrosTC
+                .filter(param => param.str_nombre === 'HABILITA_ANALISIS_3Cs')
+                .map(estado => ({
+                    prm_id: estado.int_id_parametro,
+                    prm_valor_ini: estado.str_valor_ini
+                })));
+         
             //Obtener motivos 
             fetchGetMotivos(props.token, (data) => {
                 setMotivosNegacionComite(data?.lst_motivos?.filter(motivos => motivos.str_nombre === "MOTIVOS_NEGACION_COMITE_TC"));
                 setMotivosRegresaAntBandeja(data?.lst_motivos?.filter(motivosReg => motivosReg.str_nombre === "MOTIVOS_REGRESA_TC"));
+                setMotivosNegacionSocio(data?.lst_motivos?.filter(motivosReg => motivosReg.str_nombre === "MOTIVOS_NEGACION_SOCIO_TC"));
 
             }, dispatch);
 
@@ -309,7 +307,8 @@ const VerSolicitud = (props) => {
     const validaNombreParam = (estadoNombre) => {
 
         //console.log("ESTADO ENTRA ", estadoNombre)
-        if (estadosDecisionComite.length > 0 && parametrosTC.length > 0) {
+        //if (estadosDecisionComite.length > 0 && parametrosTC.length > 0) {
+        if (parametrosTC.length > 0) {
             //const parametro = parametros.find(param => Number(param.prm_id) === Number(id));
             let parametro = parametrosTC.find(param => param.prm_valor_ini === estadoNombre);
             return parametro;
@@ -354,38 +353,39 @@ const VerSolicitud = (props) => {
     }, [estadosRetornaComiteAll])
 
 
-    /*
+    
     useEffect(() => {
         if (permisoImprimirMedioAll.length > 0) {
             console.log(permisoImprimirMedioAll)
-            //let arrEstados = permisoImprimirMedioAll.find((parametr) => (parametr.prm_valor_ini) === props.solicitud.estado)
-            //console.log("ARR_EST ", arrEstados)
-            //if (arrEstados) {
-            const estadosImprimirMedio = permisoImprimirMedioAll.prm_valor_ini.split('|');
-            setEstadosRetornaBandejaComite(estadosImprimirMedio);
-            console.log("RESP ", estadosImprimirMedio)
-            //} else {
-            //    setEstadosRetornaBandejaComite([]);
-            //}
+            const estadosImprimirMedio = permisoImprimirMedioAll[0].prm_valor_ini.split('|');
+            setPermisoImprimirMedio(estadosImprimirMedio);
         }
     }, [permisoImprimirMedioAll])
 
+    
     useEffect(() => {
         if (estadosSigConfirmPorMontoMenorAll.length > 0) {
-            console.log(estadosSigConfirmPorMontoMenorAll)
+            //console.log(estadosSigConfirmPorMontoMenorAll)
             let arrEstados = estadosSigConfirmPorMontoMenorAll.find((parametr) => (parametr.prm_valor_ini) === props.solicitud.estado)
-            console.log("ARR_EST ", arrEstados)
+            //console.log("ARR_EST ", arrEstados)
             if (arrEstados) {
                 const estadosSiguientes = arrEstados.estados.split('|');
                 setEstadosSigConfirmPorMontoMenor(estadosSiguientes);
-                console.log("RESP ", estadosSiguientes)
+                //console.log("RESP ", estadosSiguientes)
             } else {
                 setEstadosSigConfirmPorMontoMenor([]);
             }
         }
     }, [estadosSigConfirmPorMontoMenorAll])
 
-    */
+
+    useEffect(() => {
+        if (permisoAccionAnalisis3CsAll.length > 0) {
+            const permisosVerAnalisis3Cs = permisoAccionAnalisis3CsAll[0].prm_valor_ini.split('|');
+            setPermisoAccionAnalisis3Cs(permisosVerAnalisis3Cs);
+        }
+    }, [permisoAccionAnalisis3CsAll])
+
 
     /** FIN SECCION OBTENER LOS PARAMETROS DEL STORAGE */
 
@@ -540,6 +540,9 @@ const VerSolicitud = (props) => {
     const cambioMotivoNiegaComite = (e) => {
         setSelectMotivoNiegaSolComite(e.target.value);
     }
+    const cambioMotivoNiegaSocio = (e) => {
+        setSelectMotivoNiegaSocio(e.target.value);
+    }
 
 
 
@@ -571,7 +574,7 @@ const VerSolicitud = (props) => {
 
             } else { //Otros perfiles solo retornan a bandeja anterior
                 //fetchAddComentarioSolicitud(props.solicitud.solicitud, comentarioCambioEstado, props.solicitud.idSolicitud, true, props.token, (data) => {
-            fetchAddComentarioSolicitud(props.solicitud.solicitud, descripcionMotivoRetorno, props.solicitud.idSolicitud, true, props.token, (data) => {
+                fetchAddComentarioSolicitud(props.solicitud.solicitud, descripcionMotivoRetorno, props.solicitud.idSolicitud, true, props.token, (data) => {
                     if (data.str_res_codigo === "000") {
                         setModalCambioBandeja(false);
                         console.log("SE GUARDA AL NUEVO ESTADO");
@@ -612,7 +615,7 @@ const VerSolicitud = (props) => {
         }));
     }
 
-    
+    /*
     useEffect(() => {
         if (comentarioCambioEstado !== "") {
             setIsBtnDisableCambioBandeja(false);
@@ -620,7 +623,7 @@ const VerSolicitud = (props) => {
             setIsBtnDisableCambioBandeja(true);
         }
     }, [comentarioCambioEstado])
-
+    */
 
     useEffect(() => {
         if (selectMotivoRetornoBanj !== "" && selectMotivoRetornoBanj !== "-1") {
@@ -659,7 +662,7 @@ const VerSolicitud = (props) => {
                 }
             }, dispatch)
         }
-   
+
     }
     const guardarDecisionComiteHandler = () => {
         let validaCupo = controlMontoAprobado();
@@ -676,7 +679,7 @@ const VerSolicitud = (props) => {
         /*VALIDACIONES PARA CUANDO ES APROBADA*/
         //Si cupo que se va aprobar es el mismo que el socio solicito
         if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_APROBADA") { //APROBADO
-
+            //TODO COMENTARIO REVISAR SI VA
             fetchAddProcEspecifico(props.solicitud.solicitud, solicitudTarjeta.str_cupo_solicitado, "EST_APROBADA", comentarioSolicitud, props.token, (data) => { //APROBADO 11276
                 if (data.str_res_codigo === "000") {
                     console.log("SE APROBO SOLICITUD");
@@ -722,7 +725,7 @@ const VerSolicitud = (props) => {
         return controlBool;
     }
 
-    
+
     useEffect(() => {
         /* VALIDACION  PARA NEGAR SOLICITU COMITE*/
         //console.log("CAMBIO EN VALIDACION SELECT")
@@ -739,11 +742,11 @@ const VerSolicitud = (props) => {
 
         /* VALIDACION  PARA APROBACION COMITE*/
         let validaCupo = controlMontoAprobado();
-        
+
         if (Number.parseFloat(montoAprobado) > Number.parseFloat(solicitudTarjeta?.str_cupo_solicitado) || montoAprobado.length > 9) {
             setIsActivoBtnDecision(true);
             return
-        }        
+        }
 
         else if (valorDecisionSelect !== "-1" && montoAprobado > 0 && comentarioSolicitud !== "" && validaCupo.validador) {
             if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_APROBADA") {// EST_APROBADA 11276
@@ -758,8 +761,8 @@ const VerSolicitud = (props) => {
         }
     }, [valorDecisionSelect, montoAprobado, comentarioSolicitud, controlMontoAprobado])
 
-  
-   
+
+
 
 
     const openModalResolucionSocio = () => {
@@ -773,7 +776,8 @@ const VerSolicitud = (props) => {
     const guardarResolucionSocio = () => {
         // ENVIAR EL CUPO APROBADO CUANDO SE ENVIE A APROBAR
         if (selectResolucionSocio === "EST_APROBADA_SOCIO") {
-            fetchAddProcEspecifico(props.solicitud.solicitud, solicitudTarjeta.str_cupo_aprobado, "EST_APROBADA_SOCIO", comentarioCambioEstado, props.token, (data) => { //EST_APROBADA_SOCIO 11279
+            //fetchAddProcEspecifico(props.solicitud.solicitud, solicitudTarjeta.str_cupo_aprobado, "EST_APROBADA_SOCIO", comentarioCambioEstado, props.token, (data) => { //EST_APROBADA_SOCIO 11279
+            fetchAddProcEspecifico(props.solicitud.solicitud, solicitudTarjeta.str_cupo_aprobado, "EST_APROBADA_SOCIO", "", props.token, (data) => { //EST_APROBADA_SOCIO 11279
                 if (data.str_res_codigo === "000") {
                     console.log("SE APROBO POR SOCIO");
                     navigate.push('/solicitud');
@@ -784,15 +788,20 @@ const VerSolicitud = (props) => {
             }, dispatch)
 
         } else if (selectResolucionSocio === "EST_RECHAZADA") {
-            fetchAddProcEspecifico(props.solicitud.solicitud, 0, "EST_RECHAZADA", "", props.token, (data) => { //EST_RECHAZADA 11277
-                if (data.str_res_codigo === "000") {
-                    console.log("SE NEGO SOLICITUD POR SOCIO");
-                    navigate.push('/solicitud');
-                }
-                else {
-                    console.log("No cuenta con permisos EST_RECHAZADA ", data);
-                }
-            }, dispatch)
+
+            let descripcionMotivoRechazaSocio = motivosNegacionSocio.find(motivo => motivo.str_nemonico === selectMotivoNiegaSocio);
+            if (selectMotivoNiegaSocio !== undefined) {
+                descripcionMotivoRechazaSocio = descripcionMotivoRechazaSocio.str_descripcion
+                fetchAddProcEspecifico(props.solicitud.solicitud, 0, "EST_RECHAZADA", descripcionMotivoRechazaSocio, props.token, (data) => { //EST_RECHAZADA 11277
+                    if (data.str_res_codigo === "000") {
+                        console.log("SE NEGO SOLICITUD POR SOCIO");
+                        navigate.push('/solicitud');
+                    }
+                    else {
+                        console.log("No cuenta con permisos EST_RECHAZADA ", data);
+                    }
+                }, dispatch)
+            }
         }
     }
 
@@ -974,13 +983,12 @@ const VerSolicitud = (props) => {
                                     <Card className={["f-col"]}>
                                         <div className={["f-row"]}>
 
-                                            {/*TODO VALIDAR QUE SOLO SEA PARA ESE PERFIL*/}
-                                            {(solicitudTarjeta?.str_estado === "ANALISIS UAC" || solicitudTarjeta?.str_estado === "ANALISIS JEFE UAC") &&
+                                            {permisoAccionAnalisis3Cs.includes(solicitudTarjeta?.str_estado) &&
                                                 <Button className="btn_mg__primary" onClick={modalHandler}>Análisis 3C's</Button>
                                             }
-
+                                            
                                             {/*  EST_ANALISIS_UAC  || EST_ANALISIS_JEFE_UAC    */}
-                                            {(solicitudTarjeta?.str_estado === "ANALISIS UAC" || solicitudTarjeta?.str_estado === "ANALISIS JEFE UAC") &&
+                                            {permisoImprimirMedio.includes(solicitudTarjeta?.str_estado) &&
                                                 <Button className="btn_mg__primary ml-2" onClick={() => descargarMedio(props.solicitud.solicitud)}>Imprimir medio aprobación</Button>
                                             }
 
@@ -1068,34 +1076,34 @@ const VerSolicitud = (props) => {
                                             </>
                                         }
 
-                                        {isRechazaComite && 
+                                        {isRechazaComite &&
                                             <>
-                                            <Card className={["mt-2"]}>
-                                                <h3>Seleccione el motivo:</h3>
-                                                <select disabled={false} onChange={cambioMotivoNiegaComite} defaultValue={"-1"} value={selectMotivoNiegaSolComite}>
-                                                    {motivosNegacionComite.length > 0
-                                                        && motivosNegacionComite?.map((motivo, index) => {
-                                                            if (index === 0) {
-                                                                return (
-                                                                    <>
-                                                                        <option disabled={true} value={"-1"}>Seleccione una opción</option>
+                                                <Card className={["mt-2"]}>
+                                                    <h3>Seleccione el motivo:</h3>
+                                                    <select disabled={false} onChange={cambioMotivoNiegaComite} defaultValue={"-1"} value={selectMotivoNiegaSolComite}>
+                                                        {motivosNegacionComite.length > 0
+                                                            && motivosNegacionComite?.map((motivo, index) => {
+                                                                if (index === 0) {
+                                                                    return (
+                                                                        <>
+                                                                            <option disabled={true} value={"-1"}>Seleccione una opción</option>
+                                                                            <option value={motivo.str_nemonico}> {motivo.str_descripcion}</option>
+                                                                        </>
+                                                                    )
+                                                                }
+                                                                else {
+                                                                    return (
                                                                         <option value={motivo.str_nemonico}> {motivo.str_descripcion}</option>
-                                                                    </>
-                                                                )
-                                                            }
-                                                            else {
-                                                                return (
-                                                                    <option value={motivo.str_nemonico}> {motivo.str_descripcion}</option>
-                                                                )
-                                                            }
-                                                        })}
-                                                </select>
-                                            </Card>
+                                                                    )
+                                                                }
+                                                            })}
+                                                    </select>
+                                                </Card>
 
-                                            
-                                            </>    
-                                        
-                                        
+
+                                            </>
+
+
                                         }
 
                                     </Card>
@@ -1240,23 +1248,59 @@ const VerSolicitud = (props) => {
                 <h3 className="mt-4 mb-1">Escoja una opción:</h3>
 
                 <select className='w-100' defaultValue={"-1"} onChange={selectResolucionSociolHandler} value={selectResolucionSocio}>
-                    <option disabled={true} value="-1">Seleccione algún estado</option>
-                    {solicitudTarjeta?.str_estado === "POR CONFIRMAR" &&
-                        <>
-                            <option value="EST_APROBADA_SOCIO">APRUEBA SOCIO</option>
-                            <option value="EST_RECHAZADA">RECHAZA</option>
-                        </>
-                    }
+                    {estadosSigConfirmPorMontoMenor.length > 0
+                        && estadosSigConfirmPorMontoMenor?.map((estado, index) => {
+                            const resultado = validaNombreParam(estado);                           
+                            if (index === 0) {
+                                return (
+                                    <>
+                                        <option disabled={true} value={"-1"}>Seleccione una opción</option>
+                                        <option value={resultado.prm_nemonico}> {resultado.prm_valor_ini}</option>
+                                    </>
+                                )
+                            }
+                            else {
+                                return (
+                                    <option value={resultado.prm_nemonico}> {resultado.prm_valor_ini}</option>
+                                )
+                            }
+                        })}
+
+
                 </select>
 
-                <br />
-
-                {(selectResolucionSocio === "EST_APROBADA_SOCIO") &&
-                    <div>
-                        <h3 className="mt-2 mb-2">Comentario:</h3>
-                        <Input className="w-100" type="text" value={comentarioCambioEstado} placeholder="Ingrese comentario" setValueHandler={setComentarioCambioEstado}></Input>
-                    </div>
+                <br /><br />
+                {/*{(selectResolucionSocio === "EST_APROBADA_SOCIO") &&*/}
+                {/*    <div>*/}
+                {/*        <h3 className="mt-2 mb-2">Comentario:</h3>*/}
+                {/*        <Input className="w-100" type="text" value={comentarioCambioEstado} placeholder="Ingrese comentario" setValueHandler={setComentarioCambioEstado}></Input>*/}
+                {/*    </div>*/}
+                {/*}*/}
+                {(selectResolucionSocio === "EST_RECHAZADA") &&
+                    <>
+                        <h3>Seleccione el motivo:</h3>
+                        <select className='w-100' disabled={false} onChange={cambioMotivoNiegaSocio} defaultValue={"-1"} value={selectMotivoNiegaSocio}>
+                            {motivosNegacionSocio.length > 0
+                                && motivosNegacionSocio?.map((motivo, index) => {
+                                    if (index === 0) {
+                                        return (
+                                            <>
+                                                <option disabled={true} value={"-1"}>Seleccione una opción</option>
+                                                <option value={motivo.str_nemonico}> {motivo.str_descripcion}</option>
+                                            </>
+                                        )
+                                    }
+                                    else {
+                                        return (
+                                            <option value={motivo.str_nemonico}> {motivo.str_descripcion}</option>
+                                        )
+                                    }
+                                })}
+                        </select>
+                        <br />
+                    </>
                 }
+
                 <br />
             </div>}
         </Modal>

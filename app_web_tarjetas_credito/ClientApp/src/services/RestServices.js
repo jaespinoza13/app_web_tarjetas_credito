@@ -1463,7 +1463,7 @@ export function fetchGetMotivos(token, onSucces, dispatch) {
 
     }
     ServicioPostExecute(getMotivos, body, token, { dispatch: dispatch }).then((data) => {
-        console.log(data);
+        //console.log(data);
 
         if (data) {
             if (data.error) {
