@@ -1036,7 +1036,7 @@ export function fetchGetSolicitudes(token, onSucces, dispatch) {
     }
 
     ServicioPostExecute(getSolicitudes, body, token, { dispatch: dispatch }).then((data) => {
-        console.log(data)
+        //console.log(data)
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
@@ -1327,15 +1327,25 @@ export function fetchGetResolucion(idSolicitud, token, onSucces, dispatch) {
 * @param {(contenido:string, nroTotalRegistros: number) => void} onSuccess
 * @param {Function} dispatch
 */
-export function fetchAddResolucion(idSolicitud, comentario, estadoSolicitud, token, onSucces, dispatch) {
+export function fetchAddResolucion(idSolicitud, cupo_solicitado, cupo_sugerido, usuario_proc, decision_solicitud, comentario_proceso, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
+        int_id_sol: Number(idSolicitud),
+        dec_cupo_solicitado: parseFloat(cupo_solicitado),
+        dec_cupo_sugerido: parseFloat(cupo_sugerido),
+        str_usuario_proc: usuario_proc,
+        dtt_fecha_actualizacion: new Date().toISOString(),
+        str_decision_solicitud: decision_solicitud,
+        str_comentario_proceso: comentario_proceso,
+    }
+
+    /*let body = {
         int_id_solicitud: idSolicitud,
         bl_regresa_estado: false,
         str_comentario: comentario,
-        int_estado: estadoSolicitud
-    }
+        int_estado: Number(estadoSolicitud)
+    }*/
     //console.log(body);
     ServicioPostExecute(addResolucion, body, token, { dispatch: dispatch }).then((data) => {
         if (data) {
