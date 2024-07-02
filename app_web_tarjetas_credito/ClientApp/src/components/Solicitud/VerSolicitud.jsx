@@ -3,7 +3,7 @@ import { IsNullOrWhiteSpace, base64ToBlob, descargarArchivo, generarFechaHoy, ve
 import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { useEffect, useState } from "react";
-import { fetchGetInforme, fetchGetFlujoSolicitud, fetchAddComentarioAsesor, fetchAddComentarioSolicitud, fetchGetResolucion, fetchAddProcEspecifico, fetchUpdateCupoSolicitud, fetchGetMedioAprobacion, fetchGetSeparadores, fetchInfoSocio } from "../../services/RestServices";
+import { fetchGetInforme, fetchGetFlujoSolicitud, fetchAddComentarioAsesor, fetchAddComentarioSolicitud, fetchGetResolucion, fetchAddProcEspecifico, fetchUpdateCupoSolicitud, fetchGetMedioAprobacion, fetchGetSeparadores, fetchInfoSocio, fetchGetMotivos } from "../../services/RestServices";
 import Sidebar from "../Common/Navs/Sidebar";
 import Card from "../Common/Card";
 import Table from "../Common/Table";
@@ -50,11 +50,15 @@ const VerSolicitud = (props) => {
     const [textoModal, setTextoModal] = useState("");
     const [isDecisionHabilitada, setIsDecisionHabilitada] = useState(false);
     const [isMontoAprobarse, setIsMontoAprobarse] = useState(false);
+    const [isRechazaComite, setIsRechazaComite] = useState(false);
     const [accionesSolicitud, setAccionesSolicitud] = useState([{ image: "", textPrincipal: "Información de solicitud", textSecundario: "", key: 1 },
     { image: "", textPrincipal: "Documentos", textSecundario: "", key: 2 }]);
     const [accionSeleccionada, setAccionSeleccionada] = useState(1);
     const [nuevoMonto, setNuevoMonto] = useState(0);
     const [selectCambioEstadoSol, setSelectCambioEstadoSol] = useState("-1");
+    const [selectMotivoRetornoBanj, setSelectMotivoRetornoBanj] = useState("-1");
+    const [selectMotivoNiegaSolComite, setSelectMotivoNiegaSolComite] = useState("-1");
+
     const [selectResolucionSocio, setSelectResolucionSocio] = useState("-1");
     const [flujoSolId, setFlujoSolId] = useState(0);
     const [montoAprobado, setMontoAprobado] = useState(0);
@@ -100,9 +104,12 @@ const VerSolicitud = (props) => {
 
 
     const [permisoRetornarBandeja, setPermisoRetornarBandeja] = useState([]);
-    
+
     const [permisoEstadosSigComite, setPermisoEstadosSigComite] = useState([]);
     const [permisoEstadoHabilitarAprobarSol, setPermisoEstadoHabilitarAprobarSol] = useState([]);
+
+    const [motivosNegacionComite, setMotivosNegacionComite] = useState([]);
+    const [motivosRegresaAntBandeja, setMotivosRegresaAntBandeja] = useState([]);
 
     /*const parametros = [
         { prm_id: 11272, prm_valor_ini: "SOLICITUD CREADA" },
@@ -132,10 +139,10 @@ const VerSolicitud = (props) => {
     ];
 
     const estadoSolicitud = useRef('');
-
+    /*
     useEffect(() => {
         console.log("VAL CURR ", estadoSolicitud.current)
-    }, [estadoSolicitud])
+    }, [estadoSolicitud])*/
 
     useEffect(() => {
 
@@ -262,7 +269,14 @@ const VerSolicitud = (props) => {
                 estados: estado.str_valor_fin
             })));*/
 
+            //   ""
 
+            //Obtener motivos 
+            fetchGetMotivos(props.token, (data) => {
+                setMotivosNegacionComite(data?.lst_motivos?.filter(motivos => motivos.str_nombre === "MOTIVOS_NEGACION_COMITE_TC"));
+                setMotivosRegresaAntBandeja(data?.lst_motivos?.filter(motivosReg => motivosReg.str_nombre === "MOTIVOS_REGRESA_TC"));
+
+            }, dispatch);
 
         }
 
@@ -323,7 +337,7 @@ const VerSolicitud = (props) => {
         }
     }, [estadosDecBanjComiteAll])
 
-    
+
     useEffect(() => {
         if (estadosRetornaComiteAll.length > 0) {
             //console.log(estadosRetornaComiteAll)
@@ -332,7 +346,7 @@ const VerSolicitud = (props) => {
             if (arrEstados) {
                 const estadosSiguientes = arrEstados.estados.split('|');
                 setEstadosRetornaBandejaComite(estadosSiguientes);
-              //  console.log("RESP ", estadosSiguientes)
+                //  console.log("RESP ", estadosSiguientes)
             } else {
                 setEstadosRetornaBandejaComite([]);
             }
@@ -479,9 +493,14 @@ const VerSolicitud = (props) => {
         setValorDecisionSelect(event.target.value);
         if (event.target.value === "EST_APROBADA") {// || Number(event.target.value) === 11278) { //APROBADO o POR CONFIRMAR
             setIsMontoAprobarse(true);
+            setIsRechazaComite(false);
         }
-        else {
+        else if (event.target.value === "EST_RECHAZADA") {
+            setIsRechazaComite(true);
             setIsMontoAprobarse(false);
+        } else {
+            setIsMontoAprobarse(false);
+            setIsRechazaComite(false);
         }
     }
 
@@ -514,6 +533,13 @@ const VerSolicitud = (props) => {
         setNuevoMonto(value);
     }
 
+    const cambioMotivoRetornoBandeja = (e) => {
+        setSelectMotivoRetornoBanj(e.target.value);
+    }
+
+    const cambioMotivoNiegaComite = (e) => {
+        setSelectMotivoNiegaSolComite(e.target.value);
+    }
 
 
 
@@ -522,32 +548,40 @@ const VerSolicitud = (props) => {
     }
 
     const cambioEstadoBandeja = () => {
-        //Comite retorna a un estado de bandeja especifica para ANALISIS COMITE
-        if (solicitudTarjeta?.str_estado === "ANALISIS COMITE") {
-            fetchAddProcEspecifico(props.solicitud.solicitud, 0, selectCambioEstadoSol, comentarioCambioEstado, props.token, (data) => {
-                if (data.str_res_codigo === "000") {
-                    //Ir a pagina anterior
-                    setModalCambioBandeja(false);
-                    console.log("SE GUARDA AL NUEVO ESTADO");
-                    navigate.push('/solicitud');
-                }
-                else {
-                    console.log("No cuenta con permisos ", data);
-                }
 
-            }, dispatch)
+        let descripcionMotivoRetorno = motivosRegresaAntBandeja.find(motivo => motivo.str_nemonico === selectMotivoRetornoBanj);
+        if (selectMotivoRetornoBanj !== undefined) {
+            descripcionMotivoRetorno = descripcionMotivoRetorno.str_descripcion
 
-        } else { //Otros perfiles solo retornan a bandeja anterior
-            fetchAddComentarioSolicitud(props.solicitud.solicitud, comentarioCambioEstado, props.solicitud.idSolicitud, true, props.token, (data) => {
-                if (data.str_res_codigo === "000") {
-                    setModalCambioBandeja(false);
-                    console.log("SE GUARDA AL NUEVO ESTADO");
-                    navigate.push('/solicitud');
-                }
-                else {
-                    console.log("No cuenta con permisos ", data);
-                }
-            }, dispatch);
+            //Comite retorna a un estado de bandeja especifica para ANALISIS COMITE
+            if (solicitudTarjeta?.str_estado === "ANALISIS COMITE") {
+                //fetchAddProcEspecifico(props.solicitud.solicitud, 0, selectCambioEstadoSol, comentarioCambioEstado, props.token, (data) => {
+                fetchAddProcEspecifico(props.solicitud.solicitud, 0, selectCambioEstadoSol, descripcionMotivoRetorno, props.token, (data) => {
+                    if (data.str_res_codigo === "000") {
+                        //Ir a pagina anterior
+                        setModalCambioBandeja(false);
+                        console.log("SE GUARDA AL NUEVO ESTADO");
+                        navigate.push('/solicitud');
+                    }
+                    else {
+                        console.log("No cuenta con permisos ", data);
+                    }
+
+                }, dispatch)
+
+            } else { //Otros perfiles solo retornan a bandeja anterior
+                //fetchAddComentarioSolicitud(props.solicitud.solicitud, comentarioCambioEstado, props.solicitud.idSolicitud, true, props.token, (data) => {
+            fetchAddComentarioSolicitud(props.solicitud.solicitud, descripcionMotivoRetorno, props.solicitud.idSolicitud, true, props.token, (data) => {
+                    if (data.str_res_codigo === "000") {
+                        setModalCambioBandeja(false);
+                        console.log("SE GUARDA AL NUEVO ESTADO");
+                        navigate.push('/solicitud');
+                    }
+                    else {
+                        console.log("No cuenta con permisos ", data);
+                    }
+                }, dispatch);
+            }
         }
 
     }
@@ -578,7 +612,7 @@ const VerSolicitud = (props) => {
         }));
     }
 
-
+    
     useEffect(() => {
         if (comentarioCambioEstado !== "") {
             setIsBtnDisableCambioBandeja(false);
@@ -586,6 +620,15 @@ const VerSolicitud = (props) => {
             setIsBtnDisableCambioBandeja(true);
         }
     }, [comentarioCambioEstado])
+
+
+    useEffect(() => {
+        if (selectMotivoRetornoBanj !== "" && selectMotivoRetornoBanj !== "-1") {
+            setIsBtnDisableCambioBandeja(false);
+        } else {
+            setIsBtnDisableCambioBandeja(true);
+        }
+    }, [selectMotivoRetornoBanj])
 
 
     useEffect(() => {
@@ -600,19 +643,24 @@ const VerSolicitud = (props) => {
 
     const rechazarSolicitudHandler = () => {
         console.log("ENTRA A RECHAZAR")
-        fetchAddProcEspecifico(props.solicitud.solicitud, 0, "EST_RECHAZADA", "", props.token, (data) => { //EST_RECHAZADA 11277
-            if (data.str_res_codigo === "000") {
-                console.log("SE NEGO SOLICITUD");
-                setModalRechazo(false);
-                navigate.push('/solicitud');
-            }
-            else {
-                console.log("No cuenta con permisos ", data);
-            }
-        }, dispatch)
+
+        let descripcionMotivoRechazoComite = motivosNegacionComite.find(motivo => motivo.str_nemonico === selectMotivoNiegaSolComite);
+        if (descripcionMotivoRechazoComite !== undefined) {
+            descripcionMotivoRechazoComite = descripcionMotivoRechazoComite.str_descripcion
+            //fetchAddProcEspecifico(props.solicitud.solicitud, 0, "EST_RECHAZADA", "", props.token, (data) => { //EST_RECHAZADA 11277
+            fetchAddProcEspecifico(props.solicitud.solicitud, 0, "EST_RECHAZADA", descripcionMotivoRechazoComite, props.token, (data) => { //EST_RECHAZADA 11277
+                if (data.str_res_codigo === "000") {
+                    console.log("SE NEGO SOLICITUD");
+                    setModalRechazo(false);
+                    navigate.push('/solicitud');
+                }
+                else {
+                    console.log("No cuenta con permisos ", data);
+                }
+            }, dispatch)
+        }
+   
     }
-
-
     const guardarDecisionComiteHandler = () => {
         let validaCupo = controlMontoAprobado();
         console.log(`Valida Cupo,`, validaCupo)
@@ -674,18 +722,28 @@ const VerSolicitud = (props) => {
         return controlBool;
     }
 
-    /* VALIDACION  */
+    
     useEffect(() => {
-        let validaCupo = controlMontoAprobado();
-        //console.log("CONTROL CUPO 2, ", validaCupo);
+        /* VALIDACION  PARA NEGAR SOLICITU COMITE*/
+        //console.log("CAMBIO EN VALIDACION SELECT")
+        if (valorDecisionSelect === "EST_RECHAZADA") { //EST_RECHAZADA
+            if (selectMotivoNiegaSolComite !== "-1" && selectMotivoNiegaSolComite !== "") {
+                setIsActivoBtnDecision(false);
+            }
+            else {
+                setIsActivoBtnDecision(true);
+            }
+            return
 
+        }
+
+        /* VALIDACION  PARA APROBACION COMITE*/
+        let validaCupo = controlMontoAprobado();
+        
         if (Number.parseFloat(montoAprobado) > Number.parseFloat(solicitudTarjeta?.str_cupo_solicitado) || montoAprobado.length > 9) {
             setIsActivoBtnDecision(true);
             return
-        }
-        if (valorDecisionSelect === "EST_RECHAZADA") { //EST_RECHAZADA
-            setIsActivoBtnDecision(false);
-        }
+        }        
 
         else if (valorDecisionSelect !== "-1" && montoAprobado > 0 && comentarioSolicitud !== "" && validaCupo.validador) {
             if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_APROBADA") {// EST_APROBADA 11276
@@ -699,6 +757,9 @@ const VerSolicitud = (props) => {
             setIsActivoBtnDecision(true);
         }
     }, [valorDecisionSelect, montoAprobado, comentarioSolicitud, controlMontoAprobado])
+
+  
+   
 
 
     const openModalResolucionSocio = () => {
@@ -1006,6 +1067,37 @@ const VerSolicitud = (props) => {
                                                 </Card>
                                             </>
                                         }
+
+                                        {isRechazaComite && 
+                                            <>
+                                            <Card className={["mt-2"]}>
+                                                <h3>Seleccione el motivo:</h3>
+                                                <select disabled={false} onChange={cambioMotivoNiegaComite} defaultValue={"-1"} value={selectMotivoNiegaSolComite}>
+                                                    {motivosNegacionComite.length > 0
+                                                        && motivosNegacionComite?.map((motivo, index) => {
+                                                            if (index === 0) {
+                                                                return (
+                                                                    <>
+                                                                        <option disabled={true} value={"-1"}>Seleccione una opción</option>
+                                                                        <option value={motivo.str_nemonico}> {motivo.str_descripcion}</option>
+                                                                    </>
+                                                                )
+                                                            }
+                                                            else {
+                                                                return (
+                                                                    <option value={motivo.str_nemonico}> {motivo.str_descripcion}</option>
+                                                                )
+                                                            }
+                                                        })}
+                                                </select>
+                                            </Card>
+
+                                            
+                                            </>    
+                                        
+                                        
+                                        }
+
                                     </Card>
 
                                     {/*CAMPO PARA DEJAR COMENTARIO Y PASAR A LA SIGUIENTE BANDEJA*/}
@@ -1217,19 +1309,43 @@ const VerSolicitud = (props) => {
                                         )
                                     }
                                 })}
-
                         </select>
                     </>
                 }
-                {solicitudTarjeta?.str_estado !== "ANALISIS COMITE" &&
-                    <h3 className="mt-4 mb-1">Error en la obtención de parámetros. Consulte con el administrador</h3>
-                }
+                {/*{solicitudTarjeta?.str_estado !== "ANALISIS COMITE" &&*/}
+                {/*    <h3 className="mt-4 mb-1">Error en la obtención de parámetros. Consulte con el administrador</h3>*/}
+                {/*}*/}
                 <br />
 
                 <div>
-                    <h3 className="mt-2 mb-2">Comentario: {props.solicitud.idSolicitu}</h3>
-                    <Input className="w-100" type="text" value={comentarioCambioEstado} placeholder="Ingrese comentario" setValueHandler={setComentarioCambioEstado}></Input>
+                    <h3 className="mt-4 mb-1">Seleccione el motivo:</h3>
+                    <select className='w-100' defaultValue={"-1"} onChange={cambioMotivoRetornoBandeja} value={selectMotivoRetornoBanj}>
+                        {motivosRegresaAntBandeja.length > 0
+                            && motivosRegresaAntBandeja?.map((motivo, index) => {
+                                if (index === 0) {
+                                    return (
+                                        <>
+                                            <option disabled={true} value={"-1"}>Seleccione una opción</option>
+                                            <option value={motivo.str_nemonico}> {motivo.str_descripcion}</option>
+                                        </>
+                                    )
+                                }
+                                else {
+                                    return (
+                                        <option value={motivo.str_nemonico}> {motivo.str_descripcion}</option>
+                                    )
+                                }
+                            })}
+                    </select>
+
+
                 </div>
+
+
+                {/*<div>*/}
+                {/*    <h3 className="mt-2 mb-2">Comentario: {props.solicitud.idSolicitu}</h3>*/}
+                {/*    <Input className="w-100" type="text" value={comentarioCambioEstado} placeholder="Ingrese comentario" setValueHandler={setComentarioCambioEstado}></Input>*/}
+                {/*</div>*/}
 
                 <br />
 

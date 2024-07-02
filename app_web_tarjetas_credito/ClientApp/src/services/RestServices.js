@@ -1685,16 +1685,18 @@ export async function fetchAddDocumentosAxentria(requiereSeparar, rutaArchivo, n
     });
 }
 
-export function fetchGetDocumentosAxentria(intIdDocumento, intIdSolicitud, intIdFlujo, token, onSucces, dispatch) {
+//export function fetchGetDocumentosAxentria(intIdDocumento, intIdSolicitud, intIdFlujo, token, onSucces, dispatch) {
+export function fetchGetDocumentosAxentria(intIdSolicitud, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
-        id_documento: intIdDocumento,
+        //id_documento: intIdDocumento,
         id_solicitud: intIdSolicitud,
-        id_flujo: intIdFlujo
+        //id_flujo: intIdFlujo
     }
+    console.log("Get Docs BODY,", body);
     ServicioPostExecute(getDocumentosAxentria, body, token, { dispatch: dispatch }).then((data) => {
-        console.log("Get Doc Axe,", data);
+        console.log("Get Docs Axe,", data);
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));

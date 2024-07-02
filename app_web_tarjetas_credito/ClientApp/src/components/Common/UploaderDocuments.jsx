@@ -1,11 +1,9 @@
-﻿/* eslint-disable no-loop-func */
-import { Fragment, createRef, useEffect, useRef, useState } from 'react';
+﻿import { Fragment, createRef, useEffect, useRef, useState } from 'react';
 import '../../css/Components/UploaderDocuments.css';
 import Input from './UI/Input';
 import Modal from './Modal/Modal';
-import { fetchCrearSeparadoresAxentria, fetchAddDocumentosAxentria, fetchInfoSocio } from "../../services/RestServices";
+import { fetchCrearSeparadoresAxentria, fetchAddDocumentosAxentria, fetchGetDocumentosAxentria } from "../../services/RestServices";
 import { useDispatch } from 'react-redux';
-import { element } from 'prop-types';
 import { base64ToBlob, verificarPdf, descargarArchivo, conversionBase64 } from '../../js/utiles';
 
 const UploadDocumentos = (props) => {
@@ -49,6 +47,9 @@ const UploadDocumentos = (props) => {
     const controlArchivosSubidosErr = useState([]);
     const controlTerminaSubirDocs = useRef(false);
 
+    //Input para modal de busqueda
+    const [inputSolicitud, setInputSolicitud] = useState("");
+
 
     const resetCargarArchivos = () => {
         //console.log("RESETEAR")
@@ -85,6 +86,14 @@ const UploadDocumentos = (props) => {
     }
 
 
+    //Inicializador
+    useEffect(() => {
+        if (props.solicitud) {
+            setInputSolicitud(props.solicitud)
+        }
+    }, [])
+
+    
     useEffect(() => {
         if (base64SeparadorGenerado !== "" && verificarPdf(base64SeparadorGenerado)) {
             const blob = base64ToBlob(base64SeparadorGenerado, 'application/pdf');
@@ -441,6 +450,19 @@ const UploadDocumentos = (props) => {
         return respuesta;
     }
 
+    
+    const obtenerDocumentosAxentriaHandler = () => {
+        fetchGetDocumentosAxentria(inputSolicitud, props.token, (data) => {
+            console.log("INFORM ", data)
+        }, dispatch);        
+    }
+
+    const descargarDocAxentriaHandler = () => {
+
+      
+        
+    }
+
     return (
         <div className="content_uploader">
             <h4 className='strong mb-1'>Información General</h4>
@@ -710,21 +732,21 @@ const UploadDocumentos = (props) => {
             </Modal>
 
 
-            <Modal modalIsVisible={isModalBusqVisible} type="md" onCloseClick={hideModalBusqueda} onNextClick={(e) => console.log("Sig Generar")} mainText="Buscar" titulo="Buscar">
+            <Modal modalIsVisible={isModalBusqVisible} type="md" onCloseClick={hideModalBusqueda} onNextClick={obtenerDocumentosAxentriaHandler} mainText="Buscar" titulo="Buscar">
 
                 <section className="elements_two_column mt-2 mb-2">
-                    <div style={{ display: "flex", alignItems: "center" }}>
-                        <p>IDENTIFICACION: </p>
-                        <Input className="w-60 ml-2" id='identificacion' name='identificacion' esRequerido={true} type="text" placeholder="1150214375"></Input>
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center" }}>
-                        <p>ENTE: </p>
-                        <Input className="w-60 ml-2" id='ente' name='ente' esRequerido={true} type="text" placeholder="455428"></Input>
-                    </div>
+                    {/*<div style={{ display: "flex", alignItems: "center" }}>*/}
+                    {/*    <p>IDENTIFICACION: </p>*/}
+                    {/*    <Input className="w-60 ml-2" id='identificacion' name='identificacion' esRequerido={true} type="text" placeholder="1150214375"></Input>*/}
+                    {/*</div>*/}
+                    {/*<div style={{ display: "flex", alignItems: "center" }}>*/}
+                    {/*    <p>ENTE: </p>*/}
+                    {/*    <Input className="w-60 ml-2" id='ente' name='ente' esRequerido={true} type="text" placeholder="455428"></Input>*/}
+                    {/*</div>*/}
 
                     <div style={{ display: "flex", alignItems: "center" }}>
                         <p style={{ marginRight: "42px" }}>SOLICITUD: </p>
-                        <Input className="w-60" id='flujo' name='flujo' esRequerido={true} type="text"></Input>
+                        <Input className="w-60" id='flujo' name='flujo' esRequerido={true} type="text" value={inputSolicitud} onChange={(e) => setInputSolicitud(e.target.value)} />
                     </div>
 
                 </section>
@@ -734,7 +756,7 @@ const UploadDocumentos = (props) => {
                         <tr>
                             <th style={{ width: "30px" }}  >Nombre Archivo</th>
                             <th style={{ width: "15%", justifyContent: "left" }} >Usuario Carga</th>
-                            <th style={{ width: "15%", justifyContent: "left" }} >Solicitud</th>
+                    {/*        <th style={{ width: "15%", justifyContent: "left" }} >Solicitud</th>*/}
                             <th style={{ width: "10%", justifyContent: "left" }} >Version</th>
                             <th style={{ width: "15%", justifyContent: "left" }} >Ult. Modificación</th>
                             <th style={{ width: "15%", justifyContent: "left" }} >Ver Documento</th>
@@ -750,23 +772,26 @@ const UploadDocumentos = (props) => {
                                     <td style={{ justifyContent: "left" }} >
                                         {separador.str_separador}
                                     </td>
-                                    <td style={{ ustifyContent: "left" }} >
+                                    <td style={{ justifyContent: "left" }} >
                                         dvvasquez
                                     </td>
-                                    <td style={{ ustifyContent: "left" }} >
-                                        4866846
-                                    </td>
-                                    <td style={{ ustifyContent: "left" }} >
+                                    {/*<td style={{ ustifyContent: "left" }} >*/}
+                                    {/*    4866846*/}
+                                    {/*</td>*/}
+                                    <td style={{ justifyContent: "left" }} >
                                         1
                                     </td>
-                                    <td style={{ ustifyContent: "left" }} >
+                                    <td style={{ justifyContent: "left" }} >
                                         06/11/2024
                                     </td>
-                                    <div className="f-row justify-content-center align-content-center">
-                                        <button className="btn_mg_icons custom-icon-button" onClick={(e) => { console.log("VISUALIZADOR DOC") }} title="Visualizar Documento">
-                                            <img className="img-icons-acciones" src="Imagenes/view.svg" alt="Visualizar Documento"></img>
-                                        </button>
-                                    </div>
+                                    <td style={{ justifyContent: "left" }} >
+                                        <div className="f-row justify-content-center align-content-center">
+                                            <button className="btn_mg_icons custom-icon-button" onClick={ descargarDocAxentriaHandler }        title="Visualizar Documento">
+                                                <img className="img-icons-acciones" src="Imagenes/view.svg" alt="Visualizar Documento"></img>
+                                            </button>
+                                        </div>
+                                    </td>
+                                    
                                 </tr>
                             )
                         })}
