@@ -1701,12 +1701,12 @@ export function fetchGetSeparadores( token, onSucces, dispatch) {
     });
 }
 
-export async function fetchAddDocumentosAxentria(solicitudId,requiereSeparar, rutaArchivo, nombreArchivo, identificacionSocio, usuCarga, nombreSocio, nombreGrupo, referencia, archivo, token, onSucces, dispatch) {
+export async function fetchAddDocumentosAxentria(solicitudId, versionDoc,requiereSeparar, rutaArchivo, nombreArchivo, identificacionSocio, usuCarga, nombreSocio, nombreGrupo, referencia, archivo, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
         int_id_solicitud: Number(solicitudId),
-        str_version_doc: "1",
+        str_version_doc: versionDoc.toString(),
         bln_separar: requiereSeparar,
         str_ruta_arc: rutaArchivo,
         str_nombre_arc: nombreArchivo,

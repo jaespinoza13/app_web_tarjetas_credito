@@ -4,11 +4,12 @@ import Input from './UI/Input';
 import Modal from './Modal/Modal';
 import { fetchCrearSeparadoresAxentria, fetchAddDocumentosAxentria, fetchGetDocumentosAxentria, fetchDescargarDocumentoAxentria } from "../../services/RestServices";
 import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { base64ToBlob, verificarPdf, descargarArchivo, conversionBase64 } from '../../js/utiles';
 
 const UploadDocumentos = (props) => {
 
-
+    const navigate = useHistory();
     const cabeceraTabla = [{ id: 0, texto: "Separador" }, { id: 1, texto: "Publicar" }, { id: 2, texto: "Actor" }, { id: 3, texto: "Ord" },
     { id: 4, texto: "Grupo Documental" }, { id: 5, texto: "Propietario Documentación" }, { id: 6, texto: "Abrir archivo" },
     { id: 7, texto: "Usuario carga" }, { id: 8, texto: "Fecha subida" }, { id: 9, texto: "Version" }, { id: 10, texto: "Ver" }, { id: 11, texto: "Descargar" }]
@@ -300,6 +301,7 @@ const UploadDocumentos = (props) => {
         */
 
         if (props.solicitud) {
+            console.log("ENTrA cARGAr TABLA")
             setInputSolicitud(props.solicitud)
             fetchGetDocumentosAxentria(props.solicitud, props.token, (data) => {
                 setDocumentosSolicitudCruce(data.lst_documentos)
@@ -313,6 +315,7 @@ const UploadDocumentos = (props) => {
     useEffect(() => {
 
         if (documentosSolicitudCruce.length > 0 && props.contenido) {
+            console.log("ENTrA cARGAr TABLA 2")
             //console.log("DOCS TENGO ", documentosSolicitudCruce)
             //console.log(props.contenido)
 
@@ -326,6 +329,8 @@ const UploadDocumentos = (props) => {
                 resultaSeparadores[grupoSeparadorIndex].int_id_doc_relacionado = documento.int_id_doc;
             })
             setTablaContenido([...resultaSeparadores]);
+        } else if (documentosSolicitudCruce.length === 0 && props.contenido) {
+            setTablaContenido([...props.contenido]);
         }
     }, [documentosSolicitudCruce, props.contenido])
 
@@ -373,6 +378,8 @@ const UploadDocumentos = (props) => {
                 arregloArchivos.push({ id_separador: tablaContenido[indexArchivo].int_id_separador, archivo: element });
             })
             //console.log("ARREGLO ARCHIVOS OBJ ", arregloArchivos)
+
+            //TODO: MODIFICAR YA QUE MODIFICA LA LOGICA
             setValidadorCambio(true);
             setTablaContenido([...tablaContenido]);
             setCarchivosCargados([...arregloArchivos]);
@@ -420,6 +427,9 @@ const UploadDocumentos = (props) => {
                 //Se resetea
                 contadorPublicacion.current = 0;
                 controlTerminaSubirDocs.current = false;
+
+                navigate.push('/solicitud');
+
             } else if (controlArchivosSubidosErr.current?.length > 0 && controlTerminaSubirDocs.current === true) {
 
                 let mensaje_error = '';
@@ -460,7 +470,8 @@ const UploadDocumentos = (props) => {
                 let busquedaArchivo = archivosCargados.find(arch => arch.id_separador === archivoPub.int_id_separador);
                 convertorArchivo(busquedaArchivo.archivo).then(
                     archivoABase64 => {
-                        publicarAxentriaHandler(validarSeparador, archivoPub.str_ruta_ar, archivoPub.str_nombre_separador, archivoPub.str_separador, archivoABase64).then(data => {
+                        let versionSubirNuevo = archivoPub?.str_version ? (Number(archivoPub?.str_version) + 1) : 1;
+                        publicarAxentriaHandler(validarSeparador, versionSubirNuevo, archivoPub.str_ruta_ar, archivoPub.str_nombre_separador, archivoPub.str_separador, archivoABase64).then(data => {
                             //console.log("RESTTTT ", data)
 
                             if (data?.str_res_codigo === "000") {
@@ -499,9 +510,9 @@ const UploadDocumentos = (props) => {
         }
     }
 
-    const publicarAxentriaHandler = async (validarSeparador, rutaArchivo, nombreSeparador, grupoSeparador, archivoABase64) => {
+    const publicarAxentriaHandler = async (validarSeparador, version,rutaArchivo, nombreSeparador, grupoSeparador, archivoABase64) => {
         let respuesta = null;
-        await fetchAddDocumentosAxentria(props.solicitud, validarSeparador, rutaArchivo, nombreSeparador, props.cedulaSocio, props.datosUsuario[0].strUserOficial,
+        await fetchAddDocumentosAxentria(props.solicitud,version, validarSeparador, rutaArchivo, nombreSeparador, props.cedulaSocio, props.datosUsuario[0].strUserOficial,
             props.datosSocio?.str_nombres + ' ' + props.datosSocio?.str_apellido_paterno + ' ' + props.datosSocio?.str_apellido_materno,
             grupoSeparador, '', archivoABase64, props.token, (data) => {
                 respuesta = data;
