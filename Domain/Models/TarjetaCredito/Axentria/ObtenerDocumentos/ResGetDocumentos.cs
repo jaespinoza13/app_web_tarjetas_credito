@@ -5,6 +5,7 @@ namespace Domain.Models.TarjetaCredito.Axentria.ObtenerDocumentos
     public class ResGetDocumentos: ResComun
     {
         public List<Documentos> lst_documentos { get; set; } = new List<Documentos> { };
+        public byte[] file_bytes { get; set; } = new byte[0];
 
         public class Documentos
         {

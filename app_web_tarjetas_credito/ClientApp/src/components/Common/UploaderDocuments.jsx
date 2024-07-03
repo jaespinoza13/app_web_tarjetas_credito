@@ -2,7 +2,7 @@
 import '../../css/Components/UploaderDocuments.css';
 import Input from './UI/Input';
 import Modal from './Modal/Modal';
-import { fetchCrearSeparadoresAxentria, fetchAddDocumentosAxentria, fetchGetDocumentosAxentria } from "../../services/RestServices";
+import { fetchCrearSeparadoresAxentria, fetchAddDocumentosAxentria, fetchGetDocumentosAxentria, fetchDescargarDocumentoAxentria } from "../../services/RestServices";
 import { useDispatch } from 'react-redux';
 import { base64ToBlob, verificarPdf, descargarArchivo, conversionBase64 } from '../../js/utiles';
 
@@ -16,6 +16,7 @@ const UploadDocumentos = (props) => {
     //Principales arreglos
     const [tablaContenido, setTablaContenido] = useState([]);
     const [documentosSolicitudBusqueda, setDocumentosSolicitudBusqueda] = useState([]);
+    const [documentosSolicitudCruce, setDocumentosSolicitudCruce] = useState([]);
 
 
 
@@ -23,6 +24,8 @@ const UploadDocumentos = (props) => {
     const inputCargaRef = createRef(null);
     const contadorPublicacion = useRef(0);
     const [base64SeparadorGenerado, setBase64SeparadorGenerado] = useState("");
+    const [descargaDocumento, setDescargaDocumento] = useState("");
+    const [nombreDocumento, setNombreDocumento] = useState("");
     const [lstArchivosParaPublicar, setLstArchivosParaPublicar] = useState([]);
 
 
@@ -91,12 +94,7 @@ const UploadDocumentos = (props) => {
     }
 
 
-    //Inicializador
-    useEffect(() => {
-        if (props.solicitud) {
-            setInputSolicitud(props.solicitud)
-        }
-    }, [])
+
 
 
     useEffect(() => {
@@ -106,7 +104,36 @@ const UploadDocumentos = (props) => {
         }
     }, [base64SeparadorGenerado])
 
+    useEffect(() => {
+        if (descargaDocumento !== "" && verificarPdf(descargaDocumento)) {
+            const blob = base64ToBlob(descargaDocumento, 'application/pdf');
+            descargarArchivo(blob, nombreDocumento, 'pdf');
+        }
+    }, [descargaDocumento])
 
+
+    const descargarDocAxentriaHandler = (IdDocDescargar) => {
+
+        let busquedaArchivo = null;
+        if (documentosSolicitudBusqueda.length > 0) {
+            busquedaArchivo = documentosSolicitudBusqueda.find(document => document.int_id_doc === IdDocDescargar);
+        } else if (documentosSolicitudCruce.length > 0) {
+            busquedaArchivo = documentosSolicitudCruce.find(document => document.int_id_doc === IdDocDescargar);
+        }        
+        /*
+        console.log("ID DOC DESCARGAR ", IdDocDescargar)
+        console.log("documentosSolicitudBusqueda ", documentosSolicitudBusqueda)
+        console.log("documentosSolicitudCruce ", documentosSolicitudCruce)
+        console.log("busquedaArchivo ", busquedaArchivo)
+        */
+
+
+        setNombreDocumento(busquedaArchivo.str_nombre_doc)
+
+        fetchDescargarDocumentoAxentria(IdDocDescargar, props.token, (data) => {
+            setDescargaDocumento(data.file_bytes);
+        }, dispatch);
+    }
 
 
 
@@ -258,16 +285,12 @@ const UploadDocumentos = (props) => {
 
     }
 
-
+    //Inicializador
     useEffect(() => {
         const conteoRegistros = props.contenido.length;
         //console.log("TOTAL REG ",conteoRegistros)
         setTotalRegistros(conteoRegistros);
         //setTablaContenido([...props.contenido]);
-
-        //Se realiza una clonacion del objeto para no modificar el original
-        let resultaSeparadores = structuredClone(props.contenido)
-        setTablaContenido([...resultaSeparadores]);
 
         /* EN caso se requiera solo seleccionar las filas q tenga cargado el archivo
         let checkDocCargados = filasDocsCargados();
@@ -276,10 +299,35 @@ const UploadDocumentos = (props) => {
         }
         */
 
-        //console.log(props.solicitudTarjeta)
+        if (props.solicitud) {
+            setInputSolicitud(props.solicitud)
+            fetchGetDocumentosAxentria(props.solicitud, props.token, (data) => {
+                setDocumentosSolicitudCruce(data.lst_documentos)
+            }, dispatch);
+        }
+
+       
 
     }, [])
 
+    useEffect(() => {
+
+        if (documentosSolicitudCruce.length > 0 && props.contenido) {
+            //console.log("DOCS TENGO ", documentosSolicitudCruce)
+            //console.log(props.contenido)
+
+            //Se realiza una clonacion del objeto para no modificar el original
+            let resultaSeparadores = structuredClone(props.contenido)
+            documentosSolicitudCruce.forEach(documento => {
+                let grupoSeparadorIndex = resultaSeparadores.findIndex(grupoDoc => grupoDoc.str_separador === documento.str_grupo);
+                resultaSeparadores[grupoSeparadorIndex].str_login_carga = documento.str_usuario_carga;
+                resultaSeparadores[grupoSeparadorIndex].dtt_fecha_sube = documento.dtt_ult_modificacion;
+                resultaSeparadores[grupoSeparadorIndex].str_version = documento.str_version_doc;
+                resultaSeparadores[grupoSeparadorIndex].int_id_doc_relacionado = documento.int_id_doc;
+            })
+            setTablaContenido([...resultaSeparadores]);
+        }
+    }, [documentosSolicitudCruce, props.contenido])
 
     const [validadorCambio, setValidadorCambio] = useState(false);
 
@@ -364,7 +412,7 @@ const UploadDocumentos = (props) => {
                         mensaje_ok += doc.documento.toString() + '\n'
                     )
                 });
-                let mensaje = 'SE SUBIERON CORRECTAMENTE LOS ARCHIVOS:';
+                let mensaje = 'SE SUBIERON CORRECTAMENTE LOS ARCHIVOS';
 
                 //console.log("mensaje ", mensaje)
                 window.alert(mensaje);
@@ -372,7 +420,7 @@ const UploadDocumentos = (props) => {
                 //Se resetea
                 contadorPublicacion.current = 0;
                 controlTerminaSubirDocs.current = false;
-            } else if (controlArchivosSubidosErr.current.length > 0 && controlTerminaSubirDocs.current === true) {
+            } else if (controlArchivosSubidosErr.current?.length > 0 && controlTerminaSubirDocs.current === true) {
 
                 let mensaje_error = '';
                 controlArchivosSubidosOK.current.map(error => {
@@ -388,6 +436,11 @@ const UploadDocumentos = (props) => {
                 //Se resetea
                 contadorPublicacion.current = 0;
                 controlTerminaSubirDocs.current = false;
+            }
+            else {
+                let mensaje = 'Error en la publicación del archivo. Consulte con el adminitrador: \n';
+                console.log("mensaje ", mensaje)
+                window.alert(mensaje);
             }
 
             resetCargarArchivos();
@@ -420,11 +473,12 @@ const UploadDocumentos = (props) => {
                                 //console.log("lstOk ", lstOk)
                                 controlArchivosSubidosOK.current = lstOk;
                             }
-                            else {
+                            else if (data?.str_res_codigo) {
+
                                 let archivoErr = {
-                                    documento: archivoPub.str_separador,
-                                    codigo: data.str_res_codigo,
-                                    informacionAdicional: data.str_res_info_adicional
+                                    documento: archivoPub?.str_separador,
+                                    codigo: data?.str_res_codigo,
+                                    informacionAdicional: data?.str_res_info_adicional
                                 }
                                 //setControlArchivosSubidosErr([...controlArchivosSubidosErr, archivoErr]);
                                 let lstErr = [...controlArchivosSubidosOK.current, ...archivoErr]
@@ -461,15 +515,6 @@ const UploadDocumentos = (props) => {
             setDocumentosSolicitudBusqueda(data.lst_documentos)
             console.log("INFORM ", data.lst_documentos)
         }, dispatch);
-    }
-
-
-
-
-    const descargarDocAxentriaHandler = (IdDocDescargar) => {
-        console.log("ID DESCARGAR ARCHIVIO ", IdDocDescargar)
-
-
     }
 
     return (
@@ -579,6 +624,16 @@ const UploadDocumentos = (props) => {
                         </thead>
                         <tbody>
                             {tablaContenido.map((documentacion) => {
+                                let fecha = "";
+                                if (documentacion?.dtt_fecha_sube) {
+                                    fecha = new Date(documentacion?.dtt_fecha_sube);
+                                }                                
+                                let opciones = {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    second: "2-digit"
+                                };
+
                                 return (
                                     <Fragment key={documentacion.int_id_separador}>
                                         <tr key={documentacion.int_id_separador}>
@@ -610,7 +665,7 @@ const UploadDocumentos = (props) => {
                                                 {documentacion.str_login_carga}
                                             </td>
                                             <td style={{ width: "10%", justifyContent: "left" }} >
-                                                {documentacion.dtt_fecha_sube}
+                                                {fecha !== "" ? (fecha.toLocaleDateString('en-US', opciones)) :"" }
                                             </td>
                                             <td style={{ width: "3%", justifyContent: "left" }} >
                                                 {documentacion.str_version}
@@ -624,7 +679,7 @@ const UploadDocumentos = (props) => {
                                             </td>
                                             <td style={{ width: "2%", justifyContent: "left" }} >
                                                 <div className="f-row justify-content-center align-content-center">
-                                                    <button className="btn_mg_icons custom-icon-button" onClick={(e) => { console.log("DESCARGAR DOC") }} title="Descargar Documento">
+                                                    <button className="btn_mg_icons custom-icon-button" onClick={() => descargarDocAxentriaHandler(documentacion.int_id_doc_relacionado)} title="Descargar Documento">
                                                         <img className="img-icons-acciones" src="Imagenes/download.svg" alt="Descargar Documento"></img>
                                                     </button>
                                                 </div>
@@ -765,9 +820,8 @@ const UploadDocumentos = (props) => {
                     <table className='archivos mt-4'>
                         <thead>
                             <tr>
-                                <th style={{ width: "30px" }}>Nombre Archivo</th>
+                                <th>Nombre Archivo</th>
                                 <th >Usuario Carga</th>
-                                {/*        <th style={{ width: "15%", justifyContent: "left" }} >Solicitud</th>*/}
                                 <th  >Version</th>
                                 <th  >Ult. Modificación</th>
                                 <th >Ver Documento</th>
@@ -793,15 +847,15 @@ const UploadDocumentos = (props) => {
                                             <td style={{ justifyContent: "left" }} >
                                                 {doc.str_usuario_carga}
                                             </td>
-                                            <td style={{ ustifyContent: "left" }} >
+                                            <td style={{ justifyContent: "left" }} >
                                                 {doc.str_version_doc}
                                             </td>
-                                            <td style={{ ustifyContent: "left" }} >
+                                            <td style={{ justifyContent: "left" }} >
                                                 {(fecha.toLocaleDateString('en-US', opciones))}
                                             </td>
                                             <td style={{ justifyContent: "left" }} >
                                                 <div className="f-row justify-content-center align-content-center">
-                                                    <button className="btn_mg_icons custom-icon-button" onClick={()=> descargarDocAxentriaHandler(doc.int_id_doc)} title="Visualizar Documento">
+                                                    <button className="btn_mg_icons custom-icon-button" onClick={() => descargarDocAxentriaHandler(doc.int_id_doc)} title="Visualizar Documento">
                                                         <img className="img-icons-acciones" src="Imagenes/view.svg" alt="Visualizar Documento"></img>
                                                     </button>
                                                 </div>

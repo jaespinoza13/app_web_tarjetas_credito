@@ -18,6 +18,7 @@ import { connect, useDispatch } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import Solicitud from './components/Solicitud/Solicitud';
 import NuevaSolicitud from './components/Solicitud/NuevaSolicitud';
+import Reprocesar from './components/Ordenes/Reprocesar';
 import Orden from './components/Ordenes/Orden';
 import VerSolicitud from './components/Solicitud/VerSolicitud';
 import OrdenNuevaEdicion from './components/Ordenes/OrdenNuevaEdicion';
@@ -223,6 +224,17 @@ class App extends Component {
                             <Route render={() => <Redirect to="/auth" />} />
                         )}
                     </Route>
+
+                    <Route path='/reprocesar'>
+                        {this.state.isAuthenticated ? (
+                            <>
+                                <Route exact path='/reprocesar' component={Reprocesar} />
+                            </>  
+                        ) : (
+                            <Route render={() => <Redirect to="/auth" />} />
+                        )}
+                    </Route>
+
 
 
                     <Route path='/orden'>

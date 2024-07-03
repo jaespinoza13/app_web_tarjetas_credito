@@ -264,7 +264,9 @@ export function fetchListaPreguntas(exProcess, token, onSuccess, dispatch) {
                 if (data.codigo === "0000") {
                     onSuccess(data.preguntas);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
+                    let codigo = data.codigo || data.str_res_codigo;
+                    let mensaje = data.mensaje || data.str_res_info_adicional;
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
                 }
             }
         } else {
@@ -372,7 +374,9 @@ export function fetchConexiones(token, onSuccess, dispatch, usr = null, srv = nu
                 if (data.codigo === "000") {
                     onSuccess(data.lst_conexiones);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
+                    let codigo = data.codigo || data.str_res_codigo;
+                    let mensaje = data.mensaje || data.str_res_info_adicional;
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
                 }
             } else {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
@@ -909,7 +913,9 @@ export function fetchInfoSocio(strCedula, token, onSucces, dispatch) {
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
+                    let codigo = data.codigo || data.str_res_codigo || "1"; 
+                    let mensaje = data.mensaje || data.str_res_info_adicional || "Error obtener datos del socio";
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
                 }
             }
         } else {
@@ -941,7 +947,9 @@ export function fetchInfoEconomica(strEnte, token, onSucces, dispatch) {
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
+                    let codigo = data.codigo || data.str_res_codigo;
+                    let mensaje = data.mensaje || data.str_res_info_adicional;
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
                 }
             }
         } else {
@@ -1017,7 +1025,9 @@ export function fetchGetContrato(token, onSucces, dispatch) {
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
+                    let codigo = data.codigo || data.str_res_codigo;
+                    let mensaje = data.mensaje || data.str_res_info_adicional;
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
                 }
             }
         } else {
@@ -1044,7 +1054,9 @@ export function fetchGetSolicitudes(token, onSucces, dispatch) {
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
+                    let codigo = data.codigo || data.str_res_codigo;
+                    let mensaje = data.mensaje || data.str_res_info_adicional;
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
                 }
             }
         } else {
@@ -1065,7 +1077,9 @@ export function fetchAddSolicitud(body,token, onSucces, dispatch) {
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
+                    let codigo = data.codigo || data.str_res_codigo;
+                    let mensaje = data.mensaje || data.str_res_info_adicional;
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
                 }
             }
         } else {
@@ -1096,7 +1110,9 @@ export function fetchGetInfoFinan(ente, token, onSucces, dispatch) {
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
+                    let codigo = data.codigo || data.str_res_codigo;
+                    let mensaje = data.mensaje || data.str_res_info_adicional;
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
                 }
             }
         } else {
@@ -1138,7 +1154,9 @@ export function fetchAddProspecto(str_num_documento, ente, nombres, apellidos, c
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
+                    let codigo = data.codigo || data.str_res_codigo;
+                    let mensaje = data.mensaje || data.str_res_info_adicional;
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
                 }
             }
         } else {
@@ -1170,7 +1188,9 @@ export function fetchGetInforme(idSolicitud, idEstado, token, onSucces, dispatch
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
+                    let codigo = data.codigo || data.str_res_codigo;
+                    let mensaje = data.mensaje || data.str_res_info_adicional;
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
                 }
             }
         } else {
@@ -1203,7 +1223,6 @@ export function fetchGetFlujoSolicitud(idSolicitud, token, onSucces, dispatch) {
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    //if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                     let codigo = data.codigo || data.str_res_codigo;
                     let mensaje = data.mensaje || data.str_res_info_adicional;
                     if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
@@ -1240,7 +1259,9 @@ export function fetchAddComentarioAsesor(idSolicitud, comentarios, estadoSolicit
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
+                    let codigo = data.codigo || data.str_res_codigo;
+                    let mensaje = data.mensaje || data.str_res_info_adicional;
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
                 }
             }
         } else {
@@ -1278,7 +1299,9 @@ export function fetchAddComentarioSolicitud(idSolicitud, comentario, estadoSolic
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
+                    let codigo = data.codigo || data.str_res_codigo;
+                    let mensaje = data.mensaje || data.str_res_info_adicional;
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
                 }
             }
         } else {
@@ -1310,7 +1333,9 @@ export function fetchGetResolucion(idSolicitud, token, onSucces, dispatch) {
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
+                    let codigo = data.codigo || data.str_res_codigo;
+                    let mensaje = data.mensaje || data.str_res_info_adicional;
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
                 }
             }
         } else {
@@ -1355,7 +1380,9 @@ export function fetchAddResolucion(idSolicitud, cupo_solicitado, cupo_sugerido, 
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
+                    let codigo = data.codigo || data.str_res_codigo;
+                    let mensaje = data.mensaje || data.str_res_info_adicional;
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
                 }
             }
         } else {
@@ -1387,7 +1414,9 @@ export function fetchUpdResolucion(idSolicitud, token, onSucces, dispatch) {
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
+                    let codigo = data.codigo || data.str_res_codigo;
+                    let mensaje = data.mensaje || data.str_res_info_adicional;
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
                 }
             }
         } else {
@@ -1424,7 +1453,9 @@ export function fetchAddProcEspecifico(idSolicitud, cupo, estado, comentario, to
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
+                    let codigo = data.codigo || data.str_res_codigo;
+                    let mensaje = data.mensaje || data.str_res_info_adicional;
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
                 }
             }
         } else {
@@ -1458,7 +1489,9 @@ export function fetchGetParametrosSistema(token, onSucces, dispatch) {
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                    let codigo = data.codigo || data.str_res_codigo;
+                    let mensaje = data.mensaje || data.str_res_info_adicional;
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
                 }
             }
         } else {
@@ -1482,7 +1515,9 @@ export function fetchGetMotivos(token, onSucces, dispatch) {
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.codigo, text: data.mensaje }));
+                    let codigo = data.codigo || data.str_res_codigo;
+                    let mensaje = data.mensaje || data.str_res_info_adicional;
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
                 }
             }
         } else {
@@ -1519,7 +1554,9 @@ export function fetchUpdateCupoSolicitud(idSolicitud, idFlujoSol, estadoSol, dec
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
+                    let codigo = data.codigo || data.str_res_codigo;
+                    let mensaje = data.mensaje || data.str_res_info_adicional;
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
                 }
             }
             //console.log("RUSEL, ", data)
@@ -1543,7 +1580,9 @@ export function fetchGetReporteOrden(numOrden, token, onSucces, dispatch) {
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
+                    let codigo = data.codigo || data.str_res_codigo;
+                    let mensaje = data.mensaje || data.str_res_info_adicional;
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
                 }
             }
         } else {
@@ -1569,7 +1608,9 @@ export function fetchGetOrdenes(tipo_requerido, token, onSucces, dispatch) {
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
+                    let codigo = data.codigo || data.str_res_codigo;
+                    let mensaje = data.mensaje || data.str_res_info_adicional;
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
                 }
             }
         } else {
@@ -1594,7 +1635,9 @@ export function fetchGetTarjetasCredito(nemonico_producto, tipo_tarjeta, estado_
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
+                    let codigo = data.codigo || data.str_res_codigo;
+                    let mensaje = data.mensaje || data.str_res_info_adicional;
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
                 }
             }
         } else {
@@ -1620,7 +1663,9 @@ export function fetchGetMedioAprobacion(estadoSoli, idSolicitud, token, onSucces
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
+                    let codigo = data.codigo || data.str_res_codigo;
+                    let mensaje = data.mensaje || data.str_res_info_adicional;
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
                 }
             }
         } else {
@@ -1645,7 +1690,6 @@ export function fetchGetSeparadores( token, onSucces, dispatch) {
                 if (data.str_res_estado_transaccion === "OK") {
                     onSucces(data);
                 } else {
-                    //if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                     let codigo = data.codigo || data.str_res_codigo;
                     let mensaje = data.mensaje || data.str_res_info_adicional;
                     if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
@@ -1696,19 +1740,46 @@ export async function fetchAddDocumentosAxentria(solicitudId,requiereSeparar, ru
         }
     });
 }
-
-//export function fetchGetDocumentosAxentria(intIdDocumento, intIdSolicitud, intIdFlujo, token, onSucces, dispatch) {
 export function fetchGetDocumentosAxentria(intIdSolicitud, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
         //id_documento: intIdDocumento,
+        //id_solicitud: Number(intIdSolicitud),
         id_solicitud: Number(intIdSolicitud),
-        //id_flujo: intIdFlujo
+        int_id_doc: 0
     }
-    console.log("Get Docs BODY,", body);
+    //console.log("Get Docs BODY,", body);
     ServicioPostExecute(getDocumentosAxentria, body, token, { dispatch: dispatch }).then((data) => {
-        console.log("Get Docs Axe,", data);
+        //console.log("Get Docs Axe,", data);
+        if (data) {
+            if (data.error) {
+                if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
+            } else {
+                if (data.str_res_estado_transaccion === "OK") {
+                    onSucces(data);
+                } else {
+                    let codigo = data.codigo || data.str_res_codigo;
+                    let mensaje = data.mensaje || data.str_res_info_adicional;
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
+                }
+            }
+        } else {
+            if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
+        }
+    });
+}
+
+export function fetchDescargarDocumentoAxentria(intDocumento, token, onSucces, dispatch) {
+    if (dispatch) dispatch(setErrorRedirigir(""));
+
+    let body = {
+        id_solicitud: 0,
+        int_id_doc: Number(intDocumento)        
+    }
+    
+    ServicioPostExecute(getDocumentosAxentria, body, token, { dispatch: dispatch }).then((data) => {
+        console.log("Descargar Doc Axe,", data);
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));

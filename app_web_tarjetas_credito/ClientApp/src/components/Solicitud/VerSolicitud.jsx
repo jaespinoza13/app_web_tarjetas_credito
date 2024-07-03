@@ -152,7 +152,7 @@ const VerSolicitud = (props) => {
         fetchInfoSocio(props.solicitud.cedulaPersona, props.token, (data) => {
 
             //console.log("BUSQ SOCI AXEN ", props.solicitud.cedulaPersona)
-            //console.log("CEDULA ", prop)
+            console.log("Infor USUARIO ", data)
             setDatosSocio(data.datos_cliente[0]);
         }, dispatch);
 
