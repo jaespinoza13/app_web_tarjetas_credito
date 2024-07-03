@@ -65,6 +65,12 @@ function Sidebar(props) {
                     </div>
                     <div className="sidebar_menu__item">
                         <NavItem>
+                            <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'reprocesar') ? 'active' : ''}`} to="/reprocesar">Reprocesar</NavLink>
+                        </NavItem>
+                    </div>
+
+                    <div className="sidebar_menu__item">
+                        <NavItem>
                             <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'orden') ? 'active' : ''}`} to="/orden">Ordenes</NavLink>
                         </NavItem>
                     </div>

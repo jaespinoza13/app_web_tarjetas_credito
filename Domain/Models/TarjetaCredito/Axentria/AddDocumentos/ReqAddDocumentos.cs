@@ -13,6 +13,9 @@ namespace Domain.Models.TarjetaCredito.Axentria.AddDocumentos
         public string str_nombre_grupo { get; set; } = string.Empty;
         public string str_referencia { get; set; } = string.Empty;
         public Loadfile loadfile { get; set; }
+        public int int_id_solicitud { get; set; }
+        public string str_version_doc { get; set; } = string.Empty;
+
     }
     public class Loadfile
     {

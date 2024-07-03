@@ -1,0 +1,51 @@
+﻿.accordionV2 {
+    position: relative;
+}
+
+.accordionV2-header {
+    /*  display: flex; */
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+    border-radius: 7px;
+    border: 1px solid #C1CBEA;
+    ;
+    height: 2rem;
+    position: relative;
+    z-index: 20;
+    align-items: center;
+    cursor: pointer;
+    align-content: center;
+}
+
+.accordionV2-icon {
+    display: flex;
+    justify-content: space-evenly;
+    position: absolute;
+    flex-direction: row;
+    top: 2px;
+    right: 15px;
+}
+
+.accordionV2-header > h3 {
+    color: #3D3D3D;
+    margin-left: 2rem;
+}
+
+.accordionV2-header > button.loading > img.loading {
+    animation: rotation 1s infinite linear;
+}
+
+
+
+.accordionV2-header > div > button {
+    margin-right: 0.5rem;
+}
+
+    .accordionV2-header > div > button > img {
+        transition: transform 0.5s ease;
+    }
+
+        .accordionV2-header > div > button > img.rotated {
+            transform: rotate(180deg);
+        }

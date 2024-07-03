@@ -1,0 +1,49 @@
+﻿
+.table-accordion tr td:first-child {
+    border-radius: 0px;
+    border-left: 0px;
+}
+
+.table-accordion tr td:last-child {
+    border-radius: 0px;
+    border-right: 0px;
+}
+
+.table-accordion td {
+    border-bottom: 0px;
+    border-top: 0px;
+}
+
+.paddingSpacing {
+    padding: 0px;
+    border-spacing: 0px;
+}
+
+.table-accordion thead {
+    height: 28px;
+}
+
+.colorHeaderTable2 {
+    background-color: #0074C3;
+}
+
+.w-95{
+    width: 95%
+}
+
+
+
+.content-headertable {
+    width: 100%;
+    display: flex;
+}
+
+.item-header {
+    width: 100%;
+    justify-content: center;
+    align-content: center;
+}
+
+.spaceTextHeader {
+    word-spacing: 20px
+}

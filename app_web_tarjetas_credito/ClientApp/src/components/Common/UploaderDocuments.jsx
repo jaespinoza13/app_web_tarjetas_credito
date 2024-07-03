@@ -2,22 +2,31 @@
 import '../../css/Components/UploaderDocuments.css';
 import Input from './UI/Input';
 import Modal from './Modal/Modal';
-import { fetchCrearSeparadoresAxentria, fetchAddDocumentosAxentria, fetchGetDocumentosAxentria } from "../../services/RestServices";
+import { fetchCrearSeparadoresAxentria, fetchAddDocumentosAxentria, fetchGetDocumentosAxentria, fetchDescargarDocumentoAxentria } from "../../services/RestServices";
 import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { base64ToBlob, verificarPdf, descargarArchivo, conversionBase64 } from '../../js/utiles';
 
 const UploadDocumentos = (props) => {
 
-
+    const navigate = useHistory();
     const cabeceraTabla = [{ id: 0, texto: "Separador" }, { id: 1, texto: "Publicar" }, { id: 2, texto: "Actor" }, { id: 3, texto: "Ord" },
     { id: 4, texto: "Grupo Documental" }, { id: 5, texto: "Propietario Documentación" }, { id: 6, texto: "Abrir archivo" },
     { id: 7, texto: "Usuario carga" }, { id: 8, texto: "Fecha subida" }, { id: 9, texto: "Version" }, { id: 10, texto: "Ver" }, { id: 11, texto: "Descargar" }]
 
+    //Principales arreglos
     const [tablaContenido, setTablaContenido] = useState([]);
+    const [documentosSolicitudBusqueda, setDocumentosSolicitudBusqueda] = useState([]);
+    const [documentosSolicitudCruce, setDocumentosSolicitudCruce] = useState([]);
+
+
+
     const dispatch = useDispatch();
     const inputCargaRef = createRef(null);
     const contadorPublicacion = useRef(0);
     const [base64SeparadorGenerado, setBase64SeparadorGenerado] = useState("");
+    const [descargaDocumento, setDescargaDocumento] = useState("");
+    const [nombreDocumento, setNombreDocumento] = useState("");
     const [lstArchivosParaPublicar, setLstArchivosParaPublicar] = useState([]);
 
 
@@ -86,14 +95,9 @@ const UploadDocumentos = (props) => {
     }
 
 
-    //Inicializador
-    useEffect(() => {
-        if (props.solicitud) {
-            setInputSolicitud(props.solicitud)
-        }
-    }, [])
 
-    
+
+
     useEffect(() => {
         if (base64SeparadorGenerado !== "" && verificarPdf(base64SeparadorGenerado)) {
             const blob = base64ToBlob(base64SeparadorGenerado, 'application/pdf');
@@ -101,7 +105,36 @@ const UploadDocumentos = (props) => {
         }
     }, [base64SeparadorGenerado])
 
+    useEffect(() => {
+        if (descargaDocumento !== "" && verificarPdf(descargaDocumento)) {
+            const blob = base64ToBlob(descargaDocumento, 'application/pdf');
+            descargarArchivo(blob, nombreDocumento, 'pdf');
+        }
+    }, [descargaDocumento])
 
+
+    const descargarDocAxentriaHandler = (IdDocDescargar) => {
+
+        let busquedaArchivo = null;
+        if (documentosSolicitudBusqueda.length > 0) {
+            busquedaArchivo = documentosSolicitudBusqueda.find(document => document.int_id_doc === IdDocDescargar);
+        } else if (documentosSolicitudCruce.length > 0) {
+            busquedaArchivo = documentosSolicitudCruce.find(document => document.int_id_doc === IdDocDescargar);
+        }        
+        /*
+        console.log("ID DOC DESCARGAR ", IdDocDescargar)
+        console.log("documentosSolicitudBusqueda ", documentosSolicitudBusqueda)
+        console.log("documentosSolicitudCruce ", documentosSolicitudCruce)
+        console.log("busquedaArchivo ", busquedaArchivo)
+        */
+
+
+        setNombreDocumento(busquedaArchivo.str_nombre_doc)
+
+        fetchDescargarDocumentoAxentria(IdDocDescargar, props.token, (data) => {
+            setDescargaDocumento(data.file_bytes);
+        }, dispatch);
+    }
 
 
 
@@ -253,16 +286,12 @@ const UploadDocumentos = (props) => {
 
     }
 
-
+    //Inicializador
     useEffect(() => {
         const conteoRegistros = props.contenido.length;
         //console.log("TOTAL REG ",conteoRegistros)
         setTotalRegistros(conteoRegistros);
         //setTablaContenido([...props.contenido]);
-
-        //Se realiza una clonacion del objeto para no modificar el original
-        let resultaSeparadores = structuredClone(props.contenido)
-        setTablaContenido([...resultaSeparadores]);
 
         /* EN caso se requiera solo seleccionar las filas q tenga cargado el archivo
         let checkDocCargados = filasDocsCargados();
@@ -271,10 +300,39 @@ const UploadDocumentos = (props) => {
         }
         */
 
-        //console.log(props.solicitudTarjeta)
+        if (props.solicitud) {
+            console.log("ENTrA cARGAr TABLA")
+            setInputSolicitud(props.solicitud)
+            fetchGetDocumentosAxentria(props.solicitud, props.token, (data) => {
+                setDocumentosSolicitudCruce(data.lst_documentos)
+            }, dispatch);
+        }
+
+       
 
     }, [])
 
+    useEffect(() => {
+
+        if (documentosSolicitudCruce.length > 0 && props.contenido) {
+            console.log("ENTrA cARGAr TABLA 2")
+            //console.log("DOCS TENGO ", documentosSolicitudCruce)
+            //console.log(props.contenido)
+
+            //Se realiza una clonacion del objeto para no modificar el original
+            let resultaSeparadores = structuredClone(props.contenido)
+            documentosSolicitudCruce.forEach(documento => {
+                let grupoSeparadorIndex = resultaSeparadores.findIndex(grupoDoc => grupoDoc.str_separador === documento.str_grupo);
+                resultaSeparadores[grupoSeparadorIndex].str_login_carga = documento.str_usuario_carga;
+                resultaSeparadores[grupoSeparadorIndex].dtt_fecha_sube = documento.dtt_ult_modificacion;
+                resultaSeparadores[grupoSeparadorIndex].str_version = documento.str_version_doc;
+                resultaSeparadores[grupoSeparadorIndex].int_id_doc_relacionado = documento.int_id_doc;
+            })
+            setTablaContenido([...resultaSeparadores]);
+        } else if (documentosSolicitudCruce.length === 0 && props.contenido) {
+            setTablaContenido([...props.contenido]);
+        }
+    }, [documentosSolicitudCruce, props.contenido])
 
     const [validadorCambio, setValidadorCambio] = useState(false);
 
@@ -320,6 +378,8 @@ const UploadDocumentos = (props) => {
                 arregloArchivos.push({ id_separador: tablaContenido[indexArchivo].int_id_separador, archivo: element });
             })
             //console.log("ARREGLO ARCHIVOS OBJ ", arregloArchivos)
+
+            //TODO: MODIFICAR YA QUE MODIFICA LA LOGICA
             setValidadorCambio(true);
             setTablaContenido([...tablaContenido]);
             setCarchivosCargados([...arregloArchivos]);
@@ -358,8 +418,8 @@ const UploadDocumentos = (props) => {
                     return (
                         mensaje_ok += doc.documento.toString() + '\n'
                     )
-                });  
-                let mensaje = 'SE SUBIERON CORRECTAMENTE LOS ARCHIVOS:';               
+                });
+                let mensaje = 'SE SUBIERON CORRECTAMENTE LOS ARCHIVOS';
 
                 //console.log("mensaje ", mensaje)
                 window.alert(mensaje);
@@ -367,7 +427,10 @@ const UploadDocumentos = (props) => {
                 //Se resetea
                 contadorPublicacion.current = 0;
                 controlTerminaSubirDocs.current = false;
-            } else if (controlArchivosSubidosErr.current.length > 0 && controlTerminaSubirDocs.current === true) {
+
+                navigate.push('/solicitud');
+
+            } else if (controlArchivosSubidosErr.current?.length > 0 && controlTerminaSubirDocs.current === true) {
 
                 let mensaje_error = '';
                 controlArchivosSubidosOK.current.map(error => {
@@ -383,6 +446,11 @@ const UploadDocumentos = (props) => {
                 //Se resetea
                 contadorPublicacion.current = 0;
                 controlTerminaSubirDocs.current = false;
+            }
+            else {
+                let mensaje = 'Error en la publicación del archivo. Consulte con el adminitrador: \n';
+                console.log("mensaje ", mensaje)
+                window.alert(mensaje);
             }
 
             resetCargarArchivos();
@@ -402,7 +470,8 @@ const UploadDocumentos = (props) => {
                 let busquedaArchivo = archivosCargados.find(arch => arch.id_separador === archivoPub.int_id_separador);
                 convertorArchivo(busquedaArchivo.archivo).then(
                     archivoABase64 => {
-                            publicarAxentriaHandler(validarSeparador, archivoPub.str_ruta_ar, archivoPub.str_nombre_separador, archivoPub.str_separador, archivoABase64).then(data  => {
+                        let versionSubirNuevo = archivoPub?.str_version ? (Number(archivoPub?.str_version) + 1) : 1;
+                        publicarAxentriaHandler(validarSeparador, versionSubirNuevo, archivoPub.str_ruta_ar, archivoPub.str_nombre_separador, archivoPub.str_separador, archivoABase64).then(data => {
                             //console.log("RESTTTT ", data)
 
                             if (data?.str_res_codigo === "000") {
@@ -413,13 +482,14 @@ const UploadDocumentos = (props) => {
                                 }]
                                 let lstOk = [...controlArchivosSubidosOK.current, ...archivoOK]
                                 //console.log("lstOk ", lstOk)
-                                controlArchivosSubidosOK.current= lstOk;
+                                controlArchivosSubidosOK.current = lstOk;
                             }
-                            else {
+                            else if (data?.str_res_codigo) {
+
                                 let archivoErr = {
-                                    documento: archivoPub.str_separador,
-                                    codigo: data.str_res_codigo, 
-                                    informacionAdicional: data.str_res_info_adicional                                   
+                                    documento: archivoPub?.str_separador,
+                                    codigo: data?.str_res_codigo,
+                                    informacionAdicional: data?.str_res_info_adicional
                                 }
                                 //setControlArchivosSubidosErr([...controlArchivosSubidosErr, archivoErr]);
                                 let lstErr = [...controlArchivosSubidosOK.current, ...archivoErr]
@@ -440,9 +510,9 @@ const UploadDocumentos = (props) => {
         }
     }
 
-    const publicarAxentriaHandler = async (validarSeparador, rutaArchivo, nombreSeparador, grupoSeparador, archivoABase64) => {
+    const publicarAxentriaHandler = async (validarSeparador, version,rutaArchivo, nombreSeparador, grupoSeparador, archivoABase64) => {
         let respuesta = null;
-        await fetchAddDocumentosAxentria(validarSeparador, rutaArchivo, nombreSeparador, props.cedulaSocio, props.datosUsuario[0].strUserOficial,
+        await fetchAddDocumentosAxentria(props.solicitud,version, validarSeparador, rutaArchivo, nombreSeparador, props.cedulaSocio, props.datosUsuario[0].strUserOficial,
             props.datosSocio?.str_nombres + ' ' + props.datosSocio?.str_apellido_paterno + ' ' + props.datosSocio?.str_apellido_materno,
             grupoSeparador, '', archivoABase64, props.token, (data) => {
                 respuesta = data;
@@ -450,17 +520,12 @@ const UploadDocumentos = (props) => {
         return respuesta;
     }
 
-    
+
     const obtenerDocumentosAxentriaHandler = () => {
         fetchGetDocumentosAxentria(inputSolicitud, props.token, (data) => {
-            console.log("INFORM ", data)
-        }, dispatch);        
-    }
-
-    const descargarDocAxentriaHandler = () => {
-
-      
-        
+            setDocumentosSolicitudBusqueda(data.lst_documentos)
+            console.log("INFORM ", data.lst_documentos)
+        }, dispatch);
     }
 
     return (
@@ -570,6 +635,16 @@ const UploadDocumentos = (props) => {
                         </thead>
                         <tbody>
                             {tablaContenido.map((documentacion) => {
+                                let fecha = "";
+                                if (documentacion?.dtt_fecha_sube) {
+                                    fecha = new Date(documentacion?.dtt_fecha_sube);
+                                }                                
+                                let opciones = {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    second: "2-digit"
+                                };
+
                                 return (
                                     <Fragment key={documentacion.int_id_separador}>
                                         <tr key={documentacion.int_id_separador}>
@@ -601,7 +676,7 @@ const UploadDocumentos = (props) => {
                                                 {documentacion.str_login_carga}
                                             </td>
                                             <td style={{ width: "10%", justifyContent: "left" }} >
-                                                {documentacion.dtt_fecha_sube}
+                                                {fecha !== "" ? (fecha.toLocaleDateString('en-US', opciones)) :"" }
                                             </td>
                                             <td style={{ width: "3%", justifyContent: "left" }} >
                                                 {documentacion.str_version}
@@ -615,7 +690,7 @@ const UploadDocumentos = (props) => {
                                             </td>
                                             <td style={{ width: "2%", justifyContent: "left" }} >
                                                 <div className="f-row justify-content-center align-content-center">
-                                                    <button className="btn_mg_icons custom-icon-button" onClick={(e) => { console.log("DESCARGAR DOC") }} title="Descargar Documento">
+                                                    <button className="btn_mg_icons custom-icon-button" onClick={() => descargarDocAxentriaHandler(documentacion.int_id_doc_relacionado)} title="Descargar Documento">
                                                         <img className="img-icons-acciones" src="Imagenes/download.svg" alt="Descargar Documento"></img>
                                                     </button>
                                                 </div>
@@ -695,8 +770,8 @@ const UploadDocumentos = (props) => {
                         <tr>
                             <th style={{ width: "21px" }} > <input type='checkbox' checked={isSelectAllDocumental} onChange={seleccionMultipleDocumental} className='mr-1' /> Generar </th>
                             <th style={{ width: "5px" }}  >Actor</th>
-                            <th style={{ width: "37%", justifyContent: "left" }}  >Grupo Documental</th>
-                            <th style={{ width: "37%", justifyContent: "left" }} >Nombre de Archivo</th>
+                            <th style={{ width: "37%", justifyContent: "left" }}>Grupo Documental</th>
+                            <th style={{ width: "37%", justifyContent: "left" }}>Nombre de Archivo</th>
 
                         </tr>
                     </thead>
@@ -746,57 +821,65 @@ const UploadDocumentos = (props) => {
 
                     <div style={{ display: "flex", alignItems: "center" }}>
                         <p style={{ marginRight: "42px" }}>SOLICITUD: </p>
-                        <Input className="w-60" id='flujo' name='flujo' esRequerido={true} type="text" value={inputSolicitud} onChange={(e) => setInputSolicitud(e.target.value)} />
+                        <Input className="w-60" id='flujo' name='flujo' esRequerido={true} type="number" value={inputSolicitud} setValueHandler={(e) => setInputSolicitud(e)} />
                     </div>
 
                 </section>
 
-                <table className='archivos mt-4'>
-                    <thead>
-                        <tr>
-                            <th style={{ width: "30px" }}  >Nombre Archivo</th>
-                            <th style={{ width: "15%", justifyContent: "left" }} >Usuario Carga</th>
-                    {/*        <th style={{ width: "15%", justifyContent: "left" }} >Solicitud</th>*/}
-                            <th style={{ width: "10%", justifyContent: "left" }} >Version</th>
-                            <th style={{ width: "15%", justifyContent: "left" }} >Ult. Modificación</th>
-                            <th style={{ width: "15%", justifyContent: "left" }} >Ver Documento</th>
+                <div style={{ height: "370px", overflowY: 'auto' }}>
 
-                        </tr>
-                    </thead>
-                    <tbody>
+                    <table className='archivos mt-4'>
+                        <thead>
+                            <tr>
+                                <th>Nombre Archivo</th>
+                                <th >Usuario Carga</th>
+                                <th  >Version</th>
+                                <th  >Ult. Modificación</th>
+                                <th >Ver Documento</th>
 
-                        {props.grupoDocumental.map(separador => {
+                            </tr>
+                        </thead>
+                        <tbody>
 
-                            return (
-                                <tr key={separador.id}>
-                                    <td style={{ justifyContent: "left" }} >
-                                        {separador.str_separador}
-                                    </td>
-                                    <td style={{ justifyContent: "left" }} >
-                                        dvvasquez
-                                    </td>
-                                    {/*<td style={{ ustifyContent: "left" }} >*/}
-                                    {/*    4866846*/}
-                                    {/*</td>*/}
-                                    <td style={{ justifyContent: "left" }} >
-                                        1
-                                    </td>
-                                    <td style={{ justifyContent: "left" }} >
-                                        06/11/2024
-                                    </td>
-                                    <td style={{ justifyContent: "left" }} >
-                                        <div className="f-row justify-content-center align-content-center">
-                                            <button className="btn_mg_icons custom-icon-button" onClick={ descargarDocAxentriaHandler }        title="Visualizar Documento">
-                                                <img className="img-icons-acciones" src="Imagenes/view.svg" alt="Visualizar Documento"></img>
-                                            </button>
-                                        </div>
-                                    </td>
-                                    
-                                </tr>
-                            )
-                        })}
-                    </tbody>
-                </table>
+                            {documentosSolicitudBusqueda.length > 0 &&
+
+                                documentosSolicitudBusqueda.map(doc => {
+                                    const fecha = new Date(doc?.dtt_ult_modificacion);
+                                    const opciones = {
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                        second: "2-digit"
+                                    };
+                                    return (
+                                        <tr key={doc.int_id_doc}>
+                                            <td style={{ justifyContent: "left", width: "30%", fontSize: "14px" }} >
+                                                {doc.str_nombre_doc}
+                                            </td>
+                                            <td style={{ justifyContent: "left" }} >
+                                                {doc.str_usuario_carga}
+                                            </td>
+                                            <td style={{ justifyContent: "left" }} >
+                                                {doc.str_version_doc}
+                                            </td>
+                                            <td style={{ justifyContent: "left" }} >
+                                                {(fecha.toLocaleDateString('en-US', opciones))}
+                                            </td>
+                                            <td style={{ justifyContent: "left" }} >
+                                                <div className="f-row justify-content-center align-content-center">
+                                                    <button className="btn_mg_icons custom-icon-button" onClick={() => descargarDocAxentriaHandler(doc.int_id_doc)} title="Visualizar Documento">
+                                                        <img className="img-icons-acciones" src="Imagenes/view.svg" alt="Visualizar Documento"></img>
+                                                    </button>
+                                                </div>
+                                            </td>
+
+                                        </tr>
+                                    )
+                                })
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
             </Modal>
 
 

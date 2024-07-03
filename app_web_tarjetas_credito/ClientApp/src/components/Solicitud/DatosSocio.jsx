@@ -82,7 +82,7 @@ const DatosSocio = (props) => {
     { image: "", textPrincipal: "Lorem Ipsum", textSecundario: "", key: 2 },
     { image: "", textPrincipal: "Lorem Ipsum", textSecundario: "", key: 3 },
     { image: "", textPrincipal: "Regresará con la documentación", textSecundario: "", key: 4 }]);
-    const [comentarioAdicional, setComentarioAdicional] = useState(false);
+    const [comentarioAdicional, setComentarioAdicional] = useState("");
 
     //InfoEconomica
     const [infoEconomica, setInfoEconomica] = useState([]);
@@ -178,6 +178,7 @@ const DatosSocio = (props) => {
 
     useEffect(() => {
         getInfoSocio();
+        setComentarioAdicional(props.comentarioAdicionalValor);
     }, [])
 
     const descargarReporte = async () => {
@@ -262,41 +263,37 @@ const DatosSocio = (props) => {
                             <div className="values  mb-3">
                                 <h5>Ingresos</h5>
                                 <h5 className="strong">
-                                    {/*{`$ ${Number(props.informacionSocio.montoIngresos).toLocaleString("en-US")}`}*/}
-                                    {`$ ${Number(props.informacionSocio.datosFinancieros.montoIngresos)}`}
+                                    {`$ ${Number(props.informacionSocio.datosFinancieros.montoIngresos)?.toLocaleString("en-US") }`}
                                 </h5>
                             </div>
                             <div className="values  mb-3">
                                 <h5>Egresos</h5>
                                 <h5 className="strong">
-                                    {/*{`$ ${Number(props.informacionSocio.montoEgresos).toLocaleString("en-US")}`}*/}
-                                    {`$ ${Number(props.informacionSocio.datosFinancieros.montoEgresos)}`}
+                                    {`$ ${Number(props.informacionSocio.datosFinancieros.montoEgresos)?.toLocaleString("en-US") }`}
                                 </h5>
                             </div>
                             <div className="values  mb-3">
                                 <h5>Resta Gasto Financiero</h5>
                                 <h5 className="strong">                                 
-                                    {`$ ${Number(props.informacionSocio.datosFinancieros.montoRestaGstFinanciero)}`}
+                                    {`$ ${Number(props.informacionSocio.datosFinancieros.montoRestaGstFinanciero)?.toLocaleString("en-US") }`}
                                 </h5>
                             </div>
                             <div className="values  mb-3">
                                 <h5>Cupo solicitado</h5>
                                 <h5 className="strong">
-                                    {/* {`$ ${(props.informacionSocio.montoSolicitado).toLocaleString("en-US")}`}*/}
-                                    {`$ ${(props.informacionSocio.datosFinancieros.montoSolicitado)}`}
+                                    {`$ ${(props.informacionSocio.datosFinancieros.montoSolicitado)?.toLocaleString("en-US") }`}
                                 </h5>
                             </div>
                             <div className="values  mb-3">
                                 <h5>Cupo Sugerido Aval</h5>
                                 <h5 className="strong">
-                                    {`$ ${Number(props.score.response.result.capacidadPago[0].cupoSugerido)}`}
+                                    {`$ ${Number(props.score.response.result.capacidadPago[0].cupoSugerido)?.toLocaleString("en-US") }`}
                                 </h5>
                             </div>
                             <div className="values  mb-3">
                                 <h5>Score</h5>
                                 <h5 className="strong">
-                                    {/* TODO REVISAR EL 800 Q ESTA QUEMADAO */}
-                                    {props.score.response.result && props.score.response.result.scoreFinanciero && props.score.response.result.scoreFinanciero[0] && props.score.response.result.scoreFinanciero[0].score ? props.score.response.result.scoreFinanciero[0].score : 800}
+                                    {props.score.response.result && props.score.response.result.scoreFinanciero && props.score.response.result.scoreFinanciero[0] && props.score.response.result.scoreFinanciero[0].score ? props.score.response.result.scoreFinanciero[0].score : 0}
                                 </h5>
                             </div>
                             <Button className={["btn_mg btn_mg__primary mt-2 mr-2"]} disabled={false} onClick={descargarReporte}>Descargar reporte</Button>
@@ -611,7 +608,7 @@ const DatosSocio = (props) => {
                 </div>}
                 <div className="mt-4">
                     <h3 className="mb-2">Comentario Adicional</h3>
-                    <Textarea placeholder="Ej. Texto de ejemplo" type="textarea" onChange={comentarioAdicionalHanlder} esRequerido={false}></Textarea>
+                    <Textarea placeholder="Ej. Ingrese algún detalle" onChange={comentarioAdicionalHanlder} esRequerido={false} value={comentarioAdicional}></Textarea>
                 </div>
 
             </div>
