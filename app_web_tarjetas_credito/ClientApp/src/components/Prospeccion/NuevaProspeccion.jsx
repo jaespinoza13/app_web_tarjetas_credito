@@ -348,6 +348,7 @@ const NuevaProspeccion = (props) => {
             if (alertasIniciales_Invalidas.length > 0) {
                 alertasIniciales_Invalidas.forEach(alertaN3 => {
                     lst_validaciones_err.push(alertaN3)
+                    lst_validaciones_ok.push(alertaN3)
                 });
             }
             if (alertasRestriccion_Invalidas.length > 0) {
@@ -696,7 +697,6 @@ const NuevaProspeccion = (props) => {
                     {(step === 4) &&
                             <DatosSocio
                                 informacionSocio={infoSocio}
-                                lst_validaciones={lstValidaciones}
                                 score={score}
                                 token={props.token}
                                 onAgregarComentario={agregarComentarioHandler}
@@ -705,6 +705,7 @@ const NuevaProspeccion = (props) => {
                                 onComentario={handleComentario}
                             onComentarioAdic={handleComentarioAdic}
                             idClienteScore={idClienteScore}
+                            comentarioAdicionalValor={comentarioAdic}
                             ></DatosSocio>                        
                     }
                   

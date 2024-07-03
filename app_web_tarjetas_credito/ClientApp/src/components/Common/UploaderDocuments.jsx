@@ -13,7 +13,12 @@ const UploadDocumentos = (props) => {
     { id: 4, texto: "Grupo Documental" }, { id: 5, texto: "Propietario Documentación" }, { id: 6, texto: "Abrir archivo" },
     { id: 7, texto: "Usuario carga" }, { id: 8, texto: "Fecha subida" }, { id: 9, texto: "Version" }, { id: 10, texto: "Ver" }, { id: 11, texto: "Descargar" }]
 
+    //Principales arreglos
     const [tablaContenido, setTablaContenido] = useState([]);
+    const [documentosSolicitudBusqueda, setDocumentosSolicitudBusqueda] = useState([]);
+
+
+
     const dispatch = useDispatch();
     const inputCargaRef = createRef(null);
     const contadorPublicacion = useRef(0);
@@ -93,7 +98,7 @@ const UploadDocumentos = (props) => {
         }
     }, [])
 
-    
+
     useEffect(() => {
         if (base64SeparadorGenerado !== "" && verificarPdf(base64SeparadorGenerado)) {
             const blob = base64ToBlob(base64SeparadorGenerado, 'application/pdf');
@@ -358,8 +363,8 @@ const UploadDocumentos = (props) => {
                     return (
                         mensaje_ok += doc.documento.toString() + '\n'
                     )
-                });  
-                let mensaje = 'SE SUBIERON CORRECTAMENTE LOS ARCHIVOS:';               
+                });
+                let mensaje = 'SE SUBIERON CORRECTAMENTE LOS ARCHIVOS:';
 
                 //console.log("mensaje ", mensaje)
                 window.alert(mensaje);
@@ -402,7 +407,7 @@ const UploadDocumentos = (props) => {
                 let busquedaArchivo = archivosCargados.find(arch => arch.id_separador === archivoPub.int_id_separador);
                 convertorArchivo(busquedaArchivo.archivo).then(
                     archivoABase64 => {
-                            publicarAxentriaHandler(validarSeparador, archivoPub.str_ruta_ar, archivoPub.str_nombre_separador, archivoPub.str_separador, archivoABase64).then(data  => {
+                        publicarAxentriaHandler(validarSeparador, archivoPub.str_ruta_ar, archivoPub.str_nombre_separador, archivoPub.str_separador, archivoABase64).then(data => {
                             //console.log("RESTTTT ", data)
 
                             if (data?.str_res_codigo === "000") {
@@ -413,13 +418,13 @@ const UploadDocumentos = (props) => {
                                 }]
                                 let lstOk = [...controlArchivosSubidosOK.current, ...archivoOK]
                                 //console.log("lstOk ", lstOk)
-                                controlArchivosSubidosOK.current= lstOk;
+                                controlArchivosSubidosOK.current = lstOk;
                             }
                             else {
                                 let archivoErr = {
                                     documento: archivoPub.str_separador,
-                                    codigo: data.str_res_codigo, 
-                                    informacionAdicional: data.str_res_info_adicional                                   
+                                    codigo: data.str_res_codigo,
+                                    informacionAdicional: data.str_res_info_adicional
                                 }
                                 //setControlArchivosSubidosErr([...controlArchivosSubidosErr, archivoErr]);
                                 let lstErr = [...controlArchivosSubidosOK.current, ...archivoErr]
@@ -442,7 +447,7 @@ const UploadDocumentos = (props) => {
 
     const publicarAxentriaHandler = async (validarSeparador, rutaArchivo, nombreSeparador, grupoSeparador, archivoABase64) => {
         let respuesta = null;
-        await fetchAddDocumentosAxentria(validarSeparador, rutaArchivo, nombreSeparador, props.cedulaSocio, props.datosUsuario[0].strUserOficial,
+        await fetchAddDocumentosAxentria(props.solicitud, validarSeparador, rutaArchivo, nombreSeparador, props.cedulaSocio, props.datosUsuario[0].strUserOficial,
             props.datosSocio?.str_nombres + ' ' + props.datosSocio?.str_apellido_paterno + ' ' + props.datosSocio?.str_apellido_materno,
             grupoSeparador, '', archivoABase64, props.token, (data) => {
                 respuesta = data;
@@ -450,17 +455,21 @@ const UploadDocumentos = (props) => {
         return respuesta;
     }
 
-    
+
     const obtenerDocumentosAxentriaHandler = () => {
         fetchGetDocumentosAxentria(inputSolicitud, props.token, (data) => {
-            console.log("INFORM ", data)
-        }, dispatch);        
+            setDocumentosSolicitudBusqueda(data.lst_documentos)
+            console.log("INFORM ", data.lst_documentos)
+        }, dispatch);
     }
 
-    const descargarDocAxentriaHandler = () => {
 
-      
-        
+
+
+    const descargarDocAxentriaHandler = (IdDocDescargar) => {
+        console.log("ID DESCARGAR ARCHIVIO ", IdDocDescargar)
+
+
     }
 
     return (
@@ -695,8 +704,8 @@ const UploadDocumentos = (props) => {
                         <tr>
                             <th style={{ width: "21px" }} > <input type='checkbox' checked={isSelectAllDocumental} onChange={seleccionMultipleDocumental} className='mr-1' /> Generar </th>
                             <th style={{ width: "5px" }}  >Actor</th>
-                            <th style={{ width: "37%", justifyContent: "left" }}  >Grupo Documental</th>
-                            <th style={{ width: "37%", justifyContent: "left" }} >Nombre de Archivo</th>
+                            <th style={{ width: "37%", justifyContent: "left" }}>Grupo Documental</th>
+                            <th style={{ width: "37%", justifyContent: "left" }}>Nombre de Archivo</th>
 
                         </tr>
                     </thead>
@@ -746,57 +755,66 @@ const UploadDocumentos = (props) => {
 
                     <div style={{ display: "flex", alignItems: "center" }}>
                         <p style={{ marginRight: "42px" }}>SOLICITUD: </p>
-                        <Input className="w-60" id='flujo' name='flujo' esRequerido={true} type="text" value={inputSolicitud} onChange={(e) => setInputSolicitud(e.target.value)} />
+                        <Input className="w-60" id='flujo' name='flujo' esRequerido={true} type="number" value={inputSolicitud} setValueHandler={(e) => setInputSolicitud(e)} />
                     </div>
 
                 </section>
 
-                <table className='archivos mt-4'>
-                    <thead>
-                        <tr>
-                            <th style={{ width: "30px" }}  >Nombre Archivo</th>
-                            <th style={{ width: "15%", justifyContent: "left" }} >Usuario Carga</th>
-                    {/*        <th style={{ width: "15%", justifyContent: "left" }} >Solicitud</th>*/}
-                            <th style={{ width: "10%", justifyContent: "left" }} >Version</th>
-                            <th style={{ width: "15%", justifyContent: "left" }} >Ult. Modificación</th>
-                            <th style={{ width: "15%", justifyContent: "left" }} >Ver Documento</th>
+                <div style={{ height: "370px", overflowY: 'auto' }}>
 
-                        </tr>
-                    </thead>
-                    <tbody>
+                    <table className='archivos mt-4'>
+                        <thead>
+                            <tr>
+                                <th style={{ width: "30px" }}>Nombre Archivo</th>
+                                <th >Usuario Carga</th>
+                                {/*        <th style={{ width: "15%", justifyContent: "left" }} >Solicitud</th>*/}
+                                <th  >Version</th>
+                                <th  >Ult. Modificación</th>
+                                <th >Ver Documento</th>
 
-                        {props.grupoDocumental.map(separador => {
+                            </tr>
+                        </thead>
+                        <tbody>
 
-                            return (
-                                <tr key={separador.id}>
-                                    <td style={{ justifyContent: "left" }} >
-                                        {separador.str_separador}
-                                    </td>
-                                    <td style={{ justifyContent: "left" }} >
-                                        dvvasquez
-                                    </td>
-                                    {/*<td style={{ ustifyContent: "left" }} >*/}
-                                    {/*    4866846*/}
-                                    {/*</td>*/}
-                                    <td style={{ justifyContent: "left" }} >
-                                        1
-                                    </td>
-                                    <td style={{ justifyContent: "left" }} >
-                                        06/11/2024
-                                    </td>
-                                    <td style={{ justifyContent: "left" }} >
-                                        <div className="f-row justify-content-center align-content-center">
-                                            <button className="btn_mg_icons custom-icon-button" onClick={ descargarDocAxentriaHandler }        title="Visualizar Documento">
-                                                <img className="img-icons-acciones" src="Imagenes/view.svg" alt="Visualizar Documento"></img>
-                                            </button>
-                                        </div>
-                                    </td>
-                                    
-                                </tr>
-                            )
-                        })}
-                    </tbody>
-                </table>
+                            {documentosSolicitudBusqueda.length > 0 &&
+
+                                documentosSolicitudBusqueda.map(doc => {
+                                    const fecha = new Date(doc?.dtt_ult_modificacion);
+                                    const opciones = {
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                        second: "2-digit"
+                                    };
+                                    return (
+                                        <tr key={doc.int_id_doc}>
+                                            <td style={{ justifyContent: "left", width: "30%", fontSize: "14px" }} >
+                                                {doc.str_nombre_doc}
+                                            </td>
+                                            <td style={{ justifyContent: "left" }} >
+                                                {doc.str_usuario_carga}
+                                            </td>
+                                            <td style={{ ustifyContent: "left" }} >
+                                                {doc.str_version_doc}
+                                            </td>
+                                            <td style={{ ustifyContent: "left" }} >
+                                                {(fecha.toLocaleDateString('en-US', opciones))}
+                                            </td>
+                                            <td style={{ justifyContent: "left" }} >
+                                                <div className="f-row justify-content-center align-content-center">
+                                                    <button className="btn_mg_icons custom-icon-button" onClick={()=> descargarDocAxentriaHandler(doc.int_id_doc)} title="Visualizar Documento">
+                                                        <img className="img-icons-acciones" src="Imagenes/view.svg" alt="Visualizar Documento"></img>
+                                                    </button>
+                                                </div>
+                                            </td>
+
+                                        </tr>
+                                    )
+                                })
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
             </Modal>
 
 

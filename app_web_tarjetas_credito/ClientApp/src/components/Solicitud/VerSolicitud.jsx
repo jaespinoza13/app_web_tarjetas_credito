@@ -722,9 +722,9 @@ const VerSolicitud = (props) => {
 
                     //TODO: SE AGREGA RESOLUCION PARA GUARDAR COMENTARIO
                     //TODO: preguntar cual va quedar como principal si cupo Aval o Coopmego
-                    let cupoSugeridoAval = solicitudTarjeta?.str_cupo_sugerido_aval ? parseFloat(solicitudTarjeta?.str_cupo_sugerido_aval) : 0;
+                    //let cupoSugeridoAval = solicitudTarjeta?.str_cupo_sugerido_aval ? parseFloat(solicitudTarjeta?.str_cupo_sugerido_aval) : 0;
                     let decision = parametrosTC.find(param => param.prm_nemonico === valorDecisionSelect);
-                    fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, cupoSugeridoAval, datosUsuario[0].strOficial, decision.prm_valor_ini, observacionComite, props.token, (data) => {
+                    fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, Number.parseFloat(montoAprobado).toFixed(2), datosUsuario[0].strOficial, decision.prm_valor_ini, observacionComite, props.token, (data) => {
                         console.log("ADD RESOL RESP ", data);
                         navigate.push('/solicitud');
                     }, dispatch)

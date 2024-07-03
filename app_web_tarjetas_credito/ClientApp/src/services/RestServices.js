@@ -1657,10 +1657,12 @@ export function fetchGetSeparadores( token, onSucces, dispatch) {
     });
 }
 
-export async function fetchAddDocumentosAxentria(requiereSeparar, rutaArchivo, nombreArchivo, identificacionSocio, usuCarga, nombreSocio, nombreGrupo, referencia, archivo, token, onSucces, dispatch) {
+export async function fetchAddDocumentosAxentria(solicitudId,requiereSeparar, rutaArchivo, nombreArchivo, identificacionSocio, usuCarga, nombreSocio, nombreGrupo, referencia, archivo, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
+        int_id_solicitud: Number(solicitudId),
+        str_version_doc: "1",
         bln_separar: requiereSeparar,
         str_ruta_arc: rutaArchivo,
         str_nombre_arc: nombreArchivo,
@@ -1701,7 +1703,7 @@ export function fetchGetDocumentosAxentria(intIdSolicitud, token, onSucces, disp
 
     let body = {
         //id_documento: intIdDocumento,
-        id_solicitud: intIdSolicitud,
+        id_solicitud: Number(intIdSolicitud),
         //id_flujo: intIdFlujo
     }
     console.log("Get Docs BODY,", body);
@@ -1797,7 +1799,7 @@ export async function fetchGetAlertasCliente(strCedula, strTipoValidacion, strFe
     };
     //console.log("BODY ALERTAS,", body)
     await ServicioPostExecute(getAlertasCliente, body, token, { dispatch: dispatch }).then((data) => {
-        console.log("OBTENER ALERTAS,", data)
+        //console.log("OBTENER ALERTAS,", data)
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));

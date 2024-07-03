@@ -89,7 +89,7 @@ const NuevaSolicitud = (props) => {
     const [autorizacionOk, setAutorizacionOk] = useState(false);
     const [archivoAutorizacion, setArchivoAutorizacion] = useState('');
     const [step, setStep] = useState(0);
-    const [subirAutorizacion, setSubirAutorizacion] = useState(false);
+
     const [isUploadingAthorization, setIsUploadingAthorization] = useState(false);
     const [idClienteScore, setIdClienteScore] = useState(0);
 
@@ -363,7 +363,11 @@ const NuevaSolicitud = (props) => {
             setVisitadosSteps(updateSteps);
             setActualStepper(actualStepper - 1);
         }
-        
+        if (step === 2) {
+            setIsUploadingAthorization(false);
+            setShowAutorizacion(false);
+        }
+
         setIsVisibleBloque(true);
         setStep(step - 1)
     }
@@ -463,7 +467,7 @@ const NuevaSolicitud = (props) => {
                     if (data.str_res_codigo === "000") {
                         //const estadoAutorizacion = validacionesErr.find((validacion) => { return validacion.str_nemonico === "ALERTA_SOLICITUD_TC_090" })
                         //estadoAutorizacion.str_estado_alerta = "True";
-                        setSubirAutorizacion(false);
+
                         setIsUploadingAthorization(false);
                         setShowAutorizacion(false);
 
@@ -734,7 +738,6 @@ const NuevaSolicitud = (props) => {
             montoSolicitado: dato.montoSolicitado,
             montoIngresos: dato.montoIngresos,
             montoEgresos: dato.montoEgresos,
-            //montoGastosFinancieros: dato.montoGastosFinancieros,
             montoGastoFinaCodeudor: dato.montoGastoFinaCodeudor,
             montoRestaGstFinanciero: dato.restaGastoFinanciero
         }
@@ -817,6 +820,7 @@ const NuevaSolicitud = (props) => {
                             onComentario={handleComentario}
                             onComentarioAdic={handleComentarioAdic}
                             idClienteScore={idClienteScore}
+                            comentarioAdicionalValor={comentarioAdic}
                             
                         ></DatosSocio>
                     }

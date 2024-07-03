@@ -207,7 +207,7 @@ const ValidacionesGenerales = (props) => {
                                     <div className="f-row validacion mt-2" key={validacion.str_descripcion_alerta}>
                                         <img className="btn_mg mr-3" style={{ width: "15px", height: "15px" }} src="/Imagenes/statusBlocked.png"></img>
                                         <h3>{validacion.str_descripcion_alerta}</h3>
-                                        {(validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" && validacion.str_estado_alerta === "False") &&
+                                        {(validacion.str_nemonico === "ALERTA_SOLICITUD_TC_090" && validacion.str_estado_alerta === "False") &&
                                             <button className="btn_mg_icons" onClick={getDocAutorizacion}>
                                                 <img src="/Imagenes/right.svg"></img>
                                             </button>
@@ -217,11 +217,6 @@ const ValidacionesGenerales = (props) => {
 
                             })}
                         </Card>
-                    }
-                    {!props.lst_validaciones &&
-                    <>
-                        <h2>CARGANDO</h2>
-                    </>
                     }
 
                 </div>
