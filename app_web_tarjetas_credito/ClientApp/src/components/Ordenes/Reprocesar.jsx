@@ -8,6 +8,7 @@ import Button from '../Common/UI/Button';
 import { IsNullOrWhiteSpace, base64ToBlob, descargarArchivo, generarFechaHoy, verificarPdf } from '../../js/utiles';
 import "../../css/Components/Reprocesar.css";
 import AccordionV2 from '../Common/UI/AccordionV2';
+import Input from '../Common/UI/Input';
 
 
 const mapStateToProps = (state) => {
@@ -50,9 +51,9 @@ function Reprocesar(props) {
     ]
 
     const clientes = [
-        { cedula: "1150214370", nombres: "DANNY VASQUEZ", residencia: "LOJA" },
-        { cedula: "1101898147", nombres: "NICOLE ALBAN", residencia: "GUAYAQUIL" },
-        { cedula: "0181568681", nombres: "SEBASTIAN RIOFRIO", residencia: "CUENCA" }
+        { cedula: "1150214370", nombres: "DANNY VASQUEZ", tipo_tarjeta: "BLACK", tipo_producto : "Principal"},
+        { cedula: "1101898147", nombres: "NICOLE ALBAN", tipo_tarjeta: "ESTANDAR", tipo_producto: "Principal" },
+        { cedula: "0181568681", nombres: "SEBASTIAN RIOFRIO", tipo_tarjeta: "GOLDEN", tipo_producto: "Principal" }
     ]
 
 
@@ -86,7 +87,12 @@ function Reprocesar(props) {
                 </div>
 {/*                style={{ color: "white", display: "flex", justifyContent: "space-between" }} */}
                 {/*style={{ marginRight: "15%" }}*/}
-                <div className="mt-3">
+
+                <div className="f-row w-100" style={{ display: "flex", justifyContent: "right"}}>
+                    <Input className="w-20 ml-1" id="buscarOrden" type="text" disabled={false}></Input>
+                </div>
+
+                <div className="contentTableOrden mt-3">
                     <table className='table-accordion'>
                         <thead className='thead-accordion'>
                             <tr>
@@ -96,20 +102,24 @@ function Reprocesar(props) {
                                             <div style={{ width: "40px" }} >
                                                 
                                             </div>
-                                            <div style={{ width: "25%" }} > 
+                                            <div style={{ width: "20%" }} > 
                                                 <h4 className="item-header">NÚMERO DE ORDEN</h4>
                                             </div>
-                                            <div style={{ width: "25%" }} >
+                                            <div style={{ width: "20%" }} >
                                                 <h4 className="item-header">FECHA DE RECEPCIÓN</h4>
                                             </div>                                           
 
-                                            <div style={{ width: "25%" }} >
+                                            <div style={{ width: "20%" }} >
                                                 <h4 className="item-header">TOTAL DE TARJETAS</h4>
                                             </div>                                           
 
-                                            <div style={{ width: "25%" }} >
+                                            <div style={{ width: "20%" }} >
                                                 <h4 className="item-header">TOTAL DE ERRORES</h4>
-                                            </div>                
+                                            </div>       
+                                            <div style={{ width: "20%" }} >
+                                                <h4 className="item-header">REPROCESAR</h4>
+                                            </div> 
+
                                         </div>
 
                                     </div>
@@ -117,7 +127,8 @@ function Reprocesar(props) {
                                 </th>
                             </tr>
                         </thead>
-                        <tbody>
+
+                        <tbody className="scroll-body">
 
                             {ordenes.map(orden => {
                                 //let textoTitulo = (
@@ -131,20 +142,23 @@ function Reprocesar(props) {
                                 let textoTitulo = (
                                     <div className="w-95 f-row">
                                         <div className='content-headertable' >
-                                            <div style={{ width: "25%" }} > 
+                                            <div style={{ width: "20%" }} > 
                                                 <h4 className="item-header">{orden.orden}</h4>
                                             </div>
-                                            <div style={{ width: "25%" }} >
+                                            <div style={{ width: "20%" }} >
                                                 <h4 className="item-header">{orden.fecha_recepcion}</h4>
                                             </div>                                           
 
-                                            <div style={{ width: "25%" }} >
+                                            <div style={{ width: "20%" }} >
                                                 <h4 className="item-header">{orden.num_total_tarjetas}</h4>
                                             </div>                                           
 
-                                            <div style={{ width: "25%" }} >
+                                            <div style={{ width: "20%" }} >
                                                 <h4 className="item-header">{orden.num_tarjetas_error}</h4>
-                                            </div>                
+                                            </div>      
+                                            <div style={{ width: "20%" }} >
+                                                <input type="checkbox" name={orden.orden} />
+                                            </div> 
                                         </div>
 
                                     </div>
@@ -163,12 +177,14 @@ function Reprocesar(props) {
                                     <tr key={orden.orden}>
                                         <td className='paddingSpacing'>
                                             <AccordionV2 title={textoTitulo}>
-                                                <table className='table-accordion'>
-                                                    <thead className='thead-accordion'>
+                                                <table className='table-accordion2'>
+                                                    <thead className='thead-accordion2'>
                                                         <tr>
-                                                            <th className='paddingSpacing colorHeaderTable2'>IDENTIFICACION</th>
-                                                            <th className='paddingSpacing colorHeaderTable2'>CLIENTE</th>
-                                                            <th className='paddingSpacing colorHeaderTable2'>RESIDENCIA</th>
+                                                            <th className='paddingSpacing colorHeaderTable2'>Identificación</th>
+                                                            <th className='paddingSpacing colorHeaderTable2'>Nombre del titular</th>
+                                                            <th className='paddingSpacing colorHeaderTable2'>Tipo de producto</th>
+                                                            <th className='paddingSpacing colorHeaderTable2'>Tipo de tarjeta</th>
+                                                            <th className='paddingSpacing colorHeaderTable2'> </th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -177,7 +193,12 @@ function Reprocesar(props) {
                                                                 <tr key={cliente.cedula}>
                                                                     <td className='paddingSpacing'>{cliente.cedula}</td>
                                                                     <td className='paddingSpacing'>{cliente.nombres}</td>
-                                                                    <td className='paddingSpacing'>{cliente.residencia}</td>
+                                                                    <td className='paddingSpacing'>{cliente.tipo_producto}</td>
+                                                                    <td className='paddingSpacing'>{cliente.tipo_tarjeta}</td>
+                                                                    <td className='paddingSpacing'>
+                                                                        <input type="checkbox" name={cliente.cedula} />
+                                                                    </td>
+
                                                                 </tr>
                                                             )
                                                         })}
@@ -191,6 +212,10 @@ function Reprocesar(props) {
                             })}
                         </tbody>
                     </table>
+                </div>
+
+                <div className='row w-100 mt-2 f-row justify-content-center'>
+                    <Button className="btn_mg__primary" disabled={false}>Reprocesar</Button>
                 </div>
 
 

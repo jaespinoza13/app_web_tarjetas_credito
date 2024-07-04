@@ -640,12 +640,14 @@ export function base64ToBlob(base64, type = 'application/octet-stream') {
     return new Blob([arr], { type: type });
 }
 
-export function descargarArchivo(blob, nombreArchivo = "document", extensionArchivo) {
+export function descargarArchivo(blob, nombreArchivo = "document", extensionArchivo, visualizar) {
     const url = URL.createObjectURL(blob);
-
     const link = document.createElement("a");
     link.href = url;
     link.download = `${nombreArchivo}.${extensionArchivo}`;
+    if (visualizar) {
+        link.target = "_blank";
+    }
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

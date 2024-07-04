@@ -140,12 +140,16 @@ const DatosSocio = (props) => {
 
     const getInfoFinan = () => {
         setEstadoLoadingInfoFinan(true);
-        fetchGetInfoFinan(props.informacionSocio.str_ente, props.token, (data) => {
-            setDpf(...[data.lst_dep_plazo_fijo]);
-            setCreditosHis(...[data.lst_creditos_historicos]);
-            setEstadoAccordionInfoFinan(true);
-            setContentReadyInfoFinan(true);
-        }, dispatch);
+        if (!contentReadyInfoFinan) {
+            fetchGetInfoFinan(props.informacionSocio.str_ente, props.token, (data) => {
+                setDpf(...[data.lst_dep_plazo_fijo]);
+                setCreditosHis(...[data.lst_creditos_historicos]);
+                setEstadoAccordionInfoFinan(!estadoAccordionInfoFinan);
+                setContentReadyInfoFinan(!setContentReadyInfoFinan);
+            }, dispatch);
+        } else {
+            setEstadoAccordionInfoFinan(!estadoAccordionInfoFinan);
+        }          
         setEstadoLoadingInfoFinan(false);
     }
 
@@ -164,15 +168,21 @@ const DatosSocio = (props) => {
     }
 
     const getInfoEco = () => {
-        fetchInfoEconomica(props.informacionSocio.str_ente, props.token, (data) => {
-            setInfoEconomica(data)
-            setIngresos([...data.lst_ingresos_socio]);
-            setTotalIngresos(data.lst_ingresos_socio.reduce((acumulador, ingresos) => acumulador + ingresos.dcm_valor, 0))
-            setEgresos([...data.lst_egresos_socio]);
-            setTotalEgresos(data.lst_egresos_socio.reduce((acumulador, egresos) => acumulador + egresos.dcm_valor, 0))
-            setEstadoAccordionInfoEco(true);
-            setContentReadyInfoEco(true);
-        }, dispatch);
+        setEstadoLoadingInfoEco(true);
+        if (!contentReadyInfoEco) {
+            fetchInfoEconomica(props.informacionSocio.str_ente, props.token, (data) => {
+                setInfoEconomica(data)
+                setIngresos([...data.lst_ingresos_socio]);
+                setTotalIngresos(data.lst_ingresos_socio.reduce((acumulador, ingresos) => acumulador + ingresos.dcm_valor, 0))
+                setEgresos([...data.lst_egresos_socio]);
+                setTotalEgresos(data.lst_egresos_socio.reduce((acumulador, egresos) => acumulador + egresos.dcm_valor, 0))
+                setEstadoAccordionInfoEco(!estadoAccordionInfoEco);
+                setContentReadyInfoEco(!contentReadyInfoEco);
+            }, dispatch);
+        } else {
+            setEstadoAccordionInfoEco(!estadoAccordionInfoEco);
+        }        
+        setEstadoLoadingInfoEco(false);
     }
 
 
@@ -218,7 +228,7 @@ const DatosSocio = (props) => {
                 const blob = base64ToBlob(data.file_bytes, 'application/pdf');
                 let fechaHoy = generarFechaHoy();
                 const nombreArchivo = `ReporteAval_Prueba${(fechaHoy)}`;
-                descargarArchivo(blob, nombreArchivo, 'pdf');
+                descargarArchivo(blob, nombreArchivo, 'pdf', false);
             }
         }, dispatch);
 

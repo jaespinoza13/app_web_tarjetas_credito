@@ -20,7 +20,34 @@
 }
 
 .table-accordion thead {
-    height: 28px;
+    height: 34px;
+}
+
+.contentTableOrden {
+    padding-right: 50px;
+    overflow-y: auto;
+    max-height: 500px;
+    /*border: 2px solid black;*/
+}
+
+/* Set header to stick to the top of the container. */
+table.table-accordion thead tr th {
+    position: sticky;
+    top: 0;
+}
+
+/* Because we must set sticky on th, we have to apply background styles here rather than on thead */
+table.table-accordion th {
+    /* With border-collapse, we must use box-shadow or psuedo elements  for the header borders */
+    box-shadow: 0px 0px 0 0px #0074C3;
+}
+
+/* Basic Demo styling */
+table.table-accordion {
+    width: 100%;
+    font-family: sans-serif;
+    overflow: visible;
+    margin-top: -9px;
 }
 
 .colorHeaderTable2 {
@@ -30,7 +57,6 @@
 .w-95{
     width: 95%
 }
-
 
 
 .content-headertable {
@@ -47,3 +73,37 @@
 .spaceTextHeader {
     word-spacing: 20px
 }
+
+.contentTableOrden::-webkit-scrollbar {
+    width: 12px;
+}
+
+.contentTableOrden::-webkit-scrollbar-button {
+    width: 8px;
+    height: 8px;
+}
+
+.contentTableOrden::-webkit-scrollbar-track {
+    background: #C1CBEA;
+    border: thin solid #1a1f25;
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+}
+
+.contentTableOrden::-webkit-scrollbar-thumb {
+    background: -webkit-linear-gradient(top, #447fd9, #0B4891);
+    -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 225, 0.5), inset 1px 0 0 rgba(255, 255, 255, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.3);
+    border: thin solid #232c34;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+}
+
+.contentTableOrden::-webkit-scrollbar-thumb:hover {
+    background: -webkit-linear-gradient(top, #447fd9, #0B4891);
+}
+
+    /*CUANDO NO SE INTERACTURA CON EL SCROLL*/
+/*.contentTableOrden::-webkit-scrollbar-thumb:window-inactive {
+        background: rgba(68, 127, 112, 0.6);
+    }*/

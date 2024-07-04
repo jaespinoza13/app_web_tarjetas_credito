@@ -292,9 +292,24 @@ const NuevaSolicitud = (props) => {
         setIsCkeckRestaGtoFinananciero(e);
     }
 
+    const refrescarDatosInformativos = () => {
+        fetchValidacionSocio(cedulaSocio, '', props.token, (data) => {
+            data.cedula = cedulaSocio;      
+            let datosFinan = {
+                montoSolicitado: 0,
+                montoIngresos: data.dcm_total_ingresos,
+                montoEgresos: data.dcm_total_egresos,
+                montoGastoFinaCodeudor: "",
+                montoRestaGstFinanciero: "",
+            }
+            setDatosFinancierosObj(datosFinan);
+            console.log(`ingresos, ${data.dcm_total_ingresos}; egresos, ${data.dcm_total_egresos}; `,);
+            console.log("FINAN, ", datosFinan);
+        }, dispatch);
+
+    }
+
     const refrescarInformacionHandler = (actualizarInfo) => {
-        //setUpdGastoFinancieros(valor);
-        //TODO: FALTA EDITAR PARA EXTRAER INGRESOS, EGRESOS, GASTOS FINANCIEROS TITULAR
         fetchValidacionSocio(cedulaSocio, '', props.token, (data) => {
             data.cedula = cedulaSocio;
             setEnteSocio(data.str_ente);
@@ -583,29 +598,6 @@ const NuevaSolicitud = (props) => {
             let fechaNac = infoSocio.str_fecha_nacimiento.split('-');
             let fechaNacFormatoReq = fechaNac[2] + '-' + fechaNac[0] + '-' + fechaNac[1]
 
-            /*
-            let body = {
-                int_ente_aprobador: 589693,
-                str_tipo_documento: "C",
-                str_num_documento: cedulaSocio,
-                str_nombres: nombreSocio, 
-                str_primer_apellido: apellidoPaterno, 
-                str_segundo_apellido: apellidoMaterno, 
-                dtt_fecha_nacimiento: fechaNacFormatoReq,//"1994-06-08",//infoSocio.str_fecha_nacimiento, 
-                str_sexo: infoSocio.str_sexo,
-                dec_cupo_solicitado: datosFinancieros.montoSolicitado,
-                dec_cupo_sugerido: cupoSugeridoCoopM,
-                //cupo sugerido aval
-                str_correo: correoSocio,
-                str_usuario_proc: datosUsuario[0].strUserOficial,//, "xnojeda1"
-                int_oficina_proc: 1, //TODO: setItem('office' aun no retorna nada 
-                str_ente: enteSocio,
-                str_denominacion_tarjeta: nombrePersonalTarjeta,
-                str_comentario_proceso: comentario,
-                str_comentario_adicional: comentarioAdic
-            }*/
-
-
             let body = {
 
                 str_tipo_documento: "C",
@@ -802,7 +794,7 @@ const NuevaSolicitud = (props) => {
                                 setDatosFinancierosFunc={datosFinancierosHandler}
                                 isCkeckGtosFinancierosHandler={checkGastosFinancieroHandler}
                                 gestion={gestion}
-                                requiereActualizar={refrescarInformacionHandler}
+                                requiereActualizar={refrescarDatosInformativos}
                                 isCheckMontoRestaFinanciera={isCkeckRestaGtoFinananciero }
                         >
                         </DatosFinancieros>

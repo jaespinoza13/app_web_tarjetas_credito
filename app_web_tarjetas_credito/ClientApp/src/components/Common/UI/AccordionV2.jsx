@@ -21,19 +21,19 @@ const AccordionV2 = (props) => {
 
     return (
         <div className={`accordionV2 ${props.className || ''}`}>
-            <div className="accordionV2-header" onClick={handleToggleAccordion}>
+            <div className="accordionV2-header">
                 <h3 className="strong">
                     {props.title}
                 </h3>
 
                 <div className="accordionV2-icon">
                     {estadoLoadingInfoSocio
-                        ? <button className={`btn_mg btn_mg__tertiray btn_mg__auto loading`}><img className={`${estadoLoadingInfoSocio ? 'loading' : ''}`} src="Imagenes/progress_activity.svg" alt="" /></button>
+                        ? <button className={`btn_mg btn_mg__tertiray btn_mg__auto loading`} onClick={handleToggleAccordion}><img className={`${estadoLoadingInfoSocio ? 'loading' : ''}`} src="Imagenes/progress_activity.svg" alt="" /></button>
                         : <button className="btn_mg btn_mg__tertiray btn_mg__auto" onClick={handleToggleAccordion}><img className={estadoBtnDespl ? 'rotated' : ''} src="Imagenes/stat_minus.svg" alt="" /></button>
                     }
                 </div>
             </div>
-            <div className={`accordion-content ${estadoBtnDespl ? 'open' : ''}`}>
+            <div className={`accordion-contentV2 ${estadoBtnDespl ? 'open' : ''}`}>
                 {props.children}
             </div>
         </div>
