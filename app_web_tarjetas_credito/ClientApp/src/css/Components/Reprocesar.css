@@ -1,5 +1,4 @@
-﻿
-.table-accordion tr td:first-child {
+﻿.table-accordion tr td:first-child {
     border-radius: 0px;
     border-left: 0px;
 }
@@ -23,13 +22,6 @@
     height: 34px;
 }
 
-.contentTableOrden {
-    padding-right: 50px;
-    overflow-y: auto;
-    max-height: 500px;
-    /*border: 2px solid black;*/
-}
-
 /* Set header to stick to the top of the container. */
 table.table-accordion thead tr th {
     position: sticky;
@@ -50,6 +42,14 @@ table.table-accordion {
     margin-top: -9px;
 }
 
+.contentTableOrden {
+    padding-right: 30px;
+    overflow-y: auto;
+    max-height: 500px;
+    /*border: 2px solid black;*/
+}
+
+
 .colorHeaderTable2 {
     background-color: #0074C3;
 }
@@ -68,6 +68,10 @@ table.table-accordion {
     width: 100%;
     justify-content: center;
     align-content: center;
+}
+
+.white {
+    color: #FFFFFF;
 }
 
 .spaceTextHeader {
@@ -107,3 +111,63 @@ table.table-accordion {
 /*.contentTableOrden::-webkit-scrollbar-thumb:window-inactive {
         background: rgba(68, 127, 112, 0.6);
     }*/
+
+
+.input-wrapper {
+    position: relative;
+    width: 271px;
+}
+
+.input-fitro {
+    position: relative;
+    width: 40px;
+    border-radius: 5px;
+    outline: none;
+    border: 1px solid rgba(9, 57, 208, 0.2);
+    margin-left: 10px;
+    background-color: white;
+}
+
+.inputBusqueda {
+    box-sizing: border-box;
+    color: #191919;
+    padding: 5px 37px 5px 10px;
+    width: 100%;
+}
+
+.input-icon {
+    color: #191919;
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.input-icon.icon {
+    left: unset;
+    right: 9px;
+}
+
+.input-wrapper input {
+    border-radius: 5px;
+}
+
+.accordionStyle {
+    background-color: #5F92DB; 
+}
+
+.colorHeaderDistribucion {
+    color: white;
+}
+
+
+.accordionStyle2 {
+    background-color: #6492BF; /*#84A4CF #6499E6 #68A0F0 #5C87C4 #004CAC #0063E0 #0276CC #016AB8 #015A9C #0170C2 #0275B5*/
+}
+
+table.table-accordion2 th {
+    background-color: #5F92DB; 
+}
+

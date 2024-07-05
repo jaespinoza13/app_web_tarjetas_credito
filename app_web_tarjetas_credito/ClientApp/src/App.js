@@ -29,6 +29,9 @@ import OrdenRecibirProveedor from './components/Ordenes/OrdenRecibirProveedor';
 import OrdenPedidoNueva from './components/Ordenes/OrdenPedidoNueva';
 import NuevaProspeccion from './components/Prospeccion/NuevaProspeccion';
 import { getParametrosTCStateAction } from './redux/ParametrosTC/actions';
+import EnvioOrdenesPersonalizar from './components/Ordenes/EnvioOrdenesPersonalizar';
+import RecibirOrdenes from './components/Ordenes/RecibirOrdenes';
+import Distribucion from './components/Ordenes/Distribucion';
 
 
 const mapStateToProps = (state) => {
@@ -235,34 +238,63 @@ class App extends Component {
                         )}
                     </Route>
 
-
-
-                    <Route path='/orden'>
+                    <Route path='/personalizar'>
                         {this.state.isAuthenticated ? (
                             <>
-                                <Route exact path='/orden' component={Orden} />
-                                <Route path='/orden/nueva' component={OrdenNuevaEdicion} />
-                                <Route path='/orden/editar' component={OrdenNuevaEdicion} />
-                                <Route path='/orden/generarArchivo' component={OrdenGenerarArchivo} />
-                                <Route path='/orden/verOrden' component={VerOrden} />
+                                <Route exact path='/personalizar' component={EnvioOrdenesPersonalizar} />
                             </>
                         ) : (
                             <Route render={() => <Redirect to="/auth" />} />
                         )}
                     </Route>
 
-                    <Route path='/ordenPedido'>
+                    <Route path='/recepcion'>
                         {this.state.isAuthenticated ? (
                             <>
-                               <Route path='/ordenPedido/nueva' component={OrdenPedidoNueva} />
+                                <Route exact path='/recepcion' component={RecibirOrdenes} />
                             </>
                         ) : (
                             <Route render={() => <Redirect to="/auth" />} />
                         )}
                     </Route>
 
-                    <Route path='/recibir_orden_proveedor' component={!this.state.isAuthenticated ? Login : OrdenRecibirProveedor} />
-                    <Route path='/confirmar_recepcion' component={!this.state.isAuthenticated ? Login : RecepcionTarjetaAgencias} />
+                    <Route path='/distribucion'>
+                        {this.state.isAuthenticated ? (
+                            <>
+                                <Route exact path='/distribucion' component={Distribucion} />
+                            </>
+                        ) : (
+                            <Route render={() => <Redirect to="/auth" />} />
+                        )}
+                    </Route>
+
+
+                    {/*<Route path='/orden'>*/}
+                    {/*    {this.state.isAuthenticated ? (*/}
+                    {/*        <>*/}
+                    {/*            <Route exact path='/orden' component={Orden} />*/}
+                    {/*            <Route path='/orden/nueva' component={OrdenNuevaEdicion} />*/}
+                    {/*            <Route path='/orden/editar' component={OrdenNuevaEdicion} />*/}
+                    {/*            <Route path='/orden/generarArchivo' component={OrdenGenerarArchivo} />*/}
+                    {/*            <Route path='/orden/verOrden' component={VerOrden} />*/}
+                    {/*        </>*/}
+                    {/*    ) : (*/}
+                    {/*        <Route render={() => <Redirect to="/auth" />} />*/}
+                    {/*    )}*/}
+                    {/*</Route>*/}
+
+                    {/*<Route path='/ordenPedido'>*/}
+                    {/*    {this.state.isAuthenticated ? (*/}
+                    {/*        <>*/}
+                    {/*           <Route path='/ordenPedido/nueva' component={OrdenPedidoNueva} />*/}
+                    {/*        </>*/}
+                    {/*    ) : (*/}
+                    {/*        <Route render={() => <Redirect to="/auth" />} />*/}
+                    {/*    )}*/}
+                    {/*</Route>*/}
+
+                    {/*<Route path='/recibir_orden_proveedor' component={!this.state.isAuthenticated ? Login : OrdenRecibirProveedor} />*/}
+                    {/*<Route path='/confirmar_recepcion' component={!this.state.isAuthenticated ? Login : RecepcionTarjetaAgencias} />*/}
 
 
 

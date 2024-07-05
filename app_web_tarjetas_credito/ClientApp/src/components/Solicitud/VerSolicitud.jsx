@@ -115,6 +115,9 @@ const VerSolicitud = (props) => {
 
     const [toggleResetIndex, setToggleResetIndex] = useState(1);
 
+    //Filas del text Area comentarioAdicional
+    const [filasTextAreaComentarioSol, setFilasTextAreaComentarioSol] = useState(3);
+
     /*const parametros = [
         { prm_id: 11272, prm_valor_ini: "SOLICITUD CREADA" },
         { prm_id: 11273, prm_valor_ini: "ANALISIS UAC" },
@@ -832,6 +835,13 @@ const VerSolicitud = (props) => {
         }
     }
 
+    //Control para el numero de filas del text area
+    useEffect(() => {
+        let filasActuales = comentarioSolicitud.split('\n');
+        if (filasActuales.length >= 3) setFilasTextAreaComentarioSol(filasActuales.length + 1);
+        else if (filasActuales.length < 3) setFilasTextAreaComentarioSol(3);
+    }, [comentarioSolicitud])
+
     return <div className="f-row">
         <Sidebar enlace={props.location.pathname}></Sidebar>
         <Card className={["w-100"]}>
@@ -1164,7 +1174,7 @@ const VerSolicitud = (props) => {
                                     {(solicitudTarjeta?.str_estado !== 'ANALISIS COMITE' && solicitudTarjeta?.str_estado !== 'POR CONFIRMAR') &&
                                         <div className="mt-4">
                                             <h3 className="mb-3 strong">Observaciones</h3>
-                                            <Textarea placeholder="Ingrese su comentario" onChange={setComentarioSolicitudHandler} esRequerido={true} value={comentarioSolicitud}></Textarea>
+                                            <Textarea placeholder="Ingrese su comentario" onChange={setComentarioSolicitudHandler} esRequerido={true} value={comentarioSolicitud} rows={filasTextAreaComentarioSol }></Textarea>
                                         </div>
                                     }
 

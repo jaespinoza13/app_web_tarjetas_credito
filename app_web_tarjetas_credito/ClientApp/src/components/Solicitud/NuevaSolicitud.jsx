@@ -522,6 +522,7 @@ const NuevaSolicitud = (props) => {
             const dataSocio = infoSocio;
             dataSocio.datosFinancieros = datosFinancierosObj;
             setInfoSocio(dataSocio);
+            console.log("INFO SOCI SOL, ", dataSocio)
 
             /*
             const strOficina = "MATRIZ";
@@ -534,6 +535,7 @@ const NuevaSolicitud = (props) => {
             if (!realizaNuevaSimulacion.current) {
                 //console.log("PRIMERA CONSULTA BURO ")
                 //await fetchScore("C", "0903325546", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, "Matriz", datosUsuario[0].strOficial, datosUsuario[0].strCargo, props.token, (data) => {
+                //TODO cambiar cedula a a -> cedulaSocio
                 await fetchScore("C", "1150214375", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, "Matriz", datosUsuario[0].strOficial, datosUsuario[0].strCargo, props.token, (data) => {
                     setScore(data);
                     setIdClienteScore(data.int_cliente);
@@ -566,11 +568,12 @@ const NuevaSolicitud = (props) => {
                 if (!datosFinan.montoRestaGstFinanciero || datosFinan.montoRestaGstFinanciero === "" || datosFinan.montoRestaGstFinanciero === " " || IsNullOrEmpty(datosFinan.montoRestaGstFinanciero)) datosFinan.montoRestaGstFinanciero = 0;
                 if (!datosFinan.montoGastoFinaCodeudor || datosFinan.montoGastoFinaCodeudor === "" || datosFinan.montoGastoFinaCodeudor === " " || IsNullOrEmpty(datosFinan.montoGastoFinaCodeudor)) datosFinan.montoGastoFinaCodeudor = 0;
 
-                //TODO CAMBIAR LA CEDULA
+                //TODO CAMBIAR LA CEDULA ->cedulaSocio
                 await fetchNuevaSimulacionScore("C", "1150214375", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, "Matriz", datosUsuario[0].strOficial, datosUsuario[0].strCargo, datosFinan.montoIngresos, datosFinan.montoEgresos, datosFinan.montoRestaGstFinanciero, datosFinan.montoGastoFinaCodeudor,
                     props.token, (data) => {
-                   
-                        console.log("RES, ", data);
+                        //TODO: RECUPERAR EL data.int_cliente y 
+                        setIdClienteScore(data.int_cliente);
+                        //console.log("RES, ", data);
                         //let monto = Number.parseFloat(data.str_cupo_sugerido).toFixed(2);
                         ///data.str_cupo_sugerido = monto.toString();
                         //console.log("CUPO SUG COOPMEGO, ", data.str_cupo_sugerido_ccopmego);

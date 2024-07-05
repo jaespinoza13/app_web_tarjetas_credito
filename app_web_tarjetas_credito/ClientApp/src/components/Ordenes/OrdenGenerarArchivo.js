@@ -63,7 +63,7 @@ export default function OrdenGenerarArchivo(props) {
 
         const blob = new Blob([contenidoCSV], { type: "text/plain" });
 
-        descargarArchivo(blob,'inputfile', 'txt')
+        descargarArchivo(blob, 'inputfile', 'txt', false)
 
 
 

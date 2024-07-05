@@ -167,7 +167,7 @@ function Orden(props) {
                 const blob = base64ToBlob(data.byt_reporte, 'application/pdf');
                 let fechaHoy = generarFechaHoy();
                 const nombreArchivo = `Orden${orden}_${(fechaHoy)}`;
-                descargarArchivo(blob, nombreArchivo,'pdf');
+                descargarArchivo(blob, nombreArchivo,'pdf', false);
             }else {
                 window.alert("ERROR AL GENERAR EL REPORTE, COMUNIQUESE CON EL ADMINISTRADOR");
             }

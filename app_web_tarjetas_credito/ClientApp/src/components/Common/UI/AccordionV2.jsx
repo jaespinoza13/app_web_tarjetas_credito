@@ -21,7 +21,7 @@ const AccordionV2 = (props) => {
 
     return (
         <div className={`accordionV2 ${props.className || ''}`}>
-            <div className="accordionV2-header">
+            <div className={`accordionV2-header ${props.classNameTitulo || ''}`}>
                 <h3 className="strong">
                     {props.title}
                 </h3>

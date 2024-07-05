@@ -95,7 +95,7 @@ function VerOrden(props) {
                 const blob = base64ToBlob(reporteBytes, 'application/pdf');
                 let fechaHoy = generarFechaHoy();
                 const nombreArchivo = `Orden${nrOrnden}_${(fechaHoy)}`;
-                descargarArchivo(blob, nombreArchivo, 'pdf');
+                descargarArchivo(blob, nombreArchivo, 'pdf', false);
 
             } else {
                 window.alert("ERROR AL GENERAR EL REPORTE, COMUNIQUESE CON EL ADMINISTRADOR");

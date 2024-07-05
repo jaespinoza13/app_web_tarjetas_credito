@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import Card from '../Common/Card';
 import Button from '../Common/UI/Button';
-import { IsNullOrWhiteSpace, base64ToBlob, descargarArchivo, generarFechaHoy, verificarPdf } from '../../js/utiles';
+import { IsNullOrWhiteSpace } from '../../js/utiles';
 import "../../css/Components/Reprocesar.css";
 import AccordionV2 from '../Common/UI/AccordionV2';
 import Input from '../Common/UI/Input';
@@ -24,7 +24,7 @@ const mapStateToProps = (state) => {
 };
 
 
-function Reprocesar(props) {
+function EnvioOrdenesPersonalizar(props) {
 
     const navigate = useHistory();
     const dispatch = useDispatch();
@@ -32,39 +32,35 @@ function Reprocesar(props) {
     const [lstOrdenesSalida, setLstOrdenesSalida] = useState([]);
     const [inputBusqueda, setInputBusqueda] = useState([]);
 
-    const headersOrdenesEntrada = [
-        { nombre: "Nro. Orden", key: "orden" }, { nombre: "Estado", key: "estado" }, { nombre: "Creada por", key: "usuario_crea" },
-        { nombre: "Cantidad Solicitada", key: "cant_tarjetas" }, 
-        { nombre: "Fecha creación", key: "fecha_creación" },{ nombre: "Fecha solicita", key: "fecha_solicita" }, 
-        { nombre: "Acciones", key: "acciones" }
-    ]
-
-    const headersOrdenesSalida = [
-        { nombre: "Nro. Orden", key: "orden" }, { nombre: "Estado", key: "estado" }, { nombre: "Creada por", key: "usuario_crea" },
-        { nombre: "Cantidad Enviada", key: "cant_tarjetas_enviadas" }, { nombre: "Destino", key: "destino_envio" }, { nombre: "Fecha creación", key: "fecha_creación" },
-        { nombre: "Fecha de envío", key: "fecha_envio" }, { nombre: "Fecha de recepción", key: "fecha_recepcion" }, { nombre: "Acciones", key: "acciones" }
-    ]
+  
 
     const ordenes = [
-        { orden: "1", fecha_recepcion: "01/01/2024", num_total_tarjetas: 30, num_tarjetas_error: 3  },
-        { orden: "2", fecha_recepcion: "05/01/2024", num_total_tarjetas: 20, num_tarjetas_error: 1 },
-        { orden: "3", fecha_recepcion: "06/01/2024", num_total_tarjetas: 15, num_tarjetas_error: 0 },
+        { orden: "Orden 1", fecha_generacion: "01/01/2024", num_total_tarjetas: 30},
+        { orden: "Orden 2", fecha_generacion: "05/01/2024", num_total_tarjetas: 20},
+        { orden: "Orden 3", fecha_generacion: "06/01/2024", num_total_tarjetas: 15},
     ]
 
     const clientes = [
-        { cedula: "1150214370", nombres: "DANNY VASQUEZ", tipo_tarjeta: "BLACK", tipo_producto : "Principal"},
-        { cedula: "1101898147", nombres: "NICOLE ALBAN", tipo_tarjeta: "ESTANDAR", tipo_producto: "Principal" },
-        { cedula: "0181568681", nombres: "SEBASTIAN RIOFRIO", tipo_tarjeta: "GOLDEN", tipo_producto: "Principal" }
+        { cedula: "1150214370", nombres: "DANNY VASQUEZ", tipo_producto: "Principal", tipo_tarjeta: "BLACK", oficina: "MATRIZ" },
+        { cedula: "1101898147", nombres: "NICOLE ALBAN", tipo_producto: "Principal", tipo_tarjeta: "ESTANDAR", oficina: "MATRIZ" },
+        { cedula: "1231212412", nombres: "SEBASTIAN RIOFRIO", tipo_producto: "Principal", tipo_tarjeta: "GOLDEN", oficina: "MATRIZ" },
+        { cedula: "0181568684", nombres: "SEBASTIAN RIOFRIO", tipo_producto: "Principal", tipo_tarjeta: "GOLDEN", oficina: "MATRIZ" },
+        { cedula: "0181568685", nombres: "SEBASTIAN RIOFRIO", tipo_producto: "Principal", tipo_tarjeta: "GOLDEN", oficina: "MATRIZ" },
+        { cedula: "0181568686", nombres: "SEBASTIAN RIOFRIO", tipo_producto: "Principal", tipo_tarjeta: "GOLDEN", oficina: "MATRIZ" },
+        { cedula: "0181568687", nombres: "SEBASTIAN RIOFRIO", tipo_producto: "Principal", tipo_tarjeta: "GOLDEN", oficina: "MATRIZ" },
+        { cedula: "0181568688", nombres: "SEBASTIAN RIOFRIO", tipo_producto: "Principal", tipo_tarjeta: "GOLDEN", oficina: "MATRIZ" },
+        { cedula: "0181568689", nombres: "SEBASTIAN RIOFRIO", tipo_producto: "Principal", tipo_tarjeta: "GOLDEN", oficina: "MATRIZ" },
+        { cedula: "0181568680", nombres: "SEBASTIAN RIOFRIO", tipo_producto: "Principal", tipo_tarjeta: "GOLDEN", oficina: "MATRIZ" },
     ]
 
-
+    const [valueOrdenesCkeck, setValueOrdenesCkeck] = useState(false);
 
     return (
         <div className="f-row">
             <Sidebar enlace={props.location.pathname }></Sidebar>
             <div className="container_mg">
          
-                <h2 className="mt-5 mb-3">Reprocesar</h2>
+                <h2 className="mt-5 mb-3">Enviar órdenes a personalizar</h2>
 
                 <div className='row w-100'>
 
@@ -75,28 +71,26 @@ function Reprocesar(props) {
                             <div className="m-2" style={{ display: "flex", flexDirection: "column", width: "25%", marginRight: "10px"}}>
                                 <Card >
                                     <img style={{ width: "25px" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg"></img>
-                                    <h4 className="mt-2">Órdenes</h4>
-                                    <h5 className="mt-2">Generar las órdenes</h5>
-                                    <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false}>Extraer órdenes</Button>
+                                    <h4 className="mt-2">Enviar órdenes a personalizar</h4>
+                                   {/* <h5 className="mt-2">Generar las órdenes</h5>*/}
+                                    <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false}>Generar archivo</Button>
                                 </Card>
                             </div>                           
 
                         </div>
 
                     </div>
-
                 </div>
-
 
                 <div className="f-row w-100" style={{ display: "flex", justifyContent: "right", paddingRight: "30px" }}>
                     <div className="input-wrapper">
-                        <Input className="w-20 ml-1 inputBusqueda" id="buscarOrden" type="text" disabled={false} value={inputBusqueda } setValueHandler={(e) => setInputBusqueda(e)}  placeholder={"Buscar"}></Input>
+                        <Input className="w-20 ml-1 inputBusqueda" id="buscarOrden" type="text" disabled={false} value={inputBusqueda} setValueHandler={(e) => setInputBusqueda(e)} placeholder={"Buscar"}></Input>
                         <img className="input-icon icon" src="Imagenes/search.svg" alt="Buscar"></img>
                     </div>
 
                     <div className="input-fitro">
                         <img className="input-icon icon" src="Imagenes/filter.svg" alt="Filtrar"></img>
-                    </div>                    
+                    </div>
                 </div>
 
                 <div className="contentTableOrden mt-3">
@@ -109,23 +103,20 @@ function Reprocesar(props) {
                                             <div style={{ width: "40px" }} >
                                                 
                                             </div>
-                                            <div style={{ width: "20%" }} > 
+                                            <div style={{ width: "25%" }} > 
                                                 <h4 className="item-header">NÚMERO DE ORDEN</h4>
                                             </div>
-                                            <div style={{ width: "20%" }} >
+                                            <div style={{ width: "25%" }} >
                                                 <h4 className="item-header">FECHA DE RECEPCIÓN</h4>
                                             </div>                                           
 
-                                            <div style={{ width: "20%" }} >
+                                            <div style={{ width: "25%" }} >
                                                 <h4 className="item-header">TOTAL DE TARJETAS</h4>
-                                            </div>                                           
+                                            </div>   
 
-                                            <div style={{ width: "20%" }} >
-                                                <h4 className="item-header">TOTAL DE ERRORES</h4>
-                                            </div>       
-                                            <div style={{ width: "20%" }} >
-                                                <h4 className="item-header">REPROCESAR</h4>
-                                            </div> 
+                                            <div style={{ width: "25%" }} >
+                                                <h4 className="item-header">INCLUIR ENVIO</h4>
+                                            </div>  
 
                                         </div>
 
@@ -134,49 +125,28 @@ function Reprocesar(props) {
                                 </th>
                             </tr>
                         </thead>
+                        <tbody>
 
-                        <tbody className="scroll-body">
-
-                            {ordenes.map(orden => {
-                                //let textoTitulo = (
-                                //    <div className='f-row' style={{ color: "black", display: "flex", justifyContent: "space-between" }} >
-                                //    <h4 style={{ marginLeft: "7%" }}>{orden.orden} </h4>
-                                //    <h4 style={{ marginLeft: "-3%" }}>{orden.fecha_recepcion}</h4>
-                                //    <h4 style={{ marginRight: "13%" }}>{orden.num_total_tarjetas}</h4>
-                                //        <h4 style={{ marginRight: "13%" }}>{orden.num_tarjetas_error}</h4>
-                                //    </div>);
-
+                            {ordenes.map((orden,index) => {
                                 let textoTitulo = (
                                     <div className="w-95 f-row">
                                         <div className='content-headertable' >
-                                            <div style={{ width: "20%" }} > 
+                                            <div style={{ width: "25%" }} > 
                                                 <h4 className="item-header">{orden.orden}</h4>
                                             </div>
-                                            <div style={{ width: "20%" }} >
-                                                <h4 className="item-header">{orden.fecha_recepcion}</h4>
+                                            <div style={{ width: "25%" }} >
+                                                <h4 className="item-header">{orden.fecha_generacion}</h4>
                                             </div>                                           
 
-                                            <div style={{ width: "20%" }} >
+                                            <div style={{ width: "25%" }} >
                                                 <h4 className="item-header">{orden.num_total_tarjetas}</h4>
-                                            </div>                                           
-
-                                            <div style={{ width: "20%" }} >
-                                                <h4 className="item-header">{orden.num_tarjetas_error}</h4>
-                                            </div>      
-                                            <div style={{ width: "20%" }} >
-                                                <input type="checkbox" name={orden.orden} />
-                                            </div> 
+                                            </div>   
+                                            <div style={{ width: "25%" }} >
+                                                <input type="checkbox" name={orden.orden}   />
+                                            </div>    
+  
                                         </div>
-
                                     </div>
-
-                                    //<div className='f-row' style={{ color: "black", display: "flex", justifyContent: "space-between" }} >
-                                    //    <h4 style={{ marginLeft: "7%" }}>{orden.orden} </h4>
-                                    //    <h4 style={{ marginLeft: "-3%" }}>{orden.fecha_recepcion}</h4>
-                                    //    <h4 style={{ marginRight: "13%" }}>{orden.num_total_tarjetas}</h4>
-                                    //    <h4 style={{ marginRight: "13%" }}>{orden.num_tarjetas_error}</h4>
-                                    //</div>
-
                                 );
     
 
@@ -189,9 +159,10 @@ function Reprocesar(props) {
                                                         <tr>
                                                             <th className='paddingSpacing colorHeaderTable2'>Identificación</th>
                                                             <th className='paddingSpacing colorHeaderTable2'>Nombre del titular</th>
-                                                            <th className='paddingSpacing colorHeaderTable2'>Tipo de producto</th>
                                                             <th className='paddingSpacing colorHeaderTable2'>Tipo de tarjeta</th>
-                                                            <th className='paddingSpacing colorHeaderTable2'> </th>
+                                                            <th className='paddingSpacing colorHeaderTable2'>Tipo de producto</th>
+                                                            <th className='paddingSpacing colorHeaderTable2'>Oficina</th>
+
                                                         </tr>
                                                     </thead>
                                                     <tbody style={{ overflowY: "hidden" }}>
@@ -202,10 +173,7 @@ function Reprocesar(props) {
                                                                     <td className='paddingSpacing'>{cliente.nombres}</td>
                                                                     <td className='paddingSpacing'>{cliente.tipo_producto}</td>
                                                                     <td className='paddingSpacing'>{cliente.tipo_tarjeta}</td>
-                                                                    <td className='paddingSpacing'>
-                                                                        <input type="checkbox" name={cliente.cedula} />
-                                                                    </td>
-
+                                                                    <td className='paddingSpacing'>{cliente.oficina}</td>
                                                                 </tr>
                                                             )
                                                         })}
@@ -221,10 +189,10 @@ function Reprocesar(props) {
                     </table>
                 </div>
 
-                <div className='row w-100 mt-2 f-row justify-content-center'>
-                    <Button className="btn_mg__primary" disabled={false}>Reprocesar</Button>
-                </div>
 
+                <div className='row w-100 mt-2 f-row justify-content-center'>
+                    <Button className="btn_mg__primary" disabled={false}>Enviar</Button>
+                </div>
 
             </div>
         </div>
@@ -232,4 +200,4 @@ function Reprocesar(props) {
 
 }
 
-export default connect(mapStateToProps, {})(Reprocesar);
+export default connect(mapStateToProps, {})(EnvioOrdenesPersonalizar);
