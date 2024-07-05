@@ -1841,10 +1841,6 @@ export async function fetchReporteAval(idCliente, token, onSucces, dispatch) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
             } else {
                 if (data.str_res_codigo === "000") {
-
-                    const blob = new Blob([data.file_bytes], { type: "text/plain" });
-
-                    descargarArchivo(blob, 'prueba', 'txt')
                     onSucces(data);
                 } else {
                     let codigo = data.codigo || data.str_res_codigo;

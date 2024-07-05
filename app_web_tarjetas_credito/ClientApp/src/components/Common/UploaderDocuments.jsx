@@ -29,6 +29,8 @@ const UploadDocumentos = (props) => {
     const [nombreDocumento, setNombreDocumento] = useState("");
     const [lstArchivosParaPublicar, setLstArchivosParaPublicar] = useState([]);
 
+    const visualizarArchivo = useRef(false);
+
 
     const [totalRegistros, setTotalRegistros] = useState(0);
 
@@ -101,19 +103,22 @@ const UploadDocumentos = (props) => {
     useEffect(() => {
         if (base64SeparadorGenerado !== "" && verificarPdf(base64SeparadorGenerado)) {
             const blob = base64ToBlob(base64SeparadorGenerado, 'application/pdf');
-            descargarArchivo(blob, "Separadores", 'pdf');
+            descargarArchivo(blob, "Separadores", 'pdf', false);
+            setBase64SeparadorGenerado("");
         }
     }, [base64SeparadorGenerado])
 
     useEffect(() => {
         if (descargaDocumento !== "" && verificarPdf(descargaDocumento)) {
             const blob = base64ToBlob(descargaDocumento, 'application/pdf');
-            descargarArchivo(blob, nombreDocumento, 'pdf');
+            descargarArchivo(blob, nombreDocumento, 'pdf', visualizarArchivo.current);
+            visualizarArchivo.current = false;
+            setDescargaDocumento("");
         }
     }, [descargaDocumento])
 
 
-    const descargarDocAxentriaHandler = (IdDocDescargar) => {
+    const descargarDocAxentriaHandler = (IdDocDescargar, requiereVisualizar) => {
 
         let busquedaArchivo = null;
         if (documentosSolicitudBusqueda.length > 0) {
@@ -132,6 +137,7 @@ const UploadDocumentos = (props) => {
         setNombreDocumento(busquedaArchivo.str_nombre_doc)
 
         fetchDescargarDocumentoAxentria(IdDocDescargar, props.token, (data) => {
+            if (requiereVisualizar) visualizarArchivo.current = true;
             setDescargaDocumento(data.file_bytes);
         }, dispatch);
     }
@@ -428,7 +434,8 @@ const UploadDocumentos = (props) => {
                 contadorPublicacion.current = 0;
                 controlTerminaSubirDocs.current = false;
 
-                navigate.push('/solicitud');
+                props.seleccionToogleSolicitud(1);
+                //navigate.push('/solicitud');
 
             } else if (controlArchivosSubidosErr.current?.length > 0 && controlTerminaSubirDocs.current === true) {
 
@@ -683,14 +690,14 @@ const UploadDocumentos = (props) => {
                                             </td>
                                             <td style={{ width: "2%", justifyContent: "center" }} >
                                                 <div className="f-row justify-content-center align-content-center">
-                                                    <button className="btn_mg_icons custom-icon-button" onClick={(e) => { console.log("VISUALIZADOR DOC") }} title="Visualizar Documento">
+                                                    <button className="btn_mg_icons custom-icon-button" onClick={() => descargarDocAxentriaHandler(documentacion.int_id_doc_relacionado, true)} title="Visualizar Documento">
                                                         <img className="img-icons-acciones" src="Imagenes/view.svg" alt="Visualizar Documento"></img>
                                                     </button>
                                                 </div>
                                             </td>
                                             <td style={{ width: "2%", justifyContent: "left" }} >
                                                 <div className="f-row justify-content-center align-content-center">
-                                                    <button className="btn_mg_icons custom-icon-button" onClick={() => descargarDocAxentriaHandler(documentacion.int_id_doc_relacionado)} title="Descargar Documento">
+                                                    <button className="btn_mg_icons custom-icon-button" onClick={() => descargarDocAxentriaHandler(documentacion.int_id_doc_relacionado, false)} title="Descargar Documento">
                                                         <img className="img-icons-acciones" src="Imagenes/download.svg" alt="Descargar Documento"></img>
                                                     </button>
                                                 </div>
@@ -866,7 +873,7 @@ const UploadDocumentos = (props) => {
                                             </td>
                                             <td style={{ justifyContent: "left" }} >
                                                 <div className="f-row justify-content-center align-content-center">
-                                                    <button className="btn_mg_icons custom-icon-button" onClick={() => descargarDocAxentriaHandler(doc.int_id_doc)} title="Visualizar Documento">
+                                                    <button className="btn_mg_icons custom-icon-button" onClick={() => descargarDocAxentriaHandler(doc.int_id_doc, false)} title="Visualizar Documento">
                                                         <img className="img-icons-acciones" src="Imagenes/view.svg" alt="Visualizar Documento"></img>
                                                     </button>
                                                 </div>

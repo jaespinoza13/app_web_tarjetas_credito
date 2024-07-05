@@ -95,6 +95,9 @@ const DatosSocio = (props) => {
     const [dpf, setDpf] = useState([]);
     const [creditosHis, setCreditosHis] = useState([]);
 
+    //Filas del text Area comentarioAdicional
+    const [filasTextAreaComentarioAd, setFilasTextAreaComentarioAd] = useState(4);
+
     const toggleAccordionScore = () => {
         setEstadoAccordionScore(!estadoAccordionScore);
     }
@@ -103,15 +106,13 @@ const DatosSocio = (props) => {
         setComentarioAdicional(e);
         props.onComentarioAdic(e);
     }
+    //Control para el numero de filas del text area
+    useEffect(() => {
+        let filasActuales = comentarioAdicional.split('\n');
+        if (filasActuales.length >= 4) setFilasTextAreaComentarioAd(filasActuales.length + 1);
+        else if (filasActuales.length < 4) setFilasTextAreaComentarioAd(4);
+    }, [comentarioAdicional])
 
-    /*
-    const getInfoSocioHandler = () => {
-        if (infoSocio.length > 0) {
-            setEstadoAccordionInfoSocio(!estadoAccordionInfoSocio);
-        } else {
-            getInfoSocio();
-        }
-    }*/
 
     const getInfoAccordion = () => {
         setEstadoAccordionInfoSocio(!estadoAccordionInfoSocio);
@@ -124,7 +125,9 @@ const DatosSocio = (props) => {
     const getInfoSocio = () => {
         setEstadoLoadingInfoSocio(true);
         //TODO: cambiar cedula
-        fetchInfoSocio("1105970717", props.token, (data) => {
+        //fetchInfoSocio("1105970717", props.token, (data) => {
+
+        fetchInfoSocio(props.informacionSocio.cedula, props.token, (data) => {
             setDirDomicilioSocio([...data.lst_dir_domicilio]);
             setDirTrabajoSocio([...data.lst_dir_trabajo]);
             setInfoSocio([...data.datos_cliente]);
@@ -139,13 +142,17 @@ const DatosSocio = (props) => {
     }
 
     const getInfoFinan = () => {
-        setEstadoLoadingInfoFinan(true);
-        fetchGetInfoFinan(props.informacionSocio.str_ente, props.token, (data) => {
-            setDpf(...[data.lst_dep_plazo_fijo]);
-            setCreditosHis(...[data.lst_creditos_historicos]);
-            setEstadoAccordionInfoFinan(true);
-            setContentReadyInfoFinan(true);
-        }, dispatch);
+          setEstadoLoadingInfoFinan(true);
+        if (!contentReadyInfoFinan && dpf.length === 0) {
+            fetchGetInfoFinan(props.informacionSocio.str_ente, props.token, (data) => {
+                setDpf(...[data.lst_dep_plazo_fijo]);
+                setCreditosHis(...[data.lst_creditos_historicos]);
+                setEstadoAccordionInfoFinan(!estadoAccordionInfoFinan);
+                setContentReadyInfoFinan(!setContentReadyInfoFinan);
+            }, dispatch);
+        } else {
+            setEstadoAccordionInfoFinan(!estadoAccordionInfoFinan);
+        }          
         setEstadoLoadingInfoFinan(false);
     }
 
@@ -163,16 +170,22 @@ const DatosSocio = (props) => {
         setEstadoMediosNotif(!estadoMediosNotif);
     }
 
-    const getInfoEco = () => {
-        fetchInfoEconomica(props.informacionSocio.str_ente, props.token, (data) => {
-            setInfoEconomica(data)
-            setIngresos([...data.lst_ingresos_socio]);
-            setTotalIngresos(data.lst_ingresos_socio.reduce((acumulador, ingresos) => acumulador + ingresos.dcm_valor, 0))
-            setEgresos([...data.lst_egresos_socio]);
-            setTotalEgresos(data.lst_egresos_socio.reduce((acumulador, egresos) => acumulador + egresos.dcm_valor, 0))
-            setEstadoAccordionInfoEco(true);
-            setContentReadyInfoEco(true);
-        }, dispatch);
+    const getInfoEco = () => {     
+        setEstadoLoadingInfoEco(true);
+        if (!contentReadyInfoEco) {
+            fetchInfoEconomica(props.informacionSocio.str_ente, props.token, (data) => {
+                setInfoEconomica(data)
+                setIngresos([...data.lst_ingresos_socio]);
+                setTotalIngresos(data.lst_ingresos_socio.reduce((acumulador, ingresos) => acumulador + ingresos.dcm_valor, 0))
+                setEgresos([...data.lst_egresos_socio]);
+                setTotalEgresos(data.lst_egresos_socio.reduce((acumulador, egresos) => acumulador + egresos.dcm_valor, 0))
+                setEstadoAccordionInfoEco(!estadoAccordionInfoEco);
+                setContentReadyInfoEco(!contentReadyInfoEco);
+            }, dispatch);
+        } else {
+            setEstadoAccordionInfoEco(!estadoAccordionInfoEco);
+        }        
+        setEstadoLoadingInfoEco(false);
     }
 
 
@@ -183,42 +196,15 @@ const DatosSocio = (props) => {
 
     const descargarReporte = async () => {
 
-        /*
-        const pdfUrl = "Imagenes/reporteavalhtml.pdf";
-        const link = document.createElement("a");
-        link.href = pdfUrl;
-        link.download = "document.pdf"; // specify the filename
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);*/
-
-        //TODO: REVISAR PRIMER PARAMETRO intCliente reporta del metodo Score
-
-       // console.log("SCORE ID CLI ", props.idClienteScore)
-        //fetchReporteAval(props.idClienteScore, props.token, (data) => { //TODO: DEJAR ESTA LINEA PARA PRODUCCION
-
-        /*
-        let val = setTimeout( async function() {
-            await fetchReporteAval(189554, props.token, (data) => {
-                console.log("REPORTE AVAL ", data)
-                if (data.file_bytes.length > 0 && verificarPdf(data.file_bytes)) {
-                    const blob = base64ToBlob(data.file_bytes, 'application/pdf');
-                    let fechaHoy = generarFechaHoy();
-                    const nombreArchivo = `ReporteAval_Prueba${(fechaHoy)}`;
-                    descargarArchivo(blob, nombreArchivo, 'pdf');
-                }
-            }, dispatch)
-            clearTimeout(val)
-        }, 5000);*/
-               
-
+        //TODO CAMBIAR EL ID DEL CLIENTE PARA DESCARGAR REPORTE DEL AVAL A props.idClienteScore
+        console.log("INFO ID CLIENTE SCORE, ",props.idClienteScore)
         await fetchReporteAval(189554, props.token, (data) => {
             console.log("REPORTE AVAL ", data)
             if (data.file_bytes.length > 0) { //&& verificarPdf(data.file_bytes)) {
                 const blob = base64ToBlob(data.file_bytes, 'application/pdf');
                 let fechaHoy = generarFechaHoy();
                 const nombreArchivo = `ReporteAval_Prueba${(fechaHoy)}`;
-                descargarArchivo(blob, nombreArchivo, 'pdf');
+                descargarArchivo(blob, nombreArchivo, 'pdf', false);
             }
         }, dispatch);
 
@@ -608,7 +594,8 @@ const DatosSocio = (props) => {
                 </div>}
                 <div className="mt-4">
                     <h3 className="mb-2">Comentario Adicional</h3>
-                    <Textarea placeholder="Ej. Ingrese algún detalle" onChange={comentarioAdicionalHanlder} esRequerido={false} value={comentarioAdicional}></Textarea>
+                    <Textarea placeholder="Ej. Ingrese algún detalle" onChange={comentarioAdicionalHanlder} esRequerido={false} value={comentarioAdicional}
+                        rows={filasTextAreaComentarioAd }></Textarea>
                 </div>
 
             </div>

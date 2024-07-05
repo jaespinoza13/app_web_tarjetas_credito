@@ -9,7 +9,7 @@ const Toggler = (props) => {
         props.selectedToggle(index);
     }
 
-    //TODO REVISAR
+
     useEffect(() => {
         /*if (props.toggles) {
             console.log(props.toggles)
@@ -18,6 +18,13 @@ const Toggler = (props) => {
         //console.log(props.toggles)
         setActiveIndex(props.toggles[0].key);
     }, []);
+
+    useEffect(() => {
+        if (props.toggleReset) {
+            //console.log("CAMBIO TOGGLE, ", props.toggles[props.toggleReset])
+            setActiveIndex(props.toggleReset);
+        }
+    }, [props.toggleReset])
 
     return (
         <div className={`toggler ${props.className}`} value={activeIndex}>

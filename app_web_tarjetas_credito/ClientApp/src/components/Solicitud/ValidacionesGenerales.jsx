@@ -58,8 +58,7 @@ const ValidacionesGenerales = (props) => {
                 const blob = base64ToBlob(data.file_bytes, 'application/pdf');
                 let fechaHoy = generarFechaHoy();
                 const nombreArchivo = `AprobacionConsultaBuro_${(fechaHoy)}`;
-                descargarArchivo(blob, nombreArchivo, 'pdf');
-
+                descargarArchivo(blob, nombreArchivo, 'pdf', false);
             }
             
 

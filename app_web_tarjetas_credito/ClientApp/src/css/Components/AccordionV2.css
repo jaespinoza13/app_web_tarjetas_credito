@@ -1,4 +1,39 @@
-﻿.accordionV2 {
+﻿
+.table-accordion2 tr td:first-child {
+
+    border-radius: 0px;
+    border-left: 0px;
+}
+
+.table-accordion2 tr td:last-child {
+    border-radius: 0px;
+    border-right: 0px;
+}
+
+.table-accordion2 tr th:first-child {
+    border-radius: 12px 0 0 12px;
+    border-left: 1px solid;
+}
+
+.table-accordion2 tr th:last-child {
+    border-radius: 0 12px 12px 0;
+    border-right: 1px solid;
+}
+
+
+.table-accordion2 td {
+    border-bottom: 0px;
+    border-top: 0px;
+}
+
+
+.table-accordion2 thead {
+    height: 28px;
+
+}
+
+
+.accordionV2 {
     position: relative;
 }
 
@@ -9,9 +44,8 @@
     justify-content: space-between;
     border-radius: 7px;
     border: 1px solid #C1CBEA;
-    ;
     height: 2rem;
-    position: relative;
+    /*position: relative;*/
     z-index: 20;
     align-items: center;
     cursor: pointer;
@@ -36,6 +70,19 @@
     animation: rotation 1s infinite linear;
 }
 
+.accordion-contentV2 {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.3s ease;
+
+}
+
+    .accordion-contentV2.open {
+        border: 0px solid #F8F8F8;
+        max-height: 500px;
+        overflow: auto;
+        position: sticky
+    }
 
 
 .accordionV2-header > div > button {

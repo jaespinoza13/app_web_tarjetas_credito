@@ -292,9 +292,24 @@ const NuevaSolicitud = (props) => {
         setIsCkeckRestaGtoFinananciero(e);
     }
 
+    const refrescarDatosInformativos = () => {
+        fetchValidacionSocio(cedulaSocio, '', props.token, (data) => {
+            data.cedula = cedulaSocio;      
+            let datosFinan = {
+                montoSolicitado: 0,
+                montoIngresos: data.dcm_total_ingresos,
+                montoEgresos: data.dcm_total_egresos,
+                montoGastoFinaCodeudor: "",
+                montoRestaGstFinanciero: "",
+            }
+            setDatosFinancierosObj(datosFinan);
+            console.log(`ingresos, ${data.dcm_total_ingresos}; egresos, ${data.dcm_total_egresos}; `,);
+            console.log("FINAN, ", datosFinan);
+        }, dispatch);
+
+    }
+
     const refrescarInformacionHandler = (actualizarInfo) => {
-        //setUpdGastoFinancieros(valor);
-        //TODO: FALTA EDITAR PARA EXTRAER INGRESOS, EGRESOS, GASTOS FINANCIEROS TITULAR
         fetchValidacionSocio(cedulaSocio, '', props.token, (data) => {
             data.cedula = cedulaSocio;
             setEnteSocio(data.str_ente);
@@ -507,6 +522,7 @@ const NuevaSolicitud = (props) => {
             const dataSocio = infoSocio;
             dataSocio.datosFinancieros = datosFinancierosObj;
             setInfoSocio(dataSocio);
+            console.log("INFO SOCI SOL, ", dataSocio)
 
             /*
             const strOficina = "MATRIZ";
@@ -519,6 +535,7 @@ const NuevaSolicitud = (props) => {
             if (!realizaNuevaSimulacion.current) {
                 //console.log("PRIMERA CONSULTA BURO ")
                 //await fetchScore("C", "0903325546", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, "Matriz", datosUsuario[0].strOficial, datosUsuario[0].strCargo, props.token, (data) => {
+                //TODO cambiar cedula a a -> cedulaSocio
                 await fetchScore("C", "1150214375", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, "Matriz", datosUsuario[0].strOficial, datosUsuario[0].strCargo, props.token, (data) => {
                     setScore(data);
                     setIdClienteScore(data.int_cliente);
@@ -551,11 +568,12 @@ const NuevaSolicitud = (props) => {
                 if (!datosFinan.montoRestaGstFinanciero || datosFinan.montoRestaGstFinanciero === "" || datosFinan.montoRestaGstFinanciero === " " || IsNullOrEmpty(datosFinan.montoRestaGstFinanciero)) datosFinan.montoRestaGstFinanciero = 0;
                 if (!datosFinan.montoGastoFinaCodeudor || datosFinan.montoGastoFinaCodeudor === "" || datosFinan.montoGastoFinaCodeudor === " " || IsNullOrEmpty(datosFinan.montoGastoFinaCodeudor)) datosFinan.montoGastoFinaCodeudor = 0;
 
-                //TODO CAMBIAR LA CEDULA
+                //TODO CAMBIAR LA CEDULA ->cedulaSocio
                 await fetchNuevaSimulacionScore("C", "1150214375", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, "Matriz", datosUsuario[0].strOficial, datosUsuario[0].strCargo, datosFinan.montoIngresos, datosFinan.montoEgresos, datosFinan.montoRestaGstFinanciero, datosFinan.montoGastoFinaCodeudor,
                     props.token, (data) => {
-                   
-                        console.log("RES, ", data);
+                        //TODO: RECUPERAR EL data.int_cliente y 
+                        setIdClienteScore(data.int_cliente);
+                        //console.log("RES, ", data);
                         //let monto = Number.parseFloat(data.str_cupo_sugerido).toFixed(2);
                         ///data.str_cupo_sugerido = monto.toString();
                         //console.log("CUPO SUG COOPMEGO, ", data.str_cupo_sugerido_ccopmego);
@@ -582,29 +600,6 @@ const NuevaSolicitud = (props) => {
 
             let fechaNac = infoSocio.str_fecha_nacimiento.split('-');
             let fechaNacFormatoReq = fechaNac[2] + '-' + fechaNac[0] + '-' + fechaNac[1]
-
-            /*
-            let body = {
-                int_ente_aprobador: 589693,
-                str_tipo_documento: "C",
-                str_num_documento: cedulaSocio,
-                str_nombres: nombreSocio, 
-                str_primer_apellido: apellidoPaterno, 
-                str_segundo_apellido: apellidoMaterno, 
-                dtt_fecha_nacimiento: fechaNacFormatoReq,//"1994-06-08",//infoSocio.str_fecha_nacimiento, 
-                str_sexo: infoSocio.str_sexo,
-                dec_cupo_solicitado: datosFinancieros.montoSolicitado,
-                dec_cupo_sugerido: cupoSugeridoCoopM,
-                //cupo sugerido aval
-                str_correo: correoSocio,
-                str_usuario_proc: datosUsuario[0].strUserOficial,//, "xnojeda1"
-                int_oficina_proc: 1, //TODO: setItem('office' aun no retorna nada 
-                str_ente: enteSocio,
-                str_denominacion_tarjeta: nombrePersonalTarjeta,
-                str_comentario_proceso: comentario,
-                str_comentario_adicional: comentarioAdic
-            }*/
-
 
             let body = {
 
@@ -802,7 +797,7 @@ const NuevaSolicitud = (props) => {
                                 setDatosFinancierosFunc={datosFinancierosHandler}
                                 isCkeckGtosFinancierosHandler={checkGastosFinancieroHandler}
                                 gestion={gestion}
-                                requiereActualizar={refrescarInformacionHandler}
+                                requiereActualizar={refrescarDatosInformativos}
                                 isCheckMontoRestaFinanciera={isCkeckRestaGtoFinananciero }
                         >
                         </DatosFinancieros>

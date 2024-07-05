@@ -113,6 +113,11 @@ const VerSolicitud = (props) => {
     const [motivosRegresaAntBandeja, setMotivosRegresaAntBandeja] = useState([]);
     const [motivosNegacionSocio, setMotivosNegacionSocio] = useState([]);
 
+    const [toggleResetIndex, setToggleResetIndex] = useState(1);
+
+    //Filas del text Area comentarioAdicional
+    const [filasTextAreaComentarioSol, setFilasTextAreaComentarioSol] = useState(3);
+
     /*const parametros = [
         { prm_id: 11272, prm_valor_ini: "SOLICITUD CREADA" },
         { prm_id: 11273, prm_valor_ini: "ANALISIS UAC" },
@@ -129,6 +134,7 @@ const VerSolicitud = (props) => {
     const seleccionAccionSolicitud = (value) => {
         const accionSelecciona = accionesSolicitud.find((element) => { return element.key === value });
         //console.log(accionSelecciona);
+        setToggleResetIndex(value)
         setAccionSeleccionada(accionSelecciona.key);
     }
 
@@ -459,15 +465,6 @@ const VerSolicitud = (props) => {
 
     }
 
-    //const descargarReporte = () => {
-    //    const pdfUrl = "Imagenes/reporteavalhtml.pdf";
-    //    const link = document.createElement("a");
-    //    link.href = pdfUrl;
-    //    link.download = "document.pdf"; // specify the filename
-    //    document.body.appendChild(link);
-    //    link.click();
-    //    document.body.removeChild(link);
-    //}
 
     const descargarMedio = (numSolicitud) => {
         console.log("Num Sol,", numSolicitud)
@@ -478,7 +475,7 @@ const VerSolicitud = (props) => {
                 const blob = base64ToBlob(data.str_med_apro_bas_64, 'application/pdf');
                 let fechaHoy = generarFechaHoy();
                 const nombreArchivo = `MedioAprobacionTC_Sol${numSolicitud}_${(fechaHoy)}`;
-                descargarArchivo(blob, nombreArchivo, 'pdf');
+                descargarArchivo(blob, nombreArchivo, 'pdf', false);
             } else {
                 window.alert("ERROR AL GENERAR EL REPORTE, COMUNIQUESE CON EL ADMINISTRADOR");
             }
@@ -568,6 +565,8 @@ const VerSolicitud = (props) => {
                 fetchAddProcEspecifico(props.solicitud.solicitud, 0, selectCambioEstadoSol, descripcionMotivoRetorno, props.token, (data) => {
                     if (data.str_res_codigo === "000") {
                         //Ir a pagina anterior
+                        //TODO: PARA RETORNAR AL CAMBIO DE BANDEJA AGREGAR EL METO DE RESOLUCION
+
                         setModalCambioBandeja(false);
                         console.log("SE GUARDA AL NUEVO ESTADO");
                         navigate.push('/solicitud');
@@ -836,13 +835,23 @@ const VerSolicitud = (props) => {
         }
     }
 
+    //Control para el numero de filas del text area
+    useEffect(() => {
+        let filasActuales = comentarioSolicitud.split('\n');
+        if (filasActuales.length >= 3) setFilasTextAreaComentarioSol(filasActuales.length + 1);
+        else if (filasActuales.length < 3) setFilasTextAreaComentarioSol(3);
+    }, [comentarioSolicitud])
+
     return <div className="f-row">
         <Sidebar enlace={props.location.pathname}></Sidebar>
         <Card className={["w-100"]}>
             <Toggler
                 selectedToggle={seleccionAccionSolicitud}
-                toggles={accionesSolicitud}>
+                toggles={accionesSolicitud}
+                toggleReset={toggleResetIndex}                
+            >
             </Toggler>
+            {/*toggleReset={toggleResetIndex}*/}
             {modalVisible.toString()}
             {
                 accionSeleccionada === 1 &&
@@ -1165,7 +1174,7 @@ const VerSolicitud = (props) => {
                                     {(solicitudTarjeta?.str_estado !== 'ANALISIS COMITE' && solicitudTarjeta?.str_estado !== 'POR CONFIRMAR') &&
                                         <div className="mt-4">
                                             <h3 className="mb-3 strong">Observaciones</h3>
-                                            <Textarea placeholder="Ingrese su comentario" onChange={setComentarioSolicitudHandler} esRequerido={true} value={comentarioSolicitud}></Textarea>
+                                            <Textarea placeholder="Ingrese su comentario" onChange={setComentarioSolicitudHandler} esRequerido={true} value={comentarioSolicitud} rows={filasTextAreaComentarioSol }></Textarea>
                                         </div>
                                     }
 
@@ -1215,6 +1224,7 @@ const VerSolicitud = (props) => {
                             datosSocio={datosSocio}
                             datosUsuario={datosUsuario}
                             solicitudTarjeta={solicitudTarjeta}
+                            seleccionToogleSolicitud={seleccionAccionSolicitud}
                         ></UploadDocumentos>
                     </div>
                 </Card>

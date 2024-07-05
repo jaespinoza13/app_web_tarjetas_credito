@@ -71,9 +71,27 @@ function Sidebar(props) {
 
                     <div className="sidebar_menu__item">
                         <NavItem>
-                            <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'orden') ? 'active' : ''}`} to="/orden">Ordenes</NavLink>
+                            <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'personalizar') ? 'active' : ''}`} to="/personalizar">Enviar &oacute;rdenes a personalizar</NavLink>
                         </NavItem>
                     </div>
+                    
+                    <div className="sidebar_menu__item">
+                        <NavItem>
+                            <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'recepcion') ? 'active' : ''}`} to="/recepcion">Recibir &oacute;rdenes personalizadas</NavLink>
+                        </NavItem>
+                    </div>
+
+                    <div className="sidebar_menu__item">
+                        <NavItem>
+                            <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'distribucion') ? 'active' : ''}`} to="/distribucion">Distribuir &oacute;rdenes</NavLink>
+                        </NavItem>
+                    </div>
+
+                    {/*<div className="sidebar_menu__item">*/}
+                    {/*    <NavItem>*/}
+                    {/*        <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'orden') ? 'active' : ''}`} to="/orden">Ordenes</NavLink>*/}
+                    {/*    </NavItem>*/}
+                    {/*</div>*/}
                     {/*<div className="sidebar_menu__item">*/}
                     {/*    <NavItem>*/}
                     {/*        <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'recibir_orden_proveedor') ? 'active' : ''}`} to="/recibir_orden_proveedor">Recibir env&#237;o del Proveedor</NavLink>*/}
