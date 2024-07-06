@@ -62,6 +62,8 @@ export function handleSubmitLogin(login, password, token, onSuccess, dispatch) {
         login: login,
         password: hex_md5(password)
     };
+    console.log("body loggin", body)
+
     ServicioPostExecute(getLogin, body, token, { dispatch: dispatch, exProcess: true }).then((data) => {
         if (data) {
             if (data.error) {

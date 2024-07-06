@@ -73,8 +73,8 @@ const NuevaProspeccion = (props) => {
         montoSolicitado: 0,
         montoIngresos: 0,
         montoEgresos: 0,
-        montoGastoFinaCodeudor: "",
-        montoRestaGstFinanciero: "",
+        montoGastoFinaCodeudor: 0,
+        montoRestaGstFinanciero: 0,
 
     })
     const [isBtnDisabled, setIsBtnDisabled] = useState(false);
@@ -193,29 +193,19 @@ const NuevaProspeccion = (props) => {
             validadorOtrosMontos = true;
         } 
 
-        //TODO VALIDAR CAMPO FINANCIERO CODEUDOR CUANDO SEA NUEVO SIMULACION
-        //console.log("RESTA GASTO FIN ", datosFinancieros.montoRestaGstFinanciero)
         if (isCkeckRestaGtoFinananciero === true) {
-            if (IsNullOrEmpty(datosFinancierosObj.montoRestaGstFinanciero) || datosFinancierosObj.montoRestaGstFinanciero === "" || datosFinancierosObj.montoRestaGstFinanciero === " ") {
-                //console.log("Resta Gst Financ, ", datosFinancieros.montoRestaGstFinanciero)
-                //console.log("Retorna 1");
-                validaRestoMontoGstFinanciero = false;
-                return false;
-            } else if (Number(datosFinancierosObj.montoRestaGstFinanciero) < 0 || Number(datosFinancierosObj.montoRestaGstFinanciero) >= 100000) {
-                validaRestoMontoGstFinanciero = false;
-                //console.log("Retorna 2");
-                return false;
-            }
+            if (datosFinancierosObj.montoRestaGstFinanciero > 0 && datosFinancierosObj.montoRestaGstFinanciero <= 99999) {
+                validaRestoMontoGstFinanciero = true;  
+            } 
             else {
-                //console.log("Retorna 3");
-                validaRestoMontoGstFinanciero = true;
+                validaRestoMontoGstFinanciero = false;
+                return false;
             }
         } else if (isCkeckRestaGtoFinananciero === false) {
             validaRestoMontoGstFinanciero = true;
-        }        
+        }    
 
         //console.log(`Check ${validadorCheck}, cupo ${validadorOtrosMontos},  restoGast ${validaRestoMontoGstFinanciero} `)
-        //if (validadorCheck && validadorOtrosMontos && validaRestoMontoGstFinanciero) {
         if (validadorOtrosMontos && validaRestoMontoGstFinanciero) {
             return true;
         } else {
@@ -267,10 +257,7 @@ const NuevaProspeccion = (props) => {
     
     // Controles para pasar a la consulta al score Comp DatosSocio. Valida que todas las alertas esten OK
     useEffect(() => {
-        const index = validacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_090" && validacion.str_estado_alerta === "False");
-        //TODO: SE QUITO LA VALIDACION, solo este la alerta del buro
-        //const validacionesErrorTotal = validacionesErr.length;
-        //console.log("TOTAL validaciones ok, ", validacionesErrorTotal);        
+        const index = validacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_090" && validacion.str_estado_alerta === "False");     
         if (step === 2 && showAutorizacion === false) {
             if (!index) {
                 setEstadoBotonSiguiente(false);
@@ -304,10 +291,10 @@ const NuevaProspeccion = (props) => {
             //console.log(`ingresos, ${data.dcm_total_ingresos}; egresos, ${data.dcm_total_egresos}; financ, ${data.dcm_gastos_financieros} `,);
             let datosFinan = {
                 montoSolicitado: 0,
-                montoIngresos: data.dcm_total_ingresos,
-                montoEgresos: data.dcm_total_egresos,
-                montoGastoFinaCodeudor: "",
-                montoRestaGstFinanciero: "",
+                montoIngresos: Number(data.dcm_total_ingresos),
+                montoEgresos: Number(data.dcm_total_egresos),
+                montoGastoFinaCodeudor: Number(datosFinancierosObj.montoGastoFinaCodeudor),
+                montoRestaGstFinanciero: Number(datosFinancierosObj.montoRestaGstFinanciero),
             }
             console.log("resf DATA , ", datosFinan)
             setDatosFinancierosObj(datosFinan);
@@ -375,42 +362,16 @@ const NuevaProspeccion = (props) => {
     }
 
     const nextHandler = async () => {
-        console.log("STEPPP ", step)
+        //console.log("STEPPP ", step)
         if (step === 0) {
-            //TODO: FALTA EDITAR PARA EXTRAER INGRESOS, EGRESOS, GASTOS FINANCIEROS TITULAR
             setIsVisibleBloque(false);
             refrescarInformacionHandler(false);
         }
         if (step === 1) {
             await consultaAlertas(true);    
-
-            /*
-            //TODO: HACER NUEVA CONSULTA DE LAS ALERTAS ANTES DE PASAR AL 2 pasar la fecha de nacimiento
-            const objValidaciones = {
-                "lst_validaciones_ok": [
-                    { str_descripcion_alerta: "SOCIO CUENTA CON INFORMACION ACTUALIZADA" }, { str_descripcion_alerta: "SOCIO MANTIENE ACTIVA SUS CUENTAS DE AHORROS" },
-                    { str_descripcion_alerta: "SOCIO PUEDE REALIZAR LA CONSULTA AL BURO" }],
-                "lst_validaciones_err": []
-            }
-            handleLists(objValidaciones)
-
-            
-            const arrValidacionesOk = [...data.lst_datos_alerta_true];
-            const arrValidacionesErr = [...data.lst_datos_alerta_false];
-            setValidacionesOk(arrValidacionesOk);
-            setValidacionesErr(arrValidacionesErr);
-            const objValidaciones = {
-                "lst_validaciones_ok": [...data.lst_datos_alerta_true],
-                "lst_validaciones_err": [...data.lst_datos_alerta_false]
-            }
-            //console.log("VALIDACIONES, ", objValidaciones)
-            handleLists(objValidaciones);*/
-
-
         }
         if (step === 2) {
             //console.log("STEP 1, SHOW ", showAutorizacion)
-
             if (showAutorizacion) {
                 fetchAddAutorizacion("C", 1, "F", documento, nombreSocio, apellidoPaterno, apellidoMaterno,
                     archivoAutorizacion, props.token, (data) => {
@@ -424,20 +385,6 @@ const NuevaProspeccion = (props) => {
 
                             consultaAlertas(false);
 
-                            /*
-                            //TODO CAMBIAR AL NUEVO METODO DE ALERTAS
-                            fetchValidacionSocio(documento, '', props.token, (data) => {
-                                const arrValidacionesOk = [...data.lst_datos_alerta_true];
-                                const arrValidacionesErr = [...data.lst_datos_alerta_false];
-                                setValidacionesOk(arrValidacionesOk);
-                                const objValidaciones = {
-                                    "lst_validaciones_ok": [...data.lst_datos_alerta_true],
-                                    "lst_validaciones_err": [...data.lst_datos_alerta_false]
-                                }
-                                handleLists(objValidaciones);
-                                setAutorizacionOk(false);
-                                setValidacionesErr(arrValidacionesErr);
-                            }, dispatch);*/
                         }
                     }, dispatch);
                 return;
@@ -466,7 +413,7 @@ const NuevaProspeccion = (props) => {
                     realizaNuevaSimulacion.current = true
                     //const scoreStorage = JSON.stringify(data);
                     //localStorage.setItem('dataPuntaje', scoreStorage.toString());
-                    datosFinancierosObj.montoGastoFinaCodeudor = data.str_gastos_codeudor;
+                    datosFinancierosObj.montoGastoFinaCodeudor = Number(data.str_gastos_codeudor);
                     setDatosFinancierosObj(datosFinancierosObj)
 
 
@@ -485,17 +432,6 @@ const NuevaProspeccion = (props) => {
                 //TODO CAMBIAR LA CEDULA
                 await fetchNuevaSimulacionScore("C", "1150214375", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, "Matriz", datosUsuario[0].strOficial, datosUsuario[0].strCargo, datosFinan.montoIngresos, datosFinan.montoEgresos, datosFinan.montoRestaGstFinanciero, datosFinan.montoGastoFinaCodeudor,
                     props.token, (data) => {
-
-                        //scoreStorage.montoSugerido = Number.parseFloat(nuevoCupoSugerido).toFixed(2);
-                        /*scoreStorage.montoSugerido = Number.parseFloat(data.str_cupo_sugerido).toFixed(2);
-                        let datosFinan = datosFinancieros;
-                        datosFinan.montoGastoFinaCodeudor = data.str_gastos_codeudor;
-                        setDatosFinancieros(datosFinan);
-                        console.log("data Score Alm ", scoreStorage.montoSugerido);
-                        console.log("data FINAN ACT ", datosFinan);*/
-
-                        //console.log("CUPO SUG COOPMEGO, ", data.str_cupo_sugerido_ccopmego);
-                        //setCupoSugeridoCoopM(data.str_cupo_sugerido_ccopmego);
                         setCupoSugeridoCoopM(data.str_cupo_sugerido);
                         setScore(data);
 
@@ -637,11 +573,29 @@ const NuevaProspeccion = (props) => {
         }
     }
 
+    const refrescarDatosInformativos = () => {
+        fetchValidacionSocio(documento, '', props.token, (data) => {
+            let datosFinan = {
+                montoSolicitado: datosFinancierosObj.montoSolicitado,
+                montoIngresos: data.dcm_total_ingresos,
+                montoEgresos: data.dcm_total_egresos,
+                montoGastoFinaCodeudor: datosFinancierosObj.montoGastoFinaCodeudor,
+                montoRestaGstFinanciero: "",
+            }
+            setDatosFinancierosObj(datosFinan);
+            console.log(`ingresos, ${data.dcm_total_ingresos}; egresos, ${data.dcm_total_egresos}; `,);
+            console.log("FINAN, ", datosFinan);
+
+            anteriorStepHandler();
+        }, dispatch);
+
+    }
+
     return (
         <div className="f-row" >
             <Sidebar enlace={props.location.pathname}></Sidebar>
             
-            {showAutorizacion.toString()}
+            {/*{showAutorizacion.toString()}*/}
             <Card className={["m-max w-100 justify-content-space-between align-content-center"]}>
                 <div className="f-col justify-content-center">
 
@@ -687,7 +641,7 @@ const NuevaProspeccion = (props) => {
                                 setDatosFinancierosFunc={datosFinancierosHandler}
                                 isCkeckGtosFinancierosHandler={checkGastosFinancieroHandler}
                                 gestion={gestion}
-                                requiereActualizar={refrescarInformacionHandler}
+                                requiereActualizar={refrescarDatosInformativos}
                                 isCheckMontoRestaFinanciera={isCkeckRestaGtoFinananciero}
                             >
                             </DatosFinancieros>
@@ -724,9 +678,14 @@ const NuevaProspeccion = (props) => {
                         } 
                     </Item>
                     <Item xs={8} sm={8} md={8} lg={8} xl={8} className="f-row justify-content-space-evenly">
-                        {(step === 1 || step === 3) &&
+                        {(step === 1) &&
                             <Button className={["btn_mg btn_mg__primary mt-2 mr-2"]} onClick={refrescarInformacionHandler}>{"Actualizar"}</Button>
                         }  
+
+                        {(step === 3) &&
+                            <Button className={["btn_mg btn_mg__primary mt-2 mr-2"]} onClick={refrescarDatosInformativos}>{"Actualizar"}</Button>
+                        } 
+
                         <Button className={["btn_mg btn_mg__primary mt-2"]} disabled={estadoBotonSiguiente} onClick={nextHandler}>{textoSiguiente}</Button>
                     </Item>
 

@@ -30,11 +30,12 @@ const Toggler = (props) => {
         <div className={`toggler ${props.className}`} value={activeIndex}>
 
             {props.toggles.map((element, ind) => (
+                <Fragment key={ind}>
                 <Button
                     key={element.key}
                     className={`btn_mg__toggler mr-2 ${element.key === activeIndex ? 'active' : ''}`}
                     onClick={() => { togglerHandler(element.key) }}>
-                    <Fragment key={ind} >
+                    <Fragment key={element.textPrincipal} >
                         <div>
                             <img src={element.image} alt="" />
                         </div>
@@ -43,7 +44,8 @@ const Toggler = (props) => {
                             <p>{element.textSecundario}</p>
                         </div>
                     </Fragment>                    
-                </Button>
+                    </Button>
+                </Fragment>
             ))}
         </div>
     );
