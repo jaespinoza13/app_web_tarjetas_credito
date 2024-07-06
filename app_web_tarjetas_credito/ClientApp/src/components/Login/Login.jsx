@@ -249,9 +249,9 @@ function Login(props) {
                                     id="username"
                                     label="Usuario"
                                     textbutton="Olvidé mi usuario"
-                                    onClickBtn={(e) => { e.preventDefault(); setOpenUsuario(true); }}
+                                    onClick={(e) => { e.preventDefault(); setOpenUsuario(true); }}
                                     value={login}
-                                    onChange={(e) => setLogin(e.target.value)}
+                                    change={(e) => setLogin(e.target.value)}
                                 />
                                 <ModalAlert
                                     titleAlert={'Olvidé mi usuario'}
@@ -270,9 +270,9 @@ function Login(props) {
                                     id="password"
                                     label="Contraseña"
                                     textbutton="Olvidé mi contraseña"
-                                    onClickBtn={(e) => { e.preventDefault(); setIsOpen(!isOpen); }}
+                                    onClick={(e) => { e.preventDefault(); setIsOpen(!isOpen); }}
                                     value={passOff}
-                                    onChange={(e) => setPasswordWithOff(password, e.target.value, (pass, passOff) => {
+                                    change={(e) => setPasswordWithOff(password, e.target.value, (pass, passOff) => {
                                         setPassword(pass);
                                         setPassOff(passOff);
                                     })}

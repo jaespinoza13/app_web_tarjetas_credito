@@ -7,15 +7,15 @@ import { IsNullOrWhiteSpace } from '../../js/utiles';
  * @param {{ width: number, height: number, color: string|null }} param0
  */
 function InputMego(props) {
-    var { id, label, onClickBtn, textbutton, isHorizontal = false, disabled, isError, errorText, helperText, correctText } = props;
+    var { id, label, onClick, textbutton, change, type, isHorizontal = false, disabled, isError, errorText, helperText, correctText } = props;
 
     if (isHorizontal) {
         return (
             <div className="form_mg_row">
                 <label htmlFor={id} className="pbmg1 lbl-input label_horizontal">{label}</label>
                 <div className="form_mg__item">
-                    <input type="text" name="username" id={id} {...props} autoComplete="off"  />
-                    <a href="#!" rel="noreferrer" className="link_mg pbmg1 link-input" tabIndex="-1" onClick={(e) => onClickBtn(e)}>{textbutton}</a>
+                    <input type={type ? type: "text" } name="username" id={id} autoComplete="off" onChange={e => { change(e) }} />
+                    <a href="#!" rel="noreferrer" className="link_mg pbmg1 link-input" tabIndex="-1" onClick={(e) => onClick(e)}>{textbutton}</a>
                 </div>
             </div>
         );
@@ -23,8 +23,8 @@ function InputMego(props) {
         return (
             <div className="form_mg__item">
                 <label htmlFor={id} className="pbmg1 lbl-input">{label}</label>
-                <input type="text" name="username" id={id} {...props} />
-                <a href="#!" rel="noreferrer" className="link_mg pbmg1 link-input" tabIndex="-1" onClick={(e) => onClickBtn(e)}>{textbutton}</a>
+                <input type={type ? type : "text"} name="username" id={id} onChange={e => { change(e) }} />
+                <a href="#!" rel="noreferrer" className="link_mg pbmg1 link-input" tabIndex="-1" onClick={(e) => onClick(e)}>{textbutton}</a>
             </div>
         );
     }
