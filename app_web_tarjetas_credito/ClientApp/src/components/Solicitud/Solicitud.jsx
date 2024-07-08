@@ -153,7 +153,7 @@ function Solicitud(props) {
             //console.log("TOKEN", props.token);
             fetchGetSolicitudes(props.token, (data) => {
                 //console.log("ENTRA SOLICITUDES");
-                console.log(data);
+                //console.log(data);
                 stLstProspectos(data.prospectos);
                 stLstSolicitudes(data.solicitudes);
 
@@ -303,6 +303,19 @@ function Solicitud(props) {
         setModalVisible(false);
     }
 
+
+    const descargarEstadoCuenta = () => {
+       
+        const pdfUrl = "Imagenes/Estado de cuenta-Final.pdf";
+            const link = document.createElement("a");
+            link.href = pdfUrl;
+        link.download = "EstadoCuenta.pdf"; // specify the filename
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+       
+    }
+
     return (<div className="f-row">
         <Sidebar enlace={props.location.pathname}></Sidebar>
         
@@ -323,6 +336,14 @@ function Solicitud(props) {
                             <h4 className="mt-2">Prospección</h4>
                             <h5 className="mt-2">Genera una nueva prospección de tarjeta de crédito</h5>
                             <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={irNuevaProspección}>Siguiente</Button>
+                    </Card>
+
+
+                    <Card>
+                        <img style={{ width: "25px" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg"></img>
+                        <h4 className="mt-4">Estado de cuenta</h4>
+                        <h5 className="mt-4 mb-2">Generar estado de cuenta </h5>
+                        <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={descargarEstadoCuenta}>Descargar</Button>
                     </Card>
                    
                 </div>

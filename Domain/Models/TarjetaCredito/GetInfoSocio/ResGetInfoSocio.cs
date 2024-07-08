@@ -39,6 +39,7 @@ namespace Domain.Models.TarjetaCredito.GetInfoSocio
         public string str_dir_descripcion_dom { get; set; } = String.Empty;
         public string str_dir_num_casa { get; set; } = String.Empty;
         public int int_dir_direccion { get; set; }
+        public int int_codigo_postal { get; set; }
         public string str_dir_tipo {  get; set; } = String.Empty;
     }
 }

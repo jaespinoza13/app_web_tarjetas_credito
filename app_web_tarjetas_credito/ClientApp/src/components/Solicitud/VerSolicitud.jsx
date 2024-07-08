@@ -89,7 +89,7 @@ const VerSolicitud = (props) => {
 
 
     //PARAMETROS REQUERIDOS
-    const [parametrosTC, setParametrosTC] = useState([]); // cambiar prm_valor_ini por str_valor_ini
+    const [parametrosTC, setParametrosTC] = useState([]); 
 
     const [estadosDecisionComite, setEstadosDecisionComite] = useState([]);
     const [estadosDecBanjComiteAll, setEstadosDecBanjComiteAll] = useState([]);
@@ -221,7 +221,6 @@ const VerSolicitud = (props) => {
 
         //console.log("PROPS parametrosTC", props.parametrosTC.lst_parametros)
         if (props.parametrosTC.lst_parametros?.length > 0) {
-            //console.log("Entr", props.parametrosTC.lst_parametros)
             let ParametrosTC = props.parametrosTC.lst_parametros;
             setParametrosTC(ParametrosTC
                 .filter(param => param.str_nombre === 'ESTADOS_SOLICITUD_TC')
@@ -292,11 +291,6 @@ const VerSolicitud = (props) => {
 
     const actualizaInformaFlujoSol = () => {
         fetchGetFlujoSolicitud(props.solicitud.solicitud, props.token, (data) => {
-
-            //console.log("FLUJO SOL, ", data)
-            //TODO: capturar informacion bool para enviar a sig bandeja
-            //TODO: cambiar el int_id por int_flujo_id que es el campo mas actual
-            //console.log("VALOR  BOOL , ", data.int_ingreso_fijo)
             if (data.flujo_solicitudes.length > 0) {
                 const arrayDeValores = data.flujo_solicitudes.map(objeto => objeto.int_flujo_id);
                 const valorMaximo = Math.max(...arrayDeValores);
@@ -307,7 +301,6 @@ const VerSolicitud = (props) => {
                 setMontoAprobado(datosSolicitud.str_cupo_solicitado);
             }
 
-
         }, dispatch);
     }
 
@@ -315,7 +308,6 @@ const VerSolicitud = (props) => {
     const validaNombreParam = (estadoNombre) => {
 
         //console.log("ESTADO ENTRA ", estadoNombre)
-        //if (estadosDecisionComite.length > 0 && parametrosTC.length > 0) {
         if (parametrosTC.length > 0) {
             //const parametro = parametros.find(param => Number(param.prm_id) === Number(id));
             let parametro = parametrosTC.find(param => param.prm_valor_ini === estadoNombre);
