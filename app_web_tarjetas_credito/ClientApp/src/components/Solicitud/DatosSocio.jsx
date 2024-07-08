@@ -283,8 +283,9 @@ const DatosSocio = (props) => {
                         </Item>
                         <Item xs={6} sm={6} md={6} lg={6} xl={6}>
                             <h4 className="strong mb-3" >Detalle de deudas:</h4>
-                            {props.score.response.result.deudaVigenteTotal.map((deuda) => {
-                                return (<div>
+                            {props.score.response.result.deudaVigenteTotal.map((deuda,index) => {
+                                return (
+                                    <div key={index }>
                                     <h3 className="strong">{deuda.sistemaCrediticio}</h3>
                                     <div>
                                         <div className="values">

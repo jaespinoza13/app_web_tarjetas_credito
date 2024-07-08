@@ -146,10 +146,6 @@ const NuevaProspeccion = (props) => {
     }, [score]);
 
 
-    const agregarComentarioHandler = (e) => {
-
-    }
-
     useEffect(() => {
         if (step === 0 && documento !== '' && !setCedulaValida) {
             setEstadoBotonSiguiente(true);
@@ -438,7 +434,7 @@ const NuevaProspeccion = (props) => {
                     }, dispatch);
 
             }           
-            
+            setEstadoBotonSiguiente(true);
         }
 
         if (step === 4) {
@@ -653,7 +649,6 @@ const NuevaProspeccion = (props) => {
                                 informacionSocio={infoSocio}
                                 score={score}
                                 token={props.token}
-                                onAgregarComentario={agregarComentarioHandler}
                                 gestion={gestion}
                                 onInfoSocio={getInfoSocioHandler}
                                 onComentario={handleComentario}

@@ -4,7 +4,7 @@ import Button from "./Button";
 const Toggler = (props) => {
     const [activeIndex, setActiveIndex] = useState(0);
     const togglerHandler = (index) => {
-        console.log("ELEM CAMBIA TOG ", index)
+        //console.log("ELEM CAMBIA TOG ", index)
         setActiveIndex(index)
         props.selectedToggle(index);
     }

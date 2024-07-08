@@ -66,7 +66,7 @@ function Login(props) {
                     console.log(data);
                     data.datosUsuario.str_sesion = data.datosUsuario.id_usuario + "" + data.datosUsuario.id_perfil + "" + ts + "" + data.datosUsuario.id_persona;
                     localStorage.setItem('sender', set(data.datosUsuario.login));
-                    localStorage.setItem('office', set(data.datosUsuario.id_oficina));
+                    localStorage.setItem('office', set(data.datosUsuario.id_oficina.toString()));
                     localStorage.setItem('role', set(data.datosUsuario.nombre_perfil));
                     localStorage.setItem('sender_name', set(data.datosUsuario.nombre));
                     data.datosUsuario.canRedirect = true;

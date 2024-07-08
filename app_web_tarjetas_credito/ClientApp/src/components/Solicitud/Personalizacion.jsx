@@ -3,11 +3,9 @@ import Toggler from "../Common/UI/Toggler";
 import { useEffect, useState } from "react";
 
 const Personalizacion = (props) => {
-    const [nombresTarjeta, setNombresTarjeta] = useState(['', '']);
-    //const [nombresTarjeta, setNombresTarjeta] = useState([]);
-    const [nombreSeleccion, setNombreSeleccion] = useState("");
+    const [nombresTarjeta, setNombresTarjeta] = useState([]);
     const [tipoEntrega, setTipoEntrega] = useState("");
-    const [direccionEntrega, setDireccionEntrega] = useState("");
+    const [direccionEntrega, setDireccionEntrega] = useState("-1");
     const [tiposDireccion, setTiposDireccion] = useState([]);
     
     const tiposEntrega = [
@@ -15,31 +13,9 @@ const Personalizacion = (props) => {
         { image: "", textPrincipal: "Entrega en domicilio", textSecundario: "", key: "Entrega en domicilio" }
     ];
 
-
-    //useEffect(() => {
-    //    console.log(props);
-    //    setTiposDireccion([
-    //        {
-    //            image: "",
-    //            textPrincipal: "Casa",
-    //            textSecundario: `${props.lstDomicilio[0].str_dir_ciudad}, ${props.lstDomicilio[0].str_dir_descripcion_dom}`,
-    //            key: props.lstDomicilio[0].int_dir_direccion
-    //        },
-    //        {
-    //            image: "",
-    //            textPrincipal: "Trabajo",
-    //            textSecundario: `${props.lstTrabajo[0].str_dir_ciudad}`,
-    //            key: props.lstTrabajo[0].int_dir_direccion
-    //        }]);
-
-
-    //}, []);
-
     useEffect(() => {
-        console.log("PROPS PERSON ",props)
-
         if (props.lstDomicilio && props.lstDomicilio.length > 0 && props.lstDomicilio[0].str_dir_ciudad) {
-            console.log(`DOMIC ${props.lstDomicilio}`)
+            //console.log(`DOMIC ${props.lstDomicilio}`)
             setTiposDireccion([
                 {
                     image: "",
@@ -50,7 +26,7 @@ const Personalizacion = (props) => {
             ]);
         }
         if (props.lstTrabajo && props.lstTrabajo.length > 0 && props.lstTrabajo[0].str_dir_ciudad) {
-            console.log(`DOMIC ${props.lstTrabajo}`)
+            //console.log(`DOMIC ${props.lstTrabajo}`)
             setTiposDireccion(prevState => [
                 ...prevState,
                 {
@@ -61,31 +37,35 @@ const Personalizacion = (props) => {
                 }
             ]);
         }
+
+        setNombresTarjeta([
+            { image: "", textPrincipal: `${props.nombres.split(" ")[0]} ${props.str_apellido_paterno}`, textSecundario: "", key: `${props.nombres.split(" ")[0]} ${props.str_apellido_paterno}` },
+            { image: "", textPrincipal: `${props.nombres.split(" ")[1]} ${props.str_apellido_paterno}`, textSecundario: "", key: `${props.nombres.split(" ")[1]} ${props.str_apellido_paterno}` }
+        ]);
+
     }, [props]);
 
 
+    
     useEffect(() => {
-        //const defaultEntrega = tiposEntrega[0];
         const defaultEntrega = tiposEntrega.shift(0);
         setTipoEntrega(defaultEntrega.textPrincipal);
-        //const defaultNombre = nombresTarjeta[0];
-        const defaultNombre = nombresTarjeta.shift(0);
-        setNombresTarjeta(defaultNombre.textPrincipal);
 
-        //console.log(`entreg ${defaultEntrega},`);//  nombreTar ${defaultNombre},`)
-
+        const defaultNombre = `${props.nombres.split(" ")[0]} ${ props.str_apellido_paterno }`;
+        props.onNombreTarjeta(defaultNombre);
     }, []);
 
+
+
+    /*
     useEffect(() => {
         setNombresTarjeta([
             { image: "", textPrincipal: `${props.nombres.split(" ")[0]} ${props.str_apellido_paterno}`, textSecundario: "", key: `${props.nombres.split(" ")[0]} ${props.str_apellido_paterno}` },
             { image: "", textPrincipal: `${props.nombres.split(" ")[1]} ${props.str_apellido_paterno}`, textSecundario: "", key: `${props.nombres.split(" ")[1]} ${props.str_apellido_paterno}` }
         ]);
     }, [props.nombres]);
+    */
 
-    /*useEffect(() => {
-        props.onNombreTarjeta(nombresTarjeta);
-    }, [nombreSeleccion]);*/
 
     useEffect(() => {
         props.onTipoEntrega(tipoEntrega);
@@ -97,20 +77,21 @@ const Personalizacion = (props) => {
 
     const nombreSeleccionHandler = (index) => {
         const nombreSeleccion = nombresTarjeta.find((nombre) => nombre.key === index);
-        setNombreSeleccion(nombreSeleccion.textPrincipal);
         props.onNombreTarjeta(nombreSeleccion.textPrincipal);
-        console.log("CAMBI INDEX, ", index)
-        console.log("CAMBI Nombre TARJ, ", nombreSeleccion.textPrincipal)
     }
 
     const tipoEntregaHandler = (index) => {
-        console.log("CAMBI TIP ENTRE, ",index)
         const entregas = tiposEntrega.find((entrega) => entrega.key === index);
         setTipoEntrega(entregas.textPrincipal);
     }
 
-    const direccionEntregaHandler = (index) => {
-        setDireccionEntrega(tiposDireccion[index]); 
+    const direccionEntregaHandler = (event) => {
+        if (tipoEntrega === "Retiro en agencia") {
+            setDireccionEntrega(event.target.value);
+        } else {
+            setDireccionEntrega(tiposDireccion.find(direccion => direccion.key === event)); 
+        }
+
     }
 
     return (
@@ -118,9 +99,10 @@ const Personalizacion = (props) => {
             <div>
                 <h3 className="mb-3">Personalización</h3>
                 <h5 className={"mb-2"}>Selecciona el nombre a imprimir en la tarjeta</h5>
-
-                <Toggler className={"mb-3"} selectedToggle={nombreSeleccionHandler} toggles={nombresTarjeta}>
-                </Toggler>
+                {nombresTarjeta.length > 0 &&
+                    <Toggler className={"mb-3"} selectedToggle={nombreSeleccionHandler} toggles={nombresTarjeta}>
+                    </Toggler>
+                }
             </div>
             <div>
                 <h3 className="mb-3">Entrega de la tarjeta</h3>
@@ -130,6 +112,7 @@ const Personalizacion = (props) => {
                 {tipoEntrega !== "" && <h3 className={"mb-2"}>Selecciona una opción para la entrega</h3>}
                 {tipoEntrega === "Retiro en agencia" && <div>
                     <select id="tipo_documento" onChange={direccionEntregaHandler} value={direccionEntrega}>
+                        <option value="-1" disabled={true }>Seleccione una opción</option>
                         <option value="1">MATRIZ</option>
                         <option value="2">SARAGURO</option>
                         <option value="3">CATAMAYO</option>

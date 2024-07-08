@@ -62,7 +62,7 @@ export function handleSubmitLogin(login, password, token, onSuccess, dispatch) {
         login: login,
         password: hex_md5(password)
     };
-    console.log("body loggin", body)
+    //console.log("body loggin", body)
 
     ServicioPostExecute(getLogin, body, token, { dispatch: dispatch, exProcess: true }).then((data) => {
         if (data) {
@@ -819,7 +819,7 @@ export function fetchScore(strTipoDocumento, strCedula, strNombres, strLugar, st
 
     ServicioPostExecute(getScore, body, token, { dispatch: dispatch }).then((data) => {
         if (data) {
-            console.log("SOCREE", data)
+            //console.log("SOCREE", data)
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
             } else {
