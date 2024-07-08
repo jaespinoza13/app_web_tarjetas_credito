@@ -9,7 +9,7 @@ import { get } from '../js/crypt';
 import Sidebar from "./Common/Navs/Sidebar";
 import { useHistory } from 'react-router-dom';
 
-
+/*
 const mapStateToProps = (state) => {
     //console.log("PROPS STATE," ,state);
     var array = [...state.GetListaMejoras.data];
@@ -27,7 +27,7 @@ const mapStateToProps = (state) => {
         dataFechaActualizacion: get(state.GetParametros.data["fActual"]),
         dataListaMejoras: array
     };
-};
+};*/
 
 function Home(props) {
     //TODO: PENDIENTE DE HACER UNA VALDIACION SI CUENTA CON PERMISOS SINO PRESENTAR ESTA PAG POR DEFECTO
@@ -36,6 +36,11 @@ function Home(props) {
         navigate.push("/solicitud")
     },[])
 
+    //Se envia vacio para evitar renderizar el contenido y aparezca error por desmontaje de componente
+    return (
+        <div> </div>
+    )
+    /*
     return (
         <div className="f-row">
             <Sidebar enlace={props.location.pathname }></Sidebar>
@@ -59,7 +64,7 @@ function Home(props) {
                 </Container>
             </Container>
         </div>
-    );
+    );*/
 }
 
-export default connect(mapStateToProps, {})(Home);
+export default Home;//connect(mapStateToProps, {})(Home);

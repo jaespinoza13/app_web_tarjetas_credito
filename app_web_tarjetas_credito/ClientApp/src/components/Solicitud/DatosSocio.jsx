@@ -124,9 +124,6 @@ const DatosSocio = (props) => {
 
     const getInfoSocio = () => {
         setEstadoLoadingInfoSocio(true);
-        //TODO: cambiar cedula
-        //fetchInfoSocio("1105970717", props.token, (data) => {
-
         fetchInfoSocio(props.informacionSocio.cedula, props.token, (data) => {
             setDirDomicilioSocio([...data.lst_dir_domicilio]);
             setDirTrabajoSocio([...data.lst_dir_trabajo]);
@@ -572,8 +569,14 @@ const DatosSocio = (props) => {
             <div id="comentarioGestion">
                 <div className="tipoComentario mt-4 mb-4">
                     <Fragment>
-                        <h3>Está interesado en adquirir la tarjeta de crédito</h3>
-                        {props.gestion === 'prospeccion' && <Switch onChange={deseaTarjetaHandler} value={deseaTarjeta}></Switch>}
+                        
+                        {props.gestion === 'prospeccion' && (
+                            <>
+                                <h3>Está interesado en adquirir la tarjeta de crédito</h3>
+                                <Switch onChange={deseaTarjetaHandler} value={deseaTarjeta}></Switch>
+                            </>
+                        )
+                    }
 
                     </Fragment>
                 </div>

@@ -2,7 +2,7 @@
 import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import Card from "../Common/Card";
-import { IsNullOrEmpty, IsNullOrWhiteSpace, getBase64 } from "../../js/utiles";
+import { IsNullOrEmpty, IsNullOrWhiteSpace } from "../../js/utiles";
 import Sidebar from '../Common/Navs/Sidebar';
 import Button from '../Common/UI/Button';
 import { useState, useEffect, useRef } from 'react';
@@ -10,7 +10,7 @@ import ValidacionSocio from './ValidacionSocio';
 import Item from '../Common/UI/Item';
 import ValidacionesGenerales from './ValidacionesGenerales';
 import DatosSocio from './DatosSocio';
-import { fetchScore, fetchValidacionSocio, fetchAddAutorizacion, fetchAddSolicitud, fetchInfoSocio, fetchNuevaSimulacionScore, fetchGetAlertasCliente } from '../../services/RestServices';
+import { fetchScore, fetchValidacionSocio, fetchAddAutorizacion, fetchAddSolicitud, fetchNuevaSimulacionScore, fetchGetAlertasCliente } from '../../services/RestServices';
 import { get } from '../../js/crypt';
 import Modal from '../Common/Modal/Modal';
 import Personalizacion from './Personalizacion';
@@ -51,8 +51,8 @@ const NuevaSolicitud = (props) => {
         montoSolicitado: 0,
         montoIngresos: 0,
         montoEgresos: 0,
-        montoGastoFinaCodeudor: "",
-        montoRestaGstFinanciero: "",
+        montoGastoFinaCodeudor: 0,
+        montoRestaGstFinanciero: 0,
 
     })
 
@@ -157,33 +157,22 @@ const NuevaSolicitud = (props) => {
 
         if ((datosFinancierosObj.montoSolicitado > 0 && datosFinancierosObj.montoSolicitado <= 99999) &&
             (datosFinancierosObj.montoIngresos > 0 && datosFinancierosObj.montoIngresos <= 99999) &&
-            (datosFinancierosObj.montoEgresos > 0 && datosFinancierosObj.montoEgresos <= 99999)
-            //    && datosFinancieros.montoGastosFinancieros > 0
+            (datosFinancierosObj.montoEgresos > 0 && datosFinancierosObj.montoEgresos <= 99999)            
         ) {
             validadorOtrosMontos = true;
         } 
 
         if (isCkeckRestaGtoFinananciero === true) {
-            if (IsNullOrEmpty(datosFinancierosObj.montoRestaGstFinanciero) || datosFinancierosObj.montoRestaGstFinanciero === "" || datosFinancierosObj.montoRestaGstFinanciero === " ") {
-                //console.log("Resta Gst Financ, ", datosFinancieros.montoRestaGstFinanciero)
-                //console.log("Retorna 1");
-                validaRestoMontoGstFinanciero = false;
-                return false;
-            } else if (Number(datosFinancierosObj.montoRestaGstFinanciero) < 0 || Number(datosFinancierosObj.montoRestaGstFinanciero) >= 100000) {
-                validaRestoMontoGstFinanciero = false;
-                //console.log("Retorna 2");
-                return false;
-            }
+            if ((datosFinancierosObj.montoRestaGstFinanciero > 0 && datosFinancierosObj.montoRestaGstFinanciero <= 99999)) {
+                validaRestoMontoGstFinanciero = true;               
+            } 
             else {
-                //console.log("Retorna 3");
-                validaRestoMontoGstFinanciero = true;
+                validaRestoMontoGstFinanciero = false;
+                return false;                
             }
         } else if (isCkeckRestaGtoFinananciero === false) {
             validaRestoMontoGstFinanciero = true;
-        }          
-
-        //console.log(`Cupo ${validadorOtrosMontos},  restoGast ${validaRestoMontoGstFinanciero} `)
-        //if (validadorCheck && validadorOtrosMontos && validaRestoMontoGstFinanciero) {
+        }  
         if (validadorOtrosMontos && validaRestoMontoGstFinanciero) {
             return true;
         } else {
@@ -198,9 +187,7 @@ const NuevaSolicitud = (props) => {
         if (nombrePersonalTarjeta !== '' && direccionEntrega !== '' && tipoEntrega !== '') {
             validador = true
         }
-
         return validador;
-
     }
 
 
@@ -294,17 +281,17 @@ const NuevaSolicitud = (props) => {
 
     const refrescarDatosInformativos = () => {
         fetchValidacionSocio(cedulaSocio, '', props.token, (data) => {
-            data.cedula = cedulaSocio;      
             let datosFinan = {
-                montoSolicitado: 0,
+                montoSolicitado: datosFinancierosObj.montoSolicitado,
                 montoIngresos: data.dcm_total_ingresos,
                 montoEgresos: data.dcm_total_egresos,
-                montoGastoFinaCodeudor: "",
-                montoRestaGstFinanciero: "",
+                montoGastoFinaCodeudor: datosFinancierosObj.montoGastoFinaCodeudor,
+                montoRestaGstFinanciero: 0,
             }
             setDatosFinancierosObj(datosFinan);
             console.log(`ingresos, ${data.dcm_total_ingresos}; egresos, ${data.dcm_total_egresos}; `,);
             console.log("FINAN, ", datosFinan);
+            anteriorStepHandler();
         }, dispatch);
 
     }
@@ -324,10 +311,10 @@ const NuevaSolicitud = (props) => {
 
             let datosFinan = {
                 montoSolicitado: 0,
-                montoIngresos: data.dcm_total_ingresos,
-                montoEgresos: data.dcm_total_egresos,
-                montoGastoFinaCodeudor: "",
-                montoRestaGstFinanciero: "",
+                montoIngresos: Number(data.dcm_total_ingresos),
+                montoEgresos: Number(data.dcm_total_egresos),
+                montoGastoFinaCodeudor: Number(datosFinancierosObj.montoGastoFinaCodeudor),
+                montoRestaGstFinanciero: Number(datosFinancierosObj.montoRestaGstFinanciero),
             }
             setDatosFinancierosObj(datosFinan);
 
@@ -341,7 +328,6 @@ const NuevaSolicitud = (props) => {
             }
             if (data.str_res_codigo === "000") {
                 if (!actualizarInfo) {
-                    //TODO: DEJAR EN 1
                     setStep(1);
                     let retrasoEfecto = setTimeout(function () {
                         setIsVisibleBloque(true);
@@ -446,31 +432,6 @@ const NuevaSolicitud = (props) => {
         }
         if (step === 1) {
             await consultaAlertas(true);        
-
-            /*
-            //TODO: HACER NUEVA CONSULTA DE LAS ALERTAS ANTES DE PASAR AL 2 pasar la fecha de nacimiento
-            const objValidaciones = {
-                "lst_validaciones_ok": [
-                    { str_descripcion_alerta: "SOCIO CUENTA CON INFORMACION ACTUALIZADA" }, { str_descripcion_alerta: "SOCIO MANTIENE ACTIVA SUS CUENTAS DE AHORROS" },
-                    { str_descripcion_alerta: "SOCIO PUEDE REALIZAR LA CONSULTA AL BURO" }],
-                "lst_validaciones_err": []
-            }
-            handleLists(objValidaciones)*/
-
-            //console.log("SOC,", data) TODO: INCLUIR EN LAS ALERTAS DE JHONNY
-            /*const arrValidacionesOk = [...data.lst_datos_alerta_true];
-            const arrValidacionesErr = [...data.lst_datos_alerta_false];
-            setValidacionesOk(arrValidacionesOk);
-            setValidacionesErr(arrValidacionesErr);
-
-            const objValidaciones = {
-                "lst_validaciones_ok": [...data.lst_datos_alerta_true],
-                "lst_validaciones_err": [...data.lst_datos_alerta_false]
-            }
-            handleLists(objValidaciones);*/
-
-
-
         }
         if (step === 2) {
             //console.log(`SHOW AUTOR, ${showAutorizacion}`)
@@ -480,28 +441,9 @@ const NuevaSolicitud = (props) => {
                 fetchAddAutorizacion("C", 1, "F", cedulaSocio, nombreSocio, apellidoPaterno, apellidoMaterno, archivoAutorizacion, props.token, (data) => {
                     //console.log("AUTOR, ", data);
                     if (data.str_res_codigo === "000") {
-                        //const estadoAutorizacion = validacionesErr.find((validacion) => { return validacion.str_nemonico === "ALERTA_SOLICITUD_TC_090" })
-                        //estadoAutorizacion.str_estado_alerta = "True";
-
                         setIsUploadingAthorization(false);
                         setShowAutorizacion(false);
-
                         consultaAlertas(false);
-
-                        /*
-                        //TODO CAMBIAR AL NUEVO METODO DE ALERTAS
-                        fetchValidacionSocio(cedulaSocio, '', props.token, (data) => {
-                            const arrValidacionesOk = [...data.lst_datos_alerta_true];
-                            const arrValidacionesErr = [...data.lst_datos_alerta_false];
-                            setValidacionesOk(arrValidacionesOk);
-                            const objValidaciones = {
-                                "lst_validaciones_ok": [...data.lst_datos_alerta_true],
-                                "lst_validaciones_err": [...data.lst_datos_alerta_false]
-                            }
-                            handleLists(objValidaciones);
-                            setAutorizacionOk(false);
-                            setValidacionesErr(arrValidacionesErr);
-                        }, dispatch);*/
 
                     }
                 }, dispatch);
@@ -517,24 +459,14 @@ const NuevaSolicitud = (props) => {
         }
         
         if (step === 3) {
-            //DATOS FINANCIEROS SE GUARDA EN VARIABLES           
-            
+            //DATOS FINANCIEROS SE GUARDA EN VARIABLES
             const dataSocio = infoSocio;
             dataSocio.datosFinancieros = datosFinancierosObj;
             setInfoSocio(dataSocio);
-            console.log("INFO SOCI SOL, ", dataSocio)
-
-            /*
-            const strOficina = "MATRIZ";
-            //const strOficina = get(localStorage.getItem("office"));
-            const strOficial = get(localStorage.getItem("sender_name"));
-            const strCargo = get(localStorage.getItem("role"));*/
-
-            //console.log("VALOR SIM, ",realizaNuevaSimulacion)
+            //console.log("INFO SOCI SOL, ", dataSocio)
 
             if (!realizaNuevaSimulacion.current) {
                 //console.log("PRIMERA CONSULTA BURO ")
-                //await fetchScore("C", "0903325546", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, "Matriz", datosUsuario[0].strOficial, datosUsuario[0].strCargo, props.token, (data) => {
                 //TODO cambiar cedula a a -> cedulaSocio
                 await fetchScore("C", "1150214375", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, "Matriz", datosUsuario[0].strOficial, datosUsuario[0].strCargo, props.token, (data) => {
                     setScore(data);
@@ -546,7 +478,7 @@ const NuevaSolicitud = (props) => {
                     setCupoSugeridoAval(data.response.result?.capacidadPago[0].cupoSugerido.toString());
                     
                     realizaNuevaSimulacion.current = true
-                    datosFinancierosObj.montoGastoFinaCodeudor = data.str_gastos_codeudor;
+                    datosFinancierosObj.montoGastoFinaCodeudor = Number(data.str_gastos_codeudor);
                     setDatosFinancierosObj(datosFinancierosObj)
 
 
@@ -710,6 +642,14 @@ const NuevaSolicitud = (props) => {
     const [comentario, setComentario] = useState("");
     const [comentarioAdic, setComentarioAdic] = useState("");
 
+    useEffect(() => {
+        if (comentarioAdic === "") {
+            setEstadoBotonSiguiente(true);
+        } else {
+            setEstadoBotonSiguiente(false);
+        }
+    }, [comentarioAdic])
+
     const handleComentario = (comentarioToggle) => {
         setComentario(comentarioToggle);
     }
@@ -753,7 +693,7 @@ const NuevaSolicitud = (props) => {
     return (
         <div className="f-row" >
             <Sidebar enlace={props.location.pathname}></Sidebar>
-            {showAutorizacion.toString()}
+           {/* {showAutorizacion.toString()}*/}
             <Card className={["m-max w-100 justify-content-space-between align-content-center"]}>
                 <div className="f-col justify-content-center">
 
@@ -766,6 +706,7 @@ const NuevaSolicitud = (props) => {
                         <div className="f-row w-100 justify-content-center sliding-div ">
                             <ValidacionSocio paso={step}
                                 token={props.token}
+                                cedulaSocioValue={cedulaSocio }
                                 setCedulaSocio={cedulaSocioHandler}
                                 infoSocio={infoSocio}
                                 isVisibleBloque={isVisibleBloque}
@@ -851,9 +792,12 @@ const NuevaSolicitud = (props) => {
                         
                     </Item>
                     <Item xs={8} sm={8} md={8} lg={8} xl={8} className="f-row justify-content-center align-content-center">
-                        {(step === 1 || step === 3) && 
+                        {(step === 1) && 
                             <Button className={["btn_mg btn_mg__primary mt-2 mr-2"]} onClick={()=> refrescarInformacionHandler(true)}>{"Actualizar"}</Button>
-                        }                        
+                        } 
+                        {(step === 3) &&
+                            <Button className={["btn_mg btn_mg__primary mt-2 mr-2"]} onClick={refrescarDatosInformativos}>{"Actualizar"}</Button>
+                        }  
                         <Button className={["btn_mg btn_mg__primary mt-2 ml-2"]} disabled={estadoBotonSiguiente} onClick={()=>nextHandler(step)}>{textoSiguiente}</Button>
                     </Item>
                     

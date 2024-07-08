@@ -10,8 +10,8 @@ const DatosFinancieros = (props) => {
     const [montoSolicitado, setMontoSolicitado] = useState(0);
     const [montoIngresos, setMontoIngresos] = useState(0);
     const [montoEgresos, setMontoEgresos] = useState(0);
-    const [montoGastoFinaCodeudor, setMontoGastoFinanCodeudor] = useState("");
-    const [restaMontoGastosFinancieros, setRestaMontoGastosFinancieros] = useState("");
+    const [montoGastoFinaCodeudor, setMontoGastoFinanCodeudor] = useState(0);
+    const [restaMontoGastosFinancieros, setRestaMontoGastosFinancieros] = useState(0);
 
     const [isCkeckRestaGtoFinancero, setIsCkeckRestaGtoFinancero] = useState(false);
 

@@ -11,6 +11,7 @@ import ModalAlert from './Common/Alert';
 import { setAlertText } from "../redux/Alert/actions";
 import { Alert, Box, Collapse, Container, FormGroup, Grid, } from '@mui/material';
 import InputMego from './Common/Input';
+import Input from './Common/UI/Input';
 
 const mapStateToProps = (state) => {
     localStorage.setItem('sender', set("Param"));
@@ -73,11 +74,11 @@ function RecuperarPassword(props) {
             {cambiarPass ?
                 <CambiarPassword openModal={cambiarPass} setOpenModal={setCambiarPass} callIn={"RESET_PASS"} />
                 : ""}
-            <div className="card_header">
+            <div className="card_header mb-2">
                 <h2>Recuperar Password</h2>
             </div>
-            <form>
-                <FormGroup row className="mb-3">
+            <form className="form_mg">
+                <FormGroup className="mb-3">
                     <InputMego
                         id="usuario"
                         name="usuario"
@@ -87,13 +88,14 @@ function RecuperarPassword(props) {
                         isError={invalidImputs && invalidImputs.find(x => x.id === "usuario") !== undefined}
                         helperText={invalidImputs.find(x => x.id === "usuario") ? invalidImputs.find(x => x.id === "usuario").text : ''}
                         value={usuario}
-                        onChange={(e) => {
+                        change={(e) => {
                             validateInput("usuario", validarContieneEspecial(e.target.value));
                             setUsuario(e.target.value);
                         }} />
                 </FormGroup>
+                
                 <Alert severity="info" open={true} >
-                    <button color="primary" type="button" disabled={IsNullOrWhiteSpace(usuario) || (invalidImputs && invalidImputs.find(x => x.id === "usuario") !== undefined)} onClick={() => {
+                    <button style={{ marginLeft:"2rem" }} className="btn_mg btn_mg__primary" type="button" disabled={IsNullOrWhiteSpace(usuario) || (invalidImputs && invalidImputs.find(x => x.id === "usuario") !== undefined)} onClick={() => {
                         fetchPreguntaUsuario(usuario, props.token, (pregunta, idUsr) => {
                             setPregunta(pregunta);
                             setIdUsuario(idUsr);
@@ -106,10 +108,10 @@ function RecuperarPassword(props) {
                         }, dispatch);
                     }}>Verificar</button>
                     <Collapse in={!IsNullOrWhiteSpace(pregunta)}>
-                        <h6 className="alert-heading">
+                        <h3 className="alert-heading">
                             Ingrese la respuesta a la pregunta secreta:
-                        </h6>
-                        <FormGroup row className="mb-3">
+                        </h3>
+                        <FormGroup className="mb-3">
                             <InputMego
                                 id="respuesta"
                                 name="respuesta"
@@ -119,7 +121,7 @@ function RecuperarPassword(props) {
                                 isError={invalidImputs && invalidImputs.find(x => x.id === "respuesta") !== undefined}
                                 helperText={invalidImputs.find(x => x.id === "respuesta") ? invalidImputs.find(x => x.id === "respuesta").text : ''}
                                 value={respuestaOff}
-                                onChange={(e) => {
+                                change={(e) => {
                                     var txt = e.target.value;
                                     var flag = IsNullOrWhiteSpace(txt) || txt.length < 2;
                                     validateInput("respuesta", { bln: flag, text: "Campo vac\u00EDo" });
@@ -133,11 +135,11 @@ function RecuperarPassword(props) {
                 </Alert>
                 <Collapse in={!IsNullOrWhiteSpace(pregunta) && idUsuario > 0 && codeResponse === "0000"}>
                     <Alert severity="warning">
-                        <h6 className="alert-heading">
+                        <h2 className="alert-heading">
                             Resetear Clave
-                        </h6>
+                        </h2>
                         <FormGroup row className="mb-3">
-                            <Grid sm={10}>
+                            <Grid item sm={10}>
                                 <InputMego
                                     id="passwordNueva"
                                     name="passwordNueva"
@@ -146,7 +148,7 @@ function RecuperarPassword(props) {
                                     isError={invalidImputs && invalidImputs.find(x => x.id === "passwordNueva") !== undefined}
                                     helperText={invalidImputs.find(x => x.id === "passwordNueva") ? invalidImputs.find(x => x.id === "passwordNueva").text : ''}
                                     value={passNuevaOff}
-                                    onChange={(e) => {
+                                    change={(e) => {
                                         setPasswordWithOff(passNueva, e.target.value, (pass, passOff) => {
                                             var aux = validarFormatoPassword(pass, Number(props.dataNroCaracteres));
                                             aux.bln = !aux.bln;
@@ -158,7 +160,7 @@ function RecuperarPassword(props) {
                             </Grid>
                         </FormGroup>
                         <FormGroup row className="mb-3">
-                            <Grid sm={10}>
+                            <Grid item sm={10}>
                                 <InputMego
                                     id="confirmPasswordNueva"
                                     name="confirmPasswordNueva"
@@ -167,7 +169,7 @@ function RecuperarPassword(props) {
                                     isError={invalidImputs && invalidImputs.find(x => x.id === "confirmPasswordNueva") !== undefined}
                                     helperText={invalidImputs.find(x => x.id === "confirmPasswordNueva") ? invalidImputs.find(x => x.id === "confirmPasswordNueva").text : ''}
                                     value={confirmPassNuevaOff}
-                                    onChange={(e) => {
+                                    change={(e) => {
                                         setPasswordWithOff(confirmPassNueva, e.target.value, (pass, passOff) => {
                                             var aux = validarIgualdadPassword(passNueva, pass);
                                             aux.bln = !aux.bln;
@@ -180,25 +182,29 @@ function RecuperarPassword(props) {
                         </FormGroup>
                     </Alert>
                 </Collapse>
-                <button color="guardar-cambios" type="button" disabled={validImputs.length < 2} onClick={() => {
-                    if (!isValidarButton) {
-                        handlerSubmitResetearClave(idUsuario, usuario, passNueva, props.token, (code, message) => {
-                            props.setOpenModal();
-                            props.setAlertText({ code: code, text: message });
-                        }, dispatch);
-                        setPassNueva("");
-                        setPassNuevaOff("");
-                        setConfirmPassNuevaOff("");
-                    } else {
-                        handlerSubmitValidarRespuesta(idUsuario, usuario, pregunta, respuesta, props.token, (code, message) => {
-                            setCodeResponse(code);
-                            if (code !== "0000") {
+                <div className="mt-3 f-row w-100 justify-content-center align-content-center">
+                    <button className="btn_mg btn_mg__primary" type="button" disabled={validImputs.length < 2} onClick={() => {
+                        if (!isValidarButton) {
+                            handlerSubmitResetearClave(idUsuario, usuario, passNueva, props.token, (code, message) => {
+                                props.setOpenModal();
                                 props.setAlertText({ code: code, text: message });
-                            }
-                        }, dispatch);
-                    }
-                }}>{!isValidarButton ? "Guardar" : "Validar"}</button>
-                <button onClick={() => props.setOpenModal(false)}>Cancelar</button>
+                            }, dispatch);
+                            setPassNueva("");
+                            setPassNuevaOff("");
+                            setConfirmPassNuevaOff("");
+                        } else {
+                            handlerSubmitValidarRespuesta(idUsuario, usuario, pregunta, respuesta, props.token, (code, message) => {
+                                setCodeResponse(code);
+                                if (code !== "0000") {
+                                    props.setAlertText({ code: code, text: message });
+                                }
+                            }, dispatch);
+                        }
+                    }}>{!isValidarButton ? "Guardar" : "Validar"}</button>
+                    <button className="btn_mg btn_mgprev" onClick={() => props.setOpenModal(false)}>Cancelar</button>
+                </div>
+
+                
             </form>
         </Box>
     );

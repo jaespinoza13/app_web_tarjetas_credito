@@ -385,7 +385,7 @@ const UploadDocumentos = (props) => {
             })
             //console.log("ARREGLO ARCHIVOS OBJ ", arregloArchivos)
 
-            //TODO: MODIFICAR YA QUE MODIFICA LA LOGICA
+            //Se actualiza los arreglos haciendo un filtrado de archivos que se han cargado hasta el momento
             setValidadorCambio(true);
             setTablaContenido([...tablaContenido]);
             setCarchivosCargados([...arregloArchivos]);
@@ -460,7 +460,7 @@ const UploadDocumentos = (props) => {
                 window.alert(mensaje);
             }
 
-            resetCargarArchivos();
+            //resetCargarArchivos();
             return;
         }
 
@@ -758,14 +758,14 @@ const UploadDocumentos = (props) => {
                     </div>
                 </div>
 
-                <div className="f-row uploader_arc">
-                    <div className={"btn_arch btn_arch__toggler "} >
-                        <div className='f-row w-100 center_text_items'>
-                            <h3 > Salir</h3>
-                            <img style={{ marginLeft: "10px" }} src="Imagenes/close.svg" alt="" />
-                        </div>
-                    </div>
-                </div>
+                {/*<div className="f-row uploader_arc">*/}
+                {/*    <div className={"btn_arch btn_arch__toggler "} >*/}
+                {/*        <div className='f-row w-100 center_text_items'>*/}
+                {/*            <h3 > Salir</h3>*/}
+                {/*            <img style={{ marginLeft: "10px" }} src="Imagenes/close.svg" alt="" />*/}
+                {/*        </div>*/}
+                {/*    </div>*/}
+                {/*</div>*/}
 
             </section>
 

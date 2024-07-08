@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+﻿import { Fragment, useState } from 'react';
 import Sidebar from '../Common/Navs/Sidebar';
 import { useHistory } from 'react-router-dom';
 import { useEffect } from 'react';
@@ -104,7 +104,7 @@ function Distribucion(props) {
 
                 <div className="contentTableOrden mt-3 mb-3">
 
-                    {ordenes.map(orden => {
+                    {ordenes.map((orden, index) => {
                         let textoTitulo = (
                             <div className="w-95 f-row">
                                 <div className='content-headertable' >
@@ -130,6 +130,7 @@ function Distribucion(props) {
 
 
                         return (
+                            <Fragment key={index}>
                             <div className="mb-1">
                                 <AccordionV2 title={textoTitulo} classNameTitulo={"accordionStyle2"} >
                                     <table className='table-accordion2' style={{ overflowY: "hidden" }}>
@@ -162,6 +163,7 @@ function Distribucion(props) {
 
                                 </AccordionV2>
                             </div>
+                            </Fragment>
                         )
                     })}
                 </div>
