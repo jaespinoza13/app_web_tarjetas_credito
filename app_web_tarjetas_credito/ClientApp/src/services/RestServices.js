@@ -1287,8 +1287,7 @@ export function fetchAddComentarioSolicitud(idSolicitud, comentario, estadoSolic
         int_id_solicitud: idSolicitud,
         bl_regresa_estado: regresaSolicitud,
         str_comentario: comentario,
-        int_estado: estadoSolicitud,
-        str_decision_sol: "APROBADO"
+        int_estado: estadoSolicitud
     }
     console.log(body);
     ServicioPostExecute(addComentarioSolicitud, body, token, { dispatch: dispatch }).then((data) => {
@@ -1367,13 +1366,6 @@ export function fetchAddResolucion(idSolicitud, cupo_solicitado, cupo_sugerido, 
         str_comentario_proceso: comentario_proceso,
     }
 
-    /*let body = {
-        int_id_solicitud: idSolicitud,
-        bl_regresa_estado: false,
-        str_comentario: comentario,
-        int_estado: Number(estadoSolicitud)
-    }*/
-    //console.log(body);
     ServicioPostExecute(addResolucion, body, token, { dispatch: dispatch }).then((data) => {
         if (data) {
             if (data.error) {
@@ -1547,8 +1539,9 @@ export function fetchUpdateCupoSolicitud(idSolicitud, idFlujoSol, estadoSol, dec
         dec_cupo_solicitado: parseFloat(decMonto)
     }
 
-    //console.log(body);
+    console.log(body);
     ServicioPostExecute(updSolicitud, body, token, { dispatch: dispatch }).then((data) => {
+        console.log("ACTUALZIAR MONTO ", body)
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));

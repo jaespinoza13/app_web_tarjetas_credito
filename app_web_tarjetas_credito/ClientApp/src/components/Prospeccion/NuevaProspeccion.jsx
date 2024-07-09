@@ -124,10 +124,12 @@ const NuevaProspeccion = (props) => {
 
     useEffect(() => {
         const strOficial = get(localStorage.getItem("sender_name"));
-        setUsuario(strOficial);
         const strRol = get(localStorage.getItem("role"));
+        const userOficina = get(localStorage.getItem('office'));
+        const userOficial = get(localStorage.getItem('sender'));
+        setUsuario(strOficial);
         setRol(strRol);
-        setDatosUsuario([{ strCargo: strRol, strOficial: strOficial }]);
+        setDatosUsuario([{ strCargo: strRol, strOficial: strOficial, strUserOficial: userOficial, strUserOficina: userOficina }]);
     }, []);
 
 
@@ -401,7 +403,7 @@ const NuevaProspeccion = (props) => {
                 console.log("PRIMERA CONSULTA BURO ")
 
                 //TODO: CAMBIAR LA CEDULA por "documento"
-                await fetchScore("C", "1150214375", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, "Matriz", datosUsuario[0].strOficial, datosUsuario[0].strCargo, props.token, (data) => {
+                await fetchScore("C", "1150214375", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, datosUsuario[0].strUserOficial, datosUsuario[0].strOficial, datosUsuario[0].strCargo, props.token, (data) => {
                     setScore(data);
                     setIdClienteScore(data.int_cliente);
                     //console.log("SCORE, ", data.int_cliente)

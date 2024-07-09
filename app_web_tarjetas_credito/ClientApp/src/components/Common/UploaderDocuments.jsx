@@ -133,13 +133,15 @@ const UploadDocumentos = (props) => {
         console.log("busquedaArchivo ", busquedaArchivo)
         */
 
+        //Control si se encuentra archivo cargado, permite descargar 
+        if (busquedaArchivo?.str_nombre_doc) {
+            setNombreDocumento(busquedaArchivo.str_nombre_doc)
 
-        setNombreDocumento(busquedaArchivo.str_nombre_doc)
-
-        fetchDescargarDocumentoAxentria(IdDocDescargar, props.token, (data) => {
-            if (requiereVisualizar) visualizarArchivo.current = true;
-            setDescargaDocumento(data.file_bytes);
-        }, dispatch);
+            fetchDescargarDocumentoAxentria(IdDocDescargar, props.token, (data) => {
+                if (requiereVisualizar) visualizarArchivo.current = true;
+                setDescargaDocumento(data.file_bytes);
+            }, dispatch);
+        }       
     }
 
 

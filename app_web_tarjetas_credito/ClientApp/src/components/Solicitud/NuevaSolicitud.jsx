@@ -72,13 +72,11 @@ const NuevaSolicitud = (props) => {
     const [fechaNacimiento, setFechaNacimiento] = useState('');
     const [isCkeckRestaGtoFinananciero, setIsCkeckRestaGtoFinananciero] = useState(false);
 
-    //Errores
-    const [mensajeErrorScore, setMensajeErrorScore] = useState("");
-
+ 
     //Boton siguiente
     const [estadoBotonSiguiente, setEstadoBotonSiguiente] = useState(true);
-    //Score
 
+    //Score
     const [archivoAutorizacion, setArchivoAutorizacion] = useState('');
     const [step, setStep] = useState(0);
 
@@ -161,7 +159,7 @@ const NuevaSolicitud = (props) => {
         let validadorOtrosMontos = false;
         let validaRestoMontoGstFinanciero = false;
 
-        console.log(`montoSolicitado ${datosFinancierosObj.montoSolicitado}, montoEgresos ${datosFinancierosObj.montoIngresos},  montoEgresos ${datosFinancierosObj.montoEgresos} `)
+        //console.log(`montoSolicitado ${datosFinancierosObj.montoSolicitado}, montoEgresos ${datosFinancierosObj.montoIngresos},  montoEgresos ${datosFinancierosObj.montoEgresos} `)
 
         if ((datosFinancierosObj.montoSolicitado > 0 && datosFinancierosObj.montoSolicitado <= 99999) &&
             (datosFinancierosObj.montoIngresos > 0 && datosFinancierosObj.montoIngresos <= 99999) &&
@@ -194,7 +192,7 @@ const NuevaSolicitud = (props) => {
         if (nombrePersonalTarjeta !== '' && direccionEntrega !== '' && direccionEntrega !== '-1' && tipoEntrega !== '') {
             validador = true
         }
-        console.log(` Valor nom tarjeta ${nombrePersonalTarjeta} `, validador)
+        //console.log(` Valor nom tarjeta ${nombrePersonalTarjeta} `, validador)
         return validador;
     }
 
@@ -276,10 +274,6 @@ const NuevaSolicitud = (props) => {
         setArchivoAutorizacion(event);
     }
 
-
-    const agregarComentarioHandler = (e) => {
-
-    }
 
     const checkGastosFinancieroHandler = (e) => {
         setIsCkeckRestaGtoFinananciero(e);
@@ -477,7 +471,7 @@ const NuevaSolicitud = (props) => {
             if (!realizaNuevaSimulacion.current) {
                 //console.log("PRIMERA CONSULTA BURO ")
                 //TODO cambiar cedula a a -> cedulaSocio
-                await fetchScore("C", "1150214375", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, "Matriz", datosUsuario[0].strOficial, datosUsuario[0].strCargo, props.token, (data) => {
+                await fetchScore("C", "1150214375", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, datosUsuario[0].strUserOficial,  datosUsuario[0].strOficial, datosUsuario[0].strCargo, props.token, (data) => {
                     setScore(data);
                     setIdClienteScore(data.int_cliente);
                     //console.log("SCORE, ", data.int_cliente)
@@ -510,7 +504,7 @@ const NuevaSolicitud = (props) => {
                 if (!datosFinan.montoGastoFinaCodeudor || datosFinan.montoGastoFinaCodeudor === "" || datosFinan.montoGastoFinaCodeudor === " " || IsNullOrEmpty(datosFinan.montoGastoFinaCodeudor)) datosFinan.montoGastoFinaCodeudor = 0;
 
                 //TODO CAMBIAR LA CEDULA ->cedulaSocio
-                await fetchNuevaSimulacionScore("C", "1150214375", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, "Matriz", datosUsuario[0].strOficial, datosUsuario[0].strCargo, datosFinan.montoIngresos, datosFinan.montoEgresos, datosFinan.montoRestaGstFinanciero, datosFinan.montoGastoFinaCodeudor,
+                await fetchNuevaSimulacionScore("C", "1150214375", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, datosUsuario[0].strUserOficial,  datosUsuario[0].strOficial, datosUsuario[0].strCargo, datosFinan.montoIngresos, datosFinan.montoEgresos, datosFinan.montoRestaGstFinanciero, datosFinan.montoGastoFinaCodeudor,
                     props.token, (data) => {
                         //TODO: RECUPERAR EL data.int_cliente y 
                         setIdClienteScore(data.int_cliente);
@@ -518,8 +512,6 @@ const NuevaSolicitud = (props) => {
                         setScore(data);
 
                     }, dispatch);
-
-
             }
             setEstadoBotonSiguiente(true);
 
@@ -595,14 +587,13 @@ const NuevaSolicitud = (props) => {
                 str_estado_civil: estadoCivil,
                 mny_total_ingresos: datosFinancierosObj.montoIngresos.toString(),
                 mny_total_egresos: datosFinancierosObj.montoEgresos.toString(),
-                str_denominacion_socio: "",
+                str_denominacion_socio: nombrePersonalTarjeta,
 
                 str_direccion: direccion,
                 str_localidad: localidad,
                 str_barrio: barrio,
                 str_telefono: celularSocio,
                 str_provincia: provincia,
-                //str_cod_postal: "",
                 str_cod_postal: cod_postal.toString(),
                 str_zona_geo: "",
                 int_oficina_entrega: int_oficina_entrega,

@@ -24,6 +24,7 @@ namespace Domain.Models.TarjetaCredito.GetSolicitudes
         public string dec_cupo_solicitado { get; set; } = String.Empty;
         public string dtt_fecha_solicitud { get; set; } = String.Empty;
         public string str_usuario_crea { get; set; } = String.Empty;
+        public string str_analista { get; set; } = String.Empty;
         public int int_oficina_crea { get; set; }
         public string str_estado { get; set; } = String.Empty;
         public int int_estado { get; set; }
