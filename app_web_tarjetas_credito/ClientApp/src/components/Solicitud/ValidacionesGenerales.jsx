@@ -39,42 +39,13 @@ const ValidacionesGenerales = (props) => {
             const a4WidthPt = 595.28; // A4 width in points
             const a4HeightPt = 841.89; // A4 height in points
 
-
-
-            /*
-            // Create jsPDF instance with landscape orientation and A4 dimensions
-            var doc = new jsPDF('p', 'px', [a4WidthPt, a4HeightPt],false, true);
-
-            doc.html(pdfData, {
-                callback: function (doc) {
-                    doc.save();
-                },
-                x: 10,
-                y: 10
-            })*/
-
-            
             if(data.file_bytes.length > 0 && verificarPdf(data.file_bytes)) {
                 const blob = base64ToBlob(data.file_bytes, 'application/pdf');
                 let fechaHoy = generarFechaHoy();
                 const nombreArchivo = `AprobacionConsultaBuro_${(fechaHoy)}`;
                 descargarArchivo(blob, nombreArchivo, 'pdf', false);
             }
-            
 
-            // Create Blob from binary data
-            //const blob = new Blob([pdfData], { type: "application/pdf" });
-
-            //// Create download link
-            //const downloadLink = document.createElement("a");
-            //downloadLink.href = URL.createObjectURL(blob);
-
-            //// Format the current date for the filename
-            //const currentDate = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-            //downloadLink.download = "Autorizacion_" + currentDate + ".pdf";
-
-            //// Trigger download
-            //downloadLink.click();
         } catch (error) {
             console.error("Error downloading PDF:", error);
         }
@@ -102,7 +73,7 @@ const ValidacionesGenerales = (props) => {
     const getContrato = () => {
         
         const nombresApellidos = props.infoSocio.str_nombres + " " + props.infoSocio.str_apellido_paterno + " " + props.infoSocio.str_apellido_materno;
-        fetchScore("C", props.infoSocio.cedula, nombresApellidos, "Matriz", props.datosUsuario[0].strOficial, props.datosUsuario[0].strCargo, props.token, (data) =>
+        fetchScore("C", props.infoSocio.cedula, nombresApellidos, props.datosUsuario[0].strUserOficial, props.datosUsuario[0].strOficial, props.datosUsuario[0].strCargo, props.token, (data) =>
         {
             descargarArchivoConsulta(data);
         }, dispatch);
@@ -126,40 +97,12 @@ const ValidacionesGenerales = (props) => {
 
     };
 
-    /*
-    const conversionBase64 = file => {
-        return new Promise((resolve, reject) => {
-            const fileReader = new FileReader();
-            fileReader.readAsDataURL(file);
-
-            fileReader.onload = () => {
-                resolve(fileReader.result);
-            }
-
-            fileReader.onerror = (error) => {
-                reject(error);
-            }
-        })
-    }*/
-
 
     const removeFile = () => {
         setArchivoAutorizacion('');
         setIsDocCargado(false);
     }
 
-    /*
-    useEffect(() => {
-        if (archivoAutorizacion !== "" && !isDocCargado) {
-            console.log(archivoAutorizacion?.split(',')[1]);
-            let val = archivoAutorizacion?.split(',')[1];
-            //props.archivoPdf(val);
-            props.setDocumento(val)
-            setArchivoAutorizacion(val);       
-            setIsDocCargado(true)
-
-        }
-    }, [archivoAutorizacion, isDocCargado])*/
 
     return (
         <div className="f-col justify-content-center">

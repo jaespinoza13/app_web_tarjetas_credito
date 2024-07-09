@@ -44,7 +44,6 @@ function Solicitud(props) {
 
     const [isLstSolicitudes, setIsLstSolicitudes] = useState(true);
     const [isLstProspecciones, setIsLstProspecciones] = useState(false);
-    const [isModalComentarios, setisModalComentarios] = useState(false);
     const [accionesSolicitud, setAccionesSolicitud] = useState(
         [
             { image: "", textPrincipal: `Solicitudes`, textSecundario: "", key: 1 },
@@ -55,90 +54,24 @@ function Solicitud(props) {
 
     //Paginacion
     const [paginaActual, setPaginaActual] = useState(1);
-    const [paginasEnVista] = useState(10); //Número de registros listados por página
+    const [paginasEnVista, setPaginasEnVista] = useState(10); //Número de registros listados por página
     const indexOfLastRecord = paginaActual * paginasEnVista;
     const indexOfFirstRecord = indexOfLastRecord - paginasEnVista;
     const [registrosPagActual, setRegistrosPagActual] = useState();
     const [numPaginas, setNumPaginas] = useState(0);
 
-    //ACTUALIZA LA PAGINA DONDE SE QUIERE IR
-    useEffect(() => {
-        setRegistrosPagActual(lstSolicitudes.slice(indexOfFirstRecord, indexOfLastRecord));
-    }, [paginaActual])
-
+  
     //Headers tablas Solicitudes y Prospectos
     const headerTableSolicitantes = [
         { nombre: 'Nro. Solicitud', key: 0 }, { nombre: 'Identificación', key: 1 }, { nombre: 'Ente', key: 2 }, { nombre: 'Nombre solicitante', key: 3 },
         { nombre: 'Monto', key: 5 }, { nombre: 'Calificación', key: 6 },
-        { nombre: 'Estado', key: 7 }, { nombre: 'Oficina Crea', key: 8 }, { nombre: 'Acciones', key: 9 },
+        { nombre: 'Estado', key: 7 }, { nombre: 'Oficina Crea', key: 8 }, //{ nombre: 'Acciones', key: 9 },
     ];
 
     const headerTableProspectos = [
         { nombre: 'Id', key: 1 }, { nombre: 'Cédula', key: 2 }, { nombre: 'Nombres', key: 3 },
         { nombre: 'Celular', key: 4 }, { nombre: 'Correo', key: 5 }, { nombre: 'Cupo solicitado', key: 6 }, { nombre: 'Usuario Crea', key: 7 }
     ];
-
-
-    //Headers y Body TextArea
-    const headersTable_with_Text_Area = [
-        { nombre: "Tipo", key: 1 },
-        { nombre: "Descripción", key: 2 },
-        { nombre: "Detalle", key: 3 }
-    ]
-
-    const [parametrosTC, setParametrosTC] = useState([]);
-    const [permisoImprimirMedio, setPermisoImprimirMedio] = useState([]);
-    const [permisoRetornarBandeja, setPermisoRetornarBandeja] = useState([]);
-    const [permisoApruebaMontoMenor, setPermisoApruebaMontoMenor] = useState([]);
-    const [permisoEstadosSigComite, setPermisoEstadosSigComite] = useState([]);
-    const [permisoEstadoHabilitarAprobarSol, setPermisoEstadoHabilitarAprobarSol] = useState([]);
-
-    const parametros = [
-        { prm_id: 11272, prm_valor_ini: "SOLICITUD CREADA" },
-        { prm_id: 11273, prm_valor_ini: "ANALISIS UAC" },
-        { prm_id: 11274, prm_valor_ini: "ANALISIS JEFE UAC" },
-        { prm_id: 11275, prm_valor_ini: "ANALISIS COMITE" },
-        { prm_id: 11276, prm_valor_ini: "APROBADA COMITE" },
-        { prm_id: 11277, prm_valor_ini: "RECHAZADA COMITE" },
-        { prm_id: 11278, prm_valor_ini: "POR CONFIRMAR" },
-        { prm_id: 11279, prm_valor_ini: "APROBADA" },//APROBADA SOCIO
-        //{ prm_id: 11280, prm_valor_ini: "NEGADA" }, //RECHAZADA SOCIO
-        { prm_id: 11280, prm_valor_ini: "OPERATIVO NEGOCIOS" }, //RECHAZADA SOCIO
-        { prm_id: 10934, prm_valor_ini: "ANULADA COMITE" },        
-    ];
-
-    const validaNombreParam = (id) => {
-        //console.log(id);
-        const parametro = parametros.find((param) => { return param.prm_id === id });
-        return parametro.prm_valor_ini;
-    }
-
-    const bodyTable_with_Text_Area = [
-        { tipo: "DESCRIPCION GENERAL DEL SOCIO", descripcion: "Descripción general socio", detalle: "Socio se desempeña como Cbo. Primero...", key: 98 },
-        { tipo: "CARACTER", descripcion: "Antecedentes crediticios...", detalle: "Socio y conyugue cuentan con historial crediticio...", key: 50 },
-        { tipo: "CAPACIDAD", descripcion: "Fuentes de ingreso...", detalle: "Socio y conyugue perciben ingresos por sueldo...", key: 7 }
-    ]
-
-
-    const [valoresTextArea, setvaloresTextArea] = useState(bodyTable_with_Text_Area)
-
-    const textAreaHandler = (valor, index) => {
-        //console.log("EL KEY ACTUALIZAR ES", index)
-        const newData = [...valoresTextArea];
-        //newData[index].detalle = valor; // Cambiar propiedad detalle por el que se requiera
-        newData.find(comentario => comentario.key === index ? comentario.detalle = valor : '')
-        setvaloresTextArea(newData);
-    };
-
-    const cancelarComentariosHandler = () => {
-        setisModalComentarios(!isModalComentarios);
-    }
-
-    const onSubmitComentarios = (e) => {
-        e.preventDefault();
-        console.log("IMPLEMENTAR GUARDADO COMENTARIOS");
-        setisModalComentarios(!isModalComentarios)
-    };
 
 
     //Prostectos y solicitudes
@@ -169,56 +102,19 @@ function Solicitud(props) {
             setRol(strRol);
             setDatosUsuario([{ strCargo: strRol, strOficial: strOficial }]);
             setControlConsultaCargaComp(true);
-
-            
-            //console.log("PROPS PARAM", props.parametrosTC)
         }
 
     }, [props.token]);
 
-    /*
+    //ACTUALIZA LA PAGINA DONDE SE QUIERE IR
     useEffect(() => {
-        console.log(`1. ${parametrosTC};`)
-        console.log(` 2. ${permisoImprimirMedio}; `)
-        console.log(` 3. ${permisoRetornarBandeja}`)
-        console.log(`4. ${permisoApruebaMontoMenor}; `)
-        console.log(`2. ${permisoEstadosSigComite}; `)
-        console.log(` 3. ${permisoEstadoHabilitarAprobarSol}`)
-    }, [permisoEstadoHabilitarAprobarSol])*/
+       if (isLstSolicitudes) {
+            setRegistrosPagActual(lstSolicitudes.slice(indexOfFirstRecord, indexOfLastRecord));
+       } else if (isLstProspecciones) {
+            setRegistrosPagActual(lstProstectos.slice(indexOfFirstRecord, indexOfLastRecord));
+       }
+    }, [paginaActual])
 
-    /** OBTENER LOS PARAMETROS DEL STORAGE*/
-    useEffect(() => {
-        //console.log("PROPS parametrosTC", props.parametrosTC.lst_parametros)
-        if (props.parametrosTC.lst_parametros?.length > 0) {
-            let ParametrosTC = props.parametrosTC.lst_parametros;
-            //console.log("Entr", props.parametrosTC.lst_parametros)
-            //console.log("Entr", ParametrosTC.filter(param => param.str_nombre === 'IMPRIMIR_MEDIO_APROBACION_TC'))
-            
-            setParametrosTC(ParametrosTC.filter(param => param.str_nombre === 'ESTADOS_SOLICITUD_TC'));
-
-            let permisosImprimiMedio = ParametrosTC.filter(param => param.str_nombre === 'IMPRIMIR_MEDIO_APROBACION_TC')[0];
-            //permisosImprimiMedio = permisosImprimiMedio.split('|');
-            setPermisoImprimirMedio(permisosImprimiMedio);
-
-            let permisoRetornoBandeja = ParametrosTC.filter(param => param.str_nombre === 'RETORNO_ESTADO_BANDEJA_TC')[0];
-            //permisoRetornoBandeja = permisoRetornoBandeja.split('|');
-            setPermisoRetornarBandeja(permisoRetornoBandeja);
-
-            let permisoApruebaMonto = ParametrosTC.filter(param => param.str_nombre === 'APROBACION_MONTO_MENOR')[0];
-            //permisoApruebaMonto = permisoApruebaMonto.split('|');
-            setPermisoApruebaMontoMenor(permisoApruebaMonto);
-
-            let permisosEstadoSigComite = ParametrosTC.filter(param => param.str_nombre === 'ESTADOS_SIGUIENTES_ANALISIS_COMITE')[0];
-            //permisosEstadoSigComite = permisosEstadoSigComite.split('|');
-            setPermisoEstadosSigComite(permisosEstadoSigComite);
-
-            let permisoHabilitaEstSigComite = ParametrosTC.filter(param => param.str_nombre === 'HABILITA_DECISION_APRUEBA_SOLICITUD')[0];
-            //permisoHabilitaEstSigComite = permisoHabilitaEstSigComite.split('|');
-            setPermisoEstadoHabilitarAprobarSol(permisoHabilitaEstSigComite);
-    
-        }
-
-    }, [props.parametrosTC])
 
 
     useEffect(() => {
@@ -234,7 +130,6 @@ function Solicitud(props) {
             if (rol === "ASESOR DE CRÉDITO") {
                 permisosUusuario = ["CREAR SOLICITUD"];
             }
-
             var permis = permisosUusuario.includes(strNombrePermiso);
             //console.log(permis);
             if (permis) {
@@ -271,9 +166,6 @@ function Solicitud(props) {
         navigate.push('/prospeccion/nueva');
     }
 
-    const closeModalHandler = () => {
-        setisModalComentarios(false);
-    }
 
     const moveToSolicitud = (solId) => {
         //console.log(solId)
@@ -362,20 +254,25 @@ function Solicitud(props) {
                         {registrosPagActual && registrosPagActual.map((solicitud) => {
                             return (
                                 <tr key={solicitud.int_id} onClick={() => { moveToSolicitud(solicitud.int_id) }}>
-                                    <td>{solicitud.int_id}</td>
+                                    <td style={{ width:"10%" }}>
+                                        {solicitud.int_id}
+                                    </td>
                                     <td>{solicitud.str_identificacion}</td>
                                     <td>{solicitud.int_ente}</td>
                                     <td>{solicitud.str_nombres}</td>
                                     <td>{`$ ${Number(solicitud.dec_cupo_solicitado).toLocaleString('en-US')}`}</td>
-                                    <td>{"AA"}</td>
-                                    <td>{validaNombreParam(solicitud.int_estado)}</td>
-                                    <td>{"Matriz"}</td>
+                                    <td>{solicitud.str_calificacion}</td>
                                     <td>
-                                        {/*<IconButton onClick={() => { setisModalComentarios(!isModalComentarios) }}>*/}
-                                        {/*    <RateReviewSharpIcon></RateReviewSharpIcon>*/}
-                                        {/*</IconButton>*/}
-                                        
+                                        {solicitud.str_analista ? <div>
+                                            {solicitud.str_estado}
+                                            <div className='tooltip ml-1'>                                                
+                                                <img className='tooltip-icon' src='/Imagenes/info.svg'></img>
+                                                <span className='tooltip-info'>Analista: {solicitud.str_analista}</span>
+                                            </div>
+                                        </div> : '' }                                        
                                     </td>
+                                    <td>{solicitud.int_oficina_crea}</td>
+
                                 </tr>
                             );
                         })}
@@ -391,7 +288,7 @@ function Solicitud(props) {
                         {registrosPagActual && registrosPagActual.map((prospecto) => {
                             return (
                                 <tr key={prospecto.pro_id}>
-                                    <td>{prospecto.pro_id}</td>
+                                    <td style={{ width: "10%" }}>{prospecto.pro_id}</td>
                                     <td>{prospecto.pro_num_documento}</td>
                                     <td>{`${prospecto.pro_nombres} ${prospecto.pro_apellidos}`}</td>
                                     <td>{prospecto.pro_celular}</td>
@@ -417,25 +314,6 @@ function Solicitud(props) {
             
         </div>
 
-        <ModalDinamico
-            //props para Modal
-            modalIsVisible={isModalComentarios}
-            titulo={'COMENTARIOS DEL ASESOR'}
-            onCloseClick={closeModalHandler}
-            type="md"
-        >
-            <TableWithTextArea
-                isBtnDisabled={!isModalComentarios}
-                headers={headersTable_with_Text_Area}
-                body={valoresTextArea}
-                onChangeTable={textAreaHandler}
-                onSubmitComentarios={onSubmitComentarios}
-                onCancelarSubmit={cancelarComentariosHandler}
-            >
-            </TableWithTextArea>
-
-        </ModalDinamico>
-
         <Modal
             modalIsVisible={modalVisible}
             titulo={`Aviso`}
@@ -448,8 +326,6 @@ function Solicitud(props) {
                 <p>No tiene permiso para acceder a esta solicitud</p>
             </div>}
         </Modal>
-
-
        
 
     </div>);
