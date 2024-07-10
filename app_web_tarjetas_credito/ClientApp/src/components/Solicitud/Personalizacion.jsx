@@ -1,12 +1,17 @@
-﻿import Card from "../Common/Card";
+﻿import { useDispatch } from "react-redux";
+import { fetchGetOficinas } from "../../services/RestServices";
+import Card from "../Common/Card";
 import Toggler from "../Common/UI/Toggler";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 
 const Personalizacion = (props) => {
+
+    const dispatch = useDispatch();
     const [nombresTarjeta, setNombresTarjeta] = useState([]);
     const [tipoEntrega, setTipoEntrega] = useState("");
     const [direccionEntrega, setDireccionEntrega] = useState("-1");
     const [tiposDireccion, setTiposDireccion] = useState([]);
+    const [oficinas, setOficinas] = useState([]);
     
     const tiposEntrega = [
         { image: "", textPrincipal: "Retiro en agencia", textSecundario: "", key: "Retiro en agencia" },
@@ -48,6 +53,10 @@ const Personalizacion = (props) => {
 
     
     useEffect(() => {
+        fetchGetOficinas(props.token, (data) => {
+            setOficinas(data.lst_oficinas);           
+        }, dispatch);
+
         const defaultEntrega = tiposEntrega.shift(0);
         setTipoEntrega(defaultEntrega.textPrincipal);
 
@@ -111,31 +120,54 @@ const Personalizacion = (props) => {
                 </Toggler>
                 {tipoEntrega !== "" && <h3 className={"mb-2"}>Selecciona una opción para la entrega</h3>}
                 {tipoEntrega === "Retiro en agencia" && <div>
-                    <select id="tipo_documento" onChange={direccionEntregaHandler} value={direccionEntrega}>
-                        <option value="-1" disabled={true }>Seleccione una opción</option>
-                        <option value="1">MATRIZ</option>
-                        <option value="2">SARAGURO</option>
-                        <option value="3">CATAMAYO</option>
-                        <option value="4">CARIAMANGA</option>
-                        <option value="5">ALAMOR</option>
-                        <option value="6">ZAMORA</option>
-                        <option value="7">CUENCA</option>
-                        <option value="8">AGENCIA NORTE</option>
-                        <option value="9">MACARA</option>
-                        <option value="10">AGENCIA SUR</option>
-                        <option value="11">AGENCIA YANTZAZA</option>
-                        <option value="12">BALSAS</option>
-                        <option value="13">CATACOCHA</option>
-                        <option value="14">SANTA ROSA</option>
-                        <option value="15">AGENCIA GUALAQUIZA</option>
-                        <option value="16">AGENCIA CUARTO CENTENARIO</option>
-                        <option value="17">AGENCIA ZUMBA</option>
-                        <option value="18">AGENCIA EL VALLE</option>
-                        <option value="19">AGENCIA MACHALA</option>
-                        <option value="20">AGENCIA EL EJIDO</option>
-                        <option value="21">AGENCIA LATACUNGA</option>
-                        <option value="22">AGENCIA SANTO DOMINGO</option>
+
+                    <select disabled={false} onChange={direccionEntregaHandler} value={direccionEntrega}>
+                        {oficinas.length > 0
+                            && oficinas?.map((oficina, index) => {
+                                if (index === 0) {
+                                    return (
+                                        <Fragment key={index} >
+                                            <option disabled={true} value={"-1"}>Seleccione una opción</option>
+                                            <option value={oficina.id_oficina}> {oficina.agencia}</option>
+                                        </Fragment>
+                                    )
+                                }
+                                else {
+                                    return (
+                                        <Fragment key={index} >
+                                            <option value={oficina.id_oficina}> {oficina.agencia}</option>
+                                        </Fragment>
+                                    )
+                                }
+                            })}
                     </select>
+
+
+                    {/*<select id="tipo_documento" onChange={direccionEntregaHandler} value={direccionEntrega}>*/}
+                    {/*    <option value="-1" disabled={true }>Seleccione una opción</option>*/}
+                    {/*    <option value="1">MATRIZ</option>*/}
+                    {/*    <option value="2">SARAGURO</option>*/}
+                    {/*    <option value="3">CATAMAYO</option>*/}
+                    {/*    <option value="4">CARIAMANGA</option>*/}
+                    {/*    <option value="5">ALAMOR</option>*/}
+                    {/*    <option value="6">ZAMORA</option>*/}
+                    {/*    <option value="7">CUENCA</option>*/}
+                    {/*    <option value="8">AGENCIA NORTE</option>*/}
+                    {/*    <option value="9">MACARA</option>*/}
+                    {/*    <option value="10">AGENCIA SUR</option>*/}
+                    {/*    <option value="11">AGENCIA YANTZAZA</option>*/}
+                    {/*    <option value="12">BALSAS</option>*/}
+                    {/*    <option value="13">CATACOCHA</option>*/}
+                    {/*    <option value="14">SANTA ROSA</option>*/}
+                    {/*    <option value="15">AGENCIA GUALAQUIZA</option>*/}
+                    {/*    <option value="16">AGENCIA CUARTO CENTENARIO</option>*/}
+                    {/*    <option value="17">AGENCIA ZUMBA</option>*/}
+                    {/*    <option value="18">AGENCIA EL VALLE</option>*/}
+                    {/*    <option value="19">AGENCIA MACHALA</option>*/}
+                    {/*    <option value="20">AGENCIA EL EJIDO</option>*/}
+                    {/*    <option value="21">AGENCIA LATACUNGA</option>*/}
+                    {/*    <option value="22">AGENCIA SANTO DOMINGO</option>*/}
+                    {/*</select>*/}
                 </div>}
                 {tipoEntrega === "Entrega en domicilio" &&
                     <div>

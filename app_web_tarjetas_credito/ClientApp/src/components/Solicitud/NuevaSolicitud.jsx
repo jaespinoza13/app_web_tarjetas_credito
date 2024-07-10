@@ -46,6 +46,8 @@ const NuevaSolicitud = (props) => {
     //Global
     const [textoSiguiente, setTextoSiguiente] = useState("Continuar");
 
+    const [controlMontoMinimoParametro, setControlMontoMinimoParametro] = useState(0);
+
     const [datosFinancierosObj, setDatosFinancierosObj] = useState({
         montoSolicitado: 0,
         montoIngresos: 0,
@@ -133,7 +135,7 @@ const NuevaSolicitud = (props) => {
         setDatosUsuario([{ strCargo: strRol, strOficial: strOficial, strUserOficial: userOficial, strUserOficina: userOficina }]);
         //console.log(`DATOS USER, ${strOficial}, ${strRol} , ${userOficial}, ${userOficina}`)
 
-        if (props.parametrosTC.lst_parametros?.length > 0) {
+        if (props.parametrosTC?.lst_parametros?.length > 0) {
             let ParametrosTC = props.parametrosTC.lst_parametros;
             setParametrosTC(ParametrosTC
                 .filter(param => param.str_nombre === 'ESTADOS_SOLICITUD_TC')
@@ -144,7 +146,9 @@ const NuevaSolicitud = (props) => {
                     prm_valor_ini: estado.str_valor_ini,
                     prm_valor_fin: estado.str_valor_fin
                 })));
-
+            
+            /*PARAMETRO PARA CONTROL DE CUPO MINIMO A SOLICITAR EN TARJETA DE CRÉDITO*/ 
+            setControlMontoMinimoParametro(Number(ParametrosTC.filter(param => param.str_nombre === 'CUPO_MINIMO_SOLICITAR_TC')[0]?.str_valor_ini));
         }
 
 
@@ -160,8 +164,7 @@ const NuevaSolicitud = (props) => {
         let validaRestoMontoGstFinanciero = false;
 
         //console.log(`montoSolicitado ${datosFinancierosObj.montoSolicitado}, montoEgresos ${datosFinancierosObj.montoIngresos},  montoEgresos ${datosFinancierosObj.montoEgresos} `)
-
-        if ((datosFinancierosObj.montoSolicitado > 0 && datosFinancierosObj.montoSolicitado <= 99999) &&
+        if ((datosFinancierosObj.montoSolicitado > 0 && datosFinancierosObj.montoSolicitado <= 99999 && datosFinancierosObj.montoSolicitado >= controlMontoMinimoParametro) &&  
             (datosFinancierosObj.montoIngresos > 0 && datosFinancierosObj.montoIngresos <= 99999) &&
             (datosFinancierosObj.montoEgresos > 0 && datosFinancierosObj.montoEgresos <= 99999)
         ) {
@@ -569,7 +572,7 @@ const NuevaSolicitud = (props) => {
 
                 str_tipo_documento: "C",
                 str_num_documento: cedulaSocio,
-                int_ente: enteSocio,
+                int_ente: Number(enteSocio),
                 str_nombres: nombreSocio,
                 str_primer_apellido: apellidoPaterno,
                 str_segundo_apellido: apellidoMaterno,
@@ -767,6 +770,7 @@ const NuevaSolicitud = (props) => {
                                 gestion={gestion}
                                 requiereActualizar={refrescarDatosInformativos}
                                 isCheckMontoRestaFinanciera={isCkeckRestaGtoFinananciero}
+                                montoMinimoCupoSolicitado={controlMontoMinimoParametro}
                             >
                             </DatosFinancieros>
                         </div>
@@ -789,6 +793,7 @@ const NuevaSolicitud = (props) => {
                     {step === 5 &&
                         <div className="f-row w-100 justify-content-center">
                             <Personalizacion
+                                token={props.token}
                                 nombres={nombreSocio}
                                 str_apellido_paterno={apellidoPaterno}
                                 str_apellido_materno={apellidoMaterno}

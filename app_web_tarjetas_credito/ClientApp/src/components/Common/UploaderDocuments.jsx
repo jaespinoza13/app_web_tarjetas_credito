@@ -408,12 +408,6 @@ const UploadDocumentos = (props) => {
         //Obtener secuencia de publicacion
         let CheckPublidadorId = publicadorCheckBox[contadorPublicacion.current];
         let archivoPub = lstArchivosParaPublicar.filter(documento => documento.int_id_separador === CheckPublidadorId)[0];
-        //console.log("CONTADOR ", contadorPublicacion.current);
-        //console.log("lstArchivosParaPublicar ", lstArchivosParaPublicar.length);
-        //console.log("CheckPublidadorId ", CheckPublidadorId);
-        //console.log("CheckPublidadorId ", CheckPublidadorId);
-        //console.log("archivoPub ", informacionArchivosLimpia);
-
 
         if (contadorPublicacion.current === publicadorCheckBox.length && publicadorCheckBox.length !== 0) {
             //console.log("ENTRA RESET 1")
@@ -574,12 +568,12 @@ const UploadDocumentos = (props) => {
 
                         <div style={{ display: "flex" }}>
                             <p className='normal'>ESTADO CALIFICACION: </p>
-                            <p className="negrita"> </p>
+                            <p className="negrita">{props.datosSocio?.str_calificacion_riesgo} </p>
                         </div>
 
                         <div style={{ display: "flex" }}>
                             <p className='normal'>TRAMITE NRO: </p>
-                            <p className="negrita">0</p>
+                            <p className="negrita"> </p>
                         </div>
 
                     </section>
@@ -587,17 +581,17 @@ const UploadDocumentos = (props) => {
                     <section className='elements_tres_column mt-3'>
                         <div style={{ display: "flex" }}>
                             <p className='normal'>OFICINA: </p>
-                            <p className="negrita">Matriz</p>
+                            <p className="negrita">{props.oficinaSolicitud}</p>
                         </div>
 
                         <div style={{ display: "flex" }}>
                             <p className='normal'>ESTADO DE LA SOLICITUD: </p>
-                            <p className="negrita">SOLICITUD CREADA </p>
+                            <p className="negrita">{props.estadoSolicitud}</p>
                         </div>
 
                         <div style={{ display: "flex" }}>
-                            <p className='normal'>MONTO: </p>
-                            <p className="negrita">100,000</p>
+                            <p className='normal'>MONTO SOLICITADO: </p>
+                            <p className="negrita">{`$ ${Number(props.cupoSolicitado).toLocaleString("en-US") || Number('0.00').toLocaleString("en-US")}`} </p>
                         </div>
 
                     </section>
@@ -605,7 +599,7 @@ const UploadDocumentos = (props) => {
                     <section className='elements_tres_column mt-3'>
                         <div style={{ display: "flex" }}>
                             <p className='normal'>OFICIAL: </p>
-                            <p className="negrita">xnojeda1</p>
+                            <p className="negrita">{props.oficialSolicitud}</p>
                         </div>
 
                         <div style={{ display: "flex" }}>

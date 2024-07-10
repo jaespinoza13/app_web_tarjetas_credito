@@ -73,14 +73,9 @@ const VerSolicitud = (props) => {
     const [isBtnDisableCambioBandeja, setIsBtnDisableCambioBandeja] = useState(true);
     const [isBtnResolucionSocio, setIsBtnResolucionSocio] = useState(true);
 
-    //Se debe implementar con parametros
-    const [imprimeMedio, setImprimeMedio] = useState([]);
-    const [regresaSolicitud, setRegresaSolicitud] = useState([]);
-
 
     //DATOS DEL USUARIO
     const [datosUsuario, setDatosUsuario] = useState([]);
-
 
     //Datos del socio
     const [datosSocio, setDatosSocio] = useState();
@@ -103,13 +98,11 @@ const VerSolicitud = (props) => {
 
     const [permisoAccionAnalisis3CsAll, setPermisoAccionAnalisis3CsAll] = useState([]);
     const [permisoAccionAnalisis3Cs, setPermisoAccionAnalisis3Cs] = useState([]);
-
-    //const [permisoEstadosSigComite, setPermisoEstadosSigComite] = useState([]);
-    //const [permisoEstadoHabilitarAprobarSol, setPermisoEstadoHabilitarAprobarSol] = useState([]);
-
-
     const [permisoImprimirMedio, setPermisoImprimirMedio] = useState([]);
     const [permisoImprimirMedioAll, setPermisoImprimirMedioAll] = useState([]);
+
+    const [estadosPuedenRegresarBandejaAll, setEstadosPuedenRegresarBandejaAll] = useState([]);
+    const [estadosPuedenRegresarBandeja, setEstadosPuedenRegresarBandeja] = useState([]);
 
 
     const [motivosNegacionComite, setMotivosNegacionComite] = useState([]);
@@ -120,19 +113,6 @@ const VerSolicitud = (props) => {
 
     //Filas del text Area comentarioAdicional
     const [filasTextAreaComentarioSol, setFilasTextAreaComentarioSol] = useState(3);
-
-    /*const parametros = [
-        { prm_id: 11272, prm_valor_ini: "SOLICITUD CREADA" },
-        { prm_id: 11273, prm_valor_ini: "ANALISIS UAC" },
-        { prm_id: 11274, prm_valor_ini: "ANALISIS JEFE UAC" },
-        { prm_id: 11275, prm_valor_ini: "ANALISIS COMITE" },
-        { prm_id: 11276, prm_valor_ini: "APROBAR" },
-        { prm_id: 11277, prm_valor_ini: "NEGAR" },
-        { prm_id: 11278, prm_valor_ini: "POR CONFIRMAR" },
-        { prm_id: 11279, prm_valor_ini: "APROBADA" },//APROBADA SOCIO
-        { prm_id: 11280, prm_valor_ini: "NEGADA" }, //RECHAZADA SOCIO
-        { prm_id: 10934, prm_valor_ini: "ANULADA COMITE" },
-    ];*/
 
     const seleccionAccionSolicitud = (value) => {
         const accionSelecciona = accionesSolicitud.find((element) => { return element.key === value });
@@ -150,10 +130,7 @@ const VerSolicitud = (props) => {
     ];
 
     const estadoSolicitud = useRef('');
-    /*
-    useEffect(() => {
-        console.log("VAL CURR ", estadoSolicitud.current)
-    }, [estadoSolicitud])*/
+
 
     useEffect(() => {
 
@@ -194,26 +171,6 @@ const VerSolicitud = (props) => {
             setSeparadores(data.lst_separadores);
         }, dispatch);
 
-        setImprimeMedio([
-            {
-                prm_id: 11273
-            }, {
-                prm_id: 11274
-            }, {
-                prm_id: 11275
-            }
-        ]);
-        setRegresaSolicitud([
-            {
-                prm_id: 11189 //NO SE SABE A CUAL CORRESPONDE
-            }, {
-                prm_id: 11274
-            }, {
-                prm_id: 11275
-            }
-        ]);
-
-        //console.log("PROPS, ", props)
 
         //OBTENER DATOS DEL USUARIO
         const strOficial = get(localStorage.getItem("sender_name"));
@@ -273,6 +230,13 @@ const VerSolicitud = (props) => {
 
             setPermisoAccionAnalisis3CsAll(ParametrosTC
                 .filter(param => param.str_nombre === 'HABILITA_ANALISIS_3Cs')
+                .map(estado => ({
+                    prm_id: estado.int_id_parametro,
+                    prm_valor_ini: estado.str_valor_ini
+                })));
+
+            setEstadosPuedenRegresarBandejaAll(ParametrosTC
+                .filter(param => param.str_nombre === 'ESTADO_AUTORIZADOS_REGRESAR_BANDEJA')
                 .map(estado => ({
                     prm_id: estado.int_id_parametro,
                     prm_valor_ini: estado.str_valor_ini
@@ -368,7 +332,7 @@ const VerSolicitud = (props) => {
 
     useEffect(() => {
         if (estadosSigConfirmPorMontoMenorAll.length > 0) {
-            //console.log(estadosSigConfirmPorMontoMenorAll)
+            console.log(estadosSigConfirmPorMontoMenorAll)
             let arrEstados = estadosSigConfirmPorMontoMenorAll.find((parametr) => (parametr.prm_valor_ini) === props.solicitud.estado)
             //console.log("ARR_EST ", arrEstados)
             if (arrEstados) {
@@ -389,6 +353,13 @@ const VerSolicitud = (props) => {
         }
     }, [permisoAccionAnalisis3CsAll])
 
+    useEffect(() => {
+        if (estadosPuedenRegresarBandejaAll.length > 0) {
+            //console.log(permisoImprimirMedioAll)
+            const estadosRegresanBandeja = estadosPuedenRegresarBandejaAll[0].prm_valor_ini.split('|');
+            setEstadosPuedenRegresarBandeja(estadosRegresanBandeja);
+        }
+    }, [estadosPuedenRegresarBandejaAll])
 
     /** FIN SECCION OBTENER LOS PARAMETROS DEL STORAGE */
 
@@ -929,7 +900,6 @@ const VerSolicitud = (props) => {
                                                 <h5>Socio:</h5>
                                                 <h5 className="strong">
                                                     {datosSocio?.str_nombres} {datosSocio?.str_apellido_paterno} {datosSocio?.str_apellido_materno}
-                                                    {/*{`$ ${props.montoSugerido || Number('10000.00').toLocaleString("en-US")}`}*/}
                                                 </h5>
                                             </div>
                                             <div className="values  mb-3">
@@ -941,7 +911,7 @@ const VerSolicitud = (props) => {
                                             <div className="values  mb-3">
                                                 <h5>Oficina:</h5>
                                                 <h5 className="strong">
-                                                    {`EL VALLE`}
+                                                    {props.solicitud.oficinaSolicitud}
                                                 </h5>
                                             </div>
                                             <div className="values  mb-3">
@@ -1019,7 +989,7 @@ const VerSolicitud = (props) => {
                                             <div className="values  mb-3">
                                                 <h5>Oficina:</h5>
                                                 <h5 className="strong">
-                                                    {`EL VALLE`}
+                                                    {props.solicitud.oficinaSolicitud}
                                                 </h5>
                                             </div>
                                             <div className="values  mb-3">
@@ -1054,7 +1024,7 @@ const VerSolicitud = (props) => {
                                                     {`$ ${solicitudTarjeta?.str_cupo_solicitado || Number('0.00').toLocaleString("en-US")}`}
                                                     {solicitudTarjeta?.str_estado === "SOLICITUD CREADA" &&
                                                         <Button className="btn_mg__auto ml-2" onClick={updateMonto}>
-                                                            <img src="/Imagenes/edit.svg"></img>
+                                                            <img src="/Imagenes/edit.svg" alt="Editar cupo"></img>
                                                         </Button>
                                                     }
                                                 </h5>
@@ -1091,21 +1061,17 @@ const VerSolicitud = (props) => {
                                             {permisoAccionAnalisis3Cs.includes(solicitudTarjeta?.str_estado) &&
                                                 <Button className="btn_mg__primary" onClick={modalHandler}>Análisis 3C's</Button>
                                             }
-
-                                            {/*  EST_ANALISIS_UAC  || EST_ANALISIS_JEFE_UAC    */}
+                                                                                        
                                             {permisoImprimirMedio.includes(solicitudTarjeta?.str_estado) &&
                                                 <Button className="btn_mg__primary ml-2" onClick={() => descargarMedio(props.solicitud.solicitud)}>Imprimir medio aprobación</Button>
                                             }
 
-                                            {/*  EST_ANALISIS_UAC  || EST_ANALISIS_JEFE_UAC || EST_ANALISIS_COMITE   TODO FALTA EL ESTADO NUEVA BANDEJA */}
-                                            {(solicitudTarjeta?.str_estado === "ANALISIS UAC" || solicitudTarjeta?.str_estado === "ANALISIS JEFE UAC"
-                                                || solicitudTarjeta?.str_estado === "ANALISIS COMITE" || solicitudTarjeta?.str_estado === "OPERATIVO NEGOCIOS") &&
+                                            {estadosPuedenRegresarBandeja.includes(solicitudTarjeta?.str_estado) &&
                                                 <Button className="btn_mg__primary ml-2" onClick={openModalCambiarBandeja}>Retornar Solicitud</Button>
                                             }
 
-
-                                            {/* EST_POR_CONFIRMAR */}
-                                            {solicitudTarjeta?.str_estado === "POR CONFIRMAR" &&
+                                            {/*POR CONFIRMAR*/}
+                                            {solicitudTarjeta?.str_estado === estadosSigConfirmPorMontoMenorAll[0]?.prm_valor_ini &&
                                                 <>
                                                     <div className="values ml-1 mb-3">
                                                         <Button className={["btn_mg btn_mg__primary"]} onClick={openModalResolucionSocio}>Resolución socio </Button>
@@ -1257,17 +1223,6 @@ const VerSolicitud = (props) => {
             {accionSeleccionada !== 1 && accionSeleccionada === 2 &&
                 <Card className={["w-100 justify-content-space-between align-content-center"]}>
                     <h3 className="mb-3 strong">Documentos digitalizados</h3>
-
-                    {/*<Button className="mt-3 mb-3 btn_mg__primary" onClick={abrirTodos}>Abrir archivos</Button>*/}
-                    {/*<div className="select-item">*/}
-                    {/*    <a onClick={() => { downloadArchivo("/Imagenes/FRMSYS-020.pdf") }}>Cédula de ciudadania</a>*/}
-                    {/*</div>*/}
-                    {/*<div className="select-item">*/}
-                    {/*    <Input type="checkbox"></Input>*/}
-                    {/*    <a onClick={() => { downloadArchivo("/Imagenes/archivo.pdf") }}>Autorizacion de consulta al buró</a>*/}
-                    {/*</div>*/}
-
-
                     <div className="mt-3">
                         <UploadDocumentos
                             grupoDocumental={separadores}
@@ -1279,14 +1234,14 @@ const VerSolicitud = (props) => {
                             datosUsuario={datosUsuario}
                             solicitudTarjeta={solicitudTarjeta}
                             seleccionToogleSolicitud={seleccionAccionSolicitud}
+                            oficinaSolicitud={props.solicitud.oficinaSolicitud}
+                            estadoSolicitud={props.solicitud.estado}
+                            cupoSolicitado={solicitudTarjeta?.str_cupo_solicitado}
+                            oficialSolicitud={solicitudTarjeta?.str_usuario_proc}
                         ></UploadDocumentos>
                     </div>
                 </Card>
             }
-
-
-
-
 
         </Card>
 
@@ -1310,7 +1265,7 @@ const VerSolicitud = (props) => {
                                     <td style={{ width: "40%", justifyContent: "left" }}>
                                         <div className='f-row' style={{ paddingLeft: "1rem" }}>
                                             <div className='tooltip'>
-                                                <img className='tooltip-icon' src='/Imagenes/info.svg'></img>
+                                                <img className='tooltip-icon' src='/Imagenes/info.svg' alt="Analista a cargo de solicitud"></img>
                                                 <span className='tooltip-info'>{comentario.str_descripcion}</span>
                                             </div>
                                             {comentario.str_tipo}

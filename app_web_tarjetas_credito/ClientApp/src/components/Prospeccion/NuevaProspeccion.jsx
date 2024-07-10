@@ -26,6 +26,7 @@ const mapStateToProps = (state) => {
         ws: bd,
         listaFuncionalidades: state.GetListaFuncionalidades.data,
         token: state.tokenActive.data,
+        parametrosTC: state.GetParametrosTC.data
     };
 };
 
@@ -45,6 +46,8 @@ const NuevaProspeccion = (props) => {
 
     //Global
     const [textoSiguiente, setTextoSiguiente] = useState("Continuar");
+
+    const [controlMontoMinimoParametro, setControlMontoMinimoParametro] = useState(0);
 
     //ValidacionesSocio
 
@@ -77,7 +80,7 @@ const NuevaProspeccion = (props) => {
         montoRestaGstFinanciero: 0,
 
     })
-    const [isBtnDisabled, setIsBtnDisabled] = useState(false);
+
 
     //Errores
     const [mensajeErrorScore, setMensajeErrorScore] = useState("");
@@ -119,7 +122,6 @@ const NuevaProspeccion = (props) => {
     const [isVisibleBloque, setIsVisibleBloque] = useState(true);
 
     //Retorno nueva simulacion
-    //const [realizaNuevaSimulacion, setRealizaNuevaSimulacion] = useState(false);
     const realizaNuevaSimulacion = useRef(false);
 
     useEffect(() => {
@@ -130,9 +132,14 @@ const NuevaProspeccion = (props) => {
         setUsuario(strOficial);
         setRol(strRol);
         setDatosUsuario([{ strCargo: strRol, strOficial: strOficial, strUserOficial: userOficial, strUserOficina: userOficina }]);
+
+        if (props.parametrosTC?.lst_parametros?.length > 0) {
+            let ParametrosTC = props.parametrosTC.lst_parametros;
+            /*PARAMETRO PARA CONTROL DE CUPO MINIMO A SOLICITAR EN TARJETA DE CRÉDITO*/
+            setControlMontoMinimoParametro(Number(ParametrosTC.filter(param => param.str_nombre === 'CUPO_MINIMO_SOLICITAR_TC')[0]?.str_valor_ini));
+        }
+
     }, []);
-
-
 
 
     useEffect(() => {
@@ -182,8 +189,8 @@ const NuevaProspeccion = (props) => {
         let validaRestoMontoGstFinanciero = false;
 
 
-        console.log(`montoSolicitado ${datosFinancierosObj.montoSolicitado}, montoEgresos ${datosFinancierosObj.montoIngresos},  montoEgresos ${datosFinancierosObj.montoEgresos} `)
-        if ((datosFinancierosObj.montoSolicitado > 0 && datosFinancierosObj.montoSolicitado <= 99999) &&
+        //console.log(`montoSolicitado ${datosFinancierosObj.montoSolicitado}, montoEgresos ${datosFinancierosObj.montoIngresos},  montoEgresos ${datosFinancierosObj.montoEgresos} `)
+        if ((datosFinancierosObj.montoSolicitado > 0 && datosFinancierosObj.montoSolicitado <= 99999 && datosFinancierosObj.montoSolicitado >= controlMontoMinimoParametro) &&
             (datosFinancierosObj.montoIngresos > 0 && datosFinancierosObj.montoIngresos <= 99999) &&
             (datosFinancierosObj.montoEgresos > 0 && datosFinancierosObj.montoEgresos <= 99999)
             //    && datosFinancieros.montoGastosFinancieros > 0
@@ -641,6 +648,7 @@ const NuevaProspeccion = (props) => {
                                 gestion={gestion}
                                 requiereActualizar={refrescarDatosInformativos}
                                 isCheckMontoRestaFinanciera={isCkeckRestaGtoFinananciero}
+                                montoMinimoCupoSolicitado={controlMontoMinimoParametro}
                             >
                             </DatosFinancieros>
                         </div>

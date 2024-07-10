@@ -21,6 +21,7 @@ using Domain.Models.TarjetaCredito.GetInfoFinanciera;
 using Domain.Models.TarjetaCredito.GetInfoSocio;
 using Domain.Models.TarjetaCredito.GetMedioAprobacion;
 using Domain.Models.TarjetaCredito.GetMotivos;
+using Domain.Models.TarjetaCredito.GetOficinas;
 using Domain.Models.TarjetaCredito.GetOrdenes;
 using Domain.Models.TarjetaCredito.GetParamatrosSistema;
 using Domain.Models.TarjetaCredito.GetReporteAval;
@@ -1145,6 +1146,41 @@ namespace Infrastructure.TarjetaCredito
             {
                 res.str_res_codigo = "500";
                 res.str_res_info_adicional = "Ocurrió un error al obtener los datos del score";
+            }
+            return res;
+        }
+
+        public ResGetOficinas getOficinas(ReqGetOficinas req)
+        {
+            ResGetOficinas res = new ResGetOficinas();
+            try
+            {
+                req.llenarDatosConfig(_settings);
+                req.str_id_servicio = "REQ_" + _settings.service_get_oficinas;
+                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_oficinas)
+                {
+                    ThrowOnAnyError = true,
+                    MaxTimeout = _settings.time_out
+                };
+
+                var client = new RestClient(options);
+                var request = new RestRequest();
+                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                request.AddHeader("Content-Type", "application/json");
+                request.AddParameter("application/json", req, ParameterType.RequestBody);
+                request.Method = Method.Post;
+
+                var response = new RestResponse();
+                response = client.Post(request);
+
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    res = JsonSerializer.Deserialize<ResGetOficinas>(response.Content!)!;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
             }
             return res;
         }

@@ -125,6 +125,7 @@ export const crearSeparadores = "CREAR_SEPARADORES"
 export const getReporteAval = "GET_REPORTE_AVAL"
 export const getAlertasCliente = "GET_ALERTAS_CLIENTE"
 export const getMotivos = "GET_MOTIVOS"
+export const getOficinas = "GET_OFICNAS"
 
 /**
  * Obtener la Url de un servicio de acuerdo a su nombre de Proceso Unico
@@ -298,6 +299,9 @@ export function ServiceUrl(request, params = []) {
             break;        
         case getMotivos:
             pathOut = "tc/getMotivos"
+            break;         
+        case getOficinas:
+            pathOut = "tc/getOficinas"
             break;        
         default:
             return null;
@@ -558,7 +562,8 @@ function pathRewrite(path) {
         "tc/crearSeparadores": '/tarjetacredito/crearSeparadores',
         "tc/getReporteAval": '/tarjetacredito/getReporteAval',
         "tc/getAlertasCliente": '/tarjetacredito/getAlertasCliente',
-        "tc/getMotivos": '/tarjetacredito/getMotivos'
+        "tc/getMotivos": '/tarjetacredito/getMotivos',
+        "tc/getOficinas": '/tarjetacredito/getOficinas'
     };
     if (path) {
         var p = context[path];
