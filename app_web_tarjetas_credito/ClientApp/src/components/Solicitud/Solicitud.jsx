@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import '../../scss/main.css';
 import '../../scss/components/solicitud.css';
 import { useState, useEffect} from "react";
-import { fetchGetSolicitudes} from "../../services/RestServices";
+import { fetchGetOficinas, fetchGetSolicitudes} from "../../services/RestServices";
 import { IsNullOrWhiteSpace } from '../../js/utiles';
 import Modal from '../Common/Modal/Modal';
 import Sidebar from '../Common/Navs/Sidebar';
@@ -78,7 +78,12 @@ function Solicitud(props) {
     const [lstProstectos, stLstProspectos] = useState([]);
     const [lstSolicitudes, stLstSolicitudes] = useState([]);
 
+    const [oficinas, setOficinas] = useState([]);
     const [controlConsultaCargaComp, setControlConsultaCargaComp] = useState(false);
+
+    //OBTENER PARAMETROS
+    const [habilitarPerfilesVerSolicitudAll, setHabilitarPerfilesVerSolicitudAll] = useState([]);
+    const [habilitarPerfilesVerSolicitud, setHabilitarPerfilesVerSolicitud] = useState([]);
 
     //Carga de solicitudes (SE MODIFICA PARA QUE APAREZCA PRIMERA PANTALLA COMO PREDETERMINADA AL LOGUEARSE)
     useEffect(() => {
@@ -95,6 +100,10 @@ function Solicitud(props) {
                 setNumPaginas(Math.ceil(data.solicitudes.length / paginasEnVista))
                 
             }, dispatch)
+            fetchGetOficinas(props.token, (data) => {
+                setOficinas(data.lst_oficinas);
+            }, dispatch);
+
             const strOficial = get(localStorage.getItem("sender_name"));
             setUsuario(strOficial);
             const strRol = get(localStorage.getItem("role"));
@@ -102,9 +111,30 @@ function Solicitud(props) {
             setRol(strRol);
             setDatosUsuario([{ strCargo: strRol, strOficial: strOficial }]);
             setControlConsultaCargaComp(true);
+
+            if (props.parametrosTC.lst_parametros?.length > 0) {
+                let ParametrosTC = props.parametrosTC.lst_parametros;
+                /* PERFILES AUTORIZADOS EN VER LA SOLICITUD*/
+                setHabilitarPerfilesVerSolicitudAll(ParametrosTC
+                    .filter(param => param.str_nombre === 'PERFILES_AUTORIZADOS_VER_SOLICITUD')
+                    .map(estado => ({
+                        prm_id: estado.int_id_parametro,
+                        prm_valor_ini: estado.str_valor_ini
+                    })));
+
+            }
         }
 
     }, [props.token]);
+
+
+    useEffect(() => {
+        if (habilitarPerfilesVerSolicitudAll.length > 0) {
+            const perfilesAutorizados = habilitarPerfilesVerSolicitudAll[0].prm_valor_ini.split('|');
+            console.log(perfilesAutorizados)
+            setHabilitarPerfilesVerSolicitud(perfilesAutorizados);
+        }
+    }, [habilitarPerfilesVerSolicitudAll])
 
     //ACTUALIZA LA PAGINA DONDE SE QUIERE IR
     useEffect(() => {
@@ -168,18 +198,18 @@ function Solicitud(props) {
 
 
     const moveToSolicitud = (solId) => {
-        //console.log(solId)
         const solicitudSeleccionada = registrosPagActual.find((solicitud) => { return solicitud.int_id === solId });
-        /* PARA VER SOLICITUD POR PARTE DEL ASESOR DE NEGOCIOS*/ 
-        // 11276 EST_APROBADA_COMITE || 11272 EST_SOL_CREADA || 11278 EST_POR_CONFIRMAR
-        console.log(solicitudSeleccionada)
-        if ((solicitudSeleccionada.int_estado === 11276 || solicitudSeleccionada.int_estado === 11272 || solicitudSeleccionada.int_estado === 11278) && rol === "ASESOR DE CRÉDITO") { 
-            dispatch(setSolicitudStateAction({ solicitud: solicitudSeleccionada.int_id, cedulaPersona: solicitudSeleccionada.str_identificacion, idSolicitud: solicitudSeleccionada.int_estado, rol: rol, estado: solicitudSeleccionada.str_estado }))
+        let nombreOficinaDeSolicitud = validarNombreOficina(solicitudSeleccionada.int_oficina_crea);
+        //console.log(solicitudSeleccionada)
+        /* PARA VER SOLICITUD POR PARTE DEL ASESOR DE NEGOCIOS*/
+        if (rol === "ASESOR DE CRÉDITO") {
+            dispatch(setSolicitudStateAction({ solicitud: solicitudSeleccionada.int_id, cedulaPersona: solicitudSeleccionada.str_identificacion, idSolicitud: solicitudSeleccionada.int_estado, rol: rol, estado: solicitudSeleccionada.str_estado, oficinaSolicitud: nombreOficinaDeSolicitud }))
             navigate.push('/solicitud/ver');
         }
+
         /* PARA QUE PUEDAN HACER EL PASO DE BANDEJA CADA PERFIL */ 
-        else if ((rol === "ANALISTA CREDITO" || rol === "JEFE DE UAC" || rol === "DIRECTOR DE NEGOCIOS" || rol === "OPERATIVO DE NEGOCIOS" ) && solicitudSeleccionada.int_estado !== 11272) {
-            dispatch(setSolicitudStateAction({ solicitud: solicitudSeleccionada.int_id, cedulaPersona: solicitudSeleccionada.str_identificacion, idSolicitud: solicitudSeleccionada.int_estado, rol: rol, estado: solicitudSeleccionada.str_estado }))
+        else if (habilitarPerfilesVerSolicitud.includes(rol)) {
+            dispatch(setSolicitudStateAction({ solicitud: solicitudSeleccionada.int_id, cedulaPersona: solicitudSeleccionada.str_identificacion, idSolicitud: solicitudSeleccionada.int_estado, rol: rol, estado: solicitudSeleccionada.str_estado, oficinaSolicitud: nombreOficinaDeSolicitud }))
             navigate.push('/solicitud/ver');
         }
         else {
@@ -201,11 +231,16 @@ function Solicitud(props) {
         const pdfUrl = "Imagenes/Estado de cuenta-Final.pdf";
             const link = document.createElement("a");
             link.href = pdfUrl;
-        link.download = "EstadoCuenta.pdf"; // specify the filename
+            link.download = "EstadoCuenta.pdf"; // specify the filename
+            link.target = "_blank"; 
             document.body.appendChild(link);
             link.click();
-            document.body.removeChild(link);
-       
+            document.body.removeChild(link);       
+    }
+
+    const validarNombreOficina = (idOficina) => {        
+        let nombreOficina = oficinas.find(ofic => Number(ofic.id_oficina) === Number(idOficina));
+        return nombreOficina?.agencia ? nombreOficina.agencia : '';
     }
 
     return (<div className="f-row">
@@ -217,14 +252,14 @@ function Solicitud(props) {
                 <div className="content-cards mt-2">
                     
                     <Card>
-                        <img style={{ width: "25px" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg"></img>
+                        <img style={{ width: "25px" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg" alt="Solicitud"></img>
                         <h4 className="mt-2">Solicitud</h4>
                         <h5 className="mt-5">Genera una nueva solicitud de tarjeta de crédito</h5>
                         <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={irNuevaSolicitud}>Siguiente</Button>
                     </Card>
 
                     <Card>
-                        <img style={{ width: "25px" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg"></img>
+                        <img style={{ width: "25px" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg" alt="Prospección"></img>
                             <h4 className="mt-2">Prospección</h4>
                             <h5 className="mt-2">Genera una nueva prospección de tarjeta de crédito</h5>
                             <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={irNuevaProspección}>Siguiente</Button>
@@ -232,7 +267,7 @@ function Solicitud(props) {
 
 
                     <Card>
-                        <img style={{ width: "25px" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg"></img>
+                        <img style={{ width: "25px" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg" alt="Estado de cuenta"></img>
                         <h4 className="mt-4">Estado de cuenta</h4>
                         <h5 className="mt-4 mb-2">Generar estado de cuenta </h5>
                         <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={descargarEstadoCuenta}>Descargar</Button>
@@ -271,7 +306,9 @@ function Solicitud(props) {
                                             </div>
                                         </div> : '' }                                        
                                     </td>
-                                    <td>{solicitud.int_oficina_crea}</td>
+                                    <td>
+                                        {validarNombreOficina(solicitud.int_oficina_crea)}
+                                    </td>
 
                                 </tr>
                             );

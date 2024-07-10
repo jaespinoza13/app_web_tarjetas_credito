@@ -38,6 +38,7 @@ using Domain.Models.TarjetaCredito.Axentria.CrearSeparadores;
 using Domain.Models.TarjetaCredito.GetReporteAval;
 using Domain.Models.TarjetaCredito.GetAlertasCliente;
 using Domain.Models.TarjetaCredito.GetMotivos;
+using Domain.Models.TarjetaCredito.GetOficinas;
 
 namespace plantilla_app_web.Controllers
 {
@@ -367,10 +368,22 @@ namespace plantilla_app_web.Controllers
             reqReporteAval.str_sesion = req.str_sesion;
             reqReporteAval.str_id_oficina = req.str_id_oficina;
             reqReporteAval.str_id_perfil = req.str_id_perfil;
+            reqReporteAval.int_cliente = req.int_cliente;
+            reqReporteAval.int_id_con = req.int_id_con;
             reqReporteAval.str_ip_dispositivo = Utiles.getIP();
             string ip = Utiles.getIP();
             ResGetReporteAval res = tarjetaCreditoDat.getReporteAval(reqReporteAval);
             return Utiles.crypt(res, Request.Headers);
         }
+
+        [Route("getOficinas")]
+        [ServiceFilter(typeof(CryptoFilter))]
+        [HttpPost]
+        public ResCrypt Post(ReqGetOficinas req)
+        {
+            ResGetOficinas res = tarjetaCreditoDat.getOficinas(req);
+            return Utiles.crypt(res, Request.Headers);
+        }
+
     }
 }

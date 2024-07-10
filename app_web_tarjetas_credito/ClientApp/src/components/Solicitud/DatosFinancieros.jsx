@@ -116,8 +116,8 @@ const DatosFinancieros = (props) => {
     useEffect(() => {
         setIsHabilitadoRestaGstFinancieros(props.habilitaRestaGstFinancieros);
     },[props.habilitaRestaGstFinancieros])*/
-    
-    
+
+
     useEffect(() => {
         if (props.gestion === "solicitud") {
             setIsCamposDesactivados(true);
@@ -125,8 +125,8 @@ const DatosFinancieros = (props) => {
             setIsCamposDesactivados(false);
         }
     }, [props.gestion])
-    
-    
+
+
     const updGastosFinancieros = () => {
         //props.requiereActualizar(true)
 
@@ -194,52 +194,58 @@ const DatosFinancieros = (props) => {
 
                     {/*{props.gestion === "solicitud" &&*/}
 
-                        <Button className="btn_mg__auto" onClick={updGastosFinancieros}>
-                            <img src="/Imagenes/refresh.svg" style={{ transform: "scaleX(-1)"}}></img>
-                        </Button>
+                    <Button className="btn_mg__auto" onClick={updGastosFinancieros}>
+                        <img src="/Imagenes/refresh.svg" style={{ transform: "scaleX(-1)" }}></img>
+                    </Button>
 
-                </div>                
-                
+                </div>
+
                 <Card className='mt-2'>
                     <section>
-                    <form>
-                        <div className='mb-2'>
-                            <label>Ingresos</label>
-                            <div className="f-row">
+                        <form>
+                            <div className='mb-2'>
+                                <label>Ingresos</label>
+                                <div className="f-row">
                                     <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setMontoIngresosHandler} value={montoIngresos} disabled={isCamposDesactivados} min={0} max={99999} ></Input>
+                                </div>
                             </div>
-                        </div>
 
-                        <div className='mb-2'>
-                            <label>Egresos</label>
-                            <div className="f-row">
+                            <div className='mb-2'>
+                                <label>Egresos</label>
+                                <div className="f-row">
                                     <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setMontoEgresosHandler} value={montoEgresos} disabled={isCamposDesactivados} min={0} max={99999} ></Input>
+                                </div>
                             </div>
-                        </div>
 
-                        <div className='mb-2'>
-                            <div className="f-row">
-                                <Input type="checkbox" setValueHandler={CkeckGtosFinancierosHandler} checked={isCkeckRestaGtoFinancero} ></Input>
-                                <label>Resta Gasto Financiero</label>
-                            </div>
-                            
-                            <div className="f-row">
-                                    <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setRestaGastosFinancierosHandler} value={restaMontoGastosFinancieros} disabled={!isCkeckRestaGtoFinancero} min={0} max={99999}  maxlength={6} ></Input>
-                            </div>
-                        </div>
+                            <div className='mb-2'>
+                                <div className="f-row">
+                                    <Input type="checkbox" setValueHandler={CkeckGtosFinancierosHandler} checked={isCkeckRestaGtoFinancero} ></Input>
+                                    <label>Resta Gasto Financiero</label>
+                                </div>
 
-                        <div className='mb-2'>
-                            <label>Gasto Financiero CoDeudor</label>
-                            <div className="f-row">
+                                <div className="f-row">
+                                    <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setRestaGastosFinancierosHandler} value={restaMontoGastosFinancieros} disabled={!isCkeckRestaGtoFinancero} min={0} max={99999} maxlength={6} ></Input>
+                                </div>
+                            </div>
+
+                            <div className='mb-2'>
+                                <label>Gasto Financiero CoDeudor</label>
+                                <div className="f-row">
                                     <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setMontoGastoFinanCodeudorHandler} value={montoGastoFinaCodeudor} min={0} max={99999} maxlength={6} disabled={isCamposDesactivados} ></Input>
+                                </div>
                             </div>
-                        </div>
 
-                        <div className='mb-2'>
-                            <label>Cupo solicitado</label>
-                            <div className="f-row">
+                            <div className='mb-2'>
+                                <label>Cupo solicitado</label>
+                                <div className="f-row">
                                     <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setMontoSolicitadoHandler} value={montoSolicitado} min={0} max={99999}></Input>
-                            </div>
+                                </div>
+                                <div className="f-row">
+                                    {montoSolicitado < props.montoMinimoCupoSolicitado &&
+                                        <h5 className="ml-4">*El monto mínimo a solicitar debe superar los {`$ ${Number(props.montoMinimoCupoSolicitado)?.toLocaleString("en-US")}`}</h5>
+                                    }
+                                </div>
+                                
                             </div>
 
                         </form>

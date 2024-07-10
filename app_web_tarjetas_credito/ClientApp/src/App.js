@@ -92,21 +92,10 @@ function Menus({ listaMenus, id_perfil, token, setListas, setListaFunc, listaFun
         let params = setTimeout(() => {
             if (idPerfil > 0 && !IsNullOrWhiteSpace(tokeni) && validateToken(tokeni) && parametrosSistema.length === 0 && !sendedParams) {
                 setSendedParams(true); 
+                //Obtener parametros y se almacena por medio de redux
                 fetchGetParametrosSistema(tokeni, (data) => {
-                    //console.log("PARAM, ".data)
                     setParametrosSistema([data.lst_parametro]);
                     dispatch(getParametrosTCStateAction({ lst_parametros: data.lst_parametros }));
-                    /*const resultParametros = data.lst_parametros.map(param => ({
-                        param_id: param.int_id_parametro,
-                        param_nombre: param.str_nombre,
-                        param_descripcion: param.str_descripcion,
-                        param_nemonico: param.str_nemonico,
-                        param_valorInicial: param.str_valor_ini,
-                        param_valorFinal: param.str_valor_fin,
-                        param_error: param.str_error,
-                    }));*/                    
-
-                    //setParametrosSistema(resultParametros)
                 }, dispatch)
                 
             }
