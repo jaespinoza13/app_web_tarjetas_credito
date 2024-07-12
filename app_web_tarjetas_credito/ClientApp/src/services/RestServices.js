@@ -237,7 +237,16 @@ export function handlerSubmitCambiarClave(passNueva, token, exProcess = false, o
             if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
         } else {
             if (data) {
-                if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicionals[0] }, onSuccess ? () => onSuccess(data.codigo) : null));
+                //console.log("handlerSubmitCambiarClave ", data)
+                if (data.codigo === "000") {
+                    onSuccess(data.mensajes[0]);
+                    //onSuccess(data.codigo, data.mensajes[0]);
+                } else {
+                    let codigo = data.codigo || data.str_res_codigo;
+                    let mensaje = data.mensaje || data.str_res_info_adicional || data.mensajes[0];
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
+                }
+                //if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicionals[0] }, onSuccess ? () => onSuccess(data.codigo) : null));
             } else {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
             }
@@ -306,7 +315,17 @@ export function handlerSubmitCambiarPass1raVez(preguntas, respuestas, passNueva,
             if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
         } else {
             if (data) {
-                if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicionals[0] }, onSuccess ? () => onSuccess(data.codigo) : null));
+                //console.log("Repusta cambio clave 1ra vez, ", data)
+                //if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional[0] }, onSuccess ? () => onSuccess(data.codigo) : null));
+                if (data.codigo === "000") {
+                    onSuccess(data.mensajes[0]);
+                    //onSuccess(data.codigo, data.mensajes[0]);
+                } else {
+                    let codigo = data.codigo || data.str_res_codigo;
+                    let mensaje = data.mensaje || data.str_res_info_adicional || data.mensajes[0];
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
+                }
+
             } else {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
             }
@@ -343,7 +362,7 @@ export function handlerSubmitPreguntas(preguntas, respuestas, passAnterior, toke
             if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
         } else {
             if (data) {
-                if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicionals[0] }));
+                //if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional[0] }));
                 if (onSuccess) {
                     onSuccess(data.codigo);
                 }
@@ -803,7 +822,7 @@ export function fetchValidacionSocio(strCedula, strTipoValidacion, token, onSucc
 * @param {(contenido:string, nroTotalRegistros: number) => void} onSuccess
 * @param {Function} dispatch
 */
-export function fetchScore(strTipoDocumento, strCedula, strNombres, strLugar, strOficial, strCargo, token, onSucces, dispatch) {
+export async function fetchScore(strTipoDocumento, strCedula, strNombres, strLugar, strOficial, strCargo, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
@@ -817,7 +836,7 @@ export function fetchScore(strTipoDocumento, strCedula, strNombres, strLugar, st
     };
     //console.log("SCORE BODY, ",body)
 
-    ServicioPostExecute(getScore, body, token, { dispatch: dispatch }).then((data) => {
+    await ServicioPostExecute(getScore, body, token, { dispatch: dispatch }).then((data) => {
         if (data) {
             //console.log("SOCREE", data)
             if (data.error) {
@@ -968,7 +987,7 @@ export function fetchInfoEconomica(strEnte, token, onSucces, dispatch) {
 * @param {(contenido:string, nroTotalRegistros: number) => void} onSuccess
 * @param {Function} dispatch
 */
-export function fetchAddAutorizacion(strTipoIdentificacion, intRegistrarAutorizacion, strTipoAut, strNumDocumento, strNombres, strApellidoPaterno, strApellidoMaterno, archivoBase64, token, onSucces, dispatch) {
+export async function fetchAddAutorizacion(strTipoIdentificacion, intRegistrarAutorizacion, strTipoAut, strNumDocumento, strNombres, strApellidoPaterno, strApellidoMaterno, archivoBase64, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
@@ -983,7 +1002,7 @@ export function fetchAddAutorizacion(strTipoIdentificacion, intRegistrarAutoriza
             file: archivoBase64
         }
     }
-    ServicioPostExecute(addAutorizacion, body, token, { dispatch: dispatch }).then((data) => {
+    await ServicioPostExecute(addAutorizacion, body, token, { dispatch: dispatch }).then((data) => {
 
         //console.log("ADD AUTORI", body);
         if (data) {
@@ -1181,6 +1200,7 @@ export function fetchGetInforme(idSolicitud, idEstado, token, onSucces, dispatch
         int_id_sol: idSolicitud,
         int_id_est_sol: Number(idEstado)
     }
+    //console.log(body)
     ServicioPostExecute(getInforme, body, token, { dispatch: dispatch }).then((data) => {
         //console.log("FLUJO,", data);
         if (data) {
@@ -1831,7 +1851,7 @@ export async function fetchReporteAval(idCliente, token, onSucces, dispatch) {
 
     await ServicioPostExecute(getReporteAval, body, token, { dispatch: dispatch }).then((data) => {
         if (data) {
-            console.log("Reporte AVAL", data.file_bytes)
+            //console.log("Reporte AVAL", data.file_bytes)
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
             } else {

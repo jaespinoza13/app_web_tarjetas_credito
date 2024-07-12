@@ -38,9 +38,7 @@ function Solicitud(props) {
     const dispatch = useDispatch();
 
     //Inicio
-    const [usuario, setUsuario] = useState("");
     const [rol, setRol] = useState("");
-    const [datosUsuario, setDatosUsuario] = useState([]);
 
     const [isLstSolicitudes, setIsLstSolicitudes] = useState(true);
     const [isLstProspecciones, setIsLstProspecciones] = useState(false);
@@ -82,7 +80,6 @@ function Solicitud(props) {
     const [controlConsultaCargaComp, setControlConsultaCargaComp] = useState(false);
 
     //OBTENER PARAMETROS
-    const [habilitarPerfilesVerSolicitudAll, setHabilitarPerfilesVerSolicitudAll] = useState([]);
     const [habilitarPerfilesVerSolicitud, setHabilitarPerfilesVerSolicitud] = useState([]);
 
     //Carga de solicitudes (SE MODIFICA PARA QUE APAREZCA PRIMERA PANTALLA COMO PREDETERMINADA AL LOGUEARSE)
@@ -104,37 +101,26 @@ function Solicitud(props) {
                 setOficinas(data.lst_oficinas);
             }, dispatch);
 
-            const strOficial = get(localStorage.getItem("sender_name"));
-            setUsuario(strOficial);
             const strRol = get(localStorage.getItem("role"));
             //console.log(strRol);
             setRol(strRol);
-            setDatosUsuario([{ strCargo: strRol, strOficial: strOficial }]);
             setControlConsultaCargaComp(true);
-
-            if (props.parametrosTC.lst_parametros?.length > 0) {
-                let ParametrosTC = props.parametrosTC.lst_parametros;
-                /* PERFILES AUTORIZADOS EN VER LA SOLICITUD*/
-                setHabilitarPerfilesVerSolicitudAll(ParametrosTC
-                    .filter(param => param.str_nombre === 'PERFILES_AUTORIZADOS_VER_SOLICITUD')
-                    .map(estado => ({
-                        prm_id: estado.int_id_parametro,
-                        prm_valor_ini: estado.str_valor_ini
-                    })));
-
-            }
         }
-
     }, [props.token]);
 
-
     useEffect(() => {
-        if (habilitarPerfilesVerSolicitudAll.length > 0) {
-            const perfilesAutorizados = habilitarPerfilesVerSolicitudAll[0].prm_valor_ini.split('|');
-            console.log(perfilesAutorizados)
-            setHabilitarPerfilesVerSolicitud(perfilesAutorizados);
+        if (props.token && props.parametrosTC.lst_parametros?.length > 0) {
+            let ParametrosTC = props.parametrosTC.lst_parametros;
+            /* PERFILES AUTORIZADOS EN VER LA SOLICITUD */            
+            let perfilesAutorizados = (ParametrosTC
+                .filter(param => param.str_nombre === 'PERFILES_AUTORIZADOS_VER_SOLICITUD')
+                .map(estado => ({
+                    prm_id: estado.int_id_parametro,
+                    prm_valor_ini: estado.str_valor_ini
+                })));
+            if (perfilesAutorizados.length > 0) setHabilitarPerfilesVerSolicitud(perfilesAutorizados[0].prm_valor_ini.split('|'))
         }
-    }, [habilitarPerfilesVerSolicitudAll])
+    }, [props])
 
     //ACTUALIZA LA PAGINA DONDE SE QUIERE IR
     useEffect(() => {
@@ -203,13 +189,17 @@ function Solicitud(props) {
         //console.log(solicitudSeleccionada)
         /* PARA VER SOLICITUD POR PARTE DEL ASESOR DE NEGOCIOS*/
         if (rol === "ASESOR DE CRÉDITO") {
-            dispatch(setSolicitudStateAction({ solicitud: solicitudSeleccionada.int_id, cedulaPersona: solicitudSeleccionada.str_identificacion, idSolicitud: solicitudSeleccionada.int_estado, rol: rol, estado: solicitudSeleccionada.str_estado, oficinaSolicitud: nombreOficinaDeSolicitud }))
+            dispatch(setSolicitudStateAction({
+                solicitud: solicitudSeleccionada.int_id, cedulaPersona: solicitudSeleccionada.str_identificacion, idSolicitud: solicitudSeleccionada.int_estado, rol: rol, estado: solicitudSeleccionada.str_estado, oficinaSolicitud: nombreOficinaDeSolicitud, calificacionRiesgo: solicitudSeleccionada.str_calificacion
+            }))
             navigate.push('/solicitud/ver');
         }
 
         /* PARA QUE PUEDAN HACER EL PASO DE BANDEJA CADA PERFIL */ 
         else if (habilitarPerfilesVerSolicitud.includes(rol)) {
-            dispatch(setSolicitudStateAction({ solicitud: solicitudSeleccionada.int_id, cedulaPersona: solicitudSeleccionada.str_identificacion, idSolicitud: solicitudSeleccionada.int_estado, rol: rol, estado: solicitudSeleccionada.str_estado, oficinaSolicitud: nombreOficinaDeSolicitud }))
+            dispatch(setSolicitudStateAction({
+                solicitud: solicitudSeleccionada.int_id, cedulaPersona: solicitudSeleccionada.str_identificacion, idSolicitud: solicitudSeleccionada.int_estado, rol: rol, estado: solicitudSeleccionada.str_estado, oficinaSolicitud: nombreOficinaDeSolicitud, calificacionRiesgo: solicitudSeleccionada.str_calificacion
+                }))
             navigate.push('/solicitud/ver');
         }
         else {
@@ -300,8 +290,8 @@ function Solicitud(props) {
                                     <td>
                                         {solicitud.str_analista ? <div>
                                             {solicitud.str_estado}
-                                            <div className='tooltip ml-1'>                                                
-                                                <img className='tooltip-icon' src='/Imagenes/info.svg'></img>
+                                            <div className='tooltip ml-1'>
+                                                <img className='tooltip-icon' src='/Imagenes/info.svg' alt="Analista encargado seguimiento"></img>
                                                 <span className='tooltip-info'>Analista: {solicitud.str_analista}</span>
                                             </div>
                                         </div> : '' }                                        
@@ -340,13 +330,11 @@ function Solicitud(props) {
             }
 
             {(isLstSolicitudes || isLstProspecciones) && numPaginas > 1 &&
-
                 <div>
                     <Paginacion numPaginas={numPaginas}
                         paginaActual={paginaActual}
                         setPaginaActual={setPaginaActual} />
-                </div>
-                
+                </div>               
             }
             
         </div>
@@ -360,7 +348,7 @@ function Solicitud(props) {
             type="sm"
         >
             {modalVisible && <div>
-                <p>No tiene permiso para acceder a esta solicitud</p>
+                <p className="mt-2 mb-2">No tiene permiso para acceder a esta solicitud</p>
             </div>}
         </Modal>
        

@@ -124,8 +124,7 @@ namespace plantilla_app_web.Controllers
         [HttpPost]
         public ResCrypt Post(ReqGetInfoSocio req)
         {
-            ResGetInfoSocio resGetInfoSocio = new ResGetInfoSocio();
-            resGetInfoSocio = tarjetaCreditoDat.getInfoSocio(req);
+            ResGetInfoSocio resGetInfoSocio = tarjetaCreditoDat.getInfoSocio(req);
             return Utiles.crypt(resGetInfoSocio, Request.Headers);
         }
 

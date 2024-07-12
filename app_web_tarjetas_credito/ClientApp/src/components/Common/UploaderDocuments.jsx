@@ -568,7 +568,7 @@ const UploadDocumentos = (props) => {
 
                         <div style={{ display: "flex" }}>
                             <p className='normal'>ESTADO CALIFICACION: </p>
-                            <p className="negrita">{props.datosSocio?.str_calificacion_riesgo} </p>
+                            <p className="negrita">{props.calificacionRiesgo} </p>
                         </div>
 
                         <div style={{ display: "flex" }}>
@@ -603,7 +603,7 @@ const UploadDocumentos = (props) => {
                         </div>
 
                         <div style={{ display: "flex" }}>
-                            <p className='normal'>PRODUCTO CRÉDITO: </p>
+                            <p className='normal'>PRODUCTO </p>
                             <p className="negrita">TARJETA DE CRÉDITO </p>
                         </div>
 

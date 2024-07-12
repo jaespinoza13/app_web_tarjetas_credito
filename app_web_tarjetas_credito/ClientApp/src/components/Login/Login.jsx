@@ -220,10 +220,17 @@ function Login(props) {
                         </ModalAlert>
                     </div>
                     : isLogin === 3 ?
-                        <CambiarPassword openModal={openPass} setOpenModal={() => { setOpenPass(!openPass); window.location.reload(); removeSession(); }} callIn={"LOGIN"} />
+                        <CambiarPassword openModal={openPass} setOpenModal={() => { setOpenPass(!openPass); window.location.reload(); removeSession(); navigator.push("/"); setIsLogin(5); }} callIn={"LOGIN"} />
                         : isLogin === 4 ?
-                            <CambiarPass1raVez openModal={openPass1ra} setOpenModal={() => { setOpenPass1ra(!openPass1ra); window.location.reload(); removeSession(); }} callIn={"LOGIN"} />
-                            : ""
+                            <CambiarPass1raVez openModal={openPass1ra} setOpenModal={() => {
+                                setOpenPass1ra(!openPass1ra);
+                                window.location.reload();
+                                removeSession();
+                                setIsLogin(5);
+                            }} callIn={"LOGIN"} />
+                            : isLogin === 5 ?
+                                window.location.reload()
+                                : ''
             }
 
             <div className="login_info">
