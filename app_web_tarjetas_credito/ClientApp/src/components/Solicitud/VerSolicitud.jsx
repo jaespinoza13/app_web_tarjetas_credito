@@ -1210,10 +1210,7 @@ const VerSolicitud = (props) => {
                                     {(solicitudTarjeta?.str_estado !== 'ANALISIS COMITE' && solicitudTarjeta?.str_estado !== 'POR CONFIRMAR') &&
                                         <Button className="btn_mg__primary" disabled={faltaComentariosAsesor} onClick={guardarComentarioSiguiente}>Enviar</Button>
                                     }
-
                                 </div>
-
-
                             </Card>
                     }
                 </>
