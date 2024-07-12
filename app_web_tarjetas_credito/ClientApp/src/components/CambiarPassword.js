@@ -55,8 +55,15 @@ function CambiarPassword(props) {
         }
     };
 
-    const header = <><FontAwesomeIcon icon={solid("key")} color={"blue"} />&nbsp;Cambiar Password</>;
-    const footer = <Button color="guardar-cambios" type="button" disabled={validImputs.length < 3} onClick={() => handlerSubmitCambiarClave(passNueva, props.token, props.callIn !== "NAV", (code) => {
+    const header = <>
+        <div className="f-row">
+            <FontAwesomeIcon icon={solid("key")} color={"blue"} />
+            <h3 style={{ transform: "translateY(-9px)", marginLeft: "5px" }} >&nbsp;Cambiar Password</h3>
+        </div>
+    </>;
+
+
+    const footer = <Button className="btn_mg btn_mg__primary" color="guardar-cambios" type="button" disabled={validImputs.length < 3} onClick={() => handlerSubmitCambiarClave(passNueva, props.token, props.callIn !== "NAV", (code) => {
         if (code === "0000") {
             getUsuario().then(usr => {
                 if (usr) {
@@ -69,22 +76,27 @@ function CambiarPassword(props) {
     }, dispatch)}>Guardar</Button>;
 
     return (
-        <Container>
+        <Container fluid="xs">
+            {/*btnCancelar={"Cancelar"}*/}
+            {/*canClose={true}*/}
             <ModalAlert
                 openModal={props.openModal}
-                size={"xl"}
+                size={"xs"}
                 unmountOnClose={true}
                 btnCancelar={(props.callIn === "NAV") ? "Cancelar" : null}
                 handlerBtnCancelar={(props.callIn === "NAV") ? () => { props.setOpenModal(); } : null}
                 header={header}
                 canClose={props.callIn === "NAV"}
                 btn_footer={footer}
+                handlerBtnAceptar={() => { }}
             >
-                <Container>
+                <Container fluid="xs">
                     <Form>
                         <FormGroup row className="mb-3">
-                            <Label for="passwordAnterior" sm={2}>Clave Anterior:</Label>
-                            <Col sm={10}>
+                            <div className="f-row w-100 mb-1">
+
+                                <Label for="passwordAnterior" md={2} className="ml-3" style={{ paddingTop: "3px" }}>Clave Anterior:</Label>
+
                                 <Input
                                     id="passwordAnterior"
                                     name="passwordAnterior"
@@ -98,15 +110,24 @@ function CambiarPassword(props) {
                                             setPassAnterior(pass);
                                             setPassAnteriorOff(passOff);
                                         });
-                                    }} />
-                                <FormFeedback>
+                                    }}
+                                    className="w-55"
+                                    style={{ marginLeft: "35px" }}
+                                />
+                            </div>
+
+                            <div className="f-row mb-1" style={{ paddingLeft: "155px" }}>
+                                <h5 style={{ width: "90%", whiteSpace: "break-spaces" }}>
                                     {invalidImputs.find(x => x.id === "passwordAnterior") ? invalidImputs.find(x => x.id === "passwordAnterior").text : ''}
-                                </FormFeedback>
-                            </Col>
+                                </h5>
+                            </div>
+
                         </FormGroup>
+
                         <FormGroup row className="mb-3">
-                            <Label for="passwordNueva" sm={2}>Clave Nueva:</Label>
-                            <Col sm={10}>
+                            <div className="f-row w-100 mt-2 mb-1">
+                                <Label for="passwordNueva" md={2} className="ml-3" style={{ paddingTop: "3px" }}>Clave Nueva:</Label>
+
                                 <Input
                                     id="passwordNueva"
                                     name="passwordNueva"
@@ -121,15 +142,24 @@ function CambiarPassword(props) {
                                             setPassNueva(pass);
                                             setPassNuevaOff(passOff);
                                         });
-                                    }} />
-                                <FormFeedback>
+                                    }}
+                                    className="w-55"
+                                    style={{ marginLeft: "48px" }}
+                                />
+                            </div>
+
+
+                            <div className="f-row mb-1" style={{ paddingLeft: "155px" }}>
+                                <h5 style={{ width: "90%", whiteSpace: "break-spaces" }}>
                                     {invalidImputs.find(x => x.id === "passwordNueva") ? invalidImputs.find(x => x.id === "passwordNueva").text : ''}
-                                </FormFeedback>
-                            </Col>
+                                </h5>
+                            </div>
+
                         </FormGroup>
+
                         <FormGroup row className="mb-3">
-                            <Label for="confirmPasswordNueva" sm={2}>Confirmar Clave:</Label>
-                            <Col sm={10}>
+                            <div className="f-row w-100 mt-2 mb-1">
+                                <Label for="confirmPasswordNueva" md={2} className="ml-3" style={{ paddingTop: "3px" }}>Confirmar Clave:</Label>
                                 <Input
                                     id="confirmPasswordNueva"
                                     name="confirmPasswordNueva"
@@ -144,11 +174,17 @@ function CambiarPassword(props) {
                                             setConfirmPassNueva(pass);
                                             setConfirmPassNuevaOff(passOff);
                                         });
-                                    }} />
-                                <FormFeedback>
+                                    }}
+                                    className="w-55"
+                                    style={{ marginLeft: "22px" }}
+                                />
+                            </div>
+                            <div className="f-row mb-1" style={{ paddingLeft: "155px" }}>
+                                <h5 style={{ width: "90%", whiteSpace: "break-spaces" }}>
                                     {invalidImputs.find(x => x.id === "confirmPasswordNueva") ? invalidImputs.find(x => x.id === "confirmPasswordNueva").text : ''}
-                                </FormFeedback>
-                            </Col>
+                                </h5>
+                            </div>
+
                         </FormGroup>
                     </Form>
                 </Container>

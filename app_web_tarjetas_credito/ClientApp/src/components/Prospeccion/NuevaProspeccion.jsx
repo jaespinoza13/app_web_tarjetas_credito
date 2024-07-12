@@ -9,9 +9,8 @@ import { useState, useEffect, useRef } from 'react';
 import Item from '../Common/UI/Item';
 import ValidacionesGenerales from '../Solicitud/ValidacionesGenerales';
 import DatosSocio from '../Solicitud/DatosSocio';
-import { fetchScore, fetchValidacionSocio, fetchAddAutorizacion, fetchAddProspecto, fetchInfoSocio, fetchNuevaSimulacionScore, fetchGetAlertasCliente } from '../../services/RestServices';
-import { get, set } from '../../js/crypt';
-import Modal from '../Common/Modal/Modal';
+import { fetchScore, fetchValidacionSocio, fetchAddAutorizacion, fetchAddProspecto, fetchNuevaSimulacionScore, fetchGetAlertasCliente } from '../../services/RestServices';
+import { get } from '../../js/crypt';
 import FinProceso from '../Solicitud/FinProceso';
 import RegistroCliente from './RegistroCliente';
 import DatosFinancieros from '../Solicitud/DatosFinancieros';
@@ -62,16 +61,9 @@ const NuevaProspeccion = (props) => {
     const [correoSocio, setCorreoSocio] = useState('');
     const [fechaNacimiento, setFechaNacimiento] = useState('');
     
-    //const [cedulaValidacion, setCedulaValidacion] = useState('');
     const [infoSocio, setInfoSocio] = useState([]);
-    const [datosFaltan, setDatosFaltan] = useState(false);
-    //const [modalVisible, setModalVisible] = useState(false);
-
-    const [tipoDocumento, setTipoDocumento] = useState('-1');
     const [documento, setDocumento] = useState('');
     const [cedulaValida, setCedulaValida] = useState(false);
-
-    //const [montoSolicitado, setMontoSolicitado] = useState(0);
     const [datosFinancierosObj, setDatosFinancierosObj] = useState({
         montoSolicitado: 0,
         montoIngresos: 0,
@@ -81,6 +73,8 @@ const NuevaProspeccion = (props) => {
 
     })
 
+    const [comentario, setComentario] = useState("");
+    const [comentarioAdic, setComentarioAdic] = useState("");
 
     //Errores
     const [mensajeErrorScore, setMensajeErrorScore] = useState("");
@@ -94,16 +88,11 @@ const NuevaProspeccion = (props) => {
     const [autorizacionOk, setAutorizacionOk] = useState(false);
     const [archivoAutorizacion, setArchivoAutorizacion] = useState('');
     const [step, setStep] = useState(0);
-    const [subirAutorizacion, setSubirAutorizacion] = useState(false);
-    const [isUploadingAthorization, setIsUploadingAthorization] = useState(false);
+
+
     const [idClienteScore, setIdClienteScore] = useState("");
 
     const [isCkeckRestaGtoFinananciero, setIsCkeckRestaGtoFinananciero] = useState(false);
-
-    // Para registro Solicitud
-    const [calificacionRiesgo, setCalificacionRiesgo] = useState("");
-    const [cupoSugeridoAval, setCupoSugeridoAval] = useState(0);
-    const [cupoSugeridoCoopM, setCupoSugeridoCoopM] = useState(0);
 
 
     //Info Socio
@@ -168,9 +157,7 @@ const NuevaProspeccion = (props) => {
     }, [step]);
 
     const validaCamposSocio = () => {
-        //console.log(`${documento}|${nombreSocio}|${apellidoPaterno}|${apellidoMaterno}|${correoSocio}|${celularSocio}`)
-
-        
+        //console.log(`${documento}|${nombreSocio}|${apellidoPaterno}|${apellidoMaterno}|${correoSocio}|${celularSocio}`)       
 
         if (documento !== "" && nombreSocio !== "" && apellidoPaterno !== "" && apellidoMaterno !== "" && correoSocio !== "" &&
             (celularSocio !== "" && celularSocio.length > 0 && celularSocio.length === 10)) {
@@ -272,6 +259,16 @@ const NuevaProspeccion = (props) => {
         }
     }, [step, validacionesErr, archivoAutorizacion]);
     
+    useEffect(() => {
+        //console.log(`comentarioAdic ${comentarioAdic} , comentario ${comentario}`)
+        //console.log(`comentarioVADADI ${isNaN(comentarioAdic)} ${IsNullOrEmpty(comentarioAdic)}, comentarioVAD ${isNaN(comentario)} ${IsNullOrEmpty(comentario)}`)
+        if (comentario !== "" && comentarioAdic !== "") {
+            //console.log(`SIG VALIDO`)
+            setEstadoBotonSiguiente(false);
+        } else {
+            setEstadoBotonSiguiente(true); 
+        }
+    }, [comentario, comentarioAdic])
 
 
 
@@ -378,18 +375,12 @@ const NuevaProspeccion = (props) => {
         if (step === 2) {
             //console.log("STEP 1, SHOW ", showAutorizacion)
             if (showAutorizacion) {
-                fetchAddAutorizacion("C", 1, "F", documento, nombreSocio, apellidoPaterno, apellidoMaterno,
+                await fetchAddAutorizacion("C", 1, "F", documento, nombreSocio, apellidoPaterno, apellidoMaterno,
                     archivoAutorizacion, props.token, (data) => {
                         //console.log("AUTOR, ", data);
                         if (data.str_res_codigo === "000") {
-                            //const estadoAutorizacion = validacionesErr.find((validacion) => { return validacion.str_nemonico === "ALERTA_SOLICITUD_TC_005" })
-                            //estadoAutorizacion.str_estado_alerta = "True";
-                            setSubirAutorizacion(false);
-                            setIsUploadingAthorization(false);
                             setShowAutorizacion(false);
-
                             consultaAlertas(false);
-
                         }
                     }, dispatch);
                 return;
@@ -420,7 +411,7 @@ const NuevaProspeccion = (props) => {
                     //localStorage.setItem('dataPuntaje', scoreStorage.toString());
                     datosFinancierosObj.montoGastoFinaCodeudor = Number(data.str_gastos_codeudor);
                     setDatosFinancierosObj(datosFinancierosObj)
-
+                    setEstadoBotonSiguiente(true);
 
                 }, dispatch);
 
@@ -437,13 +428,11 @@ const NuevaProspeccion = (props) => {
                 //TODO CAMBIAR LA CEDULA
                 await fetchNuevaSimulacionScore("C", "1150214375", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, "Matriz", datosUsuario[0].strOficial, datosUsuario[0].strCargo, datosFinan.montoIngresos, datosFinan.montoEgresos, datosFinan.montoRestaGstFinanciero, datosFinan.montoGastoFinaCodeudor,
                     props.token, (data) => {
-                        setCupoSugeridoCoopM(data.str_cupo_sugerido);
                         setScore(data);
-
+                        setEstadoBotonSiguiente(true);
                     }, dispatch);
 
-            }           
-            setEstadoBotonSiguiente(true);
+            }              
         }
 
         if (step === 4) {
@@ -516,28 +505,9 @@ const NuevaProspeccion = (props) => {
         //Si se carga documento enviar a step para agregar la autorizacion a consulta buro
         setArchivoAutorizacion(e);
         setEstadoBotonSiguiente(true);
-        
-
-
-        /*
-        const bytesArchivo = null;        
-        const fileBytes = new Uint8Array(e);
-        // Ahora puedes trabajar con 'fileBytes'
-        console.log(fileBytes);
-        bytesArchivo(fileBytes);
-        setArchivoAutorizacion(bytesArchivo);*/
-
-
     }
 
-    
-    const handleAutorizacion = (data) => {
-        console.log(data);
-        setIsUploadingAthorization(data);
-    }
 
-    const [comentario, setComentario] = useState("");
-    const [comentarioAdic, setComentarioAdic] = useState("");
 
     const handleComentario = (comentarioToggle) => {
         setComentario(comentarioToggle);
@@ -628,8 +598,7 @@ const NuevaProspeccion = (props) => {
                             infoSocio={infoSocio}
                             lst_validaciones={lstValidaciones}
                             onFileUpload={getFileHandler}
-                            onShowAutorizacion={showAutorizacion}                            
-                            onAddAutorizacion={handleAutorizacion}
+                            onShowAutorizacion={showAutorizacion}
                             datosUsuario={datosUsuario}
                             onSetShowAutorizacion={showAutorizacionHandler}
                             cedula={documento}

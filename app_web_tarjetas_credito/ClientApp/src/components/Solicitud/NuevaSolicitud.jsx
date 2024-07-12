@@ -82,7 +82,7 @@ const NuevaSolicitud = (props) => {
     const [archivoAutorizacion, setArchivoAutorizacion] = useState('');
     const [step, setStep] = useState(0);
 
-    //const [isUploadingAthorization, setIsUploadingAthorization] = useState(false);
+
     const [idClienteScore, setIdClienteScore] = useState(0);
 
     // Para registro Solicitud
@@ -113,6 +113,9 @@ const NuevaSolicitud = (props) => {
         setDirDomicilioSocio([...data.lst_dir_domicilio]);
         setDirTrabajoSocio([...data.lst_dir_trabajo]);
     }
+
+    const [comentario, setComentario] = useState("");
+    const [comentarioAdic, setComentarioAdic] = useState("");
 
     //Retorno nueva simulacion
     const realizaNuevaSimulacion = useRef(false);
@@ -237,6 +240,15 @@ const NuevaSolicitud = (props) => {
             }
         }
     }, [step, validacionesErr, archivoAutorizacion]);
+
+
+    useEffect(() => {
+        if (comentarioAdic !== "") {
+            setEstadoBotonSiguiente(false);
+        } else {
+            setEstadoBotonSiguiente(true); 
+        }
+    }, [comentarioAdic])
 
     useEffect(() => {
         if (score.str_res_codigo === "000") {
@@ -368,7 +380,6 @@ const NuevaSolicitud = (props) => {
             setActualStepper(actualStepper - 1);
         }
         if (step === 2) {
-            //setIsUploadingAthorization(false);
             setShowAutorizacion(false);
         }
         if (step === 4) {
@@ -444,13 +455,11 @@ const NuevaSolicitud = (props) => {
 
             if (showAutorizacion) {
                 //console.log("CED ENVIA DOC, ", cedulaSocio)
-                fetchAddAutorizacion("C", 1, "F", cedulaSocio, nombreSocio, apellidoPaterno, apellidoMaterno, archivoAutorizacion, props.token, (data) => {
+                await fetchAddAutorizacion("C", 1, "F", cedulaSocio, nombreSocio, apellidoPaterno, apellidoMaterno, archivoAutorizacion, props.token, (data) => {
                     //console.log("AUTOR, ", data);
                     if (data.str_res_codigo === "000") {
-                        //setIsUploadingAthorization(false);
                         setShowAutorizacion(false);
                         consultaAlertas(false);
-
                     }
                 }, dispatch);
                 return;
@@ -493,7 +502,7 @@ const NuevaSolicitud = (props) => {
                     //console.log("SCORE ", data.response.result);
                     //console.log("CALIFICACION RIESGO COOP, ", data.response.result.modeloCoopmego[0].decisionModelo);
                     setCalificacionRiesgo(data.response.result.modeloCoopmego[0].decisionModelo)
-
+                    setEstadoBotonSiguiente(true);
 
                 }, dispatch);
 
@@ -513,11 +522,10 @@ const NuevaSolicitud = (props) => {
                         setIdClienteScore(data.int_cliente);
                         setCupoSugeridoCoopM(data.str_cupo_sugerido);
                         setScore(data);
+                        setEstadoBotonSiguiente(true);
 
                     }, dispatch);
             }
-            setEstadoBotonSiguiente(true);
-
 
         }
         if (step === 4) {
@@ -665,22 +673,6 @@ const NuevaSolicitud = (props) => {
         console.log("DIRECCION ENREGA ", data)
     }
 
-    const handleAutorizacion = (data) => {
-        //console.log(data);
-        //setIsUploadingAthorization(data);
-    }
-
-    const [comentario, setComentario] = useState("");
-    const [comentarioAdic, setComentarioAdic] = useState("");
-
-    useEffect(() => {
-        if (comentarioAdic === "") {
-            setEstadoBotonSiguiente(true);
-        } else {
-            setEstadoBotonSiguiente(false);
-        }
-    }, [comentarioAdic])
-
     const handleComentario = (comentarioToggle) => {
         setComentario(comentarioToggle);
     }
@@ -754,7 +746,6 @@ const NuevaSolicitud = (props) => {
                                 onFileUpload={getFileHandler}
                                 onShowAutorizacion={showAutorizacion}
                                 infoSocio={infoSocio}
-                                onAddAutorizacion={handleAutorizacion}
                                 datosUsuario={datosUsuario}
                                 onSetShowAutorizacion={showAutorizacionHandler}
                                 cedula={cedulaSocio}

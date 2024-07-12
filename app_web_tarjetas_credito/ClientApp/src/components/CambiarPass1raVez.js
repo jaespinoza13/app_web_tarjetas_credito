@@ -4,10 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import {
     Button,
-    Col,
     Container,
     Form,
-    FormFeedback,
     FormGroup,
     Input,
     Label,
@@ -96,28 +94,36 @@ function CambiarPass1raVez(props) {
         }
     };
 
-    const footer = <Button color="guardar-cambios" type="button" disabled={validImputs.length <= props.dataNroPregntas + props.dataNroPregntas} onClick={() => handlerSubmitCambiarPass1raVez(preguntas, respuestas, passNueva, props.token, (code) => {
+    const header = <>
+        <div className="f-row">
+            <FontAwesomeIcon icon={solid("key")} color={"blue"} />
+            <h3 style={{ transform: "translateY(-9px)", marginLeft: "5px" }} >&nbsp;Cambiar Password Primera Vez</h3>
+        </div>
+    </>;
+
+    const footer = <Button className="btn_mg btn_mg__primary" color="guardar-cambios" type="button" disabled={validImputs.length <= props.dataNroPregntas + props.dataNroPregntas} onClick={() => handlerSubmitCambiarPass1raVez(preguntas, respuestas, passNueva, props.token, (code) => {
         if (code === "0000") props.setOpenModal();
     }, dispatch)}>Guardar</Button>;
-    const header = <><FontAwesomeIcon icon={solid("key")} color={"blue"} />&nbsp;Cambiar Password Primera Vez</>;
+    
 
     return (
-        <Container>
+        <Container fluid="xs">
             <ModalAlert
                 openModal={props.openModal}
-                size={"xl"}
+                size={"xs"}
                 unmountOnClose={true}
                 btnCancelar={(props.callIn === "NAV") ? "Cancelar" : null}
                 handlerBtnCancelar={(props.callIn === "NAV") ? () => { props.setOpenModal(); } : null}
                 header={header}
                 canClose={props.callIn === "NAV"}
                 btn_footer={footer}
+                handlerBtnAceptar={() => { }}
             >
-                <Container>
+                <Container fluid="xs">
                     <Form>
                         <FormGroup row className="mb-3">
-                            <Label for="passwordAnterior" md={2}>Clave Anterior:</Label>
-                            <Col md={10}>
+                            <div className="f-row w-100 mb-1">
+                                <Label for="passwordAnterior" md={2} className="ml-3" style={{ paddingTop: "3px" }} >Clave Anterior:</Label>
                                 <Input
                                     id="passwordAnterior"
                                     name="passwordAnterior"
@@ -131,16 +137,23 @@ function CambiarPass1raVez(props) {
                                         val.bln = !val.bln;
                                         validateInput("passwordAnterior", val);
                                         setPassAnteriorOff(passOff);
-                                    })} />
-                                <FormFeedback>
+                                    })}
+                                    className="w-55"
+                                    style={{ marginLeft: "35px" }}
+                                />
+
+                            </div>
+                            <div className="f-row mb-1" style={{ paddingLeft: "155px" }}>
+                                <h5 style={{ width: "90%", whiteSpace: "break-spaces" }}>
                                     {invalidImputs.find(x => x.id === "passwordAnterior") ? invalidImputs.find(x => x.id === "passwordAnterior").text : ''}
-                                </FormFeedback>
-                            </Col>
+                                </h5>
+                            </div>
+
                         </FormGroup>
-                        <hr />
+                        <hr className="w-100" />
                         <FormGroup row className="mb-3">
-                            <Label for="passwordNueva" sm={2}>Clave Nueva:</Label>
-                            <Col sm={10}>
+                            <div className="f-row w-100 mb-1">
+                                <Label for="passwordNueva" md={2} className="ml-3" style={{ paddingTop: "3px" }}>Clave Nueva:</Label>
                                 <Input
                                     id="passwordNueva"
                                     name="passwordNueva"
@@ -155,15 +168,22 @@ function CambiarPass1raVez(props) {
                                         validateInput("passwordNueva", val);
                                         setPassNueva(pass);
                                         setPassNuevaOff(passOff);
-                                    })} />
-                                <FormFeedback>
+                                    })}
+                                    className="w-55"
+                                    style={{ marginLeft: "48px" }}
+                                />
+                            </div>
+                            <div className="f-row mb-1" style={{ paddingLeft: "15px" }}>
+                                <h5 style={{ width: "90%", whiteSpace: "break-spaces" }}>
                                     {invalidImputs.find(x => x.id === "passwordNueva") ? invalidImputs.find(x => x.id === "passwordNueva").text : ''}
-                                </FormFeedback>
-                            </Col>
+                                </h5>
+                            </div>
+
+
                         </FormGroup>
                         <FormGroup row className="mb-3">
-                            <Label for="confirmPasswordNueva" sm={2}>Confirmar Clave:</Label>
-                            <Col sm={10}>
+                            <div className="f-row w-100 mt-2 mb-1">
+                                <Label for="confirmPasswordNueva" md={2} className="ml-3" style={{ paddingTop: "3px" }}>Confirmar Clave:</Label>
                                 <Input
                                     id="confirmPasswordNueva"
                                     name="confirmPasswordNueva"
@@ -178,19 +198,26 @@ function CambiarPass1raVez(props) {
                                         validateInput("confirmPasswordNueva", val);
                                         setConfirmPassNueva(pass);
                                         setConfirmPassNuevaOff(passOff);
-                                    })} />
-                                <FormFeedback>
+                                    })}
+                                    className="w-55"
+                                    style={{ marginLeft: "22px" }}
+                                />
+                            </div>
+                            <div className="f-row mb-1" style={{ paddingLeft: "15px" }}>
+                                <h5 style={{ width: "90%", whiteSpace: "break-spaces" }}>
                                     {invalidImputs.find(x => x.id === "confirmPasswordNueva") ? invalidImputs.find(x => x.id === "confirmPasswordNueva").text : ''}
-                                </FormFeedback>
-                            </Col>
+                                </h5>
+                            </div>
+
+
                         </FormGroup>
                         <Table>
                             <thead>
                                 <tr className="row">
-                                    <th className="col-md-6">
+                                    <th style={{ width: "50%" }}>
                                         Pregunta
                                     </th>
-                                    <th className="col-md-6">
+                                    <th style={{ width: "50%" }}>
                                         Respuesta
                                     </th>
                                 </tr>
@@ -198,7 +225,7 @@ function CambiarPass1raVez(props) {
                             <tbody>
                                 {arr.map((item) =>
                                     <tr key={"Preg_" + item} className="row">
-                                        <td className="col-md-6">
+                                        <td style={{ width: "50%" }}>
                                             <FormGroup>
                                                 <Input
                                                     type="select"
@@ -206,19 +233,19 @@ function CambiarPass1raVez(props) {
                                                     name={"selectpregunta_" + item}
                                                     disabled={IsNullOrWhiteSpace(confirmPassNueva) || (validImputs && !validImputs.includes('confirmPasswordNueva'))}
                                                     value={preguntas[item]}
-                                                    onChange={(e) => { addPregunta(item, e.target.value); }}>
+                                                    onChange={(e) => { addPregunta(item, e.target.value); }}
+                                                    style={{ fontSize: "11.5px" }}
+                                                >
                                                     <option key={"preguntanull"} value={''}>
                                                         Seleccione...
                                                     </option>
                                                     {listaPreguntas.map((item) =>
-                                                        <option key={"pregunta_" + item.codigo} value={item.codigo}>
-                                                            {item.nombre}
-                                                        </option>
-                                                    )}
+                                                        <option key={"pregunta_" + item.codigo} value={item.codigo}>{item.nombre}                                                        </option>
+                                                    )}                                                    
                                                 </Input>
                                             </FormGroup>
                                         </td>
-                                        <td className="col-md-6">
+                                        <td style={{ width: "50%" }}>
                                             <FormGroup>
                                                 <Input
                                                     id={"respuesta_" + item}
@@ -233,10 +260,14 @@ function CambiarPass1raVez(props) {
                                                         validateInput("respuesta_" + item, { bln: flag, text: "Campo vac\u00EDo" });
                                                         respuestas[item] = text;
                                                         respuestasOff[item] = textOff;
-                                                    })} />
-                                                <FormFeedback>
-                                                    {invalidImputs.find(x => x.id === "respuesta_" + item) ? invalidImputs.find(x => x.id === "respuesta_" + item).text : ''}
-                                                </FormFeedback>
+                                                    })}
+                                                    style={{ fontSize: "11.5px" }}
+                                                />
+                                                <div className="f-row w-100" style={{ paddingLeft: "15px" }}>
+                                                    <h5 className="fw-80">
+                                                        {invalidImputs.find(x => x.id === "respuesta_" + item) ? invalidImputs.find(x => x.id === "respuesta_" + item).text : ''}
+                                                    </h5>
+                                                </div>
                                             </FormGroup>
                                         </td>
                                     </tr>

@@ -138,7 +138,7 @@ const VerSolicitud = (props) => {
         fetchInfoSocio(props.solicitud.cedulaPersona, props.token, (data) => {
 
             //console.log("BUSQ SOCI AXEN ", props.solicitud.cedulaPersona)
-            console.log("Infor USUARIO ", data)
+            //console.log("Infor USUARIO ", data)
             setDatosSocio(data.datos_cliente[0]);
         }, dispatch);
 
@@ -164,7 +164,7 @@ const VerSolicitud = (props) => {
         }, dispatch);
         fetchGetResolucion(props.solicitud.solicitud, props.token, (data) => {
             setResoluciones(data.lst_resoluciones);
-            console.log("Resoluciones", data);
+            //console.log("Resoluciones", data);
         }, dispatch);
         fetchGetSeparadores(props.token, (data) => {
             //console.log("RES, ", data.lst_separadores)
@@ -1238,6 +1238,7 @@ const VerSolicitud = (props) => {
                             estadoSolicitud={props.solicitud.estado}
                             cupoSolicitado={solicitudTarjeta?.str_cupo_solicitado}
                             oficialSolicitud={solicitudTarjeta?.str_usuario_proc}
+                            calificacionRiesgo={props.solicitud.calificacionRiesgo }
                         ></UploadDocumentos>
                     </div>
                 </Card>

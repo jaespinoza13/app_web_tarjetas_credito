@@ -6,7 +6,6 @@ import Item from "../Common/UI/Item";
 import { fetchInfoSocio, fetchInfoEconomica, fetchGetInfoFinan, fetchReporteAval } from "../../services/RestServices";
 import Switch from "../Common/UI/Switch";
 import Toggler from "../Common/UI/Toggler";
-import Input from "../Common/UI/Input";
 import Textarea from "../Common/UI/Textarea";
 import Button from "../Common/UI/Button";
 import { base64ToBlob, descargarArchivo, generarFechaHoy, verificarPdf } from "../../js/utiles";
@@ -124,6 +123,7 @@ const DatosSocio = (props) => {
 
     const getInfoSocio = () => {
         setEstadoLoadingInfoSocio(true);
+        console.log("CEDULA INFOSOCIO", props.informacionSocio.cedula);
         fetchInfoSocio(props.informacionSocio.cedula, props.token, (data) => {
             setDirDomicilioSocio([...data.lst_dir_domicilio]);
             setDirTrabajoSocio([...data.lst_dir_trabajo]);
@@ -196,8 +196,8 @@ const DatosSocio = (props) => {
         //TODO CAMBIAR EL ID DEL CLIENTE PARA DESCARGAR REPORTE DEL AVAL A props.idClienteScore
         console.log("INFO ID CLIENTE SCORE, ",props.idClienteScore)
         await fetchReporteAval(189554, props.token, (data) => {
-            console.log("REPORTE AVAL ", data)
-            if (data.file_bytes.length > 0) { //&& verificarPdf(data.file_bytes)) {
+            //console.log("REPORTE AVAL ", data)
+            if (data.file_bytes.length > 0 && verificarPdf(data.file_bytes)) {
                 const blob = base64ToBlob(data.file_bytes, 'application/pdf');
                 let fechaHoy = generarFechaHoy();
                 const nombreArchivo = `ReporteAval_Prueba${(fechaHoy)}`;
@@ -211,7 +211,7 @@ const DatosSocio = (props) => {
         <div className="f-col w-100">
             <div id="montoSugerido" className="f-row w-100 ">
                 <div className="f-row justify-content-center align-content-center">
-                    <img src="Imagenes/Cupo sugerido.svg" width="10%"></img>
+                    <img src="Imagenes/Cupo sugerido.svg" width="10%" alt="Cupo sugerido Aval"></img>
                     <div className="ml-3 datosMonto">
                         <h3 className="blue">Cupo Sugerido Aval:</h3>
                         <h2 className="strong blue">{`$  
@@ -220,7 +220,7 @@ const DatosSocio = (props) => {
                     </div>
                 </div>
                 <div className="f-row justify-content-center align-content-center">
-                    <img src="Imagenes/Cupo sugerido.svg" width="10%"></img>
+                    <img src="Imagenes/Cupo sugerido.svg" width="10%" alt="Cupo sugerido Coopmego"></img>
                     <div className="ml-3 datosMonto">
                         <h3 className="blue">Cupo Sugerido Coopmego: </h3>
                         <h2 className="strong blue">{`${props.score.str_cupo_sugerido ? Number(props.score.str_cupo_sugerido).toLocaleString('en-US') : Number('0.00').toLocaleString('en-US')}`}</h2>
