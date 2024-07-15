@@ -24,7 +24,6 @@ namespace Domain.Models.TarjetaCredito.GetScore
         public bool bln_cupo_sugerido { get; set; }
         public string str_gastos_codeudor { get; set; } = string.Empty;
 
-        //DATOS A LLENAR CUANDO REALIZA NUEVA SIMULACION
 
     }
 }

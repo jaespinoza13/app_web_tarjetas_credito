@@ -191,7 +191,8 @@ class App extends Component {
                 />
                 <Switch>
                     <Route exact path='/' component={!this.state.isAuthenticated ? Login : Home} />
-                    <Route path='/auth' component={Login} />
+                    {/*<Route path='/auth' component={Login} />*/}
+                    <Route path='/auth' component={this.state.isAuthenticated ? Home : Login} />
                     <Route path='/logout' component={!this.state.isAuthenticated ? Login : Logout} />
                     <Route path='/solicitud'>
                         {this.state.isAuthenticated ? (
@@ -207,10 +208,8 @@ class App extends Component {
 
                     <Route path='/prospeccion'>
                         {this.state.isAuthenticated ? (
-                            <>
-                                
-                                <Route path='/prospeccion/nueva' component={NuevaProspeccion} />
-                               
+                            <>                                
+                                <Route path='/prospeccion/nueva' component={NuevaProspeccion} /> 
                             </>
                         ) : (
                             <Route render={() => <Redirect to="/auth" />} />

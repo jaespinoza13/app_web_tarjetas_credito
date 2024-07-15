@@ -63,7 +63,6 @@ function Login(props) {
                 const ts = Number(localStorage.getItem('aceptar'));
                 let key = generate(navigator.userAgent, ts, get(remitente), data.datosUsuario.login);
                 if (data.codigo === "000") {
-                    console.log(data);
                     data.datosUsuario.str_sesion = data.datosUsuario.id_usuario + "" + data.datosUsuario.id_perfil + "" + ts + "" + data.datosUsuario.id_persona;
                     localStorage.setItem('sender', set(data.datosUsuario.login));
                     localStorage.setItem('office', set(data.datosUsuario.id_oficina.toString()));
@@ -103,6 +102,8 @@ function Login(props) {
                     setIsLogin(0);
                     setProgress(95);
                     setMsg(data.mensajes[0]);
+                    setPassword("");
+                    setPassOff("");
                 }
                 setdisableBtn(false);
                 setProgress(100);
@@ -258,7 +259,7 @@ function Login(props) {
                                     textbutton="Olvidé mi usuario"
                                     onClick={(e) => { e.preventDefault(); setOpenUsuario(true); }}
                                     value={login}
-                                    change={(e) => setLogin(e.target.value)}
+                                    change={(e) => { setLogin(e.target.value) }}
                                 />
                                 <ModalAlert
                                     titleAlert={'Olvidé mi usuario'}

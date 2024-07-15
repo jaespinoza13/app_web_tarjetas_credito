@@ -12,14 +12,11 @@ import { get } from '../../js/crypt';
 import Button from '../Common/UI/Button';
 import Toggler from '../Common/UI/Toggler';
 import Table from '../Common/Table';
-import TableWithTextArea from '../Common/UI/TableWithTextArea';
-import ModalDinamico from '../Common/Modal/ModalDinamico';
 import { setSolicitudStateAction } from '../../redux/Solicitud/actions';
 import Paginacion from '../Common/Paginacion';
 
 
 const mapStateToProps = (state) => {
-    //console.log("state, ", state)
     var bd = state.GetWebService.data;
     if (IsNullOrWhiteSpace(bd) || Array.isArray(state.GetWebService.data)) {
         bd = sessionStorage.getItem("WSSELECTED");
@@ -33,7 +30,6 @@ const mapStateToProps = (state) => {
 };
 
 function Solicitud(props) {
-    //console.log("props, ",props)
     const navigate = useHistory();
     const dispatch = useDispatch();
 
@@ -85,10 +81,7 @@ function Solicitud(props) {
     //Carga de solicitudes (SE MODIFICA PARA QUE APAREZCA PRIMERA PANTALLA COMO PREDETERMINADA AL LOGUEARSE)
     useEffect(() => {
         if (props.token && !controlConsultaCargaComp) {
-            //console.log("TOKEN", props.token);
             fetchGetSolicitudes(props.token, (data) => {
-                //console.log("ENTRA SOLICITUDES");
-                //console.log(data);
                 stLstProspectos(data.prospectos);
                 stLstSolicitudes(data.solicitudes);
 
@@ -102,7 +95,6 @@ function Solicitud(props) {
             }, dispatch);
 
             const strRol = get(localStorage.getItem("role"));
-            //console.log(strRol);
             setRol(strRol);
             setControlConsultaCargaComp(true);
         }
@@ -140,14 +132,12 @@ function Solicitud(props) {
     }, [rol]);
 
     const validaPermiso = (strNombrePermiso) => {
-        //console.log(rol);
         if (rol) {
             var permisosUusuario = [];
             if (rol === "ASESOR DE CRÉDITO") {
                 permisosUusuario = ["CREAR SOLICITUD"];
             }
             var permis = permisosUusuario.includes(strNombrePermiso);
-            //console.log(permis);
             if (permis) {
                 setPermisoNuevaSol(permis);
             }
@@ -186,7 +176,6 @@ function Solicitud(props) {
     const moveToSolicitud = (solId) => {
         const solicitudSeleccionada = registrosPagActual.find((solicitud) => { return solicitud.int_id === solId });
         let nombreOficinaDeSolicitud = validarNombreOficina(solicitudSeleccionada.int_oficina_crea);
-        //console.log(solicitudSeleccionada)
         /* PARA VER SOLICITUD POR PARTE DEL ASESOR DE NEGOCIOS*/
         if (rol === "ASESOR DE CRÉDITO") {
             dispatch(setSolicitudStateAction({

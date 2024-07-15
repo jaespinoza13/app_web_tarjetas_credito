@@ -12,13 +12,8 @@ const DatosFinancieros = (props) => {
     const [montoEgresos, setMontoEgresos] = useState(0);
     const [montoGastoFinaCodeudor, setMontoGastoFinanCodeudor] = useState(0);
     const [restaMontoGastosFinancieros, setRestaMontoGastosFinancieros] = useState(0);
-
     const [isCkeckRestaGtoFinancero, setIsCkeckRestaGtoFinancero] = useState(false);
-
     const [isCamposDesactivados, setIsCamposDesactivados] = useState(true);
-    //const [isHabilitadoRestaGstFinancieros, setIsHabilitadoRestaGstFinancieros] = useState(false);
-
-    const [validador, setValidador] = useState(false);
 
     const setMontoSolicitadoHandler = (value) => {
         setMontoSolicitado(Number(value));
@@ -26,7 +21,6 @@ const DatosFinancieros = (props) => {
             montoSolicitado: Number(value),
             montoIngresos: montoIngresos,
             montoEgresos: montoEgresos,
-            //montoGastosFinancieros: montoGastosFinancieros,
             montoGastoFinaCodeudor: montoGastoFinaCodeudor,
             restaGastoFinanciero: restaMontoGastosFinancieros
         })
@@ -38,7 +32,6 @@ const DatosFinancieros = (props) => {
             montoSolicitado: montoSolicitado,
             montoIngresos: Number(value),
             montoEgresos: montoEgresos,
-            //montoGastosFinancieros: montoGastosFinancieros,
             montoGastoFinaCodeudor: montoGastoFinaCodeudor,
             restaGastoFinanciero: restaMontoGastosFinancieros
         })
@@ -50,20 +43,18 @@ const DatosFinancieros = (props) => {
             montoSolicitado: montoSolicitado,
             montoIngresos: montoIngresos,
             montoEgresos: Number(value),
-            //montoGastosFinancieros: montoGastosFinancieros,
             montoGastoFinaCodeudor: montoGastoFinaCodeudor,
             restaGastoFinanciero: restaMontoGastosFinancieros
         })
     }
 
     const setMontoGastoFinanCodeudorHandler = (value) => {
-        setMontoGastoFinanCodeudor(value);
+        setMontoGastoFinanCodeudor(Number(value));
         props.setDatosFinancierosFunc({
             montoSolicitado: montoSolicitado,
             montoIngresos: montoIngresos,
             montoEgresos: montoEgresos,
-            //montoGastosFinancieros: montoGastosFinancieros,
-            montoGastoFinaCodeudor: value,
+            montoGastoFinaCodeudor: Number(value),
             restaGastoFinanciero: restaMontoGastosFinancieros
         })
     }
@@ -74,7 +65,6 @@ const DatosFinancieros = (props) => {
             montoSolicitado: montoSolicitado,
             montoIngresos: montoIngresos,
             montoEgresos: montoEgresos,
-            //montoGastosFinancieros: montoGastosFinancieros,
             montoGastoFinaCodeudor: montoGastoFinaCodeudor,
             restaGastoFinanciero: value
         })
@@ -83,7 +73,6 @@ const DatosFinancieros = (props) => {
 
 
     const CkeckGtosFinancierosHandler = (e) => {
-        //console.log("CAMBIO DE CHECK", !isCkeckGtosFinancieros)
         setIsCkeckRestaGtoFinancero(!isCkeckRestaGtoFinancero);
         props.isCkeckGtosFinancierosHandler(!isCkeckRestaGtoFinancero);
 
@@ -91,31 +80,10 @@ const DatosFinancieros = (props) => {
 
     useEffect(() => {
         //Habilita campo de gastos financieros
-        //console.log("CAMBIO DE CHECK 2,",isCkeckGtosFinancieros)
         if (isCkeckRestaGtoFinancero === false) {
-            //setMontoGastosFinancieros(" ");
-            //setMontoGastosFinancierosHandler("")
-
-            //setMontoGastoFinanCodeudor(" ");
-            //setMontoGastoFinanCodeudorHandler(" ");
-            setRestaMontoGastosFinancieros(" ");
             setRestaGastosFinancierosHandler(" ");
         }
     }, [isCkeckRestaGtoFinancero])
-
-    /*
-    useEffect(() => {
-        if (props.requiereActualizar) {
-            setIsCamposDesactivados(false);
-        } else {
-            setIsCamposDesactivados(true);
-        }
-    }, [props.requiereActualizar])*/
-
-    /* POR SI SE REQUIERE OCULTAR EN LA PRIMERA SIMULACION
-    useEffect(() => {
-        setIsHabilitadoRestaGstFinancieros(props.habilitaRestaGstFinancieros);
-    },[props.habilitaRestaGstFinancieros])*/
 
 
     useEffect(() => {
@@ -128,15 +96,10 @@ const DatosFinancieros = (props) => {
 
 
     const updGastosFinancieros = () => {
-        //props.requiereActualizar(true)
-
         props.requiereActualizar(true)
-        //setIsCamposDesactivados(!isCamposDesactivados);
     }
 
     useEffect(() => {
-
-        console.log("Datos finan Compon ", props.dataConsultFinan)
 
         setMontoIngresos(props.dataConsultFinan.montoIngresos);
         setMontoEgresos(props.dataConsultFinan.montoEgresos);
@@ -147,43 +110,6 @@ const DatosFinancieros = (props) => {
 
     }, [])
 
-    /*
-    useEffect(() => {
-
-            console.log("Datos finan Validador ", props.dataConsultFinan)
-            setMontoIngresos(props.dataConsultFinan.montoIngresos);
-            setMontoEgresos(props.dataConsultFinan.montoEgresos);
-
-            setRestaMontoGastosFinancieros(props.dataConsultFinan.montoRestaGstFinanciero);
-            setMontoGastoFinanCodeudor(props.dataConsultFinan.montoGastoFinaCodeudor)
-            setMontoSolicitado(props.dataConsultFinan.montoSolicitado)
-
-    }, [props.dataConsultFinan])*/
-
-    /*
-    useEffect(() => {
-        setIsCkeckRestaGtoFinancero(props.isCheckMontoRestaFinanciera)
-    }, [props.isCheckMontoRestaFinanciera])*/
-
-
-    /*
-    useEffect(() => {
-
-        console.log("ACT finan Compon ", props.dataConsultFinan)
-
-        setMontoIngresos(props.dataConsultFinan.montoIngresos);
-        setMontoEgresos(props.dataConsultFinan.montoEgresos);
-
-        setRestaMontoGastosFinancieros(props.dataConsultFinan.montoRestaGstFinanciero);
-        setMontoGastoFinanCodeudor(props.dataConsultFinan.montoGastoFinaCodeudor)
-        //setMontoGastosFinancieros(props.dataConsultFinan.montoGastosFinancieros);
-        setMontoSolicitado(props.dataConsultFinan.montoSolicitado)
-
-        setIsCkeckRestaGtoFinancero(props.isCheckMontoRestaFinanciera)
-
-    }, [props.dataConsultFinan])*/
-
-
     return (
         <>
 
@@ -192,10 +118,9 @@ const DatosFinancieros = (props) => {
                 <div className={"f-row"}>
                     <h2>Datos de Financieros</h2>
 
-                    {/*{props.gestion === "solicitud" &&*/}
 
                     <Button className="btn_mg__auto" onClick={updGastosFinancieros}>
-                        <img src="/Imagenes/refresh.svg" style={{ transform: "scaleX(-1)" }}></img>
+                        <img src="/Imagenes/refresh.svg" style={{ transform: "scaleX(-1)" }} alt="Volver a consultar."></img>
                     </Button>
 
                 </div>

@@ -123,7 +123,6 @@ const RegistroCliente = (props) => {
 
 
     useEffect(() => {
-        //console.log("DATOS CLIENTE, ", props.infoSocio)
         if (props.infoSocio && props.paso === 1) {
             setDocumento(props.infoSocio.cedula);
             setNombresCliente(props.infoSocio.nombres);
@@ -131,17 +130,14 @@ const RegistroCliente = (props) => {
             setApellidoMaterno(props.infoSocio.apellidoMaterno);
             setCelularCliente(props.infoSocio.celularCliente);
             setCorreoCliente(props.infoSocio.correoCliente);
-            console.log(props.infoSocio.fechaNacimiento)
            const partesFecha = props.infoSocio.fechaNacimiento.split('-');
             setFechaNacimiento(`${partesFecha[2]}-${partesFecha[0]}-${partesFecha[1]}`)
-            //setFechaNacimiento('01-10-1967')
         }
     }, [props.infoSocio, props.paso])
 
     const atajosHandler = (event) => {
         if (event.key === 'Enter') {
             props.AtajoHandler(event, 'Enter');
-            //console.log("ENTER TECLADO")
         }
     };
 
@@ -164,7 +160,6 @@ const RegistroCliente = (props) => {
                 </div> 
             }
 
-
             {props.paso === 1 &&
                 <div className={`f-row w-100 sliding-div ${props.isVisibleBloque ? 'visibleX' : 'hiddenX'}`}>   
                     <Item xs={3} sm={3} md={3} lg={3} xl={3} className=""></Item>
@@ -172,7 +167,7 @@ const RegistroCliente = (props) => {
                         <div className={"f-row"}>
                             <h2>Registro Datos del Cliente</h2>
                             <Button className="btn_mg__auto " onClick={updDatosHandler}>
-                                <img src="/Imagenes/refresh.svg" style={{ transform: "scaleX(-1)" }}></img>
+                                <img src="/Imagenes/refresh.svg" style={{ transform: "scaleX(-1)" }} alt="Volver a consultar"></img>
                             </Button>
                         </div>
                         <Card>
@@ -191,7 +186,6 @@ const RegistroCliente = (props) => {
                                     </div>
 
                                 </div>
-
 
                                 <div className='mb-2'>
                                     <label>Apellidos paterno:</label>
@@ -236,7 +230,6 @@ const RegistroCliente = (props) => {
                     <Item xs={3} sm={3} md={3} lg={3} xl={3} className=""></Item>
                 </div>
             }
-
         </>
     );
 }

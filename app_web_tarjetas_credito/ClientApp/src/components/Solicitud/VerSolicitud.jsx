@@ -373,9 +373,6 @@ const VerSolicitud = (props) => {
 
     }
 
-    const downloadArchivo = (archivo) => {
-        window.open(archivo, "_blank")
-    }
     const setComentarioSolicitudHandler = (data) => {
         setComentarioSolicitud(data);
     }
@@ -413,9 +410,7 @@ const VerSolicitud = (props) => {
         //TODO VALIDAR QUE DECISION QUEDA 
         let decisionPasoBandeja = props.solicitud.idSolicitud !== "ANALISIS COMITE" ? "REVISADO" : '-';
         fetchAddComentarioSolicitud(props.solicitud.solicitud, comentarioSolicitud, props.solicitud.idSolicitud, false, props.token, (data) => {
-            console.log("BANJ COMENT ", data)
-            if (data.str_res_codigo === "000") {
-             
+            if (data.str_res_codigo === "000") {            
 
 
                 let cupoSugeridoAval = solicitudTarjeta?.str_cupo_sugerido_aval ? parseFloat(solicitudTarjeta?.str_cupo_sugerido_aval) : 0;
@@ -451,10 +446,10 @@ const VerSolicitud = (props) => {
 
 
     const descargarMedio = (numSolicitud) => {
-        console.log("Num Sol,", numSolicitud)
-        //TODO: ESTADO
+        //console.log("Num Sol,", numSolicitud)
+
         fetchGetMedioAprobacion(solicitudTarjeta?.str_estado, props.solicitud.solicitud, props.token, (data) => {
-            console.log("RESP MEDIO", data)
+            //console.log("RESP MEDIO", data)
             if (data.str_res_codigo === "000" && verificarPdf(data.str_med_apro_bas_64)) {
                 const blob = base64ToBlob(data.str_med_apro_bas_64, 'application/pdf');
                 let fechaHoy = generarFechaHoy();
@@ -490,11 +485,6 @@ const VerSolicitud = (props) => {
             setIsMontoAprobarse(false);
             setIsRechazaComite(false);
         }
-    }
-
-    const abrirTodos = () => {
-        downloadArchivo("/Imagenes/FRMSYS-020.pdf");
-        downloadArchivo("/Imagenes/archivo.pdf");
     }
 
     const updateMonto = () => {
@@ -552,8 +542,6 @@ const VerSolicitud = (props) => {
                         //TODO: preguntar cual va quedar como principal si cupo Aval o Coopmego
 
                         //let decision = parametrosTC.find(param => param.prm_nemonico === selectCambioEstadoSol);
-                        //console.log("VALIDACION COMITE CAMBIO BANDEJA TODO", decision)
-
                         let decision = 'REVISAR';
 
                         fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, cupoSugeridoAval, datosUsuario[0].strOficial, decision, comentarioCambioEstado, props.token, (data) => {
@@ -563,10 +551,6 @@ const VerSolicitud = (props) => {
                         }, dispatch)
 
                     }
-                    else {
-                        console.log("No cuenta con permisos ", data);
-                    }
-
                 }, dispatch)
 
             } else { //Otros perfiles solo retornan a bandeja anterior
@@ -582,11 +566,6 @@ const VerSolicitud = (props) => {
                             console.log("SE GUARDA AL NUEVO ESTADO");
                             navigate.push('/solicitud');
                         }, dispatch)
-
-
-                    }
-                    else {
-                        console.log("No cuenta con permisos ", data);
                     }
                 }, dispatch);
             }
@@ -664,27 +643,20 @@ const VerSolicitud = (props) => {
 
 
     const rechazarSolicitudHandler = () => {
-        console.log("ENTRA A RECHAZAR")
-
         let descripcionMotivoRechazoComite = motivosNegacionComite.find(motivo => motivo.str_nemonico === selectMotivoNiegaSolComite);
         if (descripcionMotivoRechazoComite !== undefined) {
             descripcionMotivoRechazoComite = descripcionMotivoRechazoComite.str_descripcion
             //fetchAddProcEspecifico(props.solicitud.solicitud, 0, "EST_RECHAZADA", "", props.token, (data) => { //EST_RECHAZADA 11277
             fetchAddProcEspecifico(props.solicitud.solicitud, 0, "EST_RECHAZADA", descripcionMotivoRechazoComite, props.token, (data) => { //EST_RECHAZADA 11277
                 if (data.str_res_codigo === "000") {
-                    console.log("SE NEGO SOLICITUD");
                     setModalRechazo(false);
 
                     //TODO: preguntar cual va quedar como principal si cupo Aval o Coopmego
                     let cupoSugeridoAval = solicitudTarjeta?.str_cupo_sugerido_aval ? parseFloat(solicitudTarjeta?.str_cupo_sugerido_aval) : 0;
                     let decision = parametrosTC.find(param => param.prm_nemonico === valorDecisionSelect);
                     fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, cupoSugeridoAval, datosUsuario[0].strOficial, decision.prm_valor_ini, observacionComite, props.token, (data) => {
-                        console.log("ADD RESOL RESP ", data);
                         navigate.push('/solicitud');
                     }, dispatch)
-                }
-                else {
-                    console.log("No cuenta con permisos ", data);
                 }
             }, dispatch)
         }
@@ -692,8 +664,6 @@ const VerSolicitud = (props) => {
     }
     const guardarDecisionComiteHandler = () => {
         let validaCupo = controlMontoAprobado();
-        //console.log(`Valida Cupo,`, validaCupo)
-        //console.log(`valorDecisionSelect,`, valorDecisionSelect)
 
         if (valorDecisionSelect === "EST_RECHAZADA") { // EST_RECHAZADA
             setModalRechazo(true);
@@ -709,7 +679,7 @@ const VerSolicitud = (props) => {
             fetchAddProcEspecifico(props.solicitud.solicitud, solicitudTarjeta.str_cupo_solicitado, "EST_APROBADA", observacionComite, props.token, (data) => { //APROBADO 11276
                 if (data.str_res_codigo === "000") {
                     console.log("SE APROBO SOLICITUD");
-                    //TODO: SE AGREGA RESOLUCION PARA GUARDAR COMENTARIO
+
                     //TODO: preguntar cual va quedar como principal si cupo Aval o Coopmego
                     let cupoSugeridoAval = solicitudTarjeta?.str_cupo_sugerido_aval ? parseFloat(solicitudTarjeta?.str_cupo_sugerido_aval) : 0;
                     let decision = parametrosTC.find(param => param.prm_nemonico === valorDecisionSelect);
@@ -733,16 +703,12 @@ const VerSolicitud = (props) => {
                 if (data.str_res_codigo === "000") {
                     console.log("SE ENVIA POR CONFIFMAR SOLICITUD");
 
-                    //TODO: SE AGREGA RESOLUCION PARA GUARDAR COMENTARIO
                     //TODO: preguntar cual va quedar como principal si cupo Aval o Coopmego
                     let decision = parametrosTC.find(param => param.prm_nemonico === "EST_APROBADA");
                     fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, Number.parseFloat(montoAprobado).toFixed(2), datosUsuario[0].strOficial, decision.prm_valor_ini, observacionComite, props.token, (data) => {
                         console.log("ADD RESOL RESP ", data);
                         navigate.push('/solicitud');
                     }, dispatch)
-                }
-                else {
-                    console.log("No cuenta con permisos ", data);
                 }
             }, dispatch)
         }
@@ -771,7 +737,6 @@ const VerSolicitud = (props) => {
 
     useEffect(() => {
         /* VALIDACION  PARA NEGAR SOLICITU COMITE*/
-        //console.log("CAMBIO EN VALIDACION SELECT")
         if (valorDecisionSelect === "EST_RECHAZADA") { //EST_RECHAZADA
             if (selectMotivoNiegaSolComite !== "-1" && selectMotivoNiegaSolComite !== "" && observacionComite !== "") {
                 setIsActivoBtnDecision(false);
@@ -780,7 +745,6 @@ const VerSolicitud = (props) => {
                 setIsActivoBtnDecision(true);
             }
             return
-
         }
 
         /* VALIDACION  PARA APROBACION COMITE*/
@@ -823,20 +787,15 @@ const VerSolicitud = (props) => {
             //fetchAddProcEspecifico(props.solicitud.solicitud, solicitudTarjeta.str_cupo_aprobado, "EST_APROBADA_SOCIO", comentarioCambioEstado, props.token, (data) => { //EST_APROBADA_SOCIO 11279
             fetchAddProcEspecifico(props.solicitud.solicitud, solicitudTarjeta.str_cupo_aprobado, "EST_APROBADA_SOCIO", comentarioResolucionSocio, props.token, (data) => {
                 if (data.str_res_codigo === "000") {
-                    console.log("SE APROBO POR SOCIO");
 
                     //let decision = parametrosTC.find(param => param.prm_nemonico === selectResolucionSocio);
                     let decision = "APROBADA";
 
                     fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, cupoSugeridoAval, datosUsuario[0].strOficial, decision, comentarioResolucionSocio, props.token, (data) => {
-                        //console.log("ADD RESOL RESP ", data);
                         navigate.push('/solicitud');
                     }, dispatch)
 
 
-                }
-                else {
-                    console.log("No cuenta con permisos EST_APROBADA_SOCIO", data);
                 }
             }, dispatch)
 
@@ -852,14 +811,10 @@ const VerSolicitud = (props) => {
                         //TODO: revisar la decision q se va a colocar
                         let decision = "RECHAZA SOCIO"
                         fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, cupoSugeridoAval, datosUsuario[0].strOficial, decision, comentarioResolucionSocio, props.token, (data) => {
-                            console.log("ADD RESOL RESP 3", data);
+
                             navigate.push('/solicitud');
                         }, dispatch)
 
-
-                    }
-                    else {
-                        console.log("No cuenta con permisos EST_RECHAZADA ", data);
                     }
                 }, dispatch)
             }
@@ -934,7 +889,7 @@ const VerSolicitud = (props) => {
                                             <div className="values  mb-3">
                                                 <h5>Solicitud Nro:</h5>
                                                 <h5 className="strong">
-                                                    {`${props.solicitud.solicitud || Number('0')}`}
+                                                    {`${props.solicitud.solicitud} `}
                                                 </h5>
                                             </div>
 
@@ -1049,8 +1004,6 @@ const VerSolicitud = (props) => {
                                                     {`$ ${Number(solicitudTarjeta?.str_cupo_aprobado).toLocaleString("en-US") || Number('0.00').toLocaleString("en-US")}`}
                                                 </h5>
                                             </div>
-
-
                                         </Item>
                                     </Card>
 
@@ -1197,9 +1150,6 @@ const VerSolicitud = (props) => {
                                             <Textarea placeholder="Ingrese su comentario" onChange={setComentarioSolicitudHandler} esRequerido={true} value={comentarioSolicitud} rows={filasTextAreaComentarioSol }></Textarea>
                                         </div>
                                     }
-
-
-
                                 </div>
 
                                 <div className="mt-2 f-row justify-content-center">

@@ -26,11 +26,6 @@ const ValidacionesGenerales = (props) => {
 
     const descargarArchivoConsulta = (data) => {
         try {
-            // Decode base64 string to binary data
-            const pdfData = atob(data.file_bytes);
-            const a4WidthPt = 595.28; // A4 width in points
-            const a4HeightPt = 841.89; // A4 height in points
-
             if(data.file_bytes.length > 0 && verificarPdf(data.file_bytes)) {
                 const blob = base64ToBlob(data.file_bytes, 'application/pdf');
                 let fechaHoy = generarFechaHoy();
@@ -39,28 +34,10 @@ const ValidacionesGenerales = (props) => {
             }
 
         } catch (error) {
-            console.error("Error downloading PDF:", error);
+            console.error("Error ak descargar el PDF:", error);
         }
     }
 
-
-    function base64ToUtf8WithBom(base64String) {
-        // Decode the Base64 string to Uint8Array
-        const decodedArray = Uint8Array.from(atob(base64String), c => c.charCodeAt(0));
-
-        // Create a Uint8Array for BOM (UTF-8)
-        const bomArray = new Uint8Array([0xEF, 0xBB, 0xBF]);
-
-        // Concatenate the BOM array with the decoded array
-        const utf8WithBomArray = new Uint8Array(bomArray.length + decodedArray.length);
-        utf8WithBomArray.set(bomArray);
-        utf8WithBomArray.set(decodedArray, bomArray.length);
-
-        // Convert Uint8Array to UTF-8 string
-        const utf8WithBomString = new TextDecoder('utf-8').decode(utf8WithBomArray);
-
-        return utf8WithBomString;
-    }
 
     const getContrato = async () => {
         
@@ -72,14 +49,8 @@ const ValidacionesGenerales = (props) => {
     }
 
     const handleFileChange = async (event) => {
-        //console.log("ARCHVIO, ", event.target.result)
-        //console.log("ARCHIVO,", event)
-
-
         const base64 = await conversionBase64(event);
-        console.log(base64.split(',')[1]);
         props.onFileUpload(base64.split(',')[1]);
-
     };
 
 
@@ -95,13 +66,11 @@ const ValidacionesGenerales = (props) => {
             {props.onShowAutorizacion
                 ?
                 <Fragment>
-                    <Card className='f col mt-4'>
-                        <p>
-                            “EL SOCIO y/o CLIENTE” como titular de la tarjeta de crédito, al usar la tarjeta, personalizar la clave, transaccional o utilizar de cualquier otra forma los servicios o funciones asociadas a la tarjeta de débito, expresa su conformidad con los términos y condiciones para la emisión y uso de la tarjeta de débito bajo, los que se contienen en las siguientes cláusulas. PRIMERA ANTECEDENTES. “LA COOPERATIVA” ha puesto a disposición de sus socios y/o clientes, la TARJETA DE DÉBITO que les permite realizar transacciones y consultas de saldos de la cuenta de ahorros que mantienen en “LA COOPERATIVA”; a través de cajeros automáticos propios de “LA COOPERATIVA”: así como, de cajeros automáticos, puntos de venta (P.O.S), medios de pago electrónicos o botones de pago de la(s) Red(s) Transaccional(es) que “LA COOPERATIVA” mantenga convenio(s). SEGUNDA. ACCESO. “EL SOCIO y/o CLIENTE” como titular de la tarjeta de crédito, al usar la tarjeta, personalizar la clave, transaccional o utilizar de cualquier otra forma los servicios o funciones asociadas a la tarjeta de débito, expresa su conformidad con los términos y condiciones para la emisión y uso de la tarjeta de débito bajo, los que se contienen en las siguientes cláusulas. “EL SOCIO y/o CLIENTE” como titular de la tarjeta de crédito, al usar la tarjeta, personalizar la clave, transaccional o utilizar de cualquier otra forma los servicios o funciones asociadas a la tarjeta de débito, expresa su conformidad con los términos y condiciones para la emisión y uso de la tarjeta de débito bajo, los que se contienen en las siguientes cláusulas. PRIMERA ANTECEDENTES. “LA COOPERATIVA” ha puesto a disposición de sus socios y/o clientes, la TARJETA DE DÉBITO que les permite realizar transacciones y consultas de saldos de la cuenta de ahorros que mantienen en “LA COOPERATIVA”; a través de cajeros automáticos propios de “LA COOPERATIVA”: así como, de cajeros automáticos, puntos de venta (P.O.S), medios de pago electrónicos o botones de pago de la(s) Red(s) Transaccional(es) que “LA COOPERATIVA” mantenga convenio(s). SEGUNDA. ACCESO. “EL SOCIO y/o CLIENTE” como titular de la tarjeta de crédito, al usar la tarjeta, personalizar la clave, transaccional o utilizar de cualquier otra forma los servicios o funciones asociadas a la tarjeta de débito, expresa su conformidad con los términos y condiciones para la emisión y uso de la tarjeta de débito bajo, los que se contienen en las siguientes cláusulas.
-                        </p>
-                    </Card>
-                    <div className="f-row mt-4 justify-content-space-evenly">
-                        <Button className="btn_mg__toggler active" onClick={getContrato}><img src="Imagenes/download.svg" alt="Archivo de autorización"></img> Descargar archivo</Button>
+                    <div className="f-row w-100">
+                    <h2 className="mt-4 ">Requisito previo a la Consulta al Buro de Crédito</h2>
+                    </div>   
+                    <div className="f-row w100 mt-4 justify-content-space-evenly">
+                        <Button className="btn_mg__toggler active w-40" onClick={getContrato}><img src="Imagenes/download.svg" alt="Archivo de autorización"></img> Descargar archivo</Button>
                         <Uploader onClick={handleFileChange} onRemoveFile={removeFile}>Subir archivo</Uploader>
                     </div>
                 </Fragment>

@@ -91,14 +91,9 @@ const UploadDocumentos = (props) => {
         });
 
         fetchCrearSeparadoresAxentria(resum, props.token, (data) => {
-            //console.log("SEPARADORES, ", data.separadores)
             setBase64SeparadorGenerado(data.separadores);
         }, dispatch);
     }
-
-
-
-
 
     useEffect(() => {
         if (base64SeparadorGenerado !== "" && verificarPdf(base64SeparadorGenerado)) {
@@ -125,13 +120,7 @@ const UploadDocumentos = (props) => {
             busquedaArchivo = documentosSolicitudBusqueda.find(document => document.int_id_doc === IdDocDescargar);
         } else if (documentosSolicitudCruce.length > 0) {
             busquedaArchivo = documentosSolicitudCruce.find(document => document.int_id_doc === IdDocDescargar);
-        }        
-        /*
-        console.log("ID DOC DESCARGAR ", IdDocDescargar)
-        console.log("documentosSolicitudBusqueda ", documentosSolicitudBusqueda)
-        console.log("documentosSolicitudCruce ", documentosSolicitudCruce)
-        console.log("busquedaArchivo ", busquedaArchivo)
-        */
+        }
 
         //Control si se encuentra archivo cargado, permite descargar 
         if (busquedaArchivo?.str_nombre_doc) {
@@ -141,7 +130,7 @@ const UploadDocumentos = (props) => {
                 if (requiereVisualizar) visualizarArchivo.current = true;
                 setDescargaDocumento(data.file_bytes);
             }, dispatch);
-        }       
+        }
     }
 
 
@@ -174,7 +163,6 @@ const UploadDocumentos = (props) => {
             const resultado = tablaContenido.map((doc, indexOrden) => {
                 return doc.int_id_separador
             }).flat();
-            //console.log("RESULT SEPAR ", resultado)
             setSeparadorCheckBox(resultado);
         } else {
             setSeparadorCheckBox([]);
@@ -184,7 +172,6 @@ const UploadDocumentos = (props) => {
     const ckeckSelector = (valor) => {
 
         if (separadorCheckBox.includes(valor)) {
-            //separadorCheckBox.filter(fila => console.log(fila,valor))
             setSeparadorCheckBox(separadorCheckBox.filter(fila => fila !== valor));
 
         } else {
@@ -199,15 +186,12 @@ const UploadDocumentos = (props) => {
 
     }
     useEffect(() => {
-        //console.log(`${separadorCheckBox} -->  ${separadorCheckBox.length} `)
-        //console.log("TOTAL R", totalRegistros)
-        //console.log("Separador Check ", separadorCheckBox.length)
         setIsSelectAllSeparador(separadorCheckBox.length === totalRegistros && separadorCheckBox.length !== 0);
     }, [separadorCheckBox]);
 
 
 
-    ///////////
+    ///// SECCION PARA SELECCIONAR TODOS LOS ARCHIVOS A PUBLICARSE
 
     const seleccionMultiplePublicador = (e) => {
         toggleSelectAllPublicador();
@@ -241,14 +225,13 @@ const UploadDocumentos = (props) => {
     }
 
     useEffect(() => {
-        //console.log(`${separadorCheckBox} -->  ${separadorCheckBox.length} `)
-        //console.log("TOTAL R", totalRegistros)
-        //console.log("Publicador Check ", publicadorCheckBox)
         setIsSelectAllPublicar(publicadorCheckBox.length === totalRegistros && publicadorCheckBox.length !== 0);
     }, [publicadorCheckBox]);
 
+    ///// FIN SECCION PARA SELECCIONAR TODOS LOS ARCHIVOS A PUBLICARSE
 
-    ///// DOCUMENTAL
+
+    ///// SECCION MODAL PARA DESCARGAR SEPARADORES - DOCUMENTAL
     const seleccionMultipleDocumental = (e) => {
         toggleSelectAllDocumental();
         setIsSelectAllDocumental(!isSelectAllDocumental);
@@ -285,11 +268,11 @@ const UploadDocumentos = (props) => {
         setIsSelectAllDocumental(documentalCheckBox.length === totalRegistros && documentalCheckBox.length !== 0);
     }, [documentalCheckBox]);
 
+    ///// FIN SECCION MODAL PARA DESCARGAR SEPARADORES - DOCUMENTAL
 
 
     //////SEPARADORES
     const handleUpload = (event) => {
-        //console.log("Arch", event)
         inputCargaRef.current.click();
 
     }
@@ -299,7 +282,6 @@ const UploadDocumentos = (props) => {
         const conteoRegistros = props.contenido.length;
         //console.log("TOTAL REG ",conteoRegistros)
         setTotalRegistros(conteoRegistros);
-        //setTablaContenido([...props.contenido]);
 
         /* EN caso se requiera solo seleccionar las filas q tenga cargado el archivo
         let checkDocCargados = filasDocsCargados();
@@ -309,23 +291,19 @@ const UploadDocumentos = (props) => {
         */
 
         if (props.solicitud) {
-            console.log("ENTrA cARGAr TABLA")
             setInputSolicitud(props.solicitud)
             fetchGetDocumentosAxentria(props.solicitud, props.token, (data) => {
                 setDocumentosSolicitudCruce(data.lst_documentos)
             }, dispatch);
         }
 
-       
+
 
     }, [])
 
     useEffect(() => {
 
         if (documentosSolicitudCruce.length > 0 && props.contenido) {
-            console.log("ENTrA cARGAr TABLA 2")
-            //console.log("DOCS TENGO ", documentosSolicitudCruce)
-            //console.log(props.contenido)
 
             //Se realiza una clonacion del objeto para no modificar el original
             let resultaSeparadores = structuredClone(props.contenido)
@@ -356,7 +334,6 @@ const UploadDocumentos = (props) => {
     useEffect(() => {
         if (validadorCambio) {
             let checkDocCargados = filasDocsCargados();
-            //console.log("DOCS CARGA NUEVA, ", checkDocCargados)
             setPublicadorCheckBox(checkDocCargados)
             setSeparadorCheckBox(checkDocCargados)
             setValidadorCambio(false);
@@ -372,20 +349,16 @@ const UploadDocumentos = (props) => {
 
         let archivosLimpieza = [...event.target.files];
         archivosLimpieza = archivosLimpieza.filter(doc => doc.type === "application/pdf")
-        //console.log(archivosLimpieza)
 
         let arregloArchivos = [];
         if (archivosLimpieza.length > 0) {
             archivosLimpieza.forEach(element => {
                 let indexArchivo;
                 indexArchivo = tablaContenido.findIndex(fila => fila.str_nombre_separador === element.name.split('.')[0])
-                //console.log(indexArchivo);
                 tablaContenido[indexArchivo].str_ruta_arc = element.webkitRelativePath;
-                //tablaContenido[indexArchivo].str_login_carga = "dvvasquez";
                 tablaContenido[indexArchivo].str_login_carga = props.datosUsuario[0].strUserOficial;
                 arregloArchivos.push({ id_separador: tablaContenido[indexArchivo].int_id_separador, archivo: element });
             })
-            //console.log("ARREGLO ARCHIVOS OBJ ", arregloArchivos)
 
             //Se actualiza los arreglos haciendo un filtrado de archivos que se han cargado hasta el momento
             setValidadorCambio(true);
@@ -399,7 +372,6 @@ const UploadDocumentos = (props) => {
 
     const convertorArchivo = async (archivoSub) => {
         let base64Archivo = await conversionBase64(archivoSub);
-        //console.log(base64Archivo.split(',')[1]);
         return base64Archivo.split(',')[1];
     }
 
@@ -410,7 +382,6 @@ const UploadDocumentos = (props) => {
         let archivoPub = lstArchivosParaPublicar.filter(documento => documento.int_id_separador === CheckPublidadorId)[0];
 
         if (contadorPublicacion.current === publicadorCheckBox.length && publicadorCheckBox.length !== 0) {
-            //console.log("ENTRA RESET 1")
             controlTerminaSubirDocs.current = true;
 
             if (contadorPublicacion.current === controlArchivosSubidosOK.current.length && controlArchivosSubidosOK.current.length > 0 && controlTerminaSubirDocs.current === true) {
@@ -423,7 +394,6 @@ const UploadDocumentos = (props) => {
                 });
                 let mensaje = 'SE SUBIERON CORRECTAMENTE LOS ARCHIVOS';
 
-                //console.log("mensaje ", mensaje)
                 window.alert(mensaje);
 
                 //Se resetea
@@ -431,7 +401,6 @@ const UploadDocumentos = (props) => {
                 controlTerminaSubirDocs.current = false;
 
                 props.seleccionToogleSolicitud(1);
-                //navigate.push('/solicitud');
 
             } else if (controlArchivosSubidosErr.current?.length > 0 && controlTerminaSubirDocs.current === true) {
 
@@ -443,7 +412,7 @@ const UploadDocumentos = (props) => {
                 })
                 let mensaje = 'LOS SIGUIENTES ARCHIVOS TUVIERON ERROR AL SUBIRLOS: \n' + mensaje_error;
 
-                console.log("mensaje ", mensaje)
+                console.log("Error al cargar lo siguientes documentos ", mensaje);
                 window.alert(mensaje);
 
                 //Se resetea
@@ -464,10 +433,6 @@ const UploadDocumentos = (props) => {
             let validarSeparador = separadorCheckBox.includes(archivoPub.int_id_separador);
             let validarPublicacion = publicadorCheckBox.includes(archivoPub.int_id_separador);
 
-            //console.log("CONT SP", archivoPub);
-            //console.log("validarPublicacion", publicadorCheckBox);
-            //console.log(` VCHECK ${validarSeparador} | VPUBLIC ${validarPublicacion}`)
-
             if (validarPublicacion) {
                 //Obtener el archivo en base64
                 let busquedaArchivo = archivosCargados.find(arch => arch.id_separador === archivoPub.int_id_separador);
@@ -475,7 +440,6 @@ const UploadDocumentos = (props) => {
                     archivoABase64 => {
                         let versionSubirNuevo = archivoPub?.str_version ? (Number(archivoPub?.str_version) + 1) : 1;
                         publicarAxentriaHandler(validarSeparador, versionSubirNuevo, archivoPub.str_ruta_ar, archivoPub.str_nombre_separador, archivoPub.str_separador, archivoABase64).then(data => {
-                            //console.log("RESTTTT ", data)
 
                             if (data?.str_res_codigo === "000") {
                                 let archivoOK = [{
@@ -484,7 +448,6 @@ const UploadDocumentos = (props) => {
                                     informacionAdicional: ''
                                 }]
                                 let lstOk = [...controlArchivosSubidosOK.current, ...archivoOK]
-                                //console.log("lstOk ", lstOk)
                                 controlArchivosSubidosOK.current = lstOk;
                             }
                             else if (data?.str_res_codigo) {
@@ -494,7 +457,6 @@ const UploadDocumentos = (props) => {
                                     codigo: data?.str_res_codigo,
                                     informacionAdicional: data?.str_res_info_adicional
                                 }
-                                //setControlArchivosSubidosErr([...controlArchivosSubidosErr, archivoErr]);
                                 let lstErr = [...controlArchivosSubidosOK.current, ...archivoErr]
                                 console.log("lstErr ", lstErr)
                                 controlArchivosSubidosOK.current = lstErr;
@@ -513,9 +475,9 @@ const UploadDocumentos = (props) => {
         }
     }
 
-    const publicarAxentriaHandler = async (validarSeparador, version,rutaArchivo, nombreSeparador, grupoSeparador, archivoABase64) => {
+    const publicarAxentriaHandler = async (validarSeparador, version, rutaArchivo, nombreSeparador, grupoSeparador, archivoABase64) => {
         let respuesta = null;
-        await fetchAddDocumentosAxentria(props.solicitud,version, validarSeparador, rutaArchivo, nombreSeparador, props.cedulaSocio, props.datosUsuario[0].strUserOficial,
+        await fetchAddDocumentosAxentria(props.solicitud, version, validarSeparador, rutaArchivo, nombreSeparador, props.cedulaSocio, props.datosUsuario[0].strUserOficial,
             props.datosSocio?.str_nombres + ' ' + props.datosSocio?.str_apellido_paterno + ' ' + props.datosSocio?.str_apellido_materno,
             grupoSeparador, '', archivoABase64, props.token, (data) => {
                 respuesta = data;
@@ -527,7 +489,6 @@ const UploadDocumentos = (props) => {
     const obtenerDocumentosAxentriaHandler = () => {
         fetchGetDocumentosAxentria(inputSolicitud, props.token, (data) => {
             setDocumentosSolicitudBusqueda(data.lst_documentos)
-            console.log("INFORM ", data.lst_documentos)
         }, dispatch);
     }
 
@@ -548,14 +509,19 @@ const UploadDocumentos = (props) => {
                             <p className="negrita">CÉDULA</p>
                         </div>
 
-                        <div style={{ display: "flex" }}>
-                            <p className='normal'>FECHA ULT. MODIF.: </p>
-                            <p className="negrita">-</p>
-                        </div>
+                        {/*<div style={{ display: "flex" }}>*/}
+                        {/*    <p className='normal'>FECHA ULT. MODIF.: </p>*/}
+                        {/*    <p className="negrita">-</p>*/}
+                        {/*</div>*/}
 
                         <div style={{ display: "flex" }}>
                             <p className='normal'>SOLICITUD NRO: </p>
                             <p className="negrita"> {props.solicitud}</p>
+                        </div>
+
+                        <div style={{ display: "flex" }}>
+                            <p className='normal'>OFICIAL: </p>
+                            <p className="negrita">{props.oficialSolicitud}</p>
                         </div>
 
                     </section>
@@ -571,9 +537,15 @@ const UploadDocumentos = (props) => {
                             <p className="negrita">{props.calificacionRiesgo} </p>
                         </div>
 
+                        {/*<div style={{ display: "flex" }}>*/}
+                        {/*    <p className='normal'>TRAMITE NRO: </p>*/}
+                        {/*    <p className="negrita"> </p>*/}
+                        {/*</div>*/}
+
+
                         <div style={{ display: "flex" }}>
-                            <p className='normal'>TRAMITE NRO: </p>
-                            <p className="negrita"> </p>
+                            <p className='normal'>MONTO SOLICITADO: </p>
+                            <p className="negrita">{`$ ${Number(props.cupoSolicitado).toLocaleString("en-US") || Number('0.00').toLocaleString("en-US")}`} </p>
                         </div>
 
                     </section>
@@ -589,28 +561,21 @@ const UploadDocumentos = (props) => {
                             <p className="negrita">{props.estadoSolicitud}</p>
                         </div>
 
-                        <div style={{ display: "flex" }}>
-                            <p className='normal'>MONTO SOLICITADO: </p>
-                            <p className="negrita">{`$ ${Number(props.cupoSolicitado).toLocaleString("en-US") || Number('0.00').toLocaleString("en-US")}`} </p>
-                        </div>
-
-                    </section>
-
-                    <section className='elements_tres_column mt-3'>
-                        <div style={{ display: "flex" }}>
-                            <p className='normal'>OFICIAL: </p>
-                            <p className="negrita">{props.oficialSolicitud}</p>
-                        </div>
-
-                        <div style={{ display: "flex" }}>
-                            <p className='normal'>PRODUCTO </p>
-                            <p className="negrita">TARJETA DE CRÉDITO </p>
-                        </div>
 
                         <div style={{ display: "flex" }}>
                             <p className='normal'>ENTE APROBADOR: </p>
                             <p className="negrita">COMITE GENERAL DE CRÉDITO</p>
                         </div>
+
+                    </section>
+
+                    <section className='elements_tres_column mt-3'>
+
+                        {/*<div style={{ display: "flex" }}>*/}
+                        {/*    <p className='normal'>PRODUCTO </p>*/}
+                        {/*    <p className="negrita">TARJETA DE CRÉDITO </p>*/}
+                        {/*</div>*/}
+
                     </section>
 
                 </div>
@@ -641,7 +606,7 @@ const UploadDocumentos = (props) => {
                                 let fecha = "";
                                 if (documentacion?.dtt_fecha_sube) {
                                     fecha = new Date(documentacion?.dtt_fecha_sube);
-                                }                                
+                                }
                                 let opciones = {
                                     hour: "2-digit",
                                     minute: "2-digit",
@@ -679,7 +644,7 @@ const UploadDocumentos = (props) => {
                                                 {documentacion.str_login_carga}
                                             </td>
                                             <td style={{ width: "10%", justifyContent: "left" }} >
-                                                {fecha !== "" ? (fecha.toLocaleDateString('en-US', opciones)) :"" }
+                                                {fecha !== "" ? (fecha.toLocaleDateString('en-US', opciones)) : ""}
                                             </td>
                                             <td style={{ width: "3%", justifyContent: "left" }} >
                                                 {documentacion.str_version}

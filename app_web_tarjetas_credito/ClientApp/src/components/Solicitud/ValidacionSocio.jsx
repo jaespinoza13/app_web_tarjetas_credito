@@ -24,23 +24,6 @@ const ValidacionSocio = (props) => {
         
     }
 
-    /*
-    useEffect(() => {
-
-        console.log(`PROPS VISIBILIDAD ${props.isVisibleBloque}`)
-    }, [props.isVisibleBloque])*/
-
-    /*
-    const [isVisibleBloque, setIsVisibleBloque] = useState(true);
-
-    const toggleVisibility = () => {
-        setIsVisibleBloque(!isVisibleBloque);
-    };*/
-
-    /*<div className={`f-row w-100 sliding-div ${!props.isVisibleBloque ? 'visibleX' : 'hiddenX'}`}>     */
-    /*         */
-
-
     const updDatosHandler = () => {
         props.requiereActualizar(true)
     }
@@ -77,8 +60,8 @@ const ValidacionSocio = (props) => {
                     <Item xs={6} sm={6} md={6} lg={6} xl={6} className="justify-content-center">
                         <div className={"f-row"}>
                         <h2>Datos del Socio</h2>
-                        <Button className="btn_mg__auto " onClick={updDatosHandler}>
-                                <img src="/Imagenes/refresh.svg" style={{ transform: "scaleX(-1)" }}></img>
+                            <Button className="btn_mg__auto " onClick={updDatosHandler}>
+                                <img src="/Imagenes/refresh.svg" style={{ transform: "scaleX(-1)" }} alt="Volver a consultar"></img>
                          </Button>
 
                         </div>
@@ -111,7 +94,6 @@ const ValidacionSocio = (props) => {
 
                                 <div>
                                     <label>Fecha Nacimiento:</label>
-                                    {/*<h5>06/28/1990</h5>*/}
                                     <h5>{props.infoSocio.str_fecha_nacimiento}</h5>
                                     <hr className="dashed"></hr>
                                 </div>

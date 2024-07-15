@@ -128,11 +128,8 @@ const DatosSocio = (props) => {
             setDirDomicilioSocio([...data.lst_dir_domicilio]);
             setDirTrabajoSocio([...data.lst_dir_trabajo]);
             setInfoSocio([...data.datos_cliente]);
-            //setEstadoAccordionInfoSocio(true);
             setContentReadyInfoSocio(true);
             props.onInfoSocio(data);
-            //console.log("DATOS DOC  ", data.lst_dir_domicilio)
-            //console.log("DATOS TRa ", data.lst_dir_trabajo)
 
         }, dispatch);
         setEstadoLoadingInfoSocio(false);
@@ -155,7 +152,6 @@ const DatosSocio = (props) => {
 
     const seleccionComentarioAfirma = (value) => {
         const comentarioSeleccionado = comentariosPositivos.find((element) => { return element.key === value });
-        //console.log(comentarioSeleccionado);
         props.onComentario(comentarioSeleccionado.textPrincipal);
     }
     const seleccionComentarioNega = (value) => {
@@ -193,10 +189,8 @@ const DatosSocio = (props) => {
 
     const descargarReporte = async () => {
 
-        //TODO CAMBIAR EL ID DEL CLIENTE PARA DESCARGAR REPORTE DEL AVAL A props.idClienteScore
-        console.log("INFO ID CLIENTE SCORE, ",props.idClienteScore)
-        await fetchReporteAval(189554, props.token, (data) => {
-            //console.log("REPORTE AVAL ", data)
+        //TODO CAMBIAR EL ID DEL CLIENTE PARA DESCARGAR REPORTE DEL AVAL A props.idClienteScore 189554
+        await fetchReporteAval(Number(props.idClienteScore), props.token, (data) => {
             if (data.file_bytes.length > 0 && verificarPdf(data.file_bytes)) {
                 const blob = base64ToBlob(data.file_bytes, 'application/pdf');
                 let fechaHoy = generarFechaHoy();
@@ -369,7 +363,7 @@ const DatosSocio = (props) => {
                                         <div className="values mb-3">
                                             <h5>Sexo</h5>
                                             <h5 className="strong">
-                                                {`${infoSocio[0]?.str_sexo === "M" ? "Masculino" : "Femenino"}`}
+                                                {`${infoSocio[0]?.str_sexo}`}
                                             </h5>
                                         </div>
                                         <div className="values mb-3">
@@ -401,7 +395,7 @@ const DatosSocio = (props) => {
                                         <div className="values mb-3">
                                             <h5>Calificación de riesgo</h5>
                                             <h5 className="strong">
-                                                {`${infoSocio[0]?.str_calificacion_riesgo}`}
+                                                {`${props.calificacionRiesgo}`}
                                             </h5>
                                         </div>
                                     </div>
