@@ -63,7 +63,6 @@ function Login(props) {
                 const ts = Number(localStorage.getItem('aceptar'));
                 let key = generate(navigator.userAgent, ts, get(remitente), data.datosUsuario.login);
                 if (data.codigo === "000") {
-                    console.log(data);
                     data.datosUsuario.str_sesion = data.datosUsuario.id_usuario + "" + data.datosUsuario.id_perfil + "" + ts + "" + data.datosUsuario.id_persona;
                     localStorage.setItem('sender', set(data.datosUsuario.login));
                     localStorage.setItem('office', set(data.datosUsuario.id_oficina.toString()));
@@ -103,6 +102,8 @@ function Login(props) {
                     setIsLogin(0);
                     setProgress(95);
                     setMsg(data.mensajes[0]);
+                    setPassword("");
+                    setPassOff("");
                 }
                 setdisableBtn(false);
                 setProgress(100);
@@ -121,6 +122,11 @@ function Login(props) {
         }
     };
 
+
+    const refreshLogin = () => {
+        window.location.reload();
+    }
+
     return (
         <div className="bg_fixed login">
             {isLogin === 1 ?
@@ -129,8 +135,8 @@ function Login(props) {
                     icon={loginCorrecto ? 'success' : 'danger'}
                     bodyAlert={msg[0]}
                     openModal={isLogin === 1}
-                    handlerBtnAceptar={() => { loginCorrecto ? window.location.reload() : setIsLogin(0); }}
-                    handlerBtnCancelar={() => { loginCorrecto ? window.location.reload() : setIsLogin(0); }}
+                    handlerBtnAceptar={() => { loginCorrecto ? refreshLogin() : setIsLogin(0); }}
+                    handlerBtnCancelar={() => { loginCorrecto ? refreshLogin() : setIsLogin(0); }}
                     btnAceptar={"Aceptar"}
                     size={"lg"} />
                 : isLogin === 2 ?
@@ -166,7 +172,7 @@ function Login(props) {
                                     if (loginCorrecto) {
                                         datosUsuario.canRedirect = true;
                                         saveUser({ data: await encriptar(key, JSON.stringify(datosUsuario)) });
-                                        window.location.reload();
+                                        refreshLogin();
                                     } else {
                                         setIsLogin(0);
                                         setTextLogin("");
@@ -220,24 +226,19 @@ function Login(props) {
                         </ModalAlert>
                     </div>
                     : isLogin === 3 ?
-                        <CambiarPassword openModal={openPass} setOpenModal={() => { setOpenPass(!openPass); window.location.reload(); removeSession(); navigator.push("/"); setIsLogin(5); }} callIn={"LOGIN"} />
+                        <CambiarPassword openModal={openPass}
+                            setOpenModal={() => { setOpenPass(!openPass); removeSession(); refreshLogin(); }} callIn={"LOGIN"} />
                         : isLogin === 4 ?
                             <CambiarPass1raVez openModal={openPass1ra} setOpenModal={() => {
                                 setOpenPass1ra(!openPass1ra);
-                                window.location.reload();
                                 removeSession();
-                                setIsLogin(5);
+                                refreshLogin();
                             }} callIn={"LOGIN"} />
-                            : isLogin === 5 ?
-                                window.location.reload()
-                                : ''
+                            : ''
             }
 
             <div className="login_info">
                 <img src="/Imagenes/abejaSaluda.png" alt="abeja saludando" width="232px" />
-                {/*<h2>Sistema de Pagos y Transferencias</h2>*/}
-                {/*<h3>Sistema para soporte técnico, impresión de documentos en Plataforma de Servicios, reportes para departamento de Operaciones, switch lógico para servicio Windows de monitoreo de cobranzas, administraci</h3>*/}
-                {/*<h2>Sistemas Internos</h2>*/}
                 <h2>{toCapitalize(props.nombreSistema)}</h2>
                 <SizedBox height={50} />
                 <img src="/Imagenes/logo.png" alt="logo coopmego" width="133px" />
@@ -258,7 +259,7 @@ function Login(props) {
                                     textbutton="Olvidé mi usuario"
                                     onClick={(e) => { e.preventDefault(); setOpenUsuario(true); }}
                                     value={login}
-                                    change={(e) => setLogin(e.target.value)}
+                                    change={(e) => { setLogin(e.target.value) }}
                                 />
                                 <ModalAlert
                                     titleAlert={'Olvidé mi usuario'}

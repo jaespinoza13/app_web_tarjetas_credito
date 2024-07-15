@@ -63,8 +63,6 @@ namespace plantilla_app_web.Controllers
         [HttpPost]
         public ResCrypt Post(ReqGetValidaciones req)
         {
-            //ResGetValidaciones resGetValidaciones = new ResGetValidaciones();
-            //string ip = Utiles.getIP();
             ResGetValidaciones res = tarjetaCreditoDat.getValidaciones(req);
             return Utiles.crypt(res, Request.Headers);            
         }
@@ -74,8 +72,6 @@ namespace plantilla_app_web.Controllers
         [HttpPost]
         public ResCrypt Post(ReqGetAlertasCliente req)
         {
-            //ResGetValidaciones resGetValidaciones = new ResGetValidaciones();
-            //string ip = Utiles.getIP();
             ResGetAlertasCliente res = tarjetaCreditoDat.getAlertasCliente(req);
             return Utiles.crypt(res, Request.Headers);            
         }
@@ -104,8 +100,6 @@ namespace plantilla_app_web.Controllers
             reqGetScore.str_restaGastoFinanciero = req.str_restaGastoFinanciero;
             reqGetScore.str_gastos_codeudor = req.str_gastos_codeudor;
 
-
-            string ip = Utiles.getIP();
             ResGetScore res = tarjetaCreditoDat.getScore(reqGetScore);
             return Utiles.crypt(res, Request.Headers);
         }
@@ -370,7 +364,6 @@ namespace plantilla_app_web.Controllers
             reqReporteAval.int_cliente = req.int_cliente;
             reqReporteAval.int_id_con = req.int_id_con;
             reqReporteAval.str_ip_dispositivo = Utiles.getIP();
-            string ip = Utiles.getIP();
             ResGetReporteAval res = tarjetaCreditoDat.getReporteAval(reqReporteAval);
             return Utiles.crypt(res, Request.Headers);
         }

@@ -763,6 +763,7 @@ namespace Infrastructure.TarjetaCredito
             {
                 req.llenarDatosConfig(_settings);
                 req.str_id_servicio = "REQ_" + _settings.service_get_parametros_sistema;
+                req.int_id_sis = _settings.id_sistema;
                 var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_parametros_sistema)
                 {
                     ThrowOnAnyError = true,

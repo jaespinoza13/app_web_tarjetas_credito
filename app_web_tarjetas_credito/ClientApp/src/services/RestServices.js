@@ -237,10 +237,9 @@ export function handlerSubmitCambiarClave(passNueva, token, exProcess = false, o
             if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
         } else {
             if (data) {
-                //console.log("handlerSubmitCambiarClave ", data)
-                if (data.codigo === "000") {
-                    onSuccess(data.mensajes[0]);
-                    //onSuccess(data.codigo, data.mensajes[0]);
+                console.log("handlerSubmitCambiarClave ", data)
+                if (data.codigo === "0000") {
+                    onSuccess(data.codigo)
                 } else {
                     let codigo = data.codigo || data.str_res_codigo;
                     let mensaje = data.mensaje || data.str_res_info_adicional || data.mensajes[0];
@@ -315,11 +314,9 @@ export function handlerSubmitCambiarPass1raVez(preguntas, respuestas, passNueva,
             if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
         } else {
             if (data) {
-                //console.log("Repusta cambio clave 1ra vez, ", data)
-                //if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional[0] }, onSuccess ? () => onSuccess(data.codigo) : null));
-                if (data.codigo === "000") {
-                    onSuccess(data.mensajes[0]);
-                    //onSuccess(data.codigo, data.mensajes[0]);
+                if (data.codigo === "0000") {
+                    //onSuccess(data.mensajes[0]);
+                    onSuccess(data.codigo)//, data.mensajes[0]);
                 } else {
                     let codigo = data.codigo || data.str_res_codigo;
                     let mensaje = data.mensaje || data.str_res_info_adicional || data.mensajes[0];
@@ -392,7 +389,7 @@ export function fetchConexiones(token, onSuccess, dispatch, usr = null, srv = nu
             if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
         } else {
             if (data) {
-                if (data.codigo === "000") {
+                if (data.codigo === "0000") {
                     onSuccess(data.lst_conexiones);
                 } else {
                     let codigo = data.codigo || data.str_res_codigo;
@@ -441,7 +438,7 @@ export function handlerConexion(token, dispatch, serverBd, userBd, passBd, isEdi
                 if (dispatch && data.reload) dispatch(setErrorRedirigir("/reload"));
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
             } else {
-                if (data.codigo !== "000") {
+                if (data.codigo !== "0000") {
                     if (dispatch) dispatch(setAlertText({ code: data.str_res_codigo, text: data.str_res_info_adicional }));
                 } else {
                     fetchConexiones(body.str_usuario, body.str_server);
@@ -479,7 +476,7 @@ export async function handlerGetSeguimiento(transaccionBuscar, token, onSuccess,
                 if (dispatch && data.reload) dispatch(setErrorRedirigir("/reload"));
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
             } else {
-                if (data.codigo === "000") {
+                if (data.codigo === "0000") {
                     var lst = [...data.lst_seguimiento];
                     lst.sort(function (a, b) {
                         if (new Date(a.dt_fecha_operacion) > new Date(b.dt_fecha_operacion)) {
@@ -544,7 +541,7 @@ export async function fetchBds(consultar, url, token, onSuccess, dispatch) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
             } else {
                 if (data) {
-                    if (data.codigo === "000") {
+                    if (data.codigo === "0000") {
                         dispatch(setListaBases(data.lst_bds));
                         onSuccess(data.lst_bds);
                     } else {
@@ -585,7 +582,7 @@ export function fetchColecciones(ws, token, onSuccess, dispatch, background = fa
                     if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
                 }
             } else {
-                if (data.codigo === "000") {
+                if (data.codigo === "0000") {
                     onSuccess(data.lst_coleccones, data.solToken);
                 } else {
                     if (!background) {
@@ -636,7 +633,7 @@ export function fetchDocumentos(ws, coleccion, nro_regitros, ultimoRegistro, car
                     if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
                 }
             } else {
-                if (data.codigo === "000") {
+                if (data.codigo === "0000") {
                     onSuccess(data);
                 } else {
                     if (!background) {
@@ -716,7 +713,7 @@ export function fetchArchivosLogs(ws, token, onSuccess, dispatch) {
                 if (dispatch) dispatch(setErrorRedirigir(data.reload ? "/reload" : "/logs"));
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
             } else {
-                if (data.codigo === "000") {
+                if (data.codigo === "0000") {
                     onSuccess(data.lst_logs);
                 } else {
                     if (dispatch) dispatch(setErrorRedirigir("/logs"));
@@ -757,7 +754,7 @@ export function fetchContenidoArchivoLogs(ws, archivo, desde, hasta, token, onSu
                 if (dispatch) dispatch(setErrorRedirigir(data.reload ? "/reload" : "/logsTexto"));
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
             } else {
-                if (data.codigo === "000") {
+                if (data.codigo === "0000") {
                     onSuccess(data.str_body, data.int_total_registros);
                 } else {
                     if (dispatch) dispatch(setErrorRedirigir("/logsTexto"));
@@ -876,11 +873,10 @@ export function fetchNuevaSimulacionScore(strTipoDocumento, strCedula, strNombre
 
     let body = {
         bln_cupo_sugerido: true,
-        str_ingresos: ingresos.toString(),//"2000",
-        str_gastosPersonales: egresos.toString(), //"1000",
-        str_restaGastoFinanciero: gastosFinancieros.toString(),//"300",
-        str_gastos_codeudor: gastoFinanCodeudor.toString(),// "500",
-
+        str_ingresos: ingresos.toString(),
+        str_gastosPersonales: egresos.toString(), 
+        str_restaGastoFinanciero: gastosFinancieros.toString(),
+        str_gastos_codeudor: gastoFinanCodeudor.toString(),
         str_cargo: strCargo,
         str_identificacion: strCedula,
         str_tipo_identificacion: strTipoDocumento,
@@ -892,11 +888,10 @@ export function fetchNuevaSimulacionScore(strTipoDocumento, strCedula, strNombre
 
     ServicioPostExecute(getScore, body, token, { dispatch: dispatch }).then((data) => {
         if (data) {
-            console.log("SIMULACION NUEVA", data)
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
             } else {
-                if (data.str_res_codigo === "000" || data.str_res_codigo === "010") {
+                if (data.str_res_codigo === "000") {
                     onSucces(data);
                 } else {
                     let codigo = data.codigo || data.str_res_codigo;
@@ -1003,10 +998,7 @@ export async function fetchAddAutorizacion(strTipoIdentificacion, intRegistrarAu
         }
     }
     await ServicioPostExecute(addAutorizacion, body, token, { dispatch: dispatch }).then((data) => {
-
-        //console.log("ADD AUTORI", body);
         if (data) {
-            console.log("AUTO DATA", data);
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
             } else {
@@ -1015,7 +1007,7 @@ export async function fetchAddAutorizacion(strTipoIdentificacion, intRegistrarAu
                 } else {
                     let codigo = data.codigo || data.str_res_codigo;
                     let mensaje = data.mensaje || data.str_res_info_adicional;
-                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje+" Reenvie nuevamente." }));
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje+". Por favor, vuelva a reenviar nuevamente" }));
                 }
             }
         } else {
@@ -1065,7 +1057,7 @@ export function fetchGetSolicitudes(token, onSucces, dispatch) {
         //str_id_oficina: "1",
         //str_id_perfil: "36"
     }
-    console.log("BODY ADD SOL ", body);
+    //console.log("BODY ADD SOL ", body);
     ServicioPostExecute(getSolicitudes, body, token, { dispatch: dispatch }).then((data) => {
         //console.log(data)
         if (data) {
@@ -1090,7 +1082,7 @@ export function fetchAddSolicitud(body,token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
     //console.log("BODY ADD SOL ", body);
     ServicioPostExecute(addSolicitud, body, token, { dispatch: dispatch }).then((data) => {
-        console.log("RES ADD SOL", data);
+        //console.log("RES ADD SOL", data);
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
@@ -1167,7 +1159,7 @@ export function fetchAddProspecto(str_num_documento, ente, nombres, apellidos, c
         str_comentario_adicional: comentarioAdic
     }
     ServicioPostExecute(addProspecto, body, token, { dispatch: dispatch }).then((data) => {
-        console.log("DATA",  data)
+        //console.log("DATA",  data)
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
@@ -1312,8 +1304,6 @@ export function fetchAddComentarioSolicitud(idSolicitud, comentario, estadoSolic
     console.log(body);
     ServicioPostExecute(addComentarioSolicitud, body, token, { dispatch: dispatch }).then((data) => {
         if (data) {
-            console.log(data)
-            //if (data.str_res_codigo != "000") {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
             } else {
@@ -1489,13 +1479,10 @@ export function fetchAddProcEspecifico(idSolicitud, cupo, estado, comentario, to
 export function fetchGetParametrosSistema(token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
-    // TARJETAS DE CRÉDITO
     let body = {
-        int_id_sis: Number("100") //TODO: revisar id del sistema
+       
     }
     ServicioPostExecute(getParametros, body, token, { dispatch: dispatch }).then((data) => {
-        //console.log(data);
-
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
@@ -1551,7 +1538,7 @@ export function fetchGetMotivos(token, onSucces, dispatch) {
 */
 export function fetchUpdateCupoSolicitud(idSolicitud, idFlujoSol, estadoSol, decMonto, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
-
+    //TODO: revisar que valores actulizar por restrucuracion de la base
     let body = {
         int_id_solicitud: idSolicitud,
         int_id_flujo_sol: idFlujoSol,
@@ -1668,9 +1655,9 @@ export function fetchGetMedioAprobacion(estadoSoli, idSolicitud, token, onSucces
         str_est_sol: estadoSoli,
         int_id_sol: Number(idSolicitud)
     }
-    console.log("BOD ", body)
+    //console.log("BOD ", body)
     ServicioPostExecute(getMedioAprobacion, body, token, { dispatch: dispatch }).then((data) => {
-        console.log("MEDIO APRO,",data)
+        //console.log("MEDIO APRO,",data)
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
@@ -1734,10 +1721,10 @@ export async function fetchAddDocumentosAxentria(solicitudId, versionDoc,requier
             file: archivo
         } 
     }
-    console.log("BODY ADD ARC ", body)
+    //console.log("BODY ADD ARC ", body)
     
     await ServicioPostExecute(addDocumentosAxentria, body, token, { dispatch: dispatch }).then((data) => {
-        console.log("Add Doc Axe,", data);
+        //console.log("Add Doc Axe,", data);
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
@@ -1759,8 +1746,6 @@ export function fetchGetDocumentosAxentria(intIdSolicitud, token, onSucces, disp
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
-        //id_documento: intIdDocumento,
-        //id_solicitud: Number(intIdSolicitud),
         id_solicitud: Number(intIdSolicitud),
         int_id_doc: 0
     }
@@ -1794,7 +1779,7 @@ export function fetchDescargarDocumentoAxentria(intDocumento, token, onSucces, d
     }
     
     ServicioPostExecute(getDocumentosAxentria, body, token, { dispatch: dispatch }).then((data) => {
-        console.log("Descargar Doc Axe,", data);
+        //console.log("Descargar Doc Axe,", data);
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
@@ -1820,9 +1805,7 @@ export function fetchCrearSeparadoresAxentria(separadores, token, onSucces, disp
     let body = {
         lst_separadores_gen: separadores
     }
-    //console.log("LISTT", body)
     ServicioPostExecute(crearSeparadores, body, token, { dispatch: dispatch }).then((data) => {
-        console.log("Crear Sep,", data);
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
@@ -1907,7 +1890,6 @@ export function fetchGetOficinas(token, onSucces, dispatch) {
 
     }
     ServicioPostExecute(getOficinas, body, token, { dispatch: dispatch }).then((data) => {
-        //console.log(data);
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));

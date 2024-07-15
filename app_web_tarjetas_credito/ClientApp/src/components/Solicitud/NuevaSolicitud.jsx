@@ -175,7 +175,7 @@ const NuevaSolicitud = (props) => {
         }
 
         if (isCkeckRestaGtoFinananciero === true) {
-            if ((datosFinancierosObj.montoRestaGstFinanciero > 0 && datosFinancierosObj.montoRestaGstFinanciero <= 99999)) {
+            if ((Number(datosFinancierosObj.montoRestaGstFinanciero) > 0 && Number(datosFinancierosObj.montoRestaGstFinanciero) <= 99999)) {
                 validaRestoMontoGstFinanciero = true;
             }
             else {
@@ -440,8 +440,6 @@ const NuevaSolicitud = (props) => {
     }
 
     const nextHandler = async () => {
-
-        //console.log("step,", step)
         if (step === 0) {
             setIsVisibleBloque(false);
             refrescarInformacionHandler(false);
@@ -451,12 +449,8 @@ const NuevaSolicitud = (props) => {
             await consultaAlertas(true);
         }
         if (step === 2) {
-            //console.log(`SHOW AUTOR, ${showAutorizacion}`)
-
             if (showAutorizacion) {
-                //console.log("CED ENVIA DOC, ", cedulaSocio)
                 await fetchAddAutorizacion("C", 1, "F", cedulaSocio, nombreSocio, apellidoPaterno, apellidoMaterno, archivoAutorizacion, props.token, (data) => {
-                    //console.log("AUTOR, ", data);
                     if (data.str_res_codigo === "000") {
                         setShowAutorizacion(false);
                         consultaAlertas(false);
@@ -481,15 +475,12 @@ const NuevaSolicitud = (props) => {
             //console.log("INFO SOCI SOL, ", dataSocio)
 
             if (!realizaNuevaSimulacion.current) {
-                //console.log("PRIMERA CONSULTA BURO ")
                 //TODO cambiar cedula a a -> cedulaSocio
                 await fetchScore("C", "1150214375", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, datosUsuario[0].strUserOficial,  datosUsuario[0].strOficial, datosUsuario[0].strCargo, props.token, (data) => {
                     setScore(data);
                     setIdClienteScore(data.int_cliente);
-                    //console.log("SCORE, ", data.int_cliente)
 
                     //TODO VALIDAR  CAMPO capacidadPago
-                    console.log("SCORE cupoSugerido, ", data.response.result.capacidadPago[0].cupoSugerido)
                     setCupoSugeridoAval(data.response.result?.capacidadPago[0].cupoSugerido.toString());
 
                     realizaNuevaSimulacion.current = true
@@ -497,18 +488,13 @@ const NuevaSolicitud = (props) => {
                     setDatosFinancierosObj(datosFinancierosObj)
 
 
-                    //TODO VALIDAR ESA INFO
-                    //Calificacion riesgo
-                    //console.log("SCORE ", data.response.result);
-                    //console.log("CALIFICACION RIESGO COOP, ", data.response.result.modeloCoopmego[0].decisionModelo);
+                    //Se captura la calificacion que retorna de la consulta al buro
                     setCalificacionRiesgo(data.response.result.modeloCoopmego[0].decisionModelo)
                     setEstadoBotonSiguiente(true);
 
                 }, dispatch);
 
             } else if (realizaNuevaSimulacion.current) {
-                console.log("NUEVA SIMULACION")
-
                 let datosFinan = datosFinancierosObj;
                 if (!datosFinan.montoIngresos) datosFinan.montoIngresos = 0;
                 if (!datosFinan.montoEgresos) datosFinan.montoEgresos = 0;
@@ -518,7 +504,6 @@ const NuevaSolicitud = (props) => {
                 //TODO CAMBIAR LA CEDULA ->cedulaSocio
                 await fetchNuevaSimulacionScore("C", "1150214375", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, datosUsuario[0].strUserOficial,  datosUsuario[0].strOficial, datosUsuario[0].strCargo, datosFinan.montoIngresos, datosFinan.montoEgresos, datosFinan.montoRestaGstFinanciero, datosFinan.montoGastoFinaCodeudor,
                     props.token, (data) => {
-                        //TODO: RECUPERAR EL data.int_cliente y 
                         setIdClienteScore(data.int_cliente);
                         setCupoSugeridoCoopM(data.str_cupo_sugerido);
                         setScore(data);
@@ -778,6 +763,7 @@ const NuevaSolicitud = (props) => {
                             onComentarioAdic={handleComentarioAdic}
                             idClienteScore={idClienteScore}
                             comentarioAdicionalValor={comentarioAdic}
+                            calificacionRiesgo={calificacionRiesgo}
 
                         ></DatosSocio>
                     }

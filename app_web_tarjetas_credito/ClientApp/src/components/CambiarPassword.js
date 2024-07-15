@@ -4,10 +4,8 @@ import React, { useState } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import {
     Button,
-    Col,
     Container,
     Form,
-    FormFeedback,
     FormGroup,
     Input,
     Label,
@@ -77,8 +75,6 @@ function CambiarPassword(props) {
 
     return (
         <Container fluid="xs">
-            {/*btnCancelar={"Cancelar"}*/}
-            {/*canClose={true}*/}
             <ModalAlert
                 openModal={props.openModal}
                 size={"xs"}

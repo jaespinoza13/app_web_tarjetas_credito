@@ -156,15 +156,12 @@ const NuevaProspeccion = (props) => {
         }
     }, [step]);
 
-    const validaCamposSocio = () => {
-        //console.log(`${documento}|${nombreSocio}|${apellidoPaterno}|${apellidoMaterno}|${correoSocio}|${celularSocio}`)       
+    const validaCamposSocio = () => {  
 
         if (documento !== "" && nombreSocio !== "" && apellidoPaterno !== "" && apellidoMaterno !== "" && correoSocio !== "" &&
             (celularSocio !== "" && celularSocio.length > 0 && celularSocio.length === 10)) {
-            //console.log("CAMPOS CLIENTE LLENOS")
             return true;
         }
-        //console.log("Faltan campos a rellenar")
         return false;
     }
 
@@ -186,7 +183,7 @@ const NuevaProspeccion = (props) => {
         } 
 
         if (isCkeckRestaGtoFinananciero === true) {
-            if (datosFinancierosObj.montoRestaGstFinanciero > 0 && datosFinancierosObj.montoRestaGstFinanciero <= 99999) {
+            if ((Number(datosFinancierosObj.montoRestaGstFinanciero) > 0 && Number(datosFinancierosObj.montoRestaGstFinanciero) <= 99999)) {
                 validaRestoMontoGstFinanciero = true;  
             } 
             else {
@@ -196,8 +193,6 @@ const NuevaProspeccion = (props) => {
         } else if (isCkeckRestaGtoFinananciero === false) {
             validaRestoMontoGstFinanciero = true;
         }    
-
-        //console.log(`Check ${validadorCheck}, cupo ${validadorOtrosMontos},  restoGast ${validaRestoMontoGstFinanciero} `)
         if (validadorOtrosMontos && validaRestoMontoGstFinanciero) {
             return true;
         } else {
@@ -260,10 +255,7 @@ const NuevaProspeccion = (props) => {
     }, [step, validacionesErr, archivoAutorizacion]);
     
     useEffect(() => {
-        //console.log(`comentarioAdic ${comentarioAdic} , comentario ${comentario}`)
-        //console.log(`comentarioVADADI ${isNaN(comentarioAdic)} ${IsNullOrEmpty(comentarioAdic)}, comentarioVAD ${isNaN(comentario)} ${IsNullOrEmpty(comentario)}`)
         if (comentario !== "" && comentarioAdic !== "") {
-            //console.log(`SIG VALIDO`)
             setEstadoBotonSiguiente(false);
         } else {
             setEstadoBotonSiguiente(true); 
@@ -274,7 +266,7 @@ const NuevaProspeccion = (props) => {
 
     const refrescarInformacionHandler = (actualizarInfo) => {
         fetchValidacionSocio(documento, '', props.token, (data) => {
-            console.log("PROSP ", data)
+            
             setNombreSocio(data.str_nombres);
             setApellidoPaterno(data.str_apellido_paterno);
             setApellidoMaterno(data.str_apellido_materno);
@@ -298,9 +290,7 @@ const NuevaProspeccion = (props) => {
                 montoGastoFinaCodeudor: Number(datosFinancierosObj.montoGastoFinaCodeudor),
                 montoRestaGstFinanciero: Number(datosFinancierosObj.montoRestaGstFinanciero),
             }
-            console.log("resf DATA , ", datosFinan)
             setDatosFinancierosObj(datosFinan);
-
             setInfoSocio(data);
             setEnteSocio("")
             if (!actualizarInfo) {
@@ -398,13 +388,11 @@ const NuevaProspeccion = (props) => {
             setInfoSocio(dataSocio);
 
             if (!realizaNuevaSimulacion.current) {
-                console.log("PRIMERA CONSULTA BURO ")
-
                 //TODO: CAMBIAR LA CEDULA por "documento"
                 await fetchScore("C", "1150214375", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, datosUsuario[0].strUserOficial, datosUsuario[0].strOficial, datosUsuario[0].strCargo, props.token, (data) => {
                     setScore(data);
                     setIdClienteScore(data.int_cliente);
-                    //console.log("SCORE, ", data.int_cliente)
+                    //console.log("SCORE int_cliente, ", data.int_cliente)
                     //setRealizaNuevaSimulacion(true);
                     realizaNuevaSimulacion.current = true
                     //const scoreStorage = JSON.stringify(data);
@@ -416,9 +404,6 @@ const NuevaProspeccion = (props) => {
                 }, dispatch);
 
             } else if (realizaNuevaSimulacion.current){
-
-                console.log("NUEVA SIMULACION")
-
                 let datosFinan = datosFinancierosObj;
                 if (!datosFinan.montoIngresos) datosFinan.montoIngresos = 0;
                 if (!datosFinan.montoEgresos) datosFinan.montoEgresos = 0;
@@ -436,11 +421,7 @@ const NuevaProspeccion = (props) => {
         }
 
         if (step === 4) {
-            //REALIZA REGISTROS DE SIMULACION
-            //SIMULACION GUARDADA
-            console.log("STEP 4")
             fetchAddProspecto(documento, 0, nombreSocio, apellidoPaterno + " " + apellidoMaterno, celularSocio, correoSocio, datosFinancierosObj.montoSolicitado, comentario, comentarioAdic, props.token, (data) => {
-                console.log("RESP ADD PROSP, ", data)
                 setVisitadosSteps([...visitadosSteps, actualStepper + 1])
                 setActualStepper(4);
                 setStep(-1);
