@@ -5,10 +5,11 @@ import { useEffect } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import Card from '../Common/Card';
 import Button from '../Common/UI/Button';
-import { IsNullOrWhiteSpace, base64ToBlob, descargarArchivo, generarFechaHoy, verificarPdf } from '../../js/utiles';
+import { IsNullOrWhiteSpace } from '../../js/utiles';
 import "../../css/Components/Reprocesar.css";
 import AccordionV2 from '../Common/UI/AccordionV2';
 import Input from '../Common/UI/Input';
+import ModalDinamico from '../Common/Modal/ModalDinamico';
 import ComponentItemsOrden from './ComponentItemsOrden';
 
 
@@ -25,16 +26,22 @@ const mapStateToProps = (state) => {
 };
 
 
-function Distribucion(props) {
+function RecibirOrdenesPersonalizadas(props) {
 
     const navigate = useHistory();
     const dispatch = useDispatch();
+    const [lstOrdenesEntrada, setLstOrdenesEntrada] = useState([]);
+    const [lstOrdenesSalida, setLstOrdenesSalida] = useState([]);
     const [inputBusqueda, setInputBusqueda] = useState([]);
 
 
 
     const [ordenItemsCheckTotal, setOrdenItemsCheckTotal] = useState([]);
     const [totalTarjetasEnviar, setTotalTarjetasEnviar] = useState(0);
+
+
+
+    const [modalEnviarPersonalizacion, setModalEnviarPersonalizacion] = useState(false);
 
     const ordenesV2 = [
         {
@@ -80,13 +87,20 @@ function Distribucion(props) {
     }
 
 
+    const closeModaEnvioPersonalizacion = () => {
+        setModalEnviarPersonalizacion(false);
+    }
+
+    const envioPersonalizacionHandler = () => {
+
+    }
 
     return (
         <div className="f-row">
-            <Sidebar enlace={props.location.pathname}></Sidebar>
+            <Sidebar enlace={props.location.pathname }></Sidebar>
             <div className="container_mg">
-
-                <h2 className="mt-5 mb-3">Distribuir órdenes</h2>
+         
+                <h2 className="mt-5 mb-3">Recibir órdenes</h2>
 
                 <div className='row w-100'>
 
@@ -94,21 +108,21 @@ function Distribucion(props) {
 
                         <div style={{ display: "flex", flexDirection: "row", width: "100%" }}>
 
-                            <div className="m-2" style={{ display: "flex", flexDirection: "column", width: "25%", marginRight: "10px" }}>
+                            <div className="m-2" style={{ display: "flex", flexDirection: "column", width: "25%", marginRight: "10px"}}>
                                 <Card >
-                                    <img style={{ width: "25px" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg" alt="Distribuir órdenes"></img>
-                                    <h4 className="mt-2">Distribuir órdenes</h4>
-                                    <h5 className="mt-2"> </h5>
-                                    <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false}>Enviar</Button>
+                                    <img style={{ width: "25px" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg"></img>
+                                    
+                                    <h4 className="mt-2">Recibir órdenes</h4>
+                                     <h5 className="mt-2"> </h5>
+                                    <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false}>Extraer órdenes</Button>
                                 </Card>
-                            </div>
+                            </div>                           
 
                         </div>
 
                     </div>
 
                 </div>
-
 
                 <div className="f-row w-100" style={{ display: "flex", justifyContent: "right", paddingRight: "30px" }}>
                     <div className="input-wrapper">
@@ -121,6 +135,7 @@ function Distribucion(props) {
                     </div>
                 </div>
 
+
                 <div className="contentTableOrden mt-3 mb-3">
                     {ordenesV2.map((orden, index) => {
                         return (
@@ -129,7 +144,8 @@ function Distribucion(props) {
                                     index={index}
                                     orden={orden}
                                     returnItems={returnItemsHandler}
-                                    pantallaTituloExponer="RececepcionTarjetasProveedor"
+                                    pantallaTituloExponer="EnvioRececepcionPersonalizacion"
+
                                 ></ComponentItemsOrden>
                             </Fragment>
                         )
@@ -137,14 +153,32 @@ function Distribucion(props) {
                 </div>
 
                 <div className='row w-100 mt-2 f-row justify-content-center'>
-                    <Button className="btn_mg__primary" disabled={false}>Enviar</Button>
+                    <Button className="btn_mg__primary" disabled={false}>Recibir</Button>
                 </div>
 
-
             </div>
+
+            <ModalDinamico
+                modalIsVisible={modalEnviarPersonalizacion}
+                titulo={`Aviso!!!`}
+                onCloseClick={closeModaEnvioPersonalizacion}
+                type="sm"
+            >
+                <div className="pbmg4 ptmg4">
+                    <div className="f-row mb-4">
+                        {/*<h3 className="">¿Está seguro de realizar el envio de </h3>  <h3 className="strong">&nbsp;{totalTarjetasEnviar}&nbsp;</h3>  <h3>tarjetas a personalizar?</h3>*/}
+                        <h3 className="">¿Está seguro de realizar el envio de tarjetas a personalizar?</h3>
+                    </div>
+                    <div className="center_text_items">
+                        <button className="btn_mg btn_mg__primary mt-2" disabled={false} type="submit" onClick={envioPersonalizacionHandler}>Enviar</button>
+                        <button className="btn_mg btn_mg__secondary mt-2 " onClick={closeModaEnvioPersonalizacion}>Cancelar</button>
+                    </div>
+
+                </div>
+            </ModalDinamico>
         </div>
     )
 
 }
 
-export default connect(mapStateToProps, {})(Distribucion);
+export default connect(mapStateToProps, {})(RecibirOrdenesPersonalizadas);

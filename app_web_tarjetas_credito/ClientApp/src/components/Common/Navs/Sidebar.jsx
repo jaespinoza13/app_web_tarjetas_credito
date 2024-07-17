@@ -71,19 +71,35 @@ function Sidebar(props) {
 
                     <div className="sidebar_menu__item">
                         <NavItem>
-                            <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'personalizar') ? 'active' : ''}`} to="/personalizar">Enviar &oacute;rdenes a personalizar</NavLink>
+                            <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'seguimiento') ? 'active' : ''}`} to="/seguimiento">Seguimiento</NavLink>
                         </NavItem>
                     </div>
                     
-                    <div className="sidebar_menu__item">
-                        <NavItem>
-                            <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'recepcion') ? 'active' : ''}`} to="/recepcion">Recibir &oacute;rdenes personalizadas</NavLink>
-                        </NavItem>
-                    </div>
+                    {/*<div className="sidebar_menu__item">*/}
+                    {/*    <NavItem>*/}
+                    {/*        <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'recepcion') ? 'active' : ''}`} to="/recepcion">Recibir &oacute;rdenes personalizadas</NavLink>*/}
+                    {/*    </NavItem>*/}
+                    {/*</div>*/}
+
+                    {/*<div className="sidebar_menu__item">*/}
+                    {/*    <NavItem>*/}
+                    {/*        <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'distribucion') ? 'active' : ''}`} to="/distribucion">Distribuir &oacute;rdenes</NavLink>*/}
+                    {/*    </NavItem>*/}
+                    {/*</div>*/}
 
                     <div className="sidebar_menu__item">
                         <NavItem>
-                            <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'distribucion') ? 'active' : ''}`} to="/distribucion">Distribuir &oacute;rdenes</NavLink>
+                            <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'recibirOrden') ? 'active' : ''}`} to="/recibirOrden">Recibir &oacute;rdenes</NavLink>
+                        </NavItem>
+                    </div>
+                    <div className="sidebar_menu__item">
+                        <NavItem>
+                            <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'entregaTC') ? 'active' : ''}`} to="/entregaTC">Entregar tarjeta</NavLink>
+                        </NavItem>
+                    </div>
+                    <div className="sidebar_menu__item">
+                        <NavItem>
+                            <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'activacion') ? 'active' : ''}`} to="/activacion">Activar</NavLink>
                         </NavItem>
                     </div>
 
