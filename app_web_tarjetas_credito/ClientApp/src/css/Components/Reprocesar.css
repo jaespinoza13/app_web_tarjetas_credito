@@ -45,7 +45,7 @@ table.table-accordion {
 .contentTableOrden {
     padding-right: 30px;
     overflow-y: auto;
-    max-height: 500px;
+    max-height: 1200px;
     /*border: 2px solid black;*/
 }
 
@@ -62,6 +62,11 @@ table.table-accordion {
 .content-headertable {
     width: 100%;
     display: flex;
+    flex-wrap: nowrap;
+}
+
+.content-block {
+    margin-right: 12px;
 }
 
 .item-header {
@@ -164,10 +169,26 @@ table.table-accordion {
 
 
 .accordionStyle2 {
-    background-color: #6492BF; /*#84A4CF #6499E6 #68A0F0 #5C87C4 #004CAC #0063E0 #0276CC #016AB8 #015A9C #0170C2 #0275B5*/
+    background-color: #016AB8; /* #6492BF; #84A4CF #6499E6 #68A0F0 #5C87C4 #004CAC #0063E0 #0276CC #016AB8 #015A9C #0170C2 #0275B5*/
 }
 
 table.table-accordion2 th {
     background-color: #5F92DB; 
+}
+
+.content-filtro {
+    height: 70%;
+    width: 100%;
+    display: flex;
+    /*padding-left: 4rem;*/
+    padding-right: 4rem;
+    padding-top: 1.25rem;
+    padding-bottom: 1.25rem;
+    /*background-color: #fefefe;*/
+    border-radius: 5px;
+    /*border: 1px solid #3D3D3D;*/
+    position: relative;
+    flex-direction: column;
+    justify-content: space-between;
 }
 

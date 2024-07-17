@@ -24,7 +24,7 @@ const ModalDinamico = (props) => {
     }, [props.modalIsVisible]);
     return (
         <div className={`modal ${modalVisible ? 'modal-show' : ''}`}>
-            <div className={`modal-content modal-content-${props.type || defaultType} ${animation} sin-height`}>
+            <div className={`modal-content modal-content-${props.type || defaultType} ${animation}`}>
                 <div className="modal-header">
                     <h2 className="center_text_items">{props.titulo}</h2>
                 </div>

@@ -1570,6 +1570,10 @@ input[type=radio] {
     justify-content: center;
 }
 
+    .noborder {
+        border-radius: 0px;
+    }
+
 .img-icons-acciones {
     width: 30px;
 }
