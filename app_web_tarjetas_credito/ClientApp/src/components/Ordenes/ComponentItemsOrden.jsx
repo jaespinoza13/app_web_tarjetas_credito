@@ -234,7 +234,6 @@ const ComponentOrdenItems = ({ ordenItem, checkStatusSeleccion, returnItemOrden,
                                         setValueHandler={() => checkTarjeta(cliente)}
                                     ></Input>
                                 </td>
-
                             </tr>
                         )
                     })}

@@ -41,6 +41,7 @@ function Seguimiento(props) {
     const [textoBotonAccion, setTextoBotonAccion] = useState("");
     const [textBtnAccionAsistenteAgencia, setTextBtnAccionAsistenteAgencia] = useState("");
     const [lstOrdenesFiltradas, setLstOrdenesFiltradas] = useState([]);
+    const [lstItemsReceptarOficina, setLstItemsReceptarOficina] = useState([]);
     const [modalEnviarPersonalizacion, setModalEnviarPersonalizacion] = useState(false);
     const [selectFiltrarOrdenes, setSelectFiltrarOrdenes] = useState("PENDIENTE DE PERSONALIZAR");
     const [selectAccionAsistAgencia, setSelectAccionAsistAgencia] = useState("-1");
@@ -73,6 +74,7 @@ function Seguimiento(props) {
 
     useEffect(() => {
         setLstOrdenesFiltradas(ordenesV2.filter(tarjetas => tarjetas.estado === "PENDIENTE DE PERSONALIZAR"))
+        setLstItemsReceptarOficina([...ordenesAgencias]);
 
         const strOficial = get(localStorage.getItem("sender_name"));
         const strRol = get(localStorage.getItem("role"));
@@ -82,34 +84,6 @@ function Seguimiento(props) {
 
         setDatosUsuario([{ strCargo: strRol, strOficial: strOficial, strUserOficial: userOficial, strUserOficina: userOficina }]);
     }, [])
-
-    useEffect(() => {
-
-        if (datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES") {
-            setTextoTitulo("Seguimiento")
-        }
-        if (datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA") {
-           /* if (selectAccionAsistAgencia === "ACTIVAR_TARJETAS_CREDITO") {
-                setTextoTitulo("Activar tarjetas")
-            } else if (selectAccionAsistAgencia === "RECEPCION_TARJETAS_CREDITO") {
-                setTextoTitulo("Recibir tarjetas")
-            }*/
-            setTextoTitulo("")
-            
-        }
-    }, [datosUsuario, selectAccionAsistAgencia])
-
-/*
-    useEffect(() => {
-        if (boolSeccionActivacionTarjetas) {
-            setTextBtnAccionAsistenteAgencia("Ac")
-        }
-        else if (boolSeccionRecepcionTarjetas) {
-
-        }
-
-    }, [boolSeccionActivacionTarjetas, boolSeccionRecepcionTarjetas])
-    */
 
     const ordenesV2 = [
         {
@@ -161,6 +135,12 @@ function Seguimiento(props) {
 
             ]
         },
+        {
+            fecha_rel: "14/07/2024", num_total_tarjetas: 1, num_tarjetas_error: 0, oficina: "AGENCIA SUR", estado: "PENDIENTE DE DISTRIBUIR",
+            lst_socios: [
+                { cedula: "1235434654", nombres: "LORENA PINEDA", solicitud: "9", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "BLACK", fecha_proceso: "14/07/2024 17:30", oficina_solicita: "AGENCIA SUR", tipo_tarjeta: "Principal", realizar_accion: false },
+            ]
+        },
     ]
 
 
@@ -194,7 +174,6 @@ function Seguimiento(props) {
         { ente: "6849", cedula: "1104732936", nombres: "LEO MONTALVAN", tipo_producto: "BLACK", fecha_proceso: "12/07/2024 22:30", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
         { ente: "97678", cedula: "0515846844", nombres: "LUISA VALDEZ", tipo_producto: "ESTÁNDAR", fecha_proceso: "12/07/2024 16:30", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
         { ente: "15864", cedula: "0849655446", nombres: "MARIA ORTEGA", tipo_producto: "GOLD", fecha_proceso: "12/07/2024 16:30", oficina_solicita: "EL VALLER", tipo_tarjeta: "Principal" },
-
     ]
 
     const tarjetasV2 = [
@@ -202,8 +181,6 @@ function Seguimiento(props) {
         { ente: "2222", cedula: "1001234567", nombres: "PATRICIA LOPEZ", tipo_producto: "GOLD", fecha_proceso: "14/07/2024 15:30", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
         { ente: "3333", cedula: "1203456789", nombres: "CLAUDIA HERRERA", tipo_producto: "BLACK", fecha_proceso: "14/07/2024 15:30", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
         { ente: "4443", cedula: "0509876543", nombres: "PEDRO RAMOS", tipo_producto: "GOLD", fecha_proceso: "14/07/2024 15:35", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
-
-
     ]
 
     const returnItemsHandler = (arrayItems, oficina) => {
@@ -211,7 +188,7 @@ function Seguimiento(props) {
     }
 
 
-    function AddUpdateItemOrden(clave, valor) {
+    /*function AddUpdateItemOrden(clave, valor) {
 
         if (valor.length === 0) {
             setTotalTarjetasAccionDiccionario(prevTotalTarjetasAccionDiccionario => {
@@ -234,15 +211,15 @@ function Seguimiento(props) {
                 [clave]: [valor]
             }));
         }
-    }
-    /*
+    }*/
+    
     function AddUpdateItemOrden(clave, valor) {
        //Actualizar o agregar el objeto
         setTotalTarjetasAccionDiccionario(prevTotalTarjetasAccionDiccionario => ({
             ...prevTotalTarjetasAccionDiccionario,
             [clave]: [valor]
         }));
-    }*/
+    }
 
     
     useEffect(() => {
@@ -344,6 +321,7 @@ function Seguimiento(props) {
                 </div>
 
 
+                {/*BANDEJAS PARA ASISTENTE DE OPERACIONES*/}
                 {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES" && selectFiltrarOrdenes === "PENDIENTE DE PERSONALIZAR" &&
                     <div className="contentTableOrden mt-3 mb-3">
                         {lstOrdenesFiltradas.map((orden, index) => {
@@ -400,29 +378,28 @@ function Seguimiento(props) {
                         })}
                     </div>
                 }
+                {/*FIN BANDEJAS PARA ASISTENTE DE OPERACIONES*/}
 
 
+                {/*BANDEJAS PARA ASISTENTE DE AGENCIA*/}
                 {boolSeccionRecepcionTarjetas === true && datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA" &&
                     <div className="contentTableOrden mt-3 mb-3">
-                        {ordenesAgencias.map((orden, index) => {
+                        {lstItemsReceptarOficina.map((itemOrden, index) => {
                             return (
                                 <Fragment key={index}>
                                     <ComponentItemsOrden
                                         index={index}
-                                        orden={orden}
+                                        orden={itemOrden}
                                         returnItems={returnItemsHandler}
                                         pantallaTituloExponer="Seguimiento"
                                         opcionHeader={true}
-                                        opcionItemDisableDisable={false}
-
+                                        opcionItemDisable={false}
                                     ></ComponentItemsOrden>
                                 </Fragment>
                             )
                         })}
                     </div>
                 }
-
-
 
                 {boolSeccionActivacionTarjetas === true && datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA" &&
                     <div className="contentTableOrden mt-3 mb-3">
@@ -445,11 +422,10 @@ function Seguimiento(props) {
                             })}
                         </Table>
                     </div>
-
-
                 }
+                {/*FIN BANDEJAS PARA ASISTENTE DE AGENCIA*/}
 
-
+                {/*BANDEJA PARA ASISTENTE  DE PLATAFORMA DE SERVICIOS*/}
                 {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS" &&
                     <Fragment>
                         <div className="contentTableOrden mt-3 mb-3">
@@ -476,6 +452,7 @@ function Seguimiento(props) {
 
                     </Fragment>
                 }
+                {/*FIN BANDEJA PARA ASISTENTE  DE PLATAFORMA DE SERVICIOS*/}
 
 
                 {/*SECCION BOTONES PARA ASISTENTE DE OPERACIONES*/}
@@ -491,23 +468,6 @@ function Seguimiento(props) {
                         <Button className="btn_mg__primary" disabled={false}>{textBtnAccionAsistenteAgencia}</Button>
                     </div>
                 }
-
-
-                {/*{datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS" &&*/}
-                   
-                {/*}*/}
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
