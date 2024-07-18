@@ -269,24 +269,26 @@ class App extends Component {
                         )}
                     </Route>
 
-                    <Route path='/entregaTC'>
-                        {this.state.isAuthenticated ? (
-                            <>
-                                <Route exact path='/entregaTC' component={EntregaSocio} />
-                            </>
-                        ) : (
-                            <Route render={() => <Redirect to="/auth" />} />
-                        )}
-                    </Route>
-                    <Route path='/activacion'>
-                        {this.state.isAuthenticated ? (
-                            <>
-                                <Route exact path='/activacion' component={Activacion} />
-                            </>
-                        ) : (
-                            <Route render={() => <Redirect to="/auth" />} />
-                        )}
-                    </Route>
+                    {/*<Route path='/entregaTC'>*/}
+                    {/*    {this.state.isAuthenticated ? (*/}
+                    {/*        <>*/}
+                    {/*            <Route exact path='/entregaTC' component={EntregaSocio} />*/}
+                    {/*        </>*/}
+                    {/*    ) : (*/}
+                    {/*        <Route render={() => <Redirect to="/auth" />} />*/}
+                    {/*    )}*/}
+                    {/*</Route>*/}
+
+
+                    {/*<Route path='/activacion'>*/}
+                    {/*    {this.state.isAuthenticated ? (*/}
+                    {/*        <>*/}
+                    {/*            <Route exact path='/activacion' component={Activacion} />*/}
+                    {/*        </>*/}
+                    {/*    ) : (*/}
+                    {/*        <Route render={() => <Redirect to="/auth" />} />*/}
+                    {/*    )}*/}
+                    {/*</Route>*/}
 
 
 

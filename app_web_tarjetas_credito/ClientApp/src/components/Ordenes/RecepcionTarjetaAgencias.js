@@ -110,7 +110,7 @@ function RecepcionTarjetaAgencias(props) {
             case 'BLACK':
                 chipType = 'black'
                 break;
-            case 'GOLDEN':
+            case 'GOLD':
                 chipType = 'gold'
                 break;
             case 'ESTÁNDAR':
