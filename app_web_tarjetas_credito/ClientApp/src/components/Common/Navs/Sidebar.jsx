@@ -16,6 +16,11 @@ function Sidebar(props) {
     const [nombreUsuario, setNombreUsuario] = useState("");
     const [url, setUrl] = useState("");
 
+
+    //Info sesión
+    const [datosUsuario, setDatosUsuario] = useState([]);
+
+
     const [funcionalidadActiva, setFuncionalidadActiva] = useState("");
     function toggleSideBar() {
         setCollapsed(!collapsed);
@@ -40,6 +45,17 @@ function Sidebar(props) {
         }
     }, [perfilUsuario]);
 
+
+    useEffect(() => {
+        const strOficial = get(localStorage.getItem("sender_name"));
+        const strRol = get(localStorage.getItem("role"));
+
+        const userOficial = get(localStorage.getItem('sender'));
+        const userOficina = get(localStorage.getItem('office'));
+
+        setDatosUsuario([{ strCargo: strRol, strOficial: strOficial, strUserOficial: userOficial, strUserOficina: userOficina }]);
+    },[])
+
     return (
         /*<div className="content">*/
         <div className={`sidebar ${collapsed && 'sidebar_min'}`} id="sidebar">
@@ -58,22 +74,38 @@ function Sidebar(props) {
             </div>
             <div className="sidebar_menu">
                 <div className="sidebar_menu__items">
+
+                    
                     <div className="sidebar_menu__item">
                         <NavItem>
                             <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'solicitud') ? 'active' : ''}`} to="/solicitud">Solicitud</NavLink>
-                         </NavItem>
-                    </div>
-                    <div className="sidebar_menu__item">
-                        <NavItem>
-                            <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'reprocesar') ? 'active' : ''}`} to="/reprocesar">Reprocesar</NavLink>
                         </NavItem>
                     </div>
 
-                    <div className="sidebar_menu__item">
-                        <NavItem>
-                            <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'seguimiento') ? 'active' : ''}`} to="/seguimiento">Seguimiento</NavLink>
-                        </NavItem>
-                    </div>
+
+                   
+                     
+                    {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES"  &&
+
+                        <div className="sidebar_menu__item">
+                            <NavItem>
+                                <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'reprocesar') ? 'active' : ''}`} to="/reprocesar">Reprocesar</NavLink>
+                            </NavItem>
+                        </div>
+                    }
+
+
+
+
+                    {datosUsuario.length > 0 && (datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES" || datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA")  &&
+                        <div className="sidebar_menu__item">
+                            <NavItem>
+                                <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'seguimiento') ? 'active' : ''}`} to="/seguimiento">Seguimiento</NavLink>
+                            </NavItem>
+                        </div>
+                    }
+
+                    
                     
                     {/*<div className="sidebar_menu__item">*/}
                     {/*    <NavItem>*/}
@@ -87,21 +119,33 @@ function Sidebar(props) {
                     {/*    </NavItem>*/}
                     {/*</div>*/}
 
-                    <div className="sidebar_menu__item">
-                        <NavItem>
-                            <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'recibirOrden') ? 'active' : ''}`} to="/recibirOrden">Recibir &oacute;rdenes</NavLink>
-                        </NavItem>
-                    </div>
-                    <div className="sidebar_menu__item">
-                        <NavItem>
-                            <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'entregaTC') ? 'active' : ''}`} to="/entregaTC">Entregar tarjeta</NavLink>
-                        </NavItem>
-                    </div>
-                    <div className="sidebar_menu__item">
-                        <NavItem>
-                            <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'activacion') ? 'active' : ''}`} to="/activacion">Activar</NavLink>
-                        </NavItem>
-                    </div>
+                    {/*<div className="sidebar_menu__item">*/}
+                    {/*    <NavItem>*/}
+                    {/*        <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'recibirOrden') ? 'active' : ''}`} to="/recibirOrden">Recibir &oacute;rdenes</NavLink>*/}
+                    {/*    </NavItem>*/}
+                    {/*</div>*/}
+
+                    {datosUsuario.length > 0 &&
+                        (datosUsuario[0].strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS" ||
+                            datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA") &&
+                        <div className="sidebar_menu__item">
+                            <NavItem>
+                                <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'entregaTC') ? 'active' : ''}`} to="/entregaTC">
+                                    {datosUsuario[0].strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS" ? "Entregar tarjeta" : "Activar TC" }
+
+                                </NavLink>
+                            </NavItem>
+                        </div>
+                    }
+
+
+                    
+
+                    {/*<div className="sidebar_menu__item">*/}
+                    {/*    <NavItem>*/}
+                    {/*        <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'activacion') ? 'active' : ''}`} to="/activacion">Activar</NavLink>*/}
+                    {/*    </NavItem>*/}
+                    {/*</div>*/}
 
                     {/*<div className="sidebar_menu__item">*/}
                     {/*    <NavItem>*/}

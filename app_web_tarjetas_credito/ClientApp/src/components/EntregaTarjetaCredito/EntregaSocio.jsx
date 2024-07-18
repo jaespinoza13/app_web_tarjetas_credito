@@ -11,7 +11,7 @@ import AccordionV2 from '../Common/UI/AccordionV2';
 import Input from '../Common/UI/Input';
 import ModalDinamico from '../Common/Modal/ModalDinamico';
 import Table from '../Common/Table';
-
+import { get } from '../../js/crypt';
 
 const mapStateToProps = (state) => {
     var bd = state.GetWebService.data;
@@ -36,6 +36,21 @@ function EntregaSocio(props) {
     const [totalTarjetasEnviar, setTotalTarjetasEnviar] = useState(0);
     const [modalEnviarPersonalizacion, setModalEnviarPersonalizacion] = useState(false);
 
+
+    //Info sesión
+    const [datosUsuario, setDatosUsuario] = useState([]);
+
+
+    useEffect(() => {
+        const strOficial = get(localStorage.getItem("sender_name"));
+        const strRol = get(localStorage.getItem("role"));
+
+        const userOficial = get(localStorage.getItem('sender'));
+        const userOficina = get(localStorage.getItem('office'));
+
+        setDatosUsuario([{ strCargo: strRol, strOficial: strOficial, strUserOficial: userOficial, strUserOficina: userOficina }]);
+    }, [])
+
     const headersTarjetas = [{ key: 0, nombre: "Ente" }, { key: 1, nombre: "Fecha recepción" }, { key: 2, nombre: "Identificación" }, { key: 3, nombre: "Nombre del titular" }, { key: 4, nombre: "Tipo de tarjeta" }, { key: 5, nombre: "Tipo de producto" }, { key: 6, nombre: "Acciones" }]
 
     const tarjetas = [                   
@@ -50,6 +65,15 @@ function EntregaSocio(props) {
         { ente: "97678", cedula: "0515846844", nombres: "LUISA VALDEZ",  tipo_producto: "ESTANDAR", fecha_recepcion: "12/07/2024 16:30", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
         { ente: "15864", cedula: "0849655446", nombres: "MARIA ORTEGA",  tipo_producto: "GOLDEN", fecha_recepcion: "12/07/2024 16:30", oficina_solicita: "EL VALLER", tipo_tarjeta: "Principal" },
        
+    ]
+
+    const tarjetasV2 = [
+        { ente: "1111", cedula: "1306543210", nombres: "JORGE SANCHEZ", tipo_producto: "ESTANDAR", fecha_recepcion: "14/07/2024 15:30", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
+        { ente: "2222", cedula: "1001234567", nombres: "PATRICIA LOPEZ", tipo_producto: "GOLDEN", fecha_recepcion: "14/07/2024 15:30", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
+        { ente: "3333", cedula: "1203456789", nombres: "CLAUDIA HERRERA", tipo_producto: "BLACK", fecha_recepcion: "14/07/2024 15:30", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
+        { ente: "4443", cedula: "0509876543", nombres: "PEDRO RAMOS", tipo_producto: "GOLDEN", fecha_recepcion: "14/07/2024 15:35", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
+
+
     ]
 
     const returnItemsHandler = (arrayItems) => {
@@ -82,26 +106,61 @@ function EntregaSocio(props) {
                 </div>
 
 
-                <div className="contentTableOrden mt-3 mb-3">
-                    <Table headers={headersTarjetas}>
-                        {/*BODY*/}
-                        {tarjetas.map((tarjeta, index) => {
-                            return (
-                                <tr key={tarjeta.ente}>
-                                    <td>{tarjeta.ente}</td>
-                                    <td>{tarjeta.fecha_recepcion}</td>
-                                    <td>{tarjeta.cedula}</td>
-                                    <td>{tarjeta.nombres}</td>
-                                    <td>{tarjeta.tipo_tarjeta}</td>
-                                    <td>{tarjeta.tipo_producto}</td>                      
-                                    <td>
-                                        <AccionesTarjeta />
-                                    </td>
-                                </tr>
-                            );
-                        })}
-                    </Table>
-                </div>
+                {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS" &&
+                    <div className="contentTableOrden mt-3 mb-3">
+                        <Table headers={headersTarjetas}>
+                            {/*BODY*/}
+                            {tarjetas.map((tarjeta, index) => {
+                                return (
+                                    <tr key={tarjeta.ente}>
+                                        <td>{tarjeta.ente}</td>
+                                        <td>{tarjeta.fecha_recepcion}</td>
+                                        <td>{tarjeta.cedula}</td>
+                                        <td>{tarjeta.nombres}</td>
+                                        <td>{tarjeta.tipo_tarjeta}</td>
+                                        <td>{tarjeta.tipo_producto}</td>
+                                        <td>
+                                            <AccionesTarjeta />
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                        </Table>
+                    </div>
+
+                }
+
+
+
+                {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA" &&
+                    <div className="contentTableOrden mt-3 mb-3">
+                        <Table headers={headersTarjetas}>
+                            {/*BODY*/}
+                            {tarjetasV2.map((tarjeta, index) => {
+                                return (
+                                    <tr key={tarjeta.ente}>
+                                        <td>{tarjeta.ente}</td>
+                                        <td>{tarjeta.fecha_recepcion}</td>
+                                        <td>{tarjeta.cedula}</td>
+                                        <td>{tarjeta.nombres}</td>
+                                        <td>{tarjeta.tipo_tarjeta}</td>
+                                        <td>{tarjeta.tipo_producto}</td>
+                                        <td>
+                                            <AccionesTarjetaV2 />
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                        </Table>
+                    </div>
+
+                }
+
+                
+
+
+                
+                
               
 
             </div>
@@ -147,6 +206,27 @@ const AccionesTarjeta = () => {
 
             <button className="btn_mg_icons noborder" title="Entregar Tc">
                 <img className="img-icons-acciones" src="Imagenes/entregar.svg" alt="Entregar Tc"></img>
+            </button>
+
+        </div>
+    )
+}
+
+
+const AccionesTarjetaV2 = () => {
+    return (
+        <div className="f-row" style={{ gap: "6px", justifyContent: "center" }}>
+
+            <button className="btn_mg_icons noborder" title="Visualizar documentos">
+                <img className="img-icons-acciones" src="Imagenes/search.svg" alt="Visualizar documentos"></img>
+            </button>
+
+            <button className="btn_mg_icons noborder" title="Regresar Tc">
+                <img className="img-icons-acciones" src="Imagenes/return.svg" alt="Regresar Tc"></img>
+            </button>
+
+            <button className="btn_mg_icons noborder" title="Activar Tc">
+                <img className="img-icons-acciones" src="Imagenes/activate.svg" alt="Activar Tc"></img>
             </button>
 
         </div>
