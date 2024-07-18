@@ -12,9 +12,9 @@ const ComponentItemsOrden = (props) => {
         setCheckSeleccionHijo(valor);
     }
 
-    const itemsOrdenCkeckTotal = (array) => {
+    const itemsOrdenCkeckTotal = (array, oficinaSolicita) => {
         setTotalItemOrdenCheck(array)
-        props.returnItems(array);
+        props.returnItems(array, oficinaSolicita);
     }
 
 
@@ -34,7 +34,7 @@ const ComponentItemsOrden = (props) => {
                 checkStatusChange={(e) => { setStatusCheckHandler(e) }}
                 pantallaTituloExponer={props.pantallaTituloExponer}
             >
-                <ComponentOrdenItems ordenItem={props.orden} checkStatusSeleccion={checkSeleccionHijo} returnItemOrden={itemsOrdenCkeckTotal} ></ComponentOrdenItems>
+                <ComponentOrdenItems ordenItem={props.orden} checkStatusSeleccion={checkSeleccionHijo} returnItemOrden={(tarj) => itemsOrdenCkeckTotal(tarj, props.orden.oficina)} ></ComponentOrdenItems>
             </ComponentHeaderAccordion>
 
         </Fragment>
@@ -135,8 +135,6 @@ const ComponentHeaderAccordion = (props) => {
                     </div>
                 </div>
             }
-
-
         </div>
     )
 
@@ -180,8 +178,13 @@ const ComponentOrdenItems = ({ ordenItem, checkStatusSeleccion, returnItemOrden 
 
     const checkTarjeta = (ordenCheck) => {
         if (tarjetasCheckBox.includes(ordenCheck)) {
+           /* const indexOrden = tarjetasCheckBox.findIndex(ordenItem => ordenItem === ordenCheck);
+            console.log("INDEX ", indexOrden);
+            console.log(" tarjetasCheckBox[indexOrden] ", tarjetasCheckBox[indexOrden]);
+            tarjetasCheckBox[indexOrden].realizar_accion = false;*/
             setTarjetaCheckBox(tarjetasCheckBox.filter(ordenItem => ordenItem !== ordenCheck));
         } else {
+            //ordenCheck.realizar_accion = true;
             setTarjetaCheckBox([...tarjetasCheckBox, ordenCheck]);
         }
     }

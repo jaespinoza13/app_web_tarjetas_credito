@@ -12,7 +12,7 @@ import Input from '../Common/UI/Input';
 import { Fragment } from 'react';
 import ModalDinamico from '../Common/Modal/ModalDinamico';
 import ComponentItemsOrden from './ComponentItemsOrden';
-
+import { get } from '../../js/crypt';
 
 const mapStateToProps = (state) => {
     var bd = state.GetWebService.data;
@@ -41,84 +41,170 @@ function Seguimiento(props) {
     const [modalEnviarPersonalizacion, setModalEnviarPersonalizacion] = useState(false);
     const [selectFiltrarOrdenes, setSelectFiltrarOrdenes] = useState("PENDIENTE DE PERSONALIZAR");
 
+    //Info sesión
+    const [datosUsuario, setDatosUsuario] = useState([]);
+
+
+    const [textoTitulo, setTextoTitulo] = useState("");
+
+
+    const [totalTarjetasAccionDiccionario, setTotalTarjetasAccionDiccionario] = useState([])
+
     useEffect(() => {
         if (selectFiltrarOrdenes === "PENDIENTE DE PERSONALIZAR") {
             setTextoBotonAccion("Enviar");
         }
         else if (selectFiltrarOrdenes === "PENDIENTE DE VERIFICAR") {
             setTextoBotonAccion("Recibir");
-        } 
+        }
         else if (selectFiltrarOrdenes === "PENDIENTE DE DISTRIBUIR") {
             setTextoBotonAccion("Distribuir");
         }
+        //setTotalTarjetasAccionDiccionario([])
     }, [lstOrdenesFiltradas])
 
 
     useEffect(() => {
         setLstOrdenesFiltradas(ordenesV2.filter(tarjetas => tarjetas.estado === "PENDIENTE DE PERSONALIZAR"))
+
+        const strOficial = get(localStorage.getItem("sender_name"));
+        const strRol = get(localStorage.getItem("role"));
+
+        const userOficial = get(localStorage.getItem('sender'));
+        const userOficina = get(localStorage.getItem('office'));
+
+        setDatosUsuario([{ strCargo: strRol, strOficial: strOficial, strUserOficial: userOficial, strUserOficina: userOficina }]);
     }, [])
 
+    useEffect(() => {
+
+        if (datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES") {
+            setTextoTitulo("Seguimiento")
+        }
+        if (datosUsuario.length > 0 &&  datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA") {
+            setTextoTitulo("Recibir tarjetas")
+        }
+
+
+
+    }, [datosUsuario])
 
 
     const ordenesV2 = [
         {
             fecha_rel: "12/07/2024", num_total_tarjetas: 3, num_tarjetas_error: 3, oficina: "MATRIZ", estado: "PENDIENTE DE PERSONALIZAR",
             lst_socios: [
-                { cedula: "1150214370", nombres: "DANNY VASQUEZ", solicitud: "1", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLDEN", fecha_proceso_rel: "12/07/2024 22:30", oficina_solicita: "MATRIZ", tipo_tarjeta: "Principal" },
-                { cedula: "0111978465", nombres: "LUIS CONDE", solicitud: "13", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLDEN", fecha_proceso_rel: "12/07/2024 22:30", oficina_solicita: "MATRIZ", tipo_tarjeta: "Principal" },
-                {
-                    "cedula": "1102658321", "nombres": "MARIA GONZALEZ", "solicitud": "22", "estado": "PEN_ENV_PERSONALIZAR","tipo_producto": "ESTANDAR","fecha_proceso_rel": "12/07/2024 10:15","oficina_solicita": "MATRIZ","tipo_tarjeta": "Principal"
-                }
+                { cedula: "1150214370", nombres: "DANNY VASQUEZ", solicitud: "1", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLDEN", fecha_proceso_rel: "12/07/2024 22:30", oficina_solicita: "MATRIZ", tipo_tarjeta: "Principal", realizar_accion: false },
+                { cedula: "0111978465", nombres: "LUIS CONDE", solicitud: "13", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLDEN", fecha_proceso_rel: "12/07/2024 22:30", oficina_solicita: "MATRIZ", tipo_tarjeta: "Principal", realizar_accion: false },
+                { "cedula": "1102658321", "nombres": "MARIA GONZALEZ", "solicitud": "22", "estado": "PEN_ENV_PERSONALIZAR", "tipo_producto": "ESTANDAR", "fecha_proceso_rel": "12/07/2024 10:15", "oficina_solicita": "MATRIZ", "tipo_tarjeta": "Principal", realizar_accion: false },
             ]
         },
         {
             fecha_rel: "12/07/2024", num_total_tarjetas: 2, num_tarjetas_error: 1, oficina: "EL VALLE", estado: "PENDIENTE DE PERSONALIZAR",
             lst_socios: [
-                { cedula: "1101898147", nombres: "NICOLE ALBAN", solicitud: "2", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "ESTANDAR", fecha_proceso_rel: "12/07/2024 22:30", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
-                { cedula: "0913547802", nombres: "ANA RUIZ", solicitud: "12", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLDEN", fecha_proceso_rel: "12/07/2024 22:33", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
+                { cedula: "1101898147", nombres: "NICOLE ALBAN", solicitud: "2", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "ESTANDAR", fecha_proceso_rel: "12/07/2024 22:30", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal", realizar_accion: false },
+                { cedula: "0913547802", nombres: "ANA RUIZ", solicitud: "12", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLDEN", fecha_proceso_rel: "12/07/2024 22:33", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal", realizar_accion: false },
             ]
         },
         {
             fecha_rel: "13/07/2024", num_total_tarjetas: 3, num_tarjetas_error: 0, oficina: "ALAMOR", estado: "PENDIENTE DE VERIFICAR",
             lst_socios: [
-                { cedula: "1106849276", nombres: "SAMANTA CARRION", solicitud: "5", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLDEN", fecha_proceso_rel: "13/07/2024 15:35", oficina_solicita: "ALAMOR", tipo_tarjeta: "Principal" },
-                { cedula: "0681486841", nombres: "FULANITO CABRERA", solicitud: "17", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "BLACK", fecha_proceso_rel: "13/07/2024 15:35", oficina_solicita: "ALAMOR", tipo_tarjeta: "Principal" },
-                { cedula: "0804512376", nombres: "CARLOS LOPEZ", solicitud: "11", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLDEN", fecha_proceso_rel: "13/07/2024 15:35", oficina_solicita: "ALAMOR", tipo_tarjeta: "Principal" },
+                { cedula: "1106849276", nombres: "SAMANTA CARRION", solicitud: "5", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLDEN", fecha_proceso_rel: "13/07/2024 15:35", oficina_solicita: "ALAMOR", tipo_tarjeta: "Principal", realizar_accion: false },
+                { cedula: "0681486841", nombres: "FULANITO CABRERA", solicitud: "17", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "BLACK", fecha_proceso_rel: "13/07/2024 15:35", oficina_solicita: "ALAMOR", tipo_tarjeta: "Principal", realizar_accion: false },
+                { cedula: "0804512376", nombres: "CARLOS LOPEZ", solicitud: "11", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLDEN", fecha_proceso_rel: "13/07/2024 15:35", oficina_solicita: "ALAMOR", tipo_tarjeta: "Principal", realizar_accion: false },
             ]
         },
         {
             fecha_rel: "14/07/2024", num_total_tarjetas: 2, num_tarjetas_error: 0, oficina: "AGENCIA NORTE", estado: "PENDIENTE DE VERIFICAR",
             lst_socios: [
-                { cedula: "1954984972", nombres: "MARTHA PINEDA", solicitud: "9", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "ESTANDAR", fecha_proceso_rel: "14/07/2024 17:30", oficina_solicita: "AGENCIA NORTE", tipo_tarjeta: "Principal" },
-                { cedula: "0981864365", nombres: "PIEDA TOLEDO", solicitud: "10", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLDEN", fecha_proceso_rel: "14/07/2024 17:30", oficina_solicita: "AGENCIA NORTE", tipo_tarjeta: "Principal" },
+                { cedula: "1954984972", nombres: "MARTHA PINEDA", solicitud: "9", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "ESTANDAR", fecha_proceso_rel: "14/07/2024 17:30", oficina_solicita: "AGENCIA NORTE", tipo_tarjeta: "Principal", realizar_accion: false },
+                { cedula: "0981864365", nombres: "PIEDA TOLEDO", solicitud: "10", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLDEN", fecha_proceso_rel: "14/07/2024 17:30", oficina_solicita: "AGENCIA NORTE", tipo_tarjeta: "Principal", realizar_accion: false },
             ]
         },
         {
             fecha_rel: "12/07/2024", num_total_tarjetas: 3, num_tarjetas_error: 0, oficina: "AGENCIA CUARTO CENTENARIO", estado: "PENDIENTE DE VERIFICAR",
             lst_socios: [
-                { cedula: "1104732936", nombres: "LEO MONTALVAN", solicitud: "4", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "BLACK", fecha_proceso_rel: "12/07/2024 22:30", oficina_solicita: "AGENCIA CUARTO CENTENARIO", tipo_tarjeta: "Principal" },
-                { cedula: "0515846844", nombres: "LUISA VALDEZ", solicitud: "11", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "ESTANDAR", fecha_proceso_rel: "12/07/2024 16:30", oficina_solicita: "AGENCIA CUARTO CENTENARIO", tipo_tarjeta: "Principal" },
-                { cedula: "0849655446", nombres: "MARIA ORTEGA", solicitud: "12", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLDEN", fecha_proceso_rel: "12/07/2024 16:30", oficina_solicita: "AGENCIA CUARTO CENTENARIOR", tipo_tarjeta: "Principal" },
+                { cedula: "1104732936", nombres: "LEO MONTALVAN", solicitud: "4", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "BLACK", fecha_proceso_rel: "12/07/2024 22:30", oficina_solicita: "AGENCIA CUARTO CENTENARIO", tipo_tarjeta: "Principal", realizar_accion: false },
+                { cedula: "0515846844", nombres: "LUISA VALDEZ", solicitud: "11", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "ESTANDAR", fecha_proceso_rel: "12/07/2024 16:30", oficina_solicita: "AGENCIA CUARTO CENTENARIO", tipo_tarjeta: "Principal", realizar_accion: false },
+                { cedula: "0849655446", nombres: "MARIA ORTEGA", solicitud: "12", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLDEN", fecha_proceso_rel: "12/07/2024 16:30", oficina_solicita: "AGENCIA CUARTO CENTENARIOR", tipo_tarjeta: "Principal", realizar_accion: false },
             ]
         },
         {
             fecha_rel: "12/07/2024", num_total_tarjetas: 5, num_tarjetas_error: 3, oficina: "MATRIZ", estado: "PENDIENTE DE DISTRIBUIR",
-            lst_socios: [                
-                { cedula: "0111978465", nombres: "LUIS CONDE", solicitud: "13", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLDEN", fecha_proceso_rel: "12/07/2024 22:30", oficina_solicita: "MATRIZ", tipo_tarjeta: "Principal" },
-                { cedula: "1305876421", nombres: "SOFIA RAMIREZ", solicitud: "13", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "ESTANDAR", fecha_proceso_rel: "12/07/2024 22:31", oficina_solicita: "MATRIZ", tipo_tarjeta: "Principal" },
-                { cedula: "0601789456", nombres: "FERNANDO GOMEZ", solicitud: "13", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "ESTANDAR", fecha_proceso_rel: "12/07/2024 22:32", oficina_solicita: "MATRIZ", tipo_tarjeta: "Principal" },
-                { cedula: "1105874213", nombres: "LAURA CASTILLO", solicitud: "23", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "BLACK", fecha_proceso_rel: "12/07/2024 22:30", oficina_solicita: "MATRIZ", tipo_tarjeta: "Principal" },
-                { cedula: "0907654321", nombres: "MIGUEL DIAZ", solicitud: "14", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLDEN", fecha_proceso_rel: "12/07/2024 22:30", oficina_solicita: "MATRIZ", tipo_tarjeta: "Principal" },
+            lst_socios: [
+                { cedula: "0111978465", nombres: "LUIS CONDE", solicitud: "13", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLDEN", fecha_proceso_rel: "12/07/2024 22:30", oficina_solicita: "MATRIZ", tipo_tarjeta: "Principal", realizar_accion: false },
+                { cedula: "1305876421", nombres: "SOFIA RAMIREZ", solicitud: "13", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "ESTANDAR", fecha_proceso_rel: "12/07/2024 22:31", oficina_solicita: "MATRIZ", tipo_tarjeta: "Principal", realizar_accion: false },
+                { cedula: "0601789456", nombres: "FERNANDO GOMEZ", solicitud: "13", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "ESTANDAR", fecha_proceso_rel: "12/07/2024 22:32", oficina_solicita: "MATRIZ", tipo_tarjeta: "Principal", realizar_accion: false },
+                { cedula: "1105874213", nombres: "LAURA CASTILLO", solicitud: "23", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "BLACK", fecha_proceso_rel: "12/07/2024 22:30", oficina_solicita: "MATRIZ", tipo_tarjeta: "Principal", realizar_accion: false },
+                { cedula: "0907654321", nombres: "MIGUEL DIAZ", solicitud: "14", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLDEN", fecha_proceso_rel: "12/07/2024 22:30", oficina_solicita: "MATRIZ", tipo_tarjeta: "Principal", realizar_accion: false },
 
             ]
         },
     ]
 
 
+    const ordenesAgencias = [
+        {
+            fecha_rel: "12/07/2024", num_total_tarjetas: 10, num_tarjetas_error: 1, oficina: "EL VALLE", fecha_envio: "14/07/2024",
+            lst_socios: [
+                { cedula: "1101898147", nombres: "NICOLE ALBAN", solicitud: "2", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "ESTANDAR", fecha_proceso_rel: "12/07/2024 22:30", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
+                { cedula: "1150214370", nombres: "DANNY VASQUEZ", solicitud: "1", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLDEN", fecha_proceso_rel: "12/07/2024 22:30", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
+                { cedula: "0111978465", nombres: "LUIS CONDE", solicitud: "13", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLDEN", fecha_proceso_rel: "12/07/2024 22:30", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
+                { cedula: "1106849276", nombres: "SAMANTA CARRION", solicitud: "5", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLDEN", fecha_proceso_rel: "13/07/2024 15:35", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
+                { cedula: "0681486841", nombres: "FULANITO CABRERA", solicitud: "7", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLDEN", fecha_proceso_rel: "13/07/2024 15:35", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
+                { cedula: "1954984972", nombres: "MARTHA PINEDA", solicitud: "9", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "ESTANDAR", fecha_proceso_rel: "14/07/2024 17:30", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
+                { cedula: "0981864365", nombres: "PIEDA TOLEDO", solicitud: "10", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLDEN", fecha_proceso_rel: "14/07/2024 17:30", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
+                { cedula: "1104732936", nombres: "LEO MONTALVAN", solicitud: "4", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "BLACK", fecha_proceso_rel: "12/07/2024 22:30", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
+                { cedula: "0515846844", nombres: "LUISA VALDEZ", solicitud: "11", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "ESTANDAR", fecha_proceso_rel: "12/07/2024 16:30", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
+                { cedula: "0849655446", nombres: "MARIA ORTEGA", solicitud: "12", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLDEN", fecha_proceso_rel: "12/07/2024 16:30", oficina_solicita: "EL VALLER", tipo_tarjeta: "Principal" },
+            ]
+        }
 
-    const returnItemsHandler = (arrayItems) => {
-        console.log("arrayItems ", arrayItems)
+    ]
+
+    const returnItemsHandler = (arrayItems, oficina) => {
+        AddUpdateItemOrden(oficina, arrayItems);
     }
+
+
+    function AddUpdateItemOrden(clave, valor) {
+
+        if (valor.length === 0) {
+            setTotalTarjetasAccionDiccionario(prevTotalTarjetasAccionDiccionario => {
+                let updatedDictionary = { ...prevTotalTarjetasAccionDiccionario };
+                delete updatedDictionary[clave];
+                return updatedDictionary;
+            });
+        }
+        if (totalTarjetasAccionDiccionario.hasOwnProperty(clave) && totalTarjetasAccionDiccionario[clave].length === 0) {
+            //console.log("--> ",totalTarjetasAccionDiccionario[clave])
+            // Si la clave ya existe, actualizamos el arreglo asociado
+            setTotalTarjetasAccionDiccionario(prevTotalTarjetasAccionDiccionario => ({
+                ...prevTotalTarjetasAccionDiccionario,
+                [clave]: [...prevTotalTarjetasAccionDiccionario[clave], valor]
+            }));
+        } else {
+            // Si la clave no existe, creamos un nuevo arreglo con el valor
+            setTotalTarjetasAccionDiccionario(prevTotalTarjetasAccionDiccionario => ({
+                ...prevTotalTarjetasAccionDiccionario,
+                [clave]: [valor]
+            }));
+        }
+    }
+    /*
+    function AddUpdateItemOrden(clave, valor) {
+       //Actualizar o agregar el objeto
+        setTotalTarjetasAccionDiccionario(prevTotalTarjetasAccionDiccionario => ({
+            ...prevTotalTarjetasAccionDiccionario,
+            [clave]: [valor]
+        }));
+    }*/
+
+
+    useEffect(() => {
+        console.log(totalTarjetasAccionDiccionario)
+    }, [totalTarjetasAccionDiccionario])
+
 
 
     const closeModaEnvioPersonalizacion = () => {
@@ -131,7 +217,7 @@ function Seguimiento(props) {
 
     const filtrarTarjetas = () => {
         setLstOrdenesFiltradas(ordenesV2.filter(tarjetas => tarjetas.estado === selectFiltrarOrdenes))
-
+        setTotalTarjetasAccionDiccionario([])
     }
 
 
@@ -139,23 +225,25 @@ function Seguimiento(props) {
         <div className="f-row">
             <Sidebar enlace={props.location.pathname}></Sidebar>
             <div className="container_mg">
-
-                <h2 className="mt-5 mb-3">Seguimiento</h2>
+                <h2 className="mt-5 mb-3">{textoTitulo}</h2>
                 <div className='f-row w-100'>
-                    <div className="content-filtro">
-                        <div className="f-row w-100">
-                            <h3 className="strong mr-4">Seleccion el estado que desea revisar:</h3>
-                            <select style={{ width: "350px" }} id="tarjetas_select" name="tarjetas_select" value={selectFiltrarOrdenes} onChange={(e) => setSelectFiltrarOrdenes(e.target.value)}>
-                                <option value="PENDIENTE DE PERSONALIZAR">PENDIENTE DE PERSONALIZAR</option>
-                                <option value="PENDIENTE DE VERIFICAR">PENDIENTE DE VERIFICAR</option>
-                                <option value="PENDIENTE DE DISTRIBUIR">PENDIENTE DE DISTRIBUIR</option>
-                            </select>
-                            <Button className="btn_mg btn_mg__primary ml-3" disabled={false} type="submit" onClick={filtrarTarjetas}>Buscar</Button>
+
+                    {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES" &&
+                        <div className="content-filtro">
+                            <div className="f-row w-100">
+                                <h3 className="strong mr-4">Seleccione el estado que desea revisar:</h3>
+                                <select style={{ width: "350px" }} id="tarjetas_select" name="tarjetas_select" value={selectFiltrarOrdenes} onChange={(e) => setSelectFiltrarOrdenes(e.target.value)}>
+                                    <option value="PENDIENTE DE PERSONALIZAR">PENDIENTE DE PERSONALIZAR</option>
+                                    <option value="PENDIENTE DE VERIFICAR">PENDIENTE DE VERIFICAR</option>
+                                    <option value="PENDIENTE DE DISTRIBUIR">PENDIENTE DE DISTRIBUIR</option>
+                                </select>
+                                <Button className="btn_mg btn_mg__primary ml-3" disabled={false} type="submit" onClick={filtrarTarjetas}>Buscar</Button>
+                            </div>
+
+
                         </div>
 
-
-                    </div>
-
+                    }
 
                     {/*<div className="m-2" style={{ display: "flex", flexDirection: "column", width: "25%", marginRight: "10px" }}>*/}
                     {/*    <Card >*/}
@@ -180,24 +268,102 @@ function Seguimiento(props) {
                 </div>
 
 
-                <div className="contentTableOrden mt-3 mb-3">
-                    {lstOrdenesFiltradas.map((orden, index) => {
-                        return (
-                            <Fragment key={index}>
-                                <ComponentItemsOrden
-                                    index={index}
-                                    orden={orden}
-                                    returnItems={returnItemsHandler}
-                                    pantallaTituloExponer="Seguimiento"
-                                ></ComponentItemsOrden>
-                            </Fragment>
-                        )
-                    })}
-                </div>
+                {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES" && selectFiltrarOrdenes === "PENDIENTE DE PERSONALIZAR" &&
+                    <div className="contentTableOrden mt-3 mb-3">
+                        {lstOrdenesFiltradas.map((orden, index) => {
+                            return (
+                                <Fragment key={index}>
+                                    <ComponentItemsOrden
+                                        index={index}
+                                        orden={orden}
+                                        returnItems={returnItemsHandler}
+                                        pantallaTituloExponer="Seguimiento"
+                                    ></ComponentItemsOrden>
+                                </Fragment>
+                            )
+                        })}
+                    </div>
+                }
 
-                <div className='row w-100 mt-2 f-row justify-content-center'>
-                    <Button onClick={() => { setModalEnviarPersonalizacion(true) }} className="btn_mg__primary" disabled={false}>{textoBotonAccion}</Button>
-                </div>
+                {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES" && selectFiltrarOrdenes === "PENDIENTE DE VERIFICAR" &&
+                    <div className="contentTableOrden mt-3 mb-3">
+                        {lstOrdenesFiltradas.map((orden, index) => {
+                            return (
+                                <Fragment key={index}>
+                                    <ComponentItemsOrden
+                                        index={index}
+                                        orden={orden}
+                                        returnItems={returnItemsHandler}
+                                        pantallaTituloExponer="Seguimiento"
+                                    ></ComponentItemsOrden>
+                                </Fragment>
+                            )
+                        })}
+                    </div>
+                }
+
+                {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES" && selectFiltrarOrdenes === "PENDIENTE DE DISTRIBUIR" &&
+                    <div className="contentTableOrden mt-3 mb-3">
+                        {lstOrdenesFiltradas.map((orden, index) => {
+                            return (
+                                <Fragment key={index}>
+                                    <ComponentItemsOrden
+                                        index={index}
+                                        orden={orden}
+                                        returnItems={returnItemsHandler}
+                                        pantallaTituloExponer="Seguimiento"
+                                    ></ComponentItemsOrden>
+                                </Fragment>
+                            )
+                        })}
+                    </div>
+                }
+
+
+                {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA" &&
+                    <div className="contentTableOrden mt-3 mb-3">
+                        {ordenesAgencias.map((orden, index) => {
+                            return (
+                                <Fragment key={index}>
+                                    <ComponentItemsOrden
+                                        index={index}
+                                        orden={orden}
+                                        returnItems={returnItemsHandler}
+                                        pantallaTituloExponer="RecepcionTarjetasOficina"
+
+                                    ></ComponentItemsOrden>
+                                </Fragment>
+                            )
+                        })}
+                    </div>
+                }
+
+                {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES" &&
+                    <div className='row w-100 mt-2 f-row justify-content-center'>
+                        <Button onClick={() => { setModalEnviarPersonalizacion(true) }} className="btn_mg__primary" disabled={false}>{textoBotonAccion}</Button>
+                    </div>
+                }
+
+                {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA" &&
+                    <div className='row w-100 mt-2 f-row justify-content-center'>
+                        <Button className="btn_mg__primary" disabled={false}>Recibir</Button>
+                    </div>
+                }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             </div>
 

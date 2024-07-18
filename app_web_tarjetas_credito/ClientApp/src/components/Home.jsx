@@ -1,5 +1,5 @@
 import '../scss/components/Home.css';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import {
     Container,
@@ -32,9 +32,43 @@ const mapStateToProps = (state) => {
 function Home(props) {
     //TODO: PENDIENTE DE HACER UNA VALDIACION SI CUENTA CON PERMISOS SINO PRESENTAR ESTA PAG POR DEFECTO
     const navigate = useHistory();
+    //Info sesión
+    const [datosUsuario, setDatosUsuario] = useState([]);
+
+
+    useEffect(() => {
+
+        const strOficial = get(localStorage.getItem("sender_name"));
+        const strRol = get(localStorage.getItem("role"));
+
+        const userOficial = get(localStorage.getItem('sender'));
+        const userOficina = get(localStorage.getItem('office'));
+
+        setDatosUsuario([{ strCargo: strRol, strOficial: strOficial, strUserOficial: userOficial, strUserOficina: userOficina }]);
+    }, [])
+
+    useEffect(() => {
+
+        if (datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES") {
+            navigate.push("/reprocesar")
+        }
+        else if (datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA") {
+            navigate.push("/seguimiento")
+        }
+        else if (datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS") {
+            navigate.push("/entregaTC")
+        } else if (datosUsuario.length > 0) {
+            navigate.push("/solicitud")
+        }
+
+
+
+    }, [datosUsuario])
+
+    /*
     useEffect(() => {
         navigate.push("/solicitud")
-    },[])
+    },[])*/
 
     //Se envia vacio para evitar renderizar el contenido y aparezca error por desmontaje de componente
     return (
