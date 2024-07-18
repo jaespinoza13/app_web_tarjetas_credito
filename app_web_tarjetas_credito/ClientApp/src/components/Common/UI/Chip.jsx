@@ -1,13 +1,22 @@
 ﻿const Chip = (props) => {
     let chipType = '';
     switch (props.type) {
-        case 'black':
+        /*case 'black':
             chipType = 'black'
             break;
         case 'gold':
             chipType = 'gold'
             break;
         case 'standar':
+            chipType = 'standar'
+            break;*/
+        case 'BLACK':
+            chipType = 'black'
+            break;
+        case 'GOLD':
+            chipType = 'gold'
+            break;
+        case 'ESTÁNDAR':
             chipType = 'standar'
             break;
         default:

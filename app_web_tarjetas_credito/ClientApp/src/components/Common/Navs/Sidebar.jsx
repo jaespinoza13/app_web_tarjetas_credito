@@ -97,7 +97,7 @@ function Sidebar(props) {
 
 
 
-                    {datosUsuario.length > 0 && (datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES" || datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA")  &&
+                    {datosUsuario.length > 0 && (datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES" || datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA" || datosUsuario[0].strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS")  &&
                         <div className="sidebar_menu__item">
                             <NavItem>
                                 <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'seguimiento') ? 'active' : ''}`} to="/seguimiento">Seguimiento</NavLink>
@@ -125,18 +125,20 @@ function Sidebar(props) {
                     {/*    </NavItem>*/}
                     {/*</div>*/}
 
-                    {datosUsuario.length > 0 &&
-                        (datosUsuario[0].strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS" ||
-                            datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA") &&
-                        <div className="sidebar_menu__item">
-                            <NavItem>
-                                <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'entregaTC') ? 'active' : ''}`} to="/entregaTC">
-                                    {datosUsuario[0].strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS" ? "Entregar tarjeta" : "Activar TC" }
 
-                                </NavLink>
-                            </NavItem>
-                        </div>
-                    }
+
+                    {/*{datosUsuario.length > 0 &&*/}
+                    {/*    (datosUsuario[0].strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS" ||*/}
+                    {/*        datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA") &&*/}
+                    {/*    <div className="sidebar_menu__item">*/}
+                    {/*        <NavItem>*/}
+                    {/*            <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'entregaTC') ? 'active' : ''}`} to="/entregaTC">*/}
+                    {/*                {datosUsuario[0].strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS" ? "Entregar tarjeta" : "Activar TC" }*/}
+
+                    {/*            </NavLink>*/}
+                    {/*        </NavItem>*/}
+                    {/*    </div>*/}
+                    {/*}*/}
 
 
                     

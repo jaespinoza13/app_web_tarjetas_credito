@@ -183,7 +183,7 @@ function OrdenNuevaEdicion(props) {
             case 'BLACK':
                 chipType = 'black'
                 break;
-            case 'GOLDEN':
+            case 'GOLD':
                 chipType = 'gold'
                 break;
             case 'ESTÁNDAR':
@@ -216,7 +216,7 @@ function OrdenNuevaEdicion(props) {
             "str_usuario_recibe": " ",
             "dtt_fecha_creacion": new Date(),
             "dtt_fecha_envia_oficina": "",
-            "dtt_fecha_recepcion": "",
+            "dtt_fecha_proceso": "",
             "int_cantidad": lstOrdenTarjetas.length,
             "str_oficina_solicita": " ",
             "str_oficina_destino": " ",
@@ -297,7 +297,7 @@ function OrdenNuevaEdicion(props) {
                             {/*            <select id="oficina_solicita" name="oficina_solicita" defaultValue={"-1"} onChange={tipoProductoHandler} value={tipoProducto} disabled={desactivarCheckEditar}>*/}
                             {/*                <option value="-1" disabled={true}>----- SELECCIONE UN PRODUCTO -----</option>*/}
                             {/*                <option value="BLACK">BLACK</option>*/}
-                            {/*                <option value="GOLDEN">GOLDEN</option>*/}
+                            {/*                <option value="GOLD">GOLD</option>*/}
                             {/*                <option value="ESTÁNDAR">ESTÁNDAR</option>*/}
                             {/*            </select>*/}
                             {/*        </div>*/}

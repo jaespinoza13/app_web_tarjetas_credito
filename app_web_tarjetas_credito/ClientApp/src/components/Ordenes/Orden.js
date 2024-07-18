@@ -90,7 +90,7 @@ function Orden(props) {
     const headersOrdenesSalida = [
         { nombre: "Nro. Orden", key: "orden" }, { nombre: "Estado", key: "estado" }, { nombre: "Creada por", key: "usuario_crea" },
         { nombre: "Cantidad Enviada", key: "cant_tarjetas_enviadas" }, { nombre: "Destino", key: "destino_envio" }, { nombre: "Fecha creación", key: "fecha_creación" },
-        { nombre: "Fecha de envío", key: "fecha_envio" }, { nombre: "Fecha de recepción", key: "fecha_recepcion" }, { nombre: "Acciones", key: "acciones" }
+        { nombre: "Fecha de envío", key: "fecha_envio" }, { nombre: "Fecha de recepción", key: "fecha_proceso" }, { nombre: "Acciones", key: "acciones" }
     ]
 
 
@@ -339,10 +339,10 @@ function Orden(props) {
                                         <td>{'Ericka Rios'}</td>
                                         <td>{orden.int_cantidad}</td>
                                         <td>{orden.dtt_fecha_creacion}</td>
-                                        <td>{orden.dtt_fecha_recepcion}</td>
+                                        <td>{orden.dtt_fecha_proceso}</td>
                                         {/*<td style={{ width: "143px" }}>{orden.fecha_creacion}</td>*/}
                                         {/*<td style={{ width: "143px" }}>{orden.fecha_solicita}</td>*/}
-                                        {/*<td style={{ width: "143px" }}>{orden.fecha_recepcion}</td>*/}
+                                        {/*<td style={{ width: "143px" }}>{orden.fecha_proceso}</td>*/}
                                         {/*<td style={{ width: "143px" }}>{orden.fecha_cierre_orden}</td>*/}
                                         <td>
                                             <AccionesOrden numOrden={orden.int_num_orden} estadoOrden={'ENVIADO A PROVEEDOR'} />
@@ -370,7 +370,7 @@ function Orden(props) {
                                         <td>OFICINA MATRIZ</td>
                                         <td style={{ width: "143px" }}>{ordenSalida.fecha_creacion}</td>
                                         <td style={{ width: "143px" }}>{ordenSalida.fecha_creacion}</td>
-                                        <td style={{ width: "143px" }}>{ordenSalida.fecha_recepcion}</td>
+                                        <td style={{ width: "143px" }}>{ordenSalida.fecha_proceso}</td>
                                         <td>
                                             <AccionesOrden numOrden={ordenSalida.orden} estadoOrden={ordenSalida.estado} />
                                         </td>

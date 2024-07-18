@@ -1,6 +1,7 @@
 ﻿import { Fragment, useEffect, useState } from "react";
 import Input from "../Common/UI/Input";
 import AccordionV2 from '../Common/UI/AccordionV2';
+import Chip from "../Common/UI/Chip";
 
 const ComponentItemsOrden = (props) => {
 
@@ -33,8 +34,14 @@ const ComponentItemsOrden = (props) => {
                 inicialStateCheck={checkSeleccionPadre}
                 checkStatusChange={(e) => { setStatusCheckHandler(e) }}
                 pantallaTituloExponer={props.pantallaTituloExponer}
+                opcionHeader={props.opcionHeader}
             >
-                <ComponentOrdenItems ordenItem={props.orden} checkStatusSeleccion={checkSeleccionHijo} returnItemOrden={(tarj) => itemsOrdenCkeckTotal(tarj, props.orden.oficina)} ></ComponentOrdenItems>
+                <ComponentOrdenItems
+                    ordenItem={props.orden}
+                    checkStatusSeleccion={checkSeleccionHijo}
+                    returnItemOrden={(tarj) => itemsOrdenCkeckTotal(tarj, props.orden.oficina)}
+                    opcionItemDisable={props.opcionItemDisable }
+                ></ComponentOrdenItems>
             </ComponentHeaderAccordion>
 
         </Fragment>
@@ -76,11 +83,13 @@ const ComponentHeaderAccordion = (props) => {
                     <div className="content-block" style={{ width: "12%", minWidth: "120px" }} >
                         <h4 className="item-header white">{props.header.fecha_rel}</h4>
                     </div>
-                    <div className="" style={{ position: "absolute", right: "80px" }}>
-                        <input type="checkbox" name={props.header.orden} checked={props.inicialStateCheck}
-                            onChange={(e) => setCheckSeleccionAll(!checkSeleccionAll)}
-                        />
-                    </div>
+                    {props.opcionHeader === true  &&
+                        <div className="" style={{ position: "absolute", right: "80px" }}>
+                            <input type="checkbox" name={props.header.orden} checked={props.inicialStateCheck}
+                                onChange={(e) => setCheckSeleccionAll(!checkSeleccionAll)}
+                            />
+                        </div>
+                    }
                 </div>
             }
 
@@ -100,11 +109,15 @@ const ComponentHeaderAccordion = (props) => {
                     <div className="content-block" style={{ width: "7%", minWidth: "50px" }} >
                         <h4 className="item-header white">{props.header.num_total_tarjetas}</h4>
                     </div>                   
-                    <div className="" style={{ position: "absolute", right: "80px" }}>
-                        <input type="checkbox" name={props.header.orden} checked={props.inicialStateCheck}
+                    {props.opcionHeader === true &&
+                        <div className="" style={{ position: "absolute", right: "80px" }}>
+                        <input type="checkbox"
+                            name={props.header.orden}
+                            checked={props.inicialStateCheck}
                             onChange={(e) => setCheckSeleccionAll(!checkSeleccionAll)}
-                        />
-                    </div>
+                            />
+                        </div>
+                    }
                 </div>
             }
 
@@ -128,11 +141,13 @@ const ComponentHeaderAccordion = (props) => {
                     <div className="content-block" style={{ width: "7%", minWidth: "50px" }} >
                         <h4 className="item-header white">{props.header.num_total_tarjetas}</h4>
                     </div>
-                    <div className="" style={{ position: "absolute", right: "80px" }}>
-                        <input type="checkbox" name={props.header.orden} checked={props.inicialStateCheck}
-                            onChange={(e) => setCheckSeleccionAll(!checkSeleccionAll)}
-                        />
-                    </div>
+                    {props.opcionHeader === true &&
+                        <div className="" style={{ position: "absolute", right: "80px" }}>
+                            <input type="checkbox" name={props.header.orden} checked={props.inicialStateCheck}
+                                onChange={(e) => setCheckSeleccionAll(!checkSeleccionAll)}
+                            />
+                        </div>
+                    }
                 </div>
             }
         </div>
@@ -151,7 +166,7 @@ const ComponentHeaderAccordion = (props) => {
 }
 
 
-const ComponentOrdenItems = ({ ordenItem, checkStatusSeleccion, returnItemOrden }) => {
+const ComponentOrdenItems = ({ ordenItem, checkStatusSeleccion, returnItemOrden, opcionItemDisable }) => {
 
     const [tarjetasCheckBox, setTarjetaCheckBox] = useState([]);
 
@@ -196,6 +211,7 @@ const ComponentOrdenItems = ({ ordenItem, checkStatusSeleccion, returnItemOrden 
                     <tr>
                         <th className='paddingSpacing'>Identificación</th>
                         <th className='paddingSpacing'>Nombre del titular</th>
+                        <th className='paddingSpacing'>Fecha proceso</th>
                         <th className='paddingSpacing'>Tipo de tarjeta</th>
                         <th className='paddingSpacing'>Tipo de producto</th>
                         <th className='paddingSpacing'> </th>
@@ -207,12 +223,17 @@ const ComponentOrdenItems = ({ ordenItem, checkStatusSeleccion, returnItemOrden 
                             <tr key={cliente.cedula}>
                                 <td className='paddingSpacing'>{cliente.cedula}</td>
                                 <td className='paddingSpacing'>{cliente.nombres}</td>
+                                <td className='paddingSpacing'>{cliente.fecha_proceso}</td>
                                 <td className='paddingSpacing'>{cliente.tipo_tarjeta}</td>
-                                <td className='paddingSpacing'>{cliente.tipo_producto}</td>
+                                <td className='paddingSpacing'> <Chip type={cliente.tipo_producto}>{cliente.tipo_producto}</Chip></td>
                                 <td className='paddingSpacing'>
-                                    <Input key={cliente.cedula} disabled={false} type="checkbox" checked={tarjetasCheckBox.includes(cliente)} setValueHandler={() => checkTarjeta(cliente)}></Input>
+                                    <Input key={cliente.cedula}
+                                        disabled={opcionItemDisable}
+                                        type="checkbox"
+                                        checked={tarjetasCheckBox.includes(cliente)}
+                                        setValueHandler={() => checkTarjeta(cliente)}
+                                    ></Input>
                                 </td>
-
                             </tr>
                         )
                     })}

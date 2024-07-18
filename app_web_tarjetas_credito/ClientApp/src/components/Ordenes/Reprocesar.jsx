@@ -10,6 +10,7 @@ import "../../css/Components/Reprocesar.css";
 import AccordionV2 from '../Common/UI/AccordionV2';
 import Input from '../Common/UI/Input';
 import Table from '../Common/Table';
+import Chip from '../Common/UI/Chip';
 
 
 const mapStateToProps = (state) => {
@@ -40,23 +41,23 @@ function Reprocesar(props) {
 
     const clientes = [
         { cedula: "1150214370", nombres: "DANNY VASQUEZ", tipo_tarjeta: "BLACK", tipo_producto : "Principal"},
-        { cedula: "1101898147", nombres: "NICOLE ALBAN", tipo_tarjeta: "ESTANDAR", tipo_producto: "Principal" },
-        { cedula: "0181568681", nombres: "SEBASTIAN RIOFRIO", tipo_tarjeta: "GOLDEN", tipo_producto: "Principal" }
+        { cedula: "1101898147", nombres: "NICOLE ALBAN", tipo_tarjeta: "ESTÁNDAR", tipo_producto: "Principal" },
+        { cedula: "0181568681", nombres: "SEBASTIAN RIOFRIO", tipo_tarjeta: "GOLD", tipo_producto: "Principal" }
     ]
 
-    const headersTarjetas = [{ key: 0, nombre: "Identificación" }, { key: 1, nombre: "Nombre del titular" }, { key: 2, nombre: "Tipo de tarjeta" }, { key: 3, nombre: "Tipo de producto" }, { key: 4, nombre: "Oficina" }, { key: 5, nombre: "Error presentado" }, { key: 6, nombre: "" }]
+    const headersTarjetas = [{ key: 0, nombre: "Identificación" }, { key: 1, nombre: "Nombre del titular" }, { key: 2, nombre: "Fecha proceso" }, { key: 3, nombre: "Tipo de tarjeta" }, { key: 4, nombre: "Tipo de producto" }, { key: 5, nombre: "Oficina" }, { key: 6, nombre: "Error presentado" }, { key: 7, nombre: "" }]
 
     const tarjetas = [
-        { ente: "15188", cedula: "1101898147", nombres: "NICOLE ALBAN", tipo_producto: "ESTANDAR", fecha_recepcion: "12/07/2024 22:30", oficina_solicita: "MATRIZ", tipo_tarjeta: "Principal", error_proceso: "ERROR EN PROCESAMIENTO DE LA INFORMACIÓN" },
-        { ente: "49456", cedula: "1150214370", nombres: "DANNY VASQUEZ", tipo_producto: "GOLDEN", fecha_recepcion: "12/07/2024 22:30", oficina_solicita: "ALAMOR", tipo_tarjeta: "Principal", error_proceso: "ERROR LIMITE DE CREDITO" },
-        { ente: "84684", cedula: "0111978465", nombres: "LUIS CONDE", tipo_producto: "BLACK", fecha_recepcion: "12/07/2024 22:30", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal", error_proceso: "ERROR LIMITE DE CREDITO" },
-        { ente: "95464", cedula: "1106849276", nombres: "SAMANTA CARRION", tipo_producto: "ESTANDAR", fecha_recepcion: "13/07/2024 15:35", oficina_solicita: "MATRIZ", tipo_tarjeta: "Principal", error_proceso: "ERROR EN CORREO PERSONAL" },
-        { ente: "11546", cedula: "0681486841", nombres: "FULANITO CABRERA", tipo_producto: "GOLDEN", fecha_recepcion: "13/07/2024 15:35", oficina_solicita: "AGENCIA NORTE", tipo_tarjeta: "Principal", error_proceso: "ERROR EN INFORMACION DEL TITULAR" },
-        { ente: "186424", cedula: "1954984972", nombres: "MARTHA PINEDA", tipo_producto: "ESTANDAR", fecha_recepcion: "14/07/2024 17:30", oficina_solicita: "AGENCIA NORTE", tipo_tarjeta: "Principal", error_proceso: "ERROR EN PROCESAMIENTO DE LA INFORMACIÓN" },
-        { ente: "2298", cedula: "0981864365", nombres: "PIEDA TOLEDO", tipo_producto: "GOLDEN", fecha_recepcion: "14/07/2024 17:30", oficina_solicita: "ALAMOR", tipo_tarjeta: "Principal", error_proceso: "ERROR EN TASA DE INTERES" },
-        { ente: "6849", cedula: "1104732936", nombres: "LEO MONTALVAN", tipo_producto: "BLACK", fecha_recepcion: "12/07/2024 22:30", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal", error_proceso: "ERROR LIMITE DE CREDITO" },
-        { ente: "97678", cedula: "0515846844", nombres: "LUISA VALDEZ", tipo_producto: "ESTANDAR", fecha_recepcion: "12/07/2024 16:30", oficina_solicita: "AGENCIA NORTE", tipo_tarjeta: "Principal", error_proceso: "ERROR LIMITE DE CREDITO" },
-        { ente: "15864", cedula: "0849655446", nombres: "MARIA ORTEGA", tipo_producto: "GOLDEN", fecha_recepcion: "12/07/2024 16:30", oficina_solicita: "ALAMOR", tipo_tarjeta: "Principal", error_proceso: "ERROR EN INFORMACION DEL TITULAR" },
+        { ente: "15188", cedula: "1101898147", nombres: "NICOLE ALBAN", tipo_producto: "ESTÁNDAR", fecha_proceso: "12/07/2024 22:30", oficina_solicita: "MATRIZ", tipo_tarjeta: "Principal", error_proceso: "ERROR EN PROCESAMIENTO DE LA INFORMACIÓN" },
+        { ente: "49456", cedula: "1150214370", nombres: "DANNY VASQUEZ", tipo_producto: "GOLD", fecha_proceso: "12/07/2024 22:30", oficina_solicita: "ALAMOR", tipo_tarjeta: "Principal", error_proceso: "ERROR LIMITE DE CREDITO" },
+        { ente: "84684", cedula: "0111978465", nombres: "LUIS CONDE", tipo_producto: "BLACK", fecha_proceso: "12/07/2024 22:30", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal", error_proceso: "ERROR LIMITE DE CREDITO" },
+        { ente: "95464", cedula: "1106849276", nombres: "SAMANTA CARRION", tipo_producto: "ESTÁNDAR", fecha_proceso: "13/07/2024 15:35", oficina_solicita: "MATRIZ", tipo_tarjeta: "Principal", error_proceso: "ERROR EN CORREO PERSONAL" },
+        { ente: "11546", cedula: "0681486841", nombres: "FULANITO CABRERA", tipo_producto: "GOLD", fecha_proceso: "13/07/2024 15:35", oficina_solicita: "AGENCIA NORTE", tipo_tarjeta: "Principal", error_proceso: "ERROR EN INFORMACION DEL TITULAR" },
+        { ente: "186424", cedula: "1954984972", nombres: "MARTHA PINEDA", tipo_producto: "ESTÁNDAR", fecha_proceso: "14/07/2024 17:30", oficina_solicita: "AGENCIA NORTE", tipo_tarjeta: "Principal", error_proceso: "ERROR EN PROCESAMIENTO DE LA INFORMACIÓN" },
+        { ente: "2298", cedula: "0981864365", nombres: "PIEDA TOLEDO", tipo_producto: "GOLD", fecha_proceso: "14/07/2024 17:30", oficina_solicita: "ALAMOR", tipo_tarjeta: "Principal", error_proceso: "ERROR EN TASA DE INTERES" },
+        { ente: "6849", cedula: "1104732936", nombres: "LEO MONTALVAN", tipo_producto: "BLACK", fecha_proceso: "12/07/2024 22:30", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal", error_proceso: "ERROR LIMITE DE CREDITO" },
+        { ente: "97678", cedula: "0515846844", nombres: "LUISA VALDEZ", tipo_producto: "ESTÁNDAR", fecha_proceso: "12/07/2024 16:30", oficina_solicita: "AGENCIA NORTE", tipo_tarjeta: "Principal", error_proceso: "ERROR LIMITE DE CREDITO" },
+        { ente: "15864", cedula: "0849655446", nombres: "MARIA ORTEGA", tipo_producto: "GOLD", fecha_proceso: "12/07/2024 16:30", oficina_solicita: "ALAMOR", tipo_tarjeta: "Principal", error_proceso: "ERROR EN INFORMACION DEL TITULAR" },
 
     ]
 
@@ -143,7 +144,7 @@ function Reprocesar(props) {
 
                 <div className="contentTableOrden mt-3 mb-3">
                     <Table headers={headersTarjetas}
-                        indexCheckbox={6}
+                        indexCheckbox={7}
                         isSelectAll={isSelectAll}
                         onChangeCheckBox={seleccionMultiple}
                         multipleOpcion={true}
@@ -155,8 +156,9 @@ function Reprocesar(props) {
                                 <tr key={tarjetaItem.cedula}>
                                     <td>{tarjetaItem.cedula}</td>
                                     <td>{tarjetaItem.nombres}</td>
+                                    <td>{tarjetaItem.fecha_proceso}</td>
                                     <td>{tarjetaItem.tipo_tarjeta}</td>
-                                    <td>{tarjetaItem.tipo_producto}</td>
+                                    <td><Chip type={tarjetaItem.tipo_producto}>{tarjetaItem.tipo_producto}</Chip></td>
                                     <td>{tarjetaItem.oficina_solicita}</td>
                                     <td>{tarjetaItem.error_proceso}</td>
                                     <td>

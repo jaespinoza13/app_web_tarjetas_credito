@@ -40,37 +40,37 @@ function Distribucion(props) {
         {
             fecha_rel: "12/07/2024", num_total_tarjetas: 2, num_tarjetas_error: 3, oficina: "MATRIZ",
             lst_socios: [
-                { cedula: "1150214370", nombres: "DANNY VASQUEZ", solicitud: "1", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLDEN", fecha_proceso_rel: "12/07/2024 22:30", oficina_solicita: "MATRIZ", tipo_tarjeta: "Principal" },
-                { cedula: "0111978465", nombres: "LUIS CONDE", solicitud: "13", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLDEN", fecha_proceso_rel: "12/07/2024 22:30", oficina_solicita: "MATRIZ", tipo_tarjeta: "Principal" },
+                { cedula: "1150214370", nombres: "DANNY VASQUEZ", solicitud: "1", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLD", fecha_proceso: "12/07/2024 22:30", oficina_solicita: "MATRIZ", tipo_tarjeta: "Principal" },
+                { cedula: "0111978465", nombres: "LUIS CONDE", solicitud: "13", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLD", fecha_proceso: "12/07/2024 22:30", oficina_solicita: "MATRIZ", tipo_tarjeta: "Principal" },
 
             ]
         },
         {
             fecha_rel: "12/07/2024", num_total_tarjetas: 1, num_tarjetas_error: 1, oficina: "EL VALLE",
             lst_socios: [
-                { cedula: "1101898147", nombres: "NICOLE ALBAN", solicitud: "2", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "ESTANDAR", fecha_proceso_rel: "12/07/2024 22:30", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
+                { cedula: "1101898147", nombres: "NICOLE ALBAN", solicitud: "2", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "ESTÁNDAR", fecha_proceso: "12/07/2024 22:30", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
             ]
         },
         {
             fecha_rel: "13/07/2024", num_total_tarjetas: 2, num_tarjetas_error: 0, oficina: "ALAMOR",
             lst_socios: [
-                { cedula: "1106849276", nombres: "SAMANTA CARRION", solicitud: "5", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLDEN", fecha_proceso_rel: "13/07/2024 15:35", oficina_solicita: "ALAMOR", tipo_tarjeta: "Principal" },
-                { cedula: "0681486841", nombres: "FULANITO CABRERA", solicitud: "7", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLDEN", fecha_proceso_rel: "13/07/2024 15:35", oficina_solicita: "ALAMOR", tipo_tarjeta: "Principal" },
+                { cedula: "1106849276", nombres: "SAMANTA CARRION", solicitud: "5", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLD", fecha_proceso: "13/07/2024 15:35", oficina_solicita: "ALAMOR", tipo_tarjeta: "Principal" },
+                { cedula: "0681486841", nombres: "FULANITO CABRERA", solicitud: "7", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLD", fecha_proceso: "13/07/2024 15:35", oficina_solicita: "ALAMOR", tipo_tarjeta: "Principal" },
             ]
         },
         {
             fecha_rel: "14/07/2024", num_total_tarjetas: 2, num_tarjetas_error: 0, oficina: "AGENCIA NORTE",
             lst_socios: [
-                { cedula: "1954984972", nombres: "MARTHA PINEDA", solicitud: "9", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "ESTANDAR", fecha_proceso_rel: "14/07/2024 17:30", oficina_solicita: "AGENCIA NORTE", tipo_tarjeta: "Principal" },
-                { cedula: "0981864365", nombres: "PIEDA TOLEDO", solicitud: "10", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLDEN", fecha_proceso_rel: "14/07/2024 17:30", oficina_solicita: "AGENCIA NORTE", tipo_tarjeta: "Principal" },
+                { cedula: "1954984972", nombres: "MARTHA PINEDA", solicitud: "9", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "ESTÁNDAR", fecha_proceso: "14/07/2024 17:30", oficina_solicita: "AGENCIA NORTE", tipo_tarjeta: "Principal" },
+                { cedula: "0981864365", nombres: "PIEDA TOLEDO", solicitud: "10", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLD", fecha_proceso: "14/07/2024 17:30", oficina_solicita: "AGENCIA NORTE", tipo_tarjeta: "Principal" },
             ]
         },
         {
             fecha_rel: "12/07/2024", num_total_tarjetas: 3, num_tarjetas_error: 0, oficina: "AGENCIA CUARTO CENTENARIO",
             lst_socios: [
-                { cedula: "1104732936", nombres: "LEO MONTALVAN", solicitud: "4", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "BLACK", fecha_proceso_rel: "12/07/2024 22:30", oficina_solicita: "AGENCIA CUARTO CENTENARIO", tipo_tarjeta: "Principal" },
-                { cedula: "0515846844", nombres: "LUISA VALDEZ", solicitud: "11", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "ESTANDAR", fecha_proceso_rel: "12/07/2024 16:30", oficina_solicita: "AGENCIA CUARTO CENTENARIO", tipo_tarjeta: "Principal" },
-                { cedula: "0849655446", nombres: "MARIA ORTEGA", solicitud: "12", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLDEN", fecha_proceso_rel: "12/07/2024 16:30", oficina_solicita: "AGENCIA CUARTO CENTENARIOR", tipo_tarjeta: "Principal" },
+                { cedula: "1104732936", nombres: "LEO MONTALVAN", solicitud: "4", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "BLACK", fecha_proceso: "12/07/2024 22:30", oficina_solicita: "AGENCIA CUARTO CENTENARIO", tipo_tarjeta: "Principal" },
+                { cedula: "0515846844", nombres: "LUISA VALDEZ", solicitud: "11", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "ESTÁNDAR", fecha_proceso: "12/07/2024 16:30", oficina_solicita: "AGENCIA CUARTO CENTENARIO", tipo_tarjeta: "Principal" },
+                { cedula: "0849655446", nombres: "MARIA ORTEGA", solicitud: "12", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLD", fecha_proceso: "12/07/2024 16:30", oficina_solicita: "AGENCIA CUARTO CENTENARIOR", tipo_tarjeta: "Principal" },
             ]
         },
     ]

@@ -52,12 +52,12 @@ function Home(props) {
         if (datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES") {
             navigate.push("/reprocesar")
         }
-        else if (datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA") {
+        else if (datosUsuario.length > 0 && (datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA" || datosUsuario[0].strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS")) {
             navigate.push("/seguimiento")
         }
-        else if (datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS") {
+        /*else if (datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS") {
             navigate.push("/entregaTC")
-        } else if (datosUsuario.length > 0) {
+        }*/ else if (datosUsuario.length > 0) {
             navigate.push("/solicitud")
         }
 

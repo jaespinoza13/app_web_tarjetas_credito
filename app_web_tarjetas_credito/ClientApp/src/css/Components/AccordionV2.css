@@ -35,17 +35,21 @@
 
 .accordionV2 {
     position: relative;
+    border: 0.5px solid #E6E6E6; /*#6499E6; /* #6492BF; #84A4CF #6499E6 #68A0F0 #5C87C4 #004CAC #0063E0 #0276CC #016AB8 #015A9C #0170C2 #0275B5*/
+    border-top: 0px;
+    border-radius: 12px 12px 12px 12px;
 }
 
 .accordionV2-header {
-    /*  display: flex; */
     flex-direction: row;
-    width: 100%;
+    /*width: 100%;*/
+    width: 100.35%;
+    margin-left: -2px;
+    margin-bottom: -2px;
     justify-content: space-between;
     border-radius: 7px;
     border: 1px solid #C1CBEA;
     height: 2rem;
-    /*position: relative;*/
     z-index: 20;
     align-items: center;
     cursor: pointer;
