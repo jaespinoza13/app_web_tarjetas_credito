@@ -128,181 +128,183 @@ function Login(props) {
     }
 
     return (
-        <div className="bg_fixed login">
-            {isLogin === 1 ?
-                <ModalAlert
-                    titleAlert={'Login Correcto'}
-                    icon={loginCorrecto ? 'success' : 'danger'}
-                    bodyAlert={msg[0]}
-                    openModal={isLogin === 1}
-                    handlerBtnAceptar={() => { loginCorrecto ? refreshLogin() : setIsLogin(0); }}
-                    handlerBtnCancelar={() => { loginCorrecto ? refreshLogin() : setIsLogin(0); }}
-                    btnAceptar={"Aceptar"}
-                    size={"lg"} />
-                : isLogin === 2 ?
-                    <div>
-                        {!IsNullOrWhiteSpace(textLogin) ?
-                            <ModalAlert
-                                titleAlert={'Login Correcto 2'}
-                                icon={loginCorrecto ? 'success' : 'danger'}
-                                bodyAlert={textLogin}
-                                openModal={!IsNullOrWhiteSpace(textLogin)}
-                                btnAceptar={"Aceptar"}
-                                handlerBtnAceptar={async () => {
-                                    const remitente = localStorage.getItem('remitente');
-                                    const ts = Number(localStorage.getItem('aceptar'));
-                                    const sender = localStorage.getItem('sender');
-                                    let key = generate(navigator.userAgent, ts, get(remitente), get(sender));
-                                    var datosUsuario = await desencriptar(key, getUser().data);
-                                    if (loginCorrecto) {
-                                        datosUsuario.canRedirect = true;
-                                        saveUser({ data: await encriptar(key, JSON.stringify(datosUsuario)) });
-                                        window.location.reload();
-                                    } else {
-                                        setIsLogin(0);
-                                        setTextLogin("");
-                                    }
-                                }}
-                                handlerBtnCancelar={async () => {
-                                    const remitente = localStorage.getItem('remitente');
-                                    const ts = Number(localStorage.getItem('aceptar'));
-                                    const sender = localStorage.getItem('sender');
-                                    let key = generate(navigator.userAgent, ts, get(remitente), get(sender));
-                                    var datosUsuario = await desencriptar(key, getUser().data);
-                                    if (loginCorrecto) {
-                                        datosUsuario.canRedirect = true;
-                                        saveUser({ data: await encriptar(key, JSON.stringify(datosUsuario)) });
-                                        refreshLogin();
-                                    } else {
-                                        setIsLogin(0);
-                                        setTextLogin("");
-                                    }
-                                }}
-                                size={"md"} />
-                            : ""}
-                        <ModalAlert
-                            titleAlert={'Seleccionar Perfil'}
-                            icon={'success'}
-                            openModal={isLogin === 2}
-                            btnAceptar={"Aceptar"}
-                            handlerBtnAceptar={() => {
-                                handleSubmitPerfil(props.token, () => {
-                                    var str = "";
-                                    msg.forEach((el) => {
-                                        str += el + "|";
-                                    });
-                                    saveSession(true);
-                                    setTextLogin(str);
-                                    setLoginCorrecto(true);
-                                }, () => {
-                                    setIsLogin(0); removeSession(); saveSession(false);
-                                }, dispatch);
-                            }}
-                            handlerBtnCancelar={() => { setIsLogin(0); removeSession(); saveSession(false); }}
-                            size={"md"}>
-                            <div className="form_mg__item">
-                                <label htmlFor="selectPerfil" className="pbmg1 lbl-input">Selecciona el perfil con el que deseas ingresar</label>
-                                <select id="selectPerfil" name="selectPerfil" onChange={async (e) => {
-                                    const remitente = localStorage.getItem('remitente');
-                                    const ts = Number(localStorage.getItem('aceptar'));
-                                    const sender = localStorage.getItem('sender');
-                                    let key = generate(navigator.userAgent, ts, get(remitente), get(sender));
-                                    var datosUsuario = await desencriptar(key, getUser().data);
-                                    datosUsuario.id_perfil = Number(e.target.value);
-                                    datosUsuario.nombre_perfil = e.target.selectedOptions[0].innerText;
-                                    datosUsuario.str_sesion = datosUsuario.id_usuario + "" + datosUsuario.id_perfil + "" + ts + "" + datosUsuario.id_persona;
-                                    saveUser({ data: await encriptar(key, JSON.stringify(datosUsuario)) });
-                                }}>
-                                    <option key={0} value={0}>
-                                        Seleccione...
-                                    </option>
-                                    {lst_perfiles.map((perfil) =>
-                                        <option key={perfil.per_id} value={perfil.per_id}>
-                                            {perfil.per_nombre}
-                                        </option>
-                                    )}
-                                </select>
-                            </div>
-                        </ModalAlert>
-                    </div>
-                    : isLogin === 3 ?
-                        <CambiarPassword openModal={openPass}
-                            setOpenModal={() => { setOpenPass(!openPass); removeSession(); refreshLogin(); }} callIn={"LOGIN"} />
-                        : isLogin === 4 ?
-                            <CambiarPass1raVez openModal={openPass1ra} setOpenModal={() => {
-                                setOpenPass1ra(!openPass1ra);
-                                removeSession();
-                                refreshLogin();
-                            }} callIn={"LOGIN"} />
-                            : ''
-            }
-
-            <div className="login_info">
-                <img src="/Imagenes/abejaSaluda.png" alt="abeja saludando" width="232px" />
-                <h2>{toCapitalize(props.nombreSistema)}</h2>
-                <SizedBox height={50} />
-                <img src="/Imagenes/logo.png" alt="logo coopmego" width="133px" />
-            </div>
-            <div className="login_form bg-page shadowIn">
-                <div className="card card_md card-login">
-                    <Collapse in={!isOpen}>
-                        <div className="card_header">
-                            <h2>Inicio de sesión</h2>
-                        </div>
-                        <form className="form_mg" onSubmit={handlerSubmit} autoComplete="off">
-                            <FormGroup>
-                                <InputMego
-                                    type="text"
-                                    name="username"
-                                    id="username"
-                                    label="Usuario"
-                                    textbutton="Olvidé mi usuario"
-                                    onClick={(e) => { e.preventDefault(); setOpenUsuario(true); }}
-                                    value={login}
-                                    change={(e) => { setLogin(e.target.value) }}
-                                />
+        <div className="f-col w-100">
+            <div className="bg_fixed login">
+                {isLogin === 1 ?
+                    <ModalAlert
+                        titleAlert={'Login Correcto'}
+                        icon={loginCorrecto ? 'success' : 'danger'}
+                        bodyAlert={msg[0]}
+                        openModal={isLogin === 1}
+                        handlerBtnAceptar={() => { loginCorrecto ? refreshLogin() : setIsLogin(0); }}
+                        handlerBtnCancelar={() => { loginCorrecto ? refreshLogin() : setIsLogin(0); }}
+                        btnAceptar={"Aceptar"}
+                        size={"lg"} />
+                    : isLogin === 2 ?
+                        <div>
+                            {!IsNullOrWhiteSpace(textLogin) ?
                                 <ModalAlert
-                                    titleAlert={'Olvidé mi usuario'}
-                                    icon={'info'}
-                                    bodyAlert={"Para recuperar su usuario debe comunicarse con el departamento de seguridad de la información (seginformacion@mego.net)"}
-                                    openModal={openUsuario}
-                                    handlerBtnAceptar={() => setOpenUsuario(false)}
-                                    handlerBtnCancelar={() => setOpenUsuario(false)}
+                                    titleAlert={'Login Correcto 2'}
+                                    icon={loginCorrecto ? 'success' : 'danger'}
+                                    bodyAlert={textLogin}
+                                    openModal={!IsNullOrWhiteSpace(textLogin)}
                                     btnAceptar={"Aceptar"}
-                                    size={"xs"} />
-                            </FormGroup>
-                            <FormGroup>
-                                <InputMego
-                                    type="password"
-                                    name="password"
-                                    id="password"
-                                    label="Contraseña"
-                                    textbutton="Olvidé mi contraseña"
-                                    onClick={(e) => { e.preventDefault(); setIsOpen(!isOpen); }}
-                                    value={passOff}
-                                    change={(e) => setPasswordWithOff(password, e.target.value, (pass, passOff) => {
-                                        setPassword(pass);
-                                        setPassOff(passOff);
-                                    })}
-                                    onKeyDown={atajosHandler}
-                                />
-                            </FormGroup>
-                            <FormGroup>
-                                <label>{codigo !== "000" ? msg : '' }</label>
-                            </FormGroup>
-                            <button className="btn_mg btn_mg__primary" style={{ width: "200px" }} disabled={disableBtn}>{disableBtn ? <CircularProgress /> : ""}Continuar</button>
-                            <span className="version-app"><br />{props.dataVersion}</span>
-                        </form>
-                        {progress > 0 && progress < 100 ?
-                            <LinearProgressWithLabel value={progress} />
-                            : ""}
+                                    handlerBtnAceptar={async () => {
+                                        const remitente = localStorage.getItem('remitente');
+                                        const ts = Number(localStorage.getItem('aceptar'));
+                                        const sender = localStorage.getItem('sender');
+                                        let key = generate(navigator.userAgent, ts, get(remitente), get(sender));
+                                        var datosUsuario = await desencriptar(key, getUser().data);
+                                        if (loginCorrecto) {
+                                            datosUsuario.canRedirect = true;
+                                            saveUser({ data: await encriptar(key, JSON.stringify(datosUsuario)) });
+                                            window.location.reload();
+                                        } else {
+                                            setIsLogin(0);
+                                            setTextLogin("");
+                                        }
+                                    }}
+                                    handlerBtnCancelar={async () => {
+                                        const remitente = localStorage.getItem('remitente');
+                                        const ts = Number(localStorage.getItem('aceptar'));
+                                        const sender = localStorage.getItem('sender');
+                                        let key = generate(navigator.userAgent, ts, get(remitente), get(sender));
+                                        var datosUsuario = await desencriptar(key, getUser().data);
+                                        if (loginCorrecto) {
+                                            datosUsuario.canRedirect = true;
+                                            saveUser({ data: await encriptar(key, JSON.stringify(datosUsuario)) });
+                                            refreshLogin();
+                                        } else {
+                                            setIsLogin(0);
+                                            setTextLogin("");
+                                        }
+                                    }}
+                                    size={"md"} />
+                                : ""}
+                            <ModalAlert
+                                titleAlert={'Seleccionar Perfil'}
+                                icon={'success'}
+                                openModal={isLogin === 2}
+                                btnAceptar={"Aceptar"}
+                                handlerBtnAceptar={() => {
+                                    handleSubmitPerfil(props.token, () => {
+                                        var str = "";
+                                        msg.forEach((el) => {
+                                            str += el + "|";
+                                        });
+                                        saveSession(true);
+                                        setTextLogin(str);
+                                        setLoginCorrecto(true);
+                                    }, () => {
+                                        setIsLogin(0); removeSession(); saveSession(false);
+                                    }, dispatch);
+                                }}
+                                handlerBtnCancelar={() => { setIsLogin(0); removeSession(); saveSession(false); }}
+                                size={"md"}>
+                                <div className="form_mg__item">
+                                    <label htmlFor="selectPerfil" className="pbmg1 lbl-input">Selecciona el perfil con el que deseas ingresar</label>
+                                    <select id="selectPerfil" name="selectPerfil" onChange={async (e) => {
+                                        const remitente = localStorage.getItem('remitente');
+                                        const ts = Number(localStorage.getItem('aceptar'));
+                                        const sender = localStorage.getItem('sender');
+                                        let key = generate(navigator.userAgent, ts, get(remitente), get(sender));
+                                        var datosUsuario = await desencriptar(key, getUser().data);
+                                        datosUsuario.id_perfil = Number(e.target.value);
+                                        datosUsuario.nombre_perfil = e.target.selectedOptions[0].innerText;
+                                        datosUsuario.str_sesion = datosUsuario.id_usuario + "" + datosUsuario.id_perfil + "" + ts + "" + datosUsuario.id_persona;
+                                        saveUser({ data: await encriptar(key, JSON.stringify(datosUsuario)) });
+                                    }}>
+                                        <option key={0} value={0}>
+                                            Seleccione...
+                                        </option>
+                                        {lst_perfiles.map((perfil) =>
+                                            <option key={perfil.per_id} value={perfil.per_id}>
+                                                {perfil.per_nombre}
+                                            </option>
+                                        )}
+                                    </select>
+                                </div>
+                            </ModalAlert>
+                        </div>
+                        : isLogin === 3 ?
+                            <CambiarPassword openModal={openPass}
+                                setOpenModal={() => { setOpenPass(!openPass); removeSession(); refreshLogin(); }} callIn={"LOGIN"} />
+                            : isLogin === 4 ?
+                                <CambiarPass1raVez openModal={openPass1ra} setOpenModal={() => {
+                                    setOpenPass1ra(!openPass1ra);
+                                    removeSession();
+                                    refreshLogin();
+                                }} callIn={"LOGIN"} />
+                                : ''
+                }
 
-                    </Collapse>
-                    {isOpen ?
-                        <Collapse in={isOpen}>
-                            <RecuperarPassword openModal={isOpen} setOpenModal={setIsOpen} />
+                <div className="login_info">
+                    <img src="/Imagenes/abejaSaluda.png" alt="abeja saludando" width="232px" />
+                    <h2>{toCapitalize(props.nombreSistema)}</h2>
+                    <SizedBox height={50} />
+                    <img src="/Imagenes/logo.png" alt="logo coopmego" width="133px" />
+                </div>
+                <div className="login_form bg-page shadowIn">
+                    <div className="card card_md card-login">
+                        <Collapse in={!isOpen}>
+                            <div className="card_header">
+                                <h2>Inicio de sesión</h2>
+                            </div>
+                            <form className="form_mg" onSubmit={handlerSubmit} autoComplete="off">
+                                <FormGroup>
+                                    <InputMego
+                                        type="text"
+                                        name="username"
+                                        id="username"
+                                        label="Usuario"
+                                        textbutton="Olvidé mi usuario"
+                                        onClick={(e) => { e.preventDefault(); setOpenUsuario(true); }}
+                                        value={login}
+                                        change={(e) => { setLogin(e.target.value) }}
+                                    />
+                                    <ModalAlert
+                                        titleAlert={'Olvidé mi usuario'}
+                                        icon={'info'}
+                                        bodyAlert={"Para recuperar su usuario debe comunicarse con el departamento de seguridad de la información (seginformacion@mego.net)"}
+                                        openModal={openUsuario}
+                                        handlerBtnAceptar={() => setOpenUsuario(false)}
+                                        handlerBtnCancelar={() => setOpenUsuario(false)}
+                                        btnAceptar={"Aceptar"}
+                                        size={"xs"} />
+                                </FormGroup>
+                                <FormGroup>
+                                    <InputMego
+                                        type="password"
+                                        name="password"
+                                        id="password"
+                                        label="Contraseña"
+                                        textbutton="Olvidé mi contraseña"
+                                        onClick={(e) => { e.preventDefault(); setIsOpen(!isOpen); }}
+                                        value={passOff}
+                                        change={(e) => setPasswordWithOff(password, e.target.value, (pass, passOff) => {
+                                            setPassword(pass);
+                                            setPassOff(passOff);
+                                        })}
+                                        onKeyDown={atajosHandler}
+                                    />
+                                </FormGroup>
+                                <FormGroup>
+                                    <label>{codigo !== "000" ? msg : ''}</label>
+                                </FormGroup>
+                                <button className="btn_mg btn_mg__primary" style={{ width: "200px" }} disabled={disableBtn}>{disableBtn ? <CircularProgress /> : ""}Continuar</button>
+                                <span className="version-app"><br />{props.dataVersion}</span>
+                            </form>
+                            {progress > 0 && progress < 100 ?
+                                <LinearProgressWithLabel value={progress} />
+                                : ""}
+
                         </Collapse>
-                        : ""}
+                        {isOpen ?
+                            <Collapse in={isOpen}>
+                                <RecuperarPassword openModal={isOpen} setOpenModal={setIsOpen} />
+                            </Collapse>
+                            : ""}
+                    </div>
                 </div>
             </div>
         </div>

@@ -74,8 +74,8 @@ export default function OrdenGenerarArchivo(props) {
   
 
     return (
-        <div className="f-row">
-            <Sidebar enlace={props.location.pathname}></Sidebar>
+        <div className="f-row w-100" >
+            {/*<Sidebar enlace={props.location.pathname}></Sidebar>*/}
             <div className="container_mg">
 
 

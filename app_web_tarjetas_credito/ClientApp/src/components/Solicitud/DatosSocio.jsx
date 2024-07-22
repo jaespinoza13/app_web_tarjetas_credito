@@ -123,7 +123,7 @@ const DatosSocio = (props) => {
 
     const getInfoSocio = () => {
         setEstadoLoadingInfoSocio(true);
-        console.log("CEDULA INFOSOCIO", props.informacionSocio.cedula);
+        //console.log("CEDULA INFOSOCIO", props.informacionSocio.cedula);
         fetchInfoSocio(props.informacionSocio.cedula, props.token, (data) => {
             setDirDomicilioSocio([...data.lst_dir_domicilio]);
             setDirTrabajoSocio([...data.lst_dir_trabajo]);

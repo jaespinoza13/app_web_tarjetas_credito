@@ -14,7 +14,6 @@ import AssignmentRoundedIcon from '@mui/icons-material/AssignmentRounded';
 
 function Sidebar(props) {
     const [collapsed, setCollapsed] = useState(false);
-    const [funcionalidades, setFuncionalidades] = useState([]);
     const [perfilUsuario, setPerfilUsuario] = useState("");
     const [nombreUsuario, setNombreUsuario] = useState("");
     const [url, setUrl] = useState("");
@@ -31,6 +30,9 @@ function Sidebar(props) {
 
     useEffect(() => {
         setFuncionalidadActiva(extraerFuncionalPadre(props.enlace));
+    }, [props.enlace])
+
+    useEffect(() => {        
         obtenerConexionesLocales(sessionStorage.getItem("COEXIONSELECTED")).then((data) => {
             setUrl(data);
         });
@@ -58,6 +60,10 @@ function Sidebar(props) {
         setDatosUsuario([{ strCargo: strRol, strOficial: strOficial, strUserOficial: userOficial, strUserOficina: userOficina }]);
     }, [])
 
+    useEffect(() => {
+        console.log(datosUsuario)
+    }, [datosUsuario])
+
     return (
         /*<div className="content">*/
         <div className={`sidebar ${collapsed && 'sidebar_min'}`} id="sidebar">
@@ -68,9 +74,6 @@ function Sidebar(props) {
                 border: "none"
             }}>
                 <div className="sidebar_minimize">
-                    {/*<button className="btn_mg btn_mg__tertiary width_btn_close" id="toggle-sidebar" onClick={toggleSideBar}>*/}
-                    {/*    <img src="Imagenes/menu.png" alt="icono_oculta_menu"></img>*/}
-                    {/*</button>*/}
                     <div className="width_btn_close" id="toggle-sidebar" onClick={toggleSideBar}>
                         <img src="Imagenes/menu.png" alt="icono_oculta_menu" width="40rem" ></img>
                     </div>
@@ -78,47 +81,49 @@ function Sidebar(props) {
 
                 <div className="sidebar_profile">
                     <img src="Imagenes/avatar1.png" alt="" />
-                    {collapsed && <hr />}
+                    {collapsed && <hr style={{ backgroundColor: "#FED400" }} />}
                     <h3 className="tituloUsuario">{nombreUsuario}</h3>
-                    {!collapsed && <hr />}
+                    {!collapsed && <hr style={{ backgroundColor: "#FED400" }} />}
                     <h4 className="perfilUsuario">{perfilUsuario}</h4>
                 </div>
-
             </div>
 
 
             <div className="sidebar_menu">
                 <div className="sidebar_menu__items">
 
-                    <div className="sidebar_menu__item">
-                        <NavItem>
-                            <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'solicitud') ? 'active' : ''}`} to="/solicitud">
-                                <div className="f-row" style={{ width: collapsed ? "25px" : "" }}>
-                                    <HomeRoundedIcon
-                                        sx={{
-                                            fontSize: 26,
-                                            marginLeft: collapsed ? 1.7 : 0.7,
-                                            marginRight: collapsed ? 1.7 : 0.7,
-                                            transition: "0.3s ease",
-                                        }}
-                                    ></HomeRoundedIcon>
-                                    {/*<img src="Imagenes/menu.png" alt="Solicitudes" className="ml-1 mr-3"></img>*/}
-                                    <div className={`tituloItemMenu`}
-                                        style={{
-                                            transform: "translateY(0.1rem)",
-                                            transition: "opacity 0.3s ease",
-                                            display: collapsed ? "none" : "block",
 
-                                        }}>Solicitud</div>
-                                </div>
-                            </NavLink>
-                        </NavItem>
-                    </div>
+                    {perfilUsuario !== "" && (perfilUsuario === "ASESOR DE CRÉDITO" || perfilUsuario === "ANALISTA CREDITO" || perfilUsuario === "JEFE DE UAC" || perfilUsuario === "OPERATIVO DE NEGOCIOS" || perfilUsuario === "DIRECTOR DE NEGOCIOS") &&
+                        <div className="sidebar_menu__item">
+                            <NavItem>
+                                <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'solicitud') ? 'active' : ''}`} to="/solicitud">
+                                    <div className="f-row" style={{ width: collapsed ? "25px" : "" }}>
+                                        <HomeRoundedIcon
+                                            sx={{
+                                                fontSize: 26,
+                                                marginLeft: collapsed ? 1.7 : 0.7,
+                                                marginRight: collapsed ? 1.7 : 0.7,
+                                                transition: "0.3s ease",
+                                            }}
+                                        ></HomeRoundedIcon>
+                                        {/*<img src="Imagenes/menu.png" alt="Solicitudes" className="ml-1 mr-3"></img>*/}
+                                        <div className={`tituloItemMenu`}
+                                            style={{
+                                                transform: "translateY(0.1rem)",
+                                                transition: "opacity 0.3s ease",
+                                                display: collapsed ? "none" : "block",
+
+                                            }}>Solicitud</div>
+                                    </div>
+                                </NavLink>
+                            </NavItem>
+                        </div>
+                    }
 
 
 
 
-                    {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES" &&
+                    {perfilUsuario !== "" && perfilUsuario === "ASISTENTE DE OPERACIONES" &&
 
                         <div className="sidebar_menu__item">
                             <NavItem>
@@ -149,7 +154,7 @@ function Sidebar(props) {
 
 
 
-                    {datosUsuario.length > 0 && (datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES" || datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA" || datosUsuario[0].strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS") &&
+                    {perfilUsuario !== "" && (perfilUsuario === "ASISTENTE DE OPERACIONES" || perfilUsuario === "ASISTENTE DE AGENCIA" || perfilUsuario === "ASISTENTE DE PLATAFORMA DE SERVICIOS") &&
                         <div className="sidebar_menu__item">
                             <NavItem>
                                 <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'seguimiento') ? 'active' : ''}`} to="/seguimiento">

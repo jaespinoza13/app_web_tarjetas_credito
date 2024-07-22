@@ -84,7 +84,7 @@ function Solicitud(props) {
             fetchGetSolicitudes(props.token, (data) => {
                 stLstProspectos(data.prospectos);
                 stLstSolicitudes(data.solicitudes);
-
+               
                 //Aplicacion Paginacion para Solicitudes (predeterminado)
                 setRegistrosPagActual(data.solicitudes.slice(indexOfFirstRecord, indexOfLastRecord));
                 setNumPaginas(Math.ceil(data.solicitudes.length / paginasEnVista))
@@ -222,8 +222,9 @@ function Solicitud(props) {
         return nombreOficina?.agencia ? nombreOficina.agencia : '';
     }
 
-    return (<div className="f-row">
-        <Sidebar enlace={props.location.pathname}></Sidebar>
+    return (
+        <div className="f-row w-100" >
+        {/*<Sidebar enlace={props.location.pathname}></Sidebar>*/}
         
         <div className="container_mg mb-4">
             {permisoNuevaSol && 
