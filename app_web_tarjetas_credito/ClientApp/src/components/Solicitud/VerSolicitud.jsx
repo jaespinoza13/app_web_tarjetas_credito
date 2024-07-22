@@ -148,7 +148,7 @@ const VerSolicitud = (props) => {
                 const arrayDeValores = data.flujo_solicitudes.map(objeto => objeto.int_flujo_id);
                 const valorMaximo = Math.max(...arrayDeValores);
                 const datosSolicitud = data.flujo_solicitudes.find(solFlujo => solFlujo.int_flujo_id === valorMaximo);
-                console.log("FLUJO ",datosSolicitud)
+                //console.log("FLUJO ",datosSolicitud)
                 setFlujoSolId(datosSolicitud.int_flujo_id);
                 setSolicitudTarjeta(...[datosSolicitud]);
                 setMontoAprobado(datosSolicitud.str_cupo_solicitado);
@@ -498,7 +498,6 @@ const VerSolicitud = (props) => {
     const actualizarMonto = () => {
         // Solo se realiza el cambio para solicitud con estado Analista de Crédito
         fetchUpdateCupoSolicitud(props.solicitud.solicitud, flujoSolId, props.solicitud.idSolicitud, nuevoMonto, props.token, (data) => {
-            console.log(data)
             if (data.str_res_codigo === "000") {
                 setModalMonto(false);
                 actualizaInformaFlujoSol();
@@ -563,7 +562,6 @@ const VerSolicitud = (props) => {
 
                         fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, cupoSugeridoAval, datosUsuario[0].strOficial, decision, comentarioCambioEstado, props.token, (data) => {
                             setModalCambioBandeja(false);
-                            console.log("SE GUARDA AL NUEVO ESTADO");
                             navigate.push('/solicitud');
                         }, dispatch)
                     }
@@ -828,8 +826,8 @@ const VerSolicitud = (props) => {
         else if (filasActuales.length < 3) setFilasTextAreaComentarioSol(3);
     }, [comentarioSolicitud])
 
-    return <div className="f-row">
-        <Sidebar enlace={props.location.pathname}></Sidebar>
+    return <div className="f-row w-100" >
+        {/*<Sidebar enlace={props.location.pathname}></Sidebar>*/}
         <Card className={["w-100"]}>
             <Toggler
                 selectedToggle={seleccionAccionSolicitud}

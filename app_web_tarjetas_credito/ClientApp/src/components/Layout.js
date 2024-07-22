@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
-import { Col } from 'reactstrap';
 import { IsNullOrWhiteSpace, validateToken } from '../js/utiles';
 import { setAlertText, setErrorRedirigir } from '../redux/Alert/actions';
 import { fetchGetListaFuncionalidades } from '../redux/Funcionalidades/actions';
@@ -9,6 +8,9 @@ import { fetchGetListaParametros } from '../redux/Parametros/actions';
 import ModalAlert from './Common/Alert';
 import LoadingAlert from './Common/Loading';
 import NavMenu from './Common/Navs/NavMenu';
+import Sidebar from './Common/Navs/Sidebar';
+import { getUser } from 'react-session-persist';
+import { get } from '../js/crypt';
 
 const mapStateToProps = (state) => {
     return {
@@ -28,12 +30,14 @@ function Layout(props) {
     const dispatch = useDispatch();
     const location = useLocation();
     const history = useHistory();
+    const [pathname, setPathname] = useState("");
+    const [mostrarMenu, setMostrarMenu] = useState(false);
 
     const [tstampActual, setTstampActual] = useState(new Date().getTime());
     const [token, setToken] = useState(props.token);
 
     useEffect(() => {
-        setToken(props.token);
+        setToken(props.token);        
     }, [props.token]);
 
     useEffect(() => {
@@ -52,6 +56,21 @@ function Layout(props) {
             dispatch(fetchGetListaFuncionalidades(location.pathname.includes("reporte"), props.token));
         }
     }, [dispatch, location.pathname, props.listaFuncionalidades.length, props.statusLoadParams]);
+
+
+    useEffect(() => {
+        setPathname(location.pathname)
+    }, [location.pathname])
+
+
+    useEffect(() => {
+        const sender = get(localStorage.getItem('sender'));
+        const remitente = get(localStorage.getItem('remitente'));
+        const ts = Number(localStorage.getItem('aceptar'));
+        if (getUser() && remitente && sender) {
+            setMostrarMenu(true);
+        }
+    },[])
 
     return (
         <div onMouseMove={(e) => { setTstampActual(new Date().getTime()); }}>
@@ -86,9 +105,12 @@ function Layout(props) {
                     btnAceptar={"Aceptar"} />
                 : ''}
             <NavMenu id={"header_main"} tstampActual={tstampActual} listaMenus={props.listaMenus} listaUrls={props.listaUrls} />
-            {/*<Col className="widthPrincipal">*/}
+            <div className="f-row w-100">
+                {token !== "" && mostrarMenu === true &&
+                    <Sidebar enlace={pathname}></Sidebar>
+                }
                 {props.children}
-            {/*</Col>*/}
+            </div>
         </div>
     );
 }

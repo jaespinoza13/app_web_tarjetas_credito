@@ -91,8 +91,8 @@ function EntregaSocio(props) {
     }
 
     return (
-        <div className="f-row">
-            <Sidebar enlace={props.location.pathname }></Sidebar>
+        <div className="f-row w-100" >
+            {/*<Sidebar enlace={props.location.pathname}></Sidebar>*/}
             <div className="container_mg">          
 
                 <div className="f-row w-100 mt-5" style={{ display: "flex", justifyContent: "right", paddingRight: "30px" }}>

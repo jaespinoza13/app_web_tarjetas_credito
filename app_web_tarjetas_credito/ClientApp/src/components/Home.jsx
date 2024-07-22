@@ -9,7 +9,7 @@ import { get } from '../js/crypt';
 import Sidebar from "./Common/Navs/Sidebar";
 import { useHistory } from 'react-router-dom';
 
-/*
+
 const mapStateToProps = (state) => {
     //console.log("PROPS STATE," ,state);
     var array = [...state.GetListaMejoras.data];
@@ -27,7 +27,7 @@ const mapStateToProps = (state) => {
         dataFechaActualizacion: get(state.GetParametros.data["fActual"]),
         dataListaMejoras: array
     };
-};*/
+};
 
 function Home(props) {
     //TODO: PENDIENTE DE HACER UNA VALDIACION SI CUENTA CON PERMISOS SINO PRESENTAR ESTA PAG POR DEFECTO
@@ -47,6 +47,7 @@ function Home(props) {
         setDatosUsuario([{ strCargo: strRol, strOficial: strOficial, strUserOficial: userOficial, strUserOficina: userOficina }]);
     }, [])
 
+    
     useEffect(() => {
 
         if (datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES") {
@@ -55,16 +56,11 @@ function Home(props) {
         else if (datosUsuario.length > 0 && (datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA" || datosUsuario[0].strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS")) {
             navigate.push("/seguimiento")
         }
-        /*else if (datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS") {
-            navigate.push("/entregaTC")
-        }*/ else if (datosUsuario.length > 0) {
+         else if (datosUsuario.length > 0) {
             navigate.push("/solicitud")
         }
-
-
-
     }, [datosUsuario])
-
+    
     /*
     useEffect(() => {
         navigate.push("/solicitud")
@@ -101,4 +97,4 @@ function Home(props) {
     );*/
 }
 
-export default Home;//connect(mapStateToProps, {})(Home);
+export default connect(mapStateToProps, {})(Home);

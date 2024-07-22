@@ -548,8 +548,8 @@ const NuevaProspeccion = (props) => {
     }
 
     return (
-        <div className="f-row" >
-            <Sidebar enlace={props.location.pathname}></Sidebar>
+        <div className="f-row w-100" >
+            {/*<Sidebar enlace={props.location.pathname}></Sidebar>*/}
             
             {/*{showAutorizacion.toString()}*/}
             <Card className={["m-max w-100 justify-content-space-between align-content-center"]}>
