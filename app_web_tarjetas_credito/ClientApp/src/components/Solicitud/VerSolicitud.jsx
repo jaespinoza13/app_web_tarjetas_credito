@@ -148,7 +148,7 @@ const VerSolicitud = (props) => {
                 const arrayDeValores = data.flujo_solicitudes.map(objeto => objeto.int_flujo_id);
                 const valorMaximo = Math.max(...arrayDeValores);
                 const datosSolicitud = data.flujo_solicitudes.find(solFlujo => solFlujo.int_flujo_id === valorMaximo);
-                console.log("FLUJO ",datosSolicitud)
+                //console.log("FLUJO ",datosSolicitud)
                 setFlujoSolId(datosSolicitud.int_flujo_id);
                 setSolicitudTarjeta(...[datosSolicitud]);
                 setMontoAprobado(datosSolicitud.str_cupo_solicitado);
