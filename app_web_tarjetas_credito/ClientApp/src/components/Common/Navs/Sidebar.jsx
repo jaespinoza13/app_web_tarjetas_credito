@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+ï»¿import React, { useState, useEffect } from 'react';
 import { getUser } from 'react-session-persist';
 import {
     NavItem,
@@ -19,7 +19,7 @@ function Sidebar(props) {
     const [url, setUrl] = useState("");
 
 
-    //Info sesión
+    //Info sesiÃ³n
     const [datosUsuario, setDatosUsuario] = useState([]);
 
 
@@ -42,7 +42,7 @@ function Sidebar(props) {
             const ts = Number(localStorage.getItem('aceptar'));
             if (getUser() && remitente && sender) {
                 let key = generate(navigator.userAgent, ts, remitente, sender);
-                desencriptar(key, getUser().data).then((datosUsuario) => {
+                desencriptar(key, getUser().data).then((datosUsuario) => {                    
                     setPerfilUsuario((datosUsuario) ? datosUsuario.nombre_perfil : '');
                     setNombreUsuario((datosUsuario) ? datosUsuario.nombre : '');
                 });
@@ -88,12 +88,11 @@ function Sidebar(props) {
                 </div>
             </div>
 
-
             <div className="sidebar_menu">
                 <div className="sidebar_menu__items">
 
-
-                    {perfilUsuario !== "" && (perfilUsuario === "ASESOR DE CRÉDITO" || perfilUsuario === "ANALISTA CREDITO" || perfilUsuario === "JEFE DE UAC" || perfilUsuario === "OPERATIVO DE NEGOCIOS" || perfilUsuario === "DIRECTOR DE NEGOCIOS") &&
+                    {/*Se deja ASESOR DE CRï¿½DITO porque no se reconoce caracter de la tilde*/}
+                    {perfilUsuario !== "" && (perfilUsuario === "ASESOR DE CRÃ‰DITO" || perfilUsuario === "ASESOR DE CRï¿½DITO" ||  perfilUsuario === "ANALISTA CREDITO" || perfilUsuario === "JEFE DE UAC" || perfilUsuario === "OPERATIVO DE NEGOCIOS" || perfilUsuario === "DIRECTOR DE NEGOCIOS") &&
                         <div className="sidebar_menu__item">
                             <NavItem>
                                 <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'solicitud') ? 'active' : ''}`} to="/solicitud">
@@ -257,7 +256,7 @@ function Sidebar(props) {
                     {/*    </div>*/}
                     {/*</div>*/}
                 </div>
-            </div>
+                </div>
         </div>
 
 
