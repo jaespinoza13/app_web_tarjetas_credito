@@ -59,11 +59,11 @@ function Sidebar(props) {
 
         setDatosUsuario([{ strCargo: strRol, strOficial: strOficial, strUserOficial: userOficial, strUserOficina: userOficina }]);
     }, [])
-
+    /*
     useEffect(() => {
         console.log(datosUsuario)
     }, [datosUsuario])
-
+    */
     return (
         /*<div className="content">*/
         <div className={`sidebar ${collapsed && 'sidebar_min'}`} id="sidebar">
