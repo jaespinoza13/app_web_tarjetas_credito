@@ -6,7 +6,7 @@ import { connect, useDispatch } from 'react-redux';
 import Card from '../Common/Card';
 import Button from '../Common/UI/Button';
 import { IsNullOrWhiteSpace } from '../../js/utiles';
-import "../../css/Components/Reprocesar.css";
+import "../../css/Components/Seguimiento.css";
 import AccordionV2 from '../Common/UI/AccordionV2';
 import Input from '../Common/UI/Input';
 import ModalDinamico from '../Common/Modal/ModalDinamico';

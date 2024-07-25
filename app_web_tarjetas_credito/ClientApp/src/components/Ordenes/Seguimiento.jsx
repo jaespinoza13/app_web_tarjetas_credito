@@ -1,13 +1,10 @@
 ﻿import { useState } from 'react';
-import Sidebar from '../Common/Navs/Sidebar';
 import { useHistory } from 'react-router-dom';
 import { useEffect } from 'react';
 import { connect, useDispatch } from 'react-redux';
-import Card from '../Common/Card';
 import Button from '../Common/UI/Button';
 import { IsNullOrWhiteSpace } from '../../js/utiles';
-import "../../css/Components/Reprocesar.css";
-import AccordionV2 from '../Common/UI/AccordionV2';
+import "../../css/Components/Seguimiento.css";
 import Input from '../Common/UI/Input';
 import { Fragment } from 'react';
 import ModalDinamico from '../Common/Modal/ModalDinamico';
@@ -15,6 +12,7 @@ import ComponentItemsOrden from './ComponentItemsOrden';
 import { get } from '../../js/crypt';
 import Table from '../Common/Table';
 import Chip from '../Common/UI/Chip';
+import TogglerV2 from '../Common/UI/TogglerV2';
 
 const mapStateToProps = (state) => {
     var bd = state.GetWebService.data;
@@ -45,6 +43,15 @@ function Seguimiento(props) {
     const [modalEnviarPersonalizacion, setModalEnviarPersonalizacion] = useState(false);
     const [selectFiltrarOrdenes, setSelectFiltrarOrdenes] = useState("PENDIENTE DE PERSONALIZAR");
     const [selectAccionAsistAgencia, setSelectAccionAsistAgencia] = useState("-1");
+
+    const [comboOpcionesSeguimiento, setComboOpcionesSeguimiento] = useState(
+        [
+            { image: "", textPrincipal: `PENDIENTE DE PERSONALIZAR`, textSecundario: "", key: 0 },
+            { image: "", textPrincipal: `PENDIENTE DE VERIFICAR`, textSecundario: "", key: 1 },
+            { image: "", textPrincipal: `PENDIENTE DE DISTRIBUIR`, textSecundario: "", key: 2 },
+        ]);
+
+
 
 
 
@@ -277,10 +284,17 @@ function Seguimiento(props) {
                                     <option value="PENDIENTE DE VERIFICAR">PENDIENTE DE VERIFICAR</option>
                                     <option value="PENDIENTE DE DISTRIBUIR">PENDIENTE DE DISTRIBUIR</option>
                                 </select>
-                               {/* <Button className="btn_mg btn_mg__primary ml-3" disabled={false} type="submit" onClick={filtrarTarjetas}>Buscar</Button>*/}
                             </div>
                         </div>
                     }
+
+                    {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES" &&
+                        <div className="f-row w-100 justify-content-center">
+                            <br /><br />
+                            <TogglerV2 toggles={comboOpcionesSeguimiento} selectedToggle={(e) => console.log(e)}></TogglerV2>
+                        </div>
+                    }
+                    
 
 
                     {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA" &&
@@ -308,6 +322,8 @@ function Seguimiento(props) {
                     {/*</div>*/}
 
                 </div>
+
+              
 
                 <div className="f-row w-100" style={{ display: "flex", justifyContent: "right", paddingRight: "30px" }}>
                     <div className="input-wrapper">
