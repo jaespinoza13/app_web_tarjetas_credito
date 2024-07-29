@@ -2,7 +2,7 @@
 import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import Card from "../Common/Card";
-import { IsNullOrEmpty, IsNullOrWhiteSpace } from "../../js/utiles";
+import { IsNullOrEmpty, IsNullOrWhiteSpace, validarCorreo } from "../../js/utiles";
 import Sidebar from '../Common/Navs/Sidebar';
 import Button from '../Common/UI/Button';
 import { useState, useEffect, useRef } from 'react';
@@ -15,6 +15,8 @@ import FinProceso from '../Solicitud/FinProceso';
 import RegistroCliente from './RegistroCliente';
 import DatosFinancieros from '../Solicitud/DatosFinancieros';
 import Stepper from '../Common/Stepper';
+import $ from 'jquery'; 
+
 
 const mapStateToProps = (state) => {
     var bd = state.GetWebService.data;
@@ -144,9 +146,19 @@ const NuevaProspeccion = (props) => {
     }, [score]);
 
 
+
     useEffect(() => {
         if (step === 0 && documento !== '' && !setCedulaValida) {
+                    
+
+            setNombreSocio("")
+            setApellidoPaterno("")
+            setApellidoMaterno("")
+            setEnteSocio("")
+            setCorreoSocio("")
+            setFechaNacimiento("")
             setEstadoBotonSiguiente(true);
+           
         }
         if (step === 1) {
             setEstadoBotonSiguiente(true);
@@ -158,8 +170,11 @@ const NuevaProspeccion = (props) => {
 
     const validaCamposSocio = () => {  
 
-        if (documento !== "" && nombreSocio !== "" && apellidoPaterno !== "" && apellidoMaterno !== "" && correoSocio !== "" &&
-            (celularSocio !== "" && celularSocio.length > 0 && celularSocio.length === 10)) {
+
+
+        if (documento !== "" && nombreSocio !== "" && apellidoPaterno !== "" && apellidoMaterno !== "" &&
+            (correoSocio !== "" && validarCorreo(correoSocio)) && (celularSocio !== "" && celularSocio.length > 0 && celularSocio.length === 10 &&
+            fechaNacimiento !== "undefined--undefined")) {
             return true;
         }
         return false;
@@ -457,7 +472,6 @@ const NuevaProspeccion = (props) => {
     }
 
     const datosFinancierosHandler = (dato) => {
-        console.log("ACTUALIZACION DT FIN ", dato)
         let datosFinanciero = {
             montoSolicitado: dato.montoSolicitado,
             montoIngresos: dato.montoIngresos,
@@ -539,8 +553,6 @@ const NuevaProspeccion = (props) => {
                 montoRestaGstFinanciero: "",
             }
             setDatosFinancierosObj(datosFinan);
-            console.log(`ingresos, ${data.dcm_total_ingresos}; egresos, ${data.dcm_total_egresos}; `,);
-            console.log("FINAN, ", datosFinan);
 
             anteriorStepHandler();
         }, dispatch);
@@ -628,7 +640,7 @@ const NuevaProspeccion = (props) => {
                 </div>
                 <div id="botones" className="f-row ">
                     <Item xs={2} sm={2} md={2} lg={2} xl={2} className="">
-                        {(step !== 0 || step === -1) &&
+                        {(step !== 0 && step !== -1) &&
                             <Button className={["btn_mgprev mt-2"]} onClick={anteriorStepHandler}>{"Anterior"}</Button>
                         } 
                     </Item>

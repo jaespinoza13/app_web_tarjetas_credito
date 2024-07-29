@@ -95,7 +95,7 @@ function Sidebar(props) {
                     {perfilUsuario !== "" && (perfilUsuario === "ASESOR DE CRÉDITO" || perfilUsuario === "ASESOR DE CR�DITO" ||  perfilUsuario === "ANALISTA CREDITO" || perfilUsuario === "JEFE DE UAC" || perfilUsuario === "OPERATIVO DE NEGOCIOS" || perfilUsuario === "DIRECTOR DE NEGOCIOS") &&
                         <div className="sidebar_menu__item">
                             <NavItem>
-                                <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'solicitud') ? 'active' : ''}`} to="/solicitud">
+                                <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'solicitud' || funcionalidadActiva === 'prospeccion') ? 'active' : ''}`} to="/solicitud">
                                     <div className="f-row" style={{ width: collapsed ? "25px" : "" }}>
                                         <HomeRoundedIcon
                                             sx={{

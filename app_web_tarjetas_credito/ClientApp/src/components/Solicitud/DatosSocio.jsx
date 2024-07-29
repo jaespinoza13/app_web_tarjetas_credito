@@ -8,7 +8,7 @@ import Switch from "../Common/UI/Switch";
 import Toggler from "../Common/UI/Toggler";
 import Textarea from "../Common/UI/Textarea";
 import Button from "../Common/UI/Button";
-import { base64ToBlob, descargarArchivo, generarFechaHoy, verificarPdf } from "../../js/utiles";
+import { base64ToBlob, descargarArchivo, generarFechaHoy, numberFormatMoney, verificarPdf } from "../../js/utiles";
 import { useEffect } from "react";
 
 const DatosSocio = (props) => {
@@ -183,7 +183,9 @@ const DatosSocio = (props) => {
 
 
     useEffect(() => {
-        getInfoSocio();
+        if (props.gestion === 'solicitud') {
+            getInfoSocio();
+        }        
         setComentarioAdicional(props.comentarioAdicionalValor);
     }, [])
 
@@ -201,6 +203,7 @@ const DatosSocio = (props) => {
 
     }
 
+    /* Number(props.score.response.result.capacidadPago[0].cupoSugerido).toLocaleString('en-US') : Number('0.00').toLocaleString('en-US')}`}*/
     return (
         <div className="f-col w-100">
             <div id="montoSugerido" className="f-row w-100 ">
@@ -208,16 +211,23 @@ const DatosSocio = (props) => {
                     <img src="Imagenes/Cupo sugerido.svg" width="10%" alt="Cupo sugerido Aval"></img>
                     <div className="ml-3 datosMonto">
                         <h3 className="blue">Cupo Sugerido Aval:</h3>
-                        <h2 className="strong blue">{`$  
-                        ${props.score?.response?.result?.capacidadPago[0]?.cupoSugerido ? Number(props.score.response.result.capacidadPago[0].cupoSugerido).toLocaleString('en-US') : Number('0.00').toLocaleString('en-US')}`}
+                        <h2 className="strong blue">{`  
+                        ${props.score?.response?.result?.capacidadPago[0]?.cupoSugerido ?
+                            /* Number(props.score.response.result.capacidadPago[0].cupoSugerido).toLocaleString('en-US') : Number('0.00').toLocaleString('en-US')}`}*/
+                                numberFormatMoney(props.score.response.result.capacidadPago[0].cupoSugerido) : "$ 0,00"}`}
                         </h2>
                     </div>
                 </div>
                 <div className="f-row justify-content-center align-content-center">
-                    <img src="Imagenes/Cupo sugerido.svg" width="10%" alt="Cupo sugerido Coopmego"></img>
+                    <img src="Imagenes/Cupo sugerido.svg" width="10%" alt="Cupo sugerido CoopMego"></img>
                     <div className="ml-3 datosMonto">
-                        <h3 className="blue">Cupo Sugerido Coopmego: </h3>
-                        <h2 className="strong blue">{`${props.score.str_cupo_sugerido ? Number(props.score.str_cupo_sugerido).toLocaleString('en-US') : Number('0.00').toLocaleString('en-US')}`}</h2>
+                        <h3 className="blue">Cupo Sugerido CoopMego: </h3>
+                        <h2 className="strong blue">{
+                            `${props.score.str_cupo_sugerido ? numberFormatMoney(props.score.str_cupo_sugerido) : "$ 0,00"}`}
+                            {/*Number(props.score.str_cupo_sugerido).toLocaleString('en-US') : Number('0.00').toLocaleString('en-US')}`*/}
+                            
+
+                        </h2>
                         {/*<h2 className="strong blue">{`${props.score.str_cupo_sugerido_ccopmego ? Number(props.score.str_cupo_sugerido_ccopmego).toLocaleString('en-US') : Number('0.00').toLocaleString('en-US')}`}</h2>*/}
                     </div>
                 </div>
@@ -240,31 +250,37 @@ const DatosSocio = (props) => {
                             <div className="values  mb-3">
                                 <h5>Ingresos</h5>
                                 <h5 className="strong">
-                                    {`$ ${Number(props.informacionSocio.datosFinancieros.montoIngresos)?.toLocaleString("en-US") }`}
+                                {/*    {`$ ${Number(props.informacionSocio.datosFinancieros.montoIngresos)?.toLocaleString("en-US")}`}*/}
+                                    {numberFormatMoney(props.informacionSocio.datosFinancieros.montoIngresos)}
+
                                 </h5>
                             </div>
                             <div className="values  mb-3">
                                 <h5>Egresos</h5>
                                 <h5 className="strong">
-                                    {`$ ${Number(props.informacionSocio.datosFinancieros.montoEgresos)?.toLocaleString("en-US") }`}
+                                    {numberFormatMoney(props.informacionSocio.datosFinancieros.montoEgresos)}
+                                  {/*  {`$ ${Number(props.informacionSocio.datosFinancieros.montoEgresos)?.toLocaleString("en-US") }`}*/}
                                 </h5>
                             </div>
                             <div className="values  mb-3">
                                 <h5>Resta Gasto Financiero</h5>
                                 <h5 className="strong">                                 
-                                    {`$ ${Number(props.informacionSocio.datosFinancieros.montoRestaGstFinanciero)?.toLocaleString("en-US") }`}
+                                    {/*{`$ ${Number(props.informacionSocio.datosFinancieros.montoRestaGstFinanciero)?.toLocaleString("en-US")}`}*/}
+                                    {numberFormatMoney(props.informacionSocio.datosFinancieros.montoRestaGstFinanciero)}
                                 </h5>
                             </div>
                             <div className="values  mb-3">
                                 <h5>Cupo solicitado</h5>
                                 <h5 className="strong">
-                                    {`$ ${(props.informacionSocio.datosFinancieros.montoSolicitado)?.toLocaleString("en-US") }`}
+                                    {numberFormatMoney(props.informacionSocio.datosFinancieros.montoSolicitado)}
+                            {/*        {`$ ${(props.informacionSocio.datosFinancieros.montoSolicitado)?.toLocaleString("en-US") }`}*/}
                                 </h5>
                             </div>
                             <div className="values  mb-3">
                                 <h5>Cupo Sugerido Aval</h5>
                                 <h5 className="strong">
-                                    {`$ ${Number(props.score.response.result.capacidadPago[0].cupoSugerido)?.toLocaleString("en-US") }`}
+                                    {/* {`$ ${Number(props.score.response.result.capacidadPago[0].cupoSugerido)?.toLocaleString("en-US") }`}*/}
+                                    {numberFormatMoney(props.score.response.result.capacidadPago[0].cupoSugerido)}
                                 </h5>
                             </div>
                             <div className="values  mb-3">
@@ -284,15 +300,25 @@ const DatosSocio = (props) => {
                                     <div>
                                         <div className="values">
                                             <h5>Total deuda:</h5>
-                                            <h5 className="strong">$ {Number(deuda.totalDeuda).toLocaleString("en-US")}</h5>
+                                                <h5 className="strong">
+                                                    {/*{Number(deuda.totalDeuda).toLocaleString("en-US")}*/}
+                                                    {numberFormatMoney(deuda.totalDeuda)}
+                                                </h5>
                                         </div>
                                         <div className="values">
                                             <h5>Valor demanda judicial:</h5>
-                                            <h5 className="strong">$ {Number(deuda.valorDemandaJudicial).toLocaleString("en-US")}</h5>
+                                                <h5 className="strong">
+                                                   {/* $ {Number(deuda.valorDemandaJudicial).toLocaleString("en-US")}*/}
+                                                    {numberFormatMoney(deuda.valorDemandaJudicial)} 
+
+                                                </h5>
                                         </div>
                                         <div className="values">
                                             <h5>Valor por vencer:</h5>
-                                            <h5 className="strong">$ {Number(deuda.valorPorVencer).toLocaleString("en-US")}</h5>
+                                                <h5 className="strong">
+                                                   {/* $ {Number(deuda.valorPorVencer).toLocaleString("en-US")}*/}
+                                                    {numberFormatMoney(deuda.valorPorVencer)} 
+                                                </h5>
                                         </div>
                                     </div>
                                 </div>);
@@ -434,13 +460,15 @@ const DatosSocio = (props) => {
                                         <tbody>
                                             {
                                                 ingresos.map((ingreso) => {
-                                                    let valorIngreso = (ingreso.dcm_valor).toLocaleString('en-US',{
-                                                        style: 'currency',
-                                                        currency: 'USD',
-                                                    });
+                                                    //let valorIngreso = (ingreso.dcm_valor).toLocaleString('en-US',{
+                                                    //    style: 'currency',
+                                                    //    currency: 'USD',
+                                                    //});
                                                     return (<tr key={ingreso.int_codigo}>
                                                         <td>{ingreso.str_descripcion}</td>
-                                                        <td>{valorIngreso}</td>
+                                                        <td>
+                                                            {numberFormatMoney(ingreso.dcm_valor)}
+                                                        </td>
                                                     </tr>);
                                                 })
                                             }
@@ -448,10 +476,11 @@ const DatosSocio = (props) => {
                                                 <tr key={998}>
                                                     <td>TOTAL</td>
                                                     <td>
-                                                        {Number(totalIngresos).toLocaleString('en-US', {
-                                                            style: 'currency',
-                                                            currency: 'USD',
-                                                        })}
+                                                        {numberFormatMoney(totalIngresos)}
+                                                        {/*{Number(totalIngresos).toLocaleString('en-US', {*/}
+                                                        {/*    style: 'currency',*/}
+                                                        {/*    currency: 'USD',*/}
+                                                        {/*})}*/}
                                                     </td>
                                                 </tr>
                                             }
@@ -470,13 +499,13 @@ const DatosSocio = (props) => {
                                         <tbody>
                                             {
                                                 egresos.map((egreso) => {
-                                                    let valorEgreso = Number.parseFloat(egreso.dcm_valor).toLocaleString('en-US', {
-                                                        style: 'currency',
-                                                        currency: 'USD',
-                                                    });
+                                                    //let valorEgreso = Number.parseFloat(egreso.dcm_valor).toLocaleString('en-US', {
+                                                    //    style: 'currency',
+                                                    //    currency: 'USD',
+                                                    //});
                                                     return (<tr key={egreso.int_codigo}>
                                                         <td>{egreso.str_descripcion}</td>
-                                                        <td>{valorEgreso}</td>
+                                                        <td>  {numberFormatMoney(egreso.dcm_valor)}</td>
                                                     </tr>);
                                                 })
                                             }
@@ -484,10 +513,11 @@ const DatosSocio = (props) => {
                                                 <tr key={999}>
                                                     <td>TOTAL</td>
                                                     <td>
-                                                        {Number(totalEgresos).toLocaleString('en-US', {
-                                                            style: 'currency',
-                                                            currency: 'USD',
-                                                        })}
+                                                        {numberFormatMoney(totalEgresos)}
+                                                        {/*{Number(totalEgresos).toLocaleString('en-US', {*/}
+                                                        {/*    style: 'currency',*/}
+                                                        {/*    currency: 'USD',*/}
+                                                        {/*})}*/}
                                                     </td>
                                                 </tr>
                                             }
@@ -519,7 +549,7 @@ const DatosSocio = (props) => {
                                                     <td>{credito.str_tipo}</td>
                                                     <td>{credito.int_operacion}</td>
                                                     <td>{credito.str_operacion_cred}</td>
-                                                    <td>{`$ ${credito.dcm_monto_aprobado}`}</td>
+                                                    <td>{numberFormatMoney(credito.dcm_monto_aprobado)}</td>
                                                     <td>{credito.dtt_fecha_vencimiento}</td>
                                                     <td>{credito.dtt_fecha_concesion}</td>
                                                     <td>{credito.int_cuotas_vencidas}</td>
@@ -548,7 +578,7 @@ const DatosSocio = (props) => {
                                                 return (<tr key={valor.int_id_cuenta}>
                                                     <td>{valor.str_num_cuenta}</td>
                                                     <td>{valor.str_tipo_cta}</td>
-                                                    <td>{`$ ${valor.dcm_ahorro}`}</td>
+                                                    <td>{numberFormatMoney(valor.dcm_ahorro)}</td>
                                                     <td>{valor.dtt_fecha_movimiento}</td>
                                                     <td>{valor.str_estado}</td>
                                                 </tr>);

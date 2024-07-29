@@ -4,6 +4,7 @@
 import jwt_decode from "jwt-decode";
 import { getUser } from 'react-session-persist';
 import { desencriptar, encriptar, generate, get, set } from './crypt';
+import { number } from "prop-types";
 
 /**
  * Metodo que transforma el formato ingresado en valores que representan la fecha enviada
@@ -709,6 +710,40 @@ export function conversionBase64(file) {
         }
     })
 }
+
+
+
+export function validarCorreo(correo) {
+    // Expresión regular para validar el formato del correo electrónico
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    let valida = regex.test(correo);
+    return valida;
+}
+
+
+export function numberFormatMoney(numero) {
+    let IsNaNNumero = isNaN(numero);
+    let valor = "$ 0,00";
+    if (IsNaNNumero) {
+        return valor;
+    } else {
+        valor = (numero).toLocaleString('en-US', {
+            style: 'currency',
+            currency: 'USD',
+        });
+        valor = valor.replace('.', '#'); // Reemplaza todos los puntos con un marcador temporal '#'
+        // Luego, reemplazamos las comas decimales por puntos
+        valor = valor.replace(',', '.'); // Reemplaza todas las comas con puntos
+        // Finalmente, reemplazamos el marcador temporal '#' con comas
+        valor = valor.replace('#', ','); // Reemplaza el marcador temporal '#' con comas
+        valor = valor.replace('$', '$ '); 
+
+    }    
+    return valor;
+}
+
+
+
 /*
 export function getBase64(file, cb) {
     let reader = new FileReader();

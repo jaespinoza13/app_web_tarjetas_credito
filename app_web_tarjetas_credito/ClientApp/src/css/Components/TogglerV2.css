@@ -23,7 +23,6 @@
     text-align: center;
     justify-content: center;
     background-color: #F1F6FF;
-    font-size: 1.1em;
     color: black;
 }
 
@@ -40,7 +39,7 @@
 p.textoToggle {
     font-family: "Karbon-Bold", sans-serif;
     font-weight: 700;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     color: #525252
 }
 

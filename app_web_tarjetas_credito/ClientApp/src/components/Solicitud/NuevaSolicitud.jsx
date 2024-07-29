@@ -794,7 +794,7 @@ const NuevaSolicitud = (props) => {
                 </div>
                 <div id="botones" className="f-row ">
                     <Item xs={2} sm={2} md={2} lg={2} xl={2} className="">
-                        {(step !== 0 || step === -1) &&
+                        {(step !== 0 && step !== -1) &&
                             <Button className={["btn_mgprev mt-2"]} onClick={anteriorStepHandler}>{"Anterior"}</Button>
                         }
 

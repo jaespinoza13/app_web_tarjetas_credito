@@ -23,6 +23,7 @@ const mapStateToProps = (state) => {
         ws: bd,
         listaFuncionalidades: state.GetListaFuncionalidades.data,
         token: state.tokenActive.data,
+        parametrosTC: state.GetParametrosTC.data
     };
 };
 
@@ -31,6 +32,9 @@ function Seguimiento(props) {
 
     const navigate = useHistory();
     const dispatch = useDispatch();
+
+    //PARAMETROS REQUERIDOS
+    const [parametrosTC, setParametrosTC] = useState([]); 
 
     const [inputBusqueda, setInputBusqueda] = useState([]);
 
@@ -46,9 +50,15 @@ function Seguimiento(props) {
 
     const [comboOpcionesSeguimiento, setComboOpcionesSeguimiento] = useState(
         [
-            { image: "", textPrincipal: `PENDIENTE DE PERSONALIZAR`, textSecundario: "", key: 0 },
-            { image: "", textPrincipal: `PENDIENTE DE VERIFICAR`, textSecundario: "", key: 1 },
-            { image: "", textPrincipal: `PENDIENTE DE DISTRIBUIR`, textSecundario: "", key: 2 },
+            { image: "", textPrincipal: `PEND. DE PERSONALIZAR`, textSecundario: "", key: 0, nemonico: "PENDIENTE DE PERSONALIZAR" },
+            { image: "", textPrincipal: `PENDIENTE DE VERIFICAR`, textSecundario: "", key: 1, nemonico: "PENDIENTE DE VERIFICAR" },
+            { image: "", textPrincipal: `PENDIENTE DE DISTRIBUIR`, textSecundario: "", key: 2, nemonico: "PENDIENTE DE DISTRIBUIR" },
+        ]);
+
+    const [comboOpcionesSegAsisteAgencia, setComboOpcionesSegAsisteAgencia] = useState(
+        [
+            { image: "", textPrincipal: `RECEPTAR TARJETAS DE CRÉDITO`, textSecundario: "", key: 0 },
+            { image: "", textPrincipal: `ACTIVAR TARJETAS DE CRÉDITO`, textSecundario: "", key: 1 },
         ]);
 
 
@@ -64,6 +74,8 @@ function Seguimiento(props) {
 
     const [textoTitulo, setTextoTitulo] = useState("");
     const [totalTarjetasAccionDiccionario, setTotalTarjetasAccionDiccionario] = useState([])
+
+    const [subMenuOpcionesPerfil, setSubMenuOpcionesPerfil] = useState([]);
 
     useEffect(() => {
         if (selectFiltrarOrdenes === "PENDIENTE DE PERSONALIZAR") {
@@ -90,8 +102,34 @@ function Seguimiento(props) {
         const userOficina = get(localStorage.getItem('office'));
 
         setDatosUsuario([{ strCargo: strRol, strOficial: strOficial, strUserOficial: userOficial, strUserOficina: userOficina }]);
+
+        if (props.parametrosTC.lst_parametros?.length > 0) {
+            let ParametrosTC = props.parametrosTC.lst_parametros;
+            setParametrosTC(ParametrosTC
+                .filter(param => param.str_nombre === 'ESTADOS_ORDENES_TC')
+                .map(estado => ({
+                    prm_id: estado.int_id_parametro,
+                    prm_nombre: estado.str_nombre,
+                    prm_nemonico: estado.str_nemonico,
+                    prm_valor_ini: estado.str_valor_ini,
+                    prm_valor_fin: estado.str_valor_fin
+                })));
+        }
+
+        if (strRol === "ASISTENTE DE AGENCIA") {
+            setSubMenuOpcionesPerfil(comboOpcionesSegAsisteAgencia)
+        } else if (strRol === "ASISTENTE DE OPERACIONES") {
+            setSubMenuOpcionesPerfil(comboOpcionesSeguimiento)
+        }
+
+
     }, [])
 
+    /*
+    useEffect(() => {
+        console.log(parametrosTC)
+    }, [parametrosTC])
+    */
     const ordenesV2 = [
         {
             fecha_rel: "12/07/2024", num_total_tarjetas: 3, num_tarjetas_error: 3, oficina: "MATRIZ", estado: "PENDIENTE DE PERSONALIZAR",
@@ -244,19 +282,28 @@ function Seguimiento(props) {
     }
 
     const filtrarTarjetas = (valorSelect) => {
-        setSelectFiltrarOrdenes(valorSelect);
-        setLstOrdenesFiltradas(ordenesV2.filter(tarjetas => tarjetas.estado === valorSelect));
-        setTotalTarjetasAccionDiccionario([])
+
+        let valor = comboOpcionesSeguimiento.find(opciones => opciones.key === valorSelect);
+        console.log("VALOR ", valor)
+
+        setSelectFiltrarOrdenes(valor.nemonico);
+        setLstOrdenesFiltradas(ordenesV2.filter(tarjetas => tarjetas.estado === valor.nemonico));
+        setTotalTarjetasAccionDiccionario([]);
+
     }
 
     const accionAsistenteAgenciaHandler = (valor) => {
-        setSelectAccionAsistAgencia(valor);
-        if (valor === "RECEPCION_TARJETAS_CREDITO") {
+        let valorParametro = comboOpcionesSegAsisteAgencia.find(opciones => opciones.key === valor);
+
+        console.log("VALOR ASIS AGENCIA ", valorParametro.textPrincipal)
+
+        //setSelectAccionAsistAgencia(valor);
+        if (valorParametro.textPrincipal === "RECEPTAR TARJETAS DE CRÉDIT") {
             setBoolSeccionRecepcionTarjetas(true);
             setBoolSeccionActivacionTarjetas(false);
             setTextBtnAccionAsistenteAgencia("Recibir");
         }
-        else if (valor === "ACTIVAR_TARJETAS_CREDITO") {
+        else if (valorParametro.textPrincipal === "ACTIVAR TARJETAS DE CRÉDITO") {
             setBoolSeccionActivacionTarjetas(true);
             setBoolSeccionRecepcionTarjetas(false);
         }
@@ -275,41 +322,58 @@ function Seguimiento(props) {
                 {/*<h2 className="mt-5 mb-3">{textoTitulo}</h2>*/}
                 <div className='f-row w-100'>
 
-                    {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES" &&
-                        <div className="content-filtro">
-                            <div className="f-row w-100">
-                                <h3 className="strong mr-4">Seleccione el estado que desea revisar:</h3>
-                                <select style={{ width: "350px" }} id="tarjetas_select" name="tarjetas_select" value={selectFiltrarOrdenes} onChange={(e) => filtrarTarjetas(e.target.value)}>
-                                    <option value="PENDIENTE DE PERSONALIZAR">PENDIENTE DE PERSONALIZAR</option>
-                                    <option value="PENDIENTE DE VERIFICAR">PENDIENTE DE VERIFICAR</option>
-                                    <option value="PENDIENTE DE DISTRIBUIR">PENDIENTE DE DISTRIBUIR</option>
-                                </select>
-                            </div>
-                        </div>
-                    }
+                    {/*{datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES" &&*/}
+                    {/*    <div className="content-filtro">*/}
+                    {/*        <div className="f-row w-100">*/}
+                    {/*            <h3 className="strong mr-4">Seleccione el estado que desea revisar:</h3>*/}
+                    {/*            <select style={{ width: "350px" }} id="tarjetas_select" name="tarjetas_select" value={selectFiltrarOrdenes} onChange={(e) => filtrarTarjetas(e.target.value)}>*/}
+                    {/*                <option value="PENDIENTE DE PERSONALIZAR">PENDIENTE DE PERSONALIZAR</option>*/}
+                    {/*                <option value="PENDIENTE DE VERIFICAR">PENDIENTE DE VERIFICAR</option>*/}
+                    {/*                <option value="PENDIENTE DE DISTRIBUIR">PENDIENTE DE DISTRIBUIR</option>*/}
+                    {/*            </select>*/}
+                    {/*        </div>*/}
+                    {/*    </div>*/}
+                    {/*}*/}
 
                     {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES" &&
                         <div className="f-row w-100 justify-content-center">
-                            <br /><br />
-                            <TogglerV2 toggles={comboOpcionesSeguimiento} selectedToggle={(e) => console.log(e)}></TogglerV2>
+                            <div className="mb-4" style={{ marginTop:"2.5rem" }}>
+                                <TogglerV2 toggles={subMenuOpcionesPerfil} selectedToggle={(e) => filtrarTarjetas(e)}></TogglerV2>
+                            </div>
+                            
                         </div>
                     }
                     
 
 
+                    {/*{datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA" &&*/}
+                    {/*    <div className="content-filtro">*/}
+                    {/*        <div className="f-row w-100">*/}
+                    {/*            <h3 className="strong mr-4">Acción a realizar:</h3>*/}
+                    {/*            <select style={{ width: "350px" }} id="tarjetas_selectAsisAgencia" name="tarjetas_selectAsisAgencia" value={selectAccionAsistAgencia} onChange={(e) => accionAsistenteAgenciaHandler(e.target.value)}>*/}
+                    {/*                <option value="-1" disabled={true }>Seleccione una opción</option>*/}
+                    {/*                <option value="RECEPCION_TARJETAS_CREDITO">RECEPTAR TARJETAS DE CRÉDITO</option>*/}
+                    {/*                <option value="ACTIVAR_TARJETAS_CREDITO">ACTIVAR TARJETAS DE CRÉDITO</option>*/}
+                    {/*            </select>*/}
+                    {/*           */}{/* <Button className="btn_mg btn_mg__primary ml-3" disabled={false} type="submit" onClick={accionAsistenteAgenciaHandler}>Buscar</Button>*/}
+                    {/*        </div>*/}
+                    {/*    </div>*/}
+                    {/*}*/}
+
+
+
                     {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA" &&
-                        <div className="content-filtro">
-                            <div className="f-row w-100">
-                                <h3 className="strong mr-4">Acción a realizar:</h3>
-                                <select style={{ width: "350px" }} id="tarjetas_selectAsisAgencia" name="tarjetas_selectAsisAgencia" value={selectAccionAsistAgencia} onChange={(e) => accionAsistenteAgenciaHandler(e.target.value)}>
-                                    <option value="-1" disabled={true }>Seleccione una opción</option>
-                                    <option value="RECEPCION_TARJETAS_CREDITO">RECEPTAR TARJETAS DE CRÉDITO</option>
-                                    <option value="ACTIVAR_TARJETAS_CREDITO">ACTIVAR TARJETAS DE CRÉDITO</option>
-                                </select>
-                               {/* <Button className="btn_mg btn_mg__primary ml-3" disabled={false} type="submit" onClick={accionAsistenteAgenciaHandler}>Buscar</Button>*/}
+
+                      <div className="f-row w-100 justify-content-center">
+                            <div className="mb-4" style={{ marginTop:"2.5rem" }}>
+                                <TogglerV2 toggles={subMenuOpcionesPerfil} selectedToggle={(e) => accionAsistenteAgenciaHandler(e)}></TogglerV2>
                             </div>
+                            
                         </div>
+
                     }
+
+
 
 
                     {/*<div className="m-2" style={{ display: "flex", flexDirection: "column", width: "25%", marginRight: "10px" }}>*/}
@@ -325,7 +389,7 @@ function Seguimiento(props) {
 
               
 
-                <div className="f-row w-100" style={{ display: "flex", justifyContent: "right", paddingRight: "30px" }}>
+                <div className="f-row w-100 mt-3" style={{ display: "flex", justifyContent: "right", paddingRight: "30px" }}>
                     <div className="input-wrapper">
                         <Input className="w-20 ml-1 inputBusqueda" id="buscarOrden" type="text" disabled={false} value={inputBusqueda} setValueHandler={(e) => setInputBusqueda(e)} placeholder={"Buscar"}></Input>
                         <img className="input-icon icon" src="Imagenes/search.svg" alt="Buscar"></img>
