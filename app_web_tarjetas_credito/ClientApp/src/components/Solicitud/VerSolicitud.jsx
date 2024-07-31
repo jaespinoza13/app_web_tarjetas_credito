@@ -1,10 +1,9 @@
 ﻿/* eslint-disable react-hooks/exhaustive-deps */
-import { IsNullOrWhiteSpace, base64ToBlob, descargarArchivo, generarFechaHoy, verificarPdf } from "../../js/utiles";
+import { IsNullOrEmpty, IsNullOrWhiteSpace, base64ToBlob, descargarArchivo, generarFechaHoy, numberFormatMoney, verificarPdf } from "../../js/utiles";
 import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { useEffect, useState } from "react";
 import { fetchGetInforme, fetchGetFlujoSolicitud, fetchAddComentarioAsesor, fetchAddComentarioSolicitud, fetchGetResolucion, fetchAddProcEspecifico, fetchUpdateCupoSolicitud, fetchGetMedioAprobacion, fetchGetSeparadores, fetchInfoSocio, fetchGetMotivos, fetchAddResolucion } from "../../services/RestServices";
-import Sidebar from "../Common/Navs/Sidebar";
 import Card from "../Common/Card";
 import Table from "../Common/Table";
 import Textarea from "../Common/UI/Textarea";
@@ -87,7 +86,7 @@ const VerSolicitud = (props) => {
 
 
     //PARAMETROS REQUERIDOS
-    const [parametrosTC, setParametrosTC] = useState([]); 
+    const [parametrosTC, setParametrosTC] = useState([]);
 
     const [estadosDecisionComite, setEstadosDecisionComite] = useState([]);
     const [estadosDecBanjComiteAll, setEstadosDecBanjComiteAll] = useState([]);
@@ -148,11 +147,17 @@ const VerSolicitud = (props) => {
                 const arrayDeValores = data.flujo_solicitudes.map(objeto => objeto.int_flujo_id);
                 const valorMaximo = Math.max(...arrayDeValores);
                 const datosSolicitud = data.flujo_solicitudes.find(solFlujo => solFlujo.int_flujo_id === valorMaximo);
-                //console.log("FLUJO ",datosSolicitud)
+                console.log("FLUJO ", datosSolicitud)
                 setFlujoSolId(datosSolicitud.int_flujo_id);
                 setSolicitudTarjeta(...[datosSolicitud]);
                 setMontoAprobado(datosSolicitud.str_cupo_solicitado);
                 estadoSolicitud.current = datosSolicitud.str_estado;
+
+                //console.log(datosSolicitud.str_cupo_sugerido_coopmego)
+                console.log(Number(datosSolicitud?.str_cupo_sugerido_coopmego))
+
+                //(datosSolicitud?.str_cupo_sugerido_aval))
+                //console.log(datosSolicitud.str_cupo_sugerido_coopmego) 
             }
         }, dispatch);
 
@@ -218,7 +223,7 @@ const VerSolicitud = (props) => {
                     prm_valor_ini: estado.str_valor_ini
                 })));
 
-            /* ESTADOS SIGUIENTES CUANDO SOLICITUD ESTA EN POR CONFIRMAR SOCIO POR MONTO MENOR APROBADO */
+            /* ESTADOS SIGUIENTES CUANDO SOLICITUD ESTA EN VERIFICAR CLIENTE SOCIO POR MONTO MENOR APROBADO */
             setEstadosSigConfirmPorMontoMenorAll(ParametrosTC
                 .filter(param => param.str_nombre === 'APROBACION_SOLICITUD_MONTO_MENOR')
                 .map(estado => ({
@@ -408,25 +413,21 @@ const VerSolicitud = (props) => {
         //Debe guardar comentario de Resolucion
 
         //TODO VALIDAR QUE DECISION QUEDA 
-        let decisionPasoBandeja = props.solicitud.idSolicitud !== "ANALISIS COMITE" ? "REVISADO" : '-';
+        let decisionPasoBandeja = props.solicitud.idSolicitud !== "POR APROBAR SOLICITUD" ? "REVISADO" : '-';
         fetchAddComentarioSolicitud(props.solicitud.solicitud, comentarioSolicitud, props.solicitud.idSolicitud, false, props.token, (data) => {
-            if (data.str_res_codigo === "000") {            
+            if (data.str_res_codigo === "000") {
+                let cupoResolucion = Number(solicitudTarjeta?.str_cupo_sugerido_coopmego) !== 0 ? parseFloat(solicitudTarjeta?.str_cupo_sugerido_coopmego)
+                    : parseFloat(solicitudTarjeta?.str_cupo_sugerido_aval);
 
-
-                let cupoSugeridoAval = solicitudTarjeta?.str_cupo_sugerido_aval ? parseFloat(solicitudTarjeta?.str_cupo_sugerido_aval) : 0;
-                /*let estadoActualSol = parametrosTC.find(param => param.prm_id === props.solicitud.idSolicitud);
-                console.log("Estado acutla sol", estadoActualSol);
-                let estadoSiguiente = parametrosTC.find(param => param.prm_id === estadoActualSol.prm_valor_fin + 1);
-                console.log("Estado despues sol", estadoSiguiente);*/
-
-                //fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, cupoSugeridoAval, datosUsuario[0].strOficial, estadoSiguiente.prm_valor_ini, observacionComite, props.token, (data) => {
-                fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, cupoSugeridoAval, datosUsuario[0].strOficial, decisionPasoBandeja, comentarioSolicitud, props.token, (data) => {
+                    /* TODO: comentardo temporalmente
+                //let cupoSugeridoAval = solicitudTarjeta?.str_cupo_sugerido_aval ? parseFloat(solicitudTarjeta?.str_cupo_sugerido_aval) : 0;
+                fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, cupoResolucion, datosUsuario[0].strOficial, decisionPasoBandeja, comentarioSolicitud, props.token, (data) => {
                     setModalVisibleOk(true);
                     setTextoModal("Su comentario se ha guardado correctamente");
-                    console.log("ADD RESOL RESP ", data);
                     //navigate.push('/solicitud');
                 }, dispatch)
-
+                */
+                navigate.push('/solicitud');
 
             }
         }, dispatch);
@@ -474,7 +475,7 @@ const VerSolicitud = (props) => {
     const getDecision = (event) => {
         setObservacionComite("");
         setValorDecisionSelect(event.target.value);
-        if (event.target.value === "EST_APROBADA") {// || Number(event.target.value) === 11278) { //APROBADO o POR CONFIRMAR
+        if (event.target.value === "EST_APROBADA") {// || Number(event.target.value) === 11278) { //APROBADO o VERIFICAR CLIENTE
             setIsMontoAprobarse(true);
             setIsRechazaComite(false);
         }
@@ -531,39 +532,44 @@ const VerSolicitud = (props) => {
         let descripcionMotivoRetorno = motivosRegresaAntBandeja.find(motivo => motivo.str_nemonico === selectMotivoRetornoBanj);
         if (selectMotivoRetornoBanj !== undefined) {
             descripcionMotivoRetorno = descripcionMotivoRetorno.str_descripcion
-            let cupoSugeridoAval = solicitudTarjeta?.str_cupo_sugerido_aval ? parseFloat(solicitudTarjeta?.str_cupo_sugerido_aval) : 0;
+            //let cupoSugeridoAval = solicitudTarjeta?.str_cupo_sugerido_aval ? parseFloat(solicitudTarjeta?.str_cupo_sugerido_aval) : 0;
+            let cupoResolucion = Number(solicitudTarjeta?.str_cupo_sugerido_coopmego) !== 0 ? parseFloat(solicitudTarjeta?.str_cupo_sugerido_coopmego)
+                : parseFloat(solicitudTarjeta?.str_cupo_sugerido_aval);
 
-            //Comite retorna a un estado de bandeja especifica para ANALISIS COMITE
-            if (solicitudTarjeta?.str_estado === "ANALISIS COMITE") {
+            //Comite retorna a un estado de bandeja especifica para POR APROBAR SOLICITUD
+            if (solicitudTarjeta?.str_estado === "POR APROBAR SOLICITUD") {
                 //fetchAddProcEspecifico(props.solicitud.solicitud, 0, selectCambioEstadoSol, comentarioCambioEstado, props.token, (data) => {
                 fetchAddProcEspecifico(props.solicitud.solicitud, 0, selectCambioEstadoSol, descripcionMotivoRetorno, props.token, (data) => {
                     if (data.str_res_codigo === "000") {
-                        //TODO: preguntar cual va quedar como principal si cupo Aval o Coopmego
 
+                        /* TODO: comentardo temporalmente
                         //let decision = parametrosTC.find(param => param.prm_nemonico === selectCambioEstadoSol);
                         let decision = 'REVISAR';
-
-                        fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, cupoSugeridoAval, datosUsuario[0].strOficial, decision, comentarioCambioEstado, props.token, (data) => {
+                        fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, cupoResolucion, datosUsuario[0].strOficial, decision, comentarioCambioEstado, props.token, (data) => {
                             setModalCambioBandeja(false);
-                            console.log("SE GUARDA AL NUEVO ESTADO");
                             navigate.push('/solicitud');
                         }, dispatch)
+                        */
+                        navigate.push('/solicitud');
 
                     }
                 }, dispatch)
 
             } else { //Otros perfiles solo retornan a bandeja anterior
-                //fetchAddComentarioSolicitud(props.solicitud.solicitud, comentarioCambioEstado, props.solicitud.idSolicitud, true, props.token, (data) => {
                 //Variable true para retornar bandeja anterior
                 fetchAddComentarioSolicitud(props.solicitud.solicitud, descripcionMotivoRetorno, props.solicitud.idSolicitud, true, props.token, (data) => {
-                    if (data.str_res_codigo === "000") {
-                       
-                        let decision = 'REVISAR';
+                    console.log("RETORNAR sol", data)
+                    if (data.str_res_codigo === "000") {                        
 
-                        fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, cupoSugeridoAval, datosUsuario[0].strOficial, decision, comentarioCambioEstado, props.token, (data) => {
+                        /* TODO: comentardo temporalmente
+                        let decision = 'REVISAR';
+                        fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, cupoResolucion, datosUsuario[0].strOficial, decision, comentarioCambioEstado, props.token, (data) => {
                             setModalCambioBandeja(false);
+
                             navigate.push('/solicitud');
                         }, dispatch)
+                        */
+                        navigate.push('/solicitud');
                     }
                 }, dispatch);
             }
@@ -611,19 +617,19 @@ const VerSolicitud = (props) => {
             setIsBtnResolucionSocio(true);
         }
     }, [selectResolucionSocio, selectMotivoNiegaSocio, comentarioResolucionSocio])
-    
+
 
     useEffect(() => {
 
         if (selectMotivoRetornoBanj !== "" && selectMotivoRetornoBanj !== "-1" && comentarioCambioEstado !== "") {
-            if (solicitudTarjeta?.str_estado === "ANALISIS COMITE" && selectCambioEstadoSol !== "" && selectCambioEstadoSol !== "-1") {
+            if (solicitudTarjeta?.str_estado === "POR APROBAR SOLICITUD" && selectCambioEstadoSol !== "" && selectCambioEstadoSol !== "-1") {
                 setIsBtnDisableCambioBandeja(false);
-            } else if (solicitudTarjeta?.str_estado !== "ANALISIS COMITE") {
+            } else if (solicitudTarjeta?.str_estado !== "POR APROBAR SOLICITUD") {
                 setIsBtnDisableCambioBandeja(false);
             } else {
                 setIsBtnDisableCambioBandeja(true);
             }
-            
+
         } else {
             setIsBtnDisableCambioBandeja(true);
         }
@@ -644,17 +650,21 @@ const VerSolicitud = (props) => {
         let descripcionMotivoRechazoComite = motivosNegacionComite.find(motivo => motivo.str_nemonico === selectMotivoNiegaSolComite);
         if (descripcionMotivoRechazoComite !== undefined) {
             descripcionMotivoRechazoComite = descripcionMotivoRechazoComite.str_descripcion
-            //fetchAddProcEspecifico(props.solicitud.solicitud, 0, "EST_RECHAZADA", "", props.token, (data) => { //EST_RECHAZADA 11277
             fetchAddProcEspecifico(props.solicitud.solicitud, 0, "EST_RECHAZADA", descripcionMotivoRechazoComite, props.token, (data) => { //EST_RECHAZADA 11277
                 if (data.str_res_codigo === "000") {
                     setModalRechazo(false);
 
-                    //TODO: preguntar cual va quedar como principal si cupo Aval o Coopmego
-                    let cupoSugeridoAval = solicitudTarjeta?.str_cupo_sugerido_aval ? parseFloat(solicitudTarjeta?.str_cupo_sugerido_aval) : 0;
+                    //let cupoSugeridoAval = solicitudTarjeta?.str_cupo_sugerido_aval ? parseFloat(solicitudTarjeta?.str_cupo_sugerido_aval) : 0;
+                    let cupoResolucion = Number(solicitudTarjeta?.str_cupo_sugerido_coopmego) !== 0 ? parseFloat(solicitudTarjeta?.str_cupo_sugerido_coopmego)
+                        : parseFloat(solicitudTarjeta?.str_cupo_sugerido_aval);
                     let decision = parametrosTC.find(param => param.prm_nemonico === valorDecisionSelect);
-                    fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, cupoSugeridoAval, datosUsuario[0].strOficial, decision.prm_valor_ini, observacionComite, props.token, (data) => {
+
+                    /* TODO: comentardo temporalmente
+                    fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, cupoResolucion, datosUsuario[0].strOficial, decision.prm_valor_ini, observacionComite, props.token, (data) => {
                         navigate.push('/solicitud');
                     }, dispatch)
+                    */
+                    navigate.push('/solicitud');
                 }
             }, dispatch)
         }
@@ -668,24 +678,26 @@ const VerSolicitud = (props) => {
             return;
         }
 
-        //console.log(`Contr montoAprobado ${montoAprobado} cupo_solicitado ${solicitudTarjeta?.str_cupo_solicitado}`)
-
         /*VALIDACIONES PARA CUANDO ES APROBADA*/
         //Si cupo que se va aprobar es el mismo que el socio solicito
         if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_APROBADA") { //APROBADO
 
             fetchAddProcEspecifico(props.solicitud.solicitud, solicitudTarjeta.str_cupo_solicitado, "EST_APROBADA", observacionComite, props.token, (data) => { //APROBADO 11276
                 if (data.str_res_codigo === "000") {
-                    console.log("SE APROBO SOLICITUD");
 
-                    //TODO: preguntar cual va quedar como principal si cupo Aval o Coopmego
-                    let cupoSugeridoAval = solicitudTarjeta?.str_cupo_sugerido_aval ? parseFloat(solicitudTarjeta?.str_cupo_sugerido_aval) : 0;
+                    //TODO validar que cuando se vaya aprobar, sea por el cupo solicitado por socio
+
+                    //let cupoSugeridoAval = solicitudTarjeta?.str_cupo_sugerido_aval ? parseFloat(solicitudTarjeta?.str_cupo_sugerido_aval) : 0;
+                    let cupoResolucion = Number(solicitudTarjeta?.str_cupo_sugerido_coopmego) !== 0 ? parseFloat(solicitudTarjeta?.str_cupo_sugerido_coopmego)
+                        : parseFloat(solicitudTarjeta?.str_cupo_sugerido_aval);
                     let decision = parametrosTC.find(param => param.prm_nemonico === valorDecisionSelect);
 
-                    fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, cupoSugeridoAval, datosUsuario[0].strOficial, decision.prm_valor_ini, observacionComite, props.token, (data) => {
-                        console.log("ADD RESOL RESP ", data);
+                    /* TODO: comentardo temporalmente
+                    fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, cupoResolucion, datosUsuario[0].strOficial, decision.prm_valor_ini, observacionComite, props.token, (data) => {
                         navigate.push('/solicitud');
                     }, dispatch)
+                    */
+                    navigate.push('/solicitud');
                 }
                 else {
                     console.log("No cuenta con permisos ", data);
@@ -696,17 +708,16 @@ const VerSolicitud = (props) => {
 
         }
         //Si cupo que se va aprobar es menor al que solicita el socio
-        else if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_POR_CONFIRMAR") { //POR CONFIRMAR
-            fetchAddProcEspecifico(props.solicitud.solicitud, Number.parseFloat(montoAprobado).toFixed(2), "EST_POR_CONFIRMAR", observacionComite, props.token, (data) => { //POR CONFIRMAR 11278
+        else if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_POR_CONFIRMAR") { //VERIFICAR CLIENTE
+            fetchAddProcEspecifico(props.solicitud.solicitud, Number.parseFloat(montoAprobado).toFixed(2), "EST_POR_CONFIRMAR", observacionComite, props.token, (data) => { //VERIFICAR CLIENTE 11278
                 if (data.str_res_codigo === "000") {
-                    console.log("SE ENVIA POR CONFIFMAR SOLICITUD");
-
-                    //TODO: preguntar cual va quedar como principal si cupo Aval o Coopmego
+                    /* TODO: comentardo temporalmente
                     let decision = parametrosTC.find(param => param.prm_nemonico === "EST_APROBADA");
                     fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, Number.parseFloat(montoAprobado).toFixed(2), datosUsuario[0].strOficial, decision.prm_valor_ini, observacionComite, props.token, (data) => {
-                        console.log("ADD RESOL RESP ", data);
                         navigate.push('/solicitud');
                     }, dispatch)
+                    */
+                    navigate.push('/solicitud');
                 }
             }, dispatch)
         }
@@ -781,17 +792,19 @@ const VerSolicitud = (props) => {
     const guardarResolucionSocio = () => {
         // ENVIAR EL CUPO APROBADO CUANDO SE ENVIE A APROBAR
         let cupoSugeridoAval = solicitudTarjeta?.str_cupo_sugerido_aval ? parseFloat(solicitudTarjeta?.str_cupo_sugerido_aval) : 0;
-        if (selectResolucionSocio === "EST_APROBADA_SOCIO") {
-            //fetchAddProcEspecifico(props.solicitud.solicitud, solicitudTarjeta.str_cupo_aprobado, "EST_APROBADA_SOCIO", comentarioCambioEstado, props.token, (data) => { //EST_APROBADA_SOCIO 11279
-            fetchAddProcEspecifico(props.solicitud.solicitud, solicitudTarjeta.str_cupo_aprobado, "EST_APROBADA_SOCIO", comentarioResolucionSocio, props.token, (data) => {
+        if (selectResolucionSocio === "EST_APROBADA_CLIENTE") {
+            //fetchAddProcEspecifico(props.solicitud.solicitud, solicitudTarjeta.str_cupo_aprobado, "EST_APROBADA_CLIENTE", comentarioCambioEstado, props.token, (data) => { //EST_APROBADA_CLIENTE 11279
+            fetchAddProcEspecifico(props.solicitud.solicitud, solicitudTarjeta.str_cupo_aprobado, "EST_APROBADA_CLIENTE", comentarioResolucionSocio, props.token, (data) => {
                 if (data.str_res_codigo === "000") {
 
                     //let decision = parametrosTC.find(param => param.prm_nemonico === selectResolucionSocio);
                     let decision = "APROBADA";
-
+                    /* TODO: comentardo temporalmente
                     fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, cupoSugeridoAval, datosUsuario[0].strOficial, decision, comentarioResolucionSocio, props.token, (data) => {
                         navigate.push('/solicitud');
                     }, dispatch)
+                    */
+                    navigate.push('/solicitud');
 
 
                 }
@@ -806,12 +819,15 @@ const VerSolicitud = (props) => {
                     if (data.str_res_codigo === "000") {
 
                         //let decision = parametrosTC.find(param => param.prm_nemonico === selectResolucionSocio);
-                        //TODO: revisar la decision q se va a colocar
+
+                        /* TODO: comentardo temporalmente
                         let decision = "RECHAZA SOCIO"
                         fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, cupoSugeridoAval, datosUsuario[0].strOficial, decision, comentarioResolucionSocio, props.token, (data) => {
 
                             navigate.push('/solicitud');
                         }, dispatch)
+                        */
+                        navigate.push('/solicitud');
 
                     }
                 }, dispatch)
@@ -832,10 +848,10 @@ const VerSolicitud = (props) => {
             <Toggler
                 selectedToggle={seleccionAccionSolicitud}
                 toggles={accionesSolicitud}
-                toggleReset={toggleResetIndex}                
+                toggleReset={toggleResetIndex}
             >
             </Toggler>
-            
+
             {
                 accionSeleccionada === 1 &&
                 <>
@@ -894,27 +910,31 @@ const VerSolicitud = (props) => {
                                             <div className="values  mb-3">
                                                 <h5>Cupo solicitado:</h5>
                                                 <h5 className="strong f-row">
-                                                    {`$ ${Number(solicitudTarjeta?.str_cupo_solicitado).toLocaleString("en-US") || Number('0.00').toLocaleString("en-US")}`}
+                                                   {/* {`$ ${Number(solicitudTarjeta?.str_cupo_solicitado).toLocaleString("en-US") || Number('0.00').toLocaleString("en-US")}`}*/}
+                                                    {numberFormatMoney(solicitudTarjeta?.str_cupo_solicitado)}
                                                 </h5>
                                             </div>
                                             <div className="values  mb-3">
                                                 <h5>Cupo sugerido Aval:</h5>
                                                 <h5 className="strong">
-                                                    {`$ ${Number(solicitudTarjeta?.str_cupo_sugerido_aval).toLocaleString("en-US") || Number('0.00').toLocaleString("en-US")}`}
+                                                   {/* {`$ ${Number(solicitudTarjeta?.str_cupo_sugerido_aval).toLocaleString("en-US") || Number('0.00').toLocaleString("en-US")}`}*/}
+                                                    {numberFormatMoney(solicitudTarjeta?.str_cupo_sugerido_aval)}
                                                 </h5>
                                             </div>
 
                                             <div className="values  mb-3">
-                                                <h5>Cupo sugerido Coopmego:</h5>
+                                                <h5>Cupo sugerido CoopMego:</h5>
                                                 <h5 className="strong">
-                                                    {`$ ${Number(solicitudTarjeta?.str_cupo_sugerido_coopmego).toLocaleString("en-US") || Number('0.00').toLocaleString("en-US")}`}
+                                                    {/*{`$ ${Number(solicitudTarjeta?.str_cupo_sugerido_coopmego).toLocaleString("en-US") || Number('0.00').toLocaleString("en-US")}`}*/}
+                                                    {numberFormatMoney(solicitudTarjeta?.str_cupo_sugerido_coopmego)}
                                                 </h5>
                                             </div>
 
                                             <div className="values  mb-3">
                                                 <h5>Cupo aprobado:</h5>
                                                 <h5 className="strong">
-                                                    {`$ ${Number(solicitudTarjeta?.str_cupo_aprobado).toLocaleString("en-US") || Number('0.00').toLocaleString("en-US")}`}
+                                                    {/*{`$ ${Number(solicitudTarjeta?.str_cupo_aprobado).toLocaleString("en-US") || Number('0.00').toLocaleString("en-US")}`}*/}
+                                                    {numberFormatMoney(solicitudTarjeta?.str_cupo_aprobado)}                                                   
                                                 </h5>
                                             </div>
                                         </Item>
@@ -974,8 +994,9 @@ const VerSolicitud = (props) => {
 
                                                 <h5>Cupo solicitado:</h5>
                                                 <h5 className="strong f-row">
-                                                    {`$ ${solicitudTarjeta?.str_cupo_solicitado || Number('0.00').toLocaleString("en-US")}`}
-                                                    {solicitudTarjeta?.str_estado === "SOLICITUD CREADA" &&
+                                                    {/*{`$ ${solicitudTarjeta?.str_cupo_solicitado || Number('0.00').toLocaleString("en-US")}`}*/}
+                                                    {numberFormatMoney(solicitudTarjeta?.str_cupo_solicitado)}
+                                                    {solicitudTarjeta?.str_estado === "CREADA" &&
                                                         <Button className="btn_mg__auto ml-2" onClick={updateMonto}>
                                                             <img src="/Imagenes/edit.svg" alt="Editar cupo"></img>
                                                         </Button>
@@ -985,21 +1006,24 @@ const VerSolicitud = (props) => {
                                             <div className="values  mb-3">
                                                 <h5>Cupo sugerido Aval:</h5>
                                                 <h5 className="strong">
-                                                    {`$ ${Number(solicitudTarjeta?.str_cupo_sugerido_aval).toLocaleString("en-US") || Number('0.00').toLocaleString("en-US")}`}
+                                                    {/*{`$ ${Number(solicitudTarjeta?.str_cupo_sugerido_aval).toLocaleString("en-US") || Number('0.00').toLocaleString("en-US")}`}*/}
+                                                    {numberFormatMoney(solicitudTarjeta?.str_cupo_sugerido_aval)}
                                                 </h5>
                                             </div>
 
                                             <div className="values  mb-3">
-                                                <h5>Cupo sugerido Coopmego:</h5>
+                                                <h5>Cupo sugerido CoopMego:</h5>
                                                 <h5 className="strong">
-                                                    {`$ ${Number(solicitudTarjeta?.str_cupo_sugerido_coopmego).toLocaleString("en-US") || Number('0.00').toLocaleString("en-US")}`}
+                                                    {/*{`$ ${Number(solicitudTarjeta?.str_cupo_sugerido_coopmego).toLocaleString("en-US") || Number('0.00').toLocaleString("en-US")}`}*/}
+                                                    {numberFormatMoney(solicitudTarjeta?.str_cupo_sugerido_coopmego)}
                                                 </h5>
                                             </div>
 
                                             <div className="values  mb-3">
                                                 <h5>Cupo aprobado:</h5>
                                                 <h5 className="strong">
-                                                    {`$ ${Number(solicitudTarjeta?.str_cupo_aprobado).toLocaleString("en-US") || Number('0.00').toLocaleString("en-US")}`}
+                                                    {/*{`$ ${Number(solicitudTarjeta?.str_cupo_aprobado).toLocaleString("en-US") || Number('0.00').toLocaleString("en-US")}`}*/}
+                                                    {numberFormatMoney(solicitudTarjeta?.str_cupo_aprobado)}
                                                 </h5>
                                             </div>
                                         </Item>
@@ -1012,7 +1036,7 @@ const VerSolicitud = (props) => {
                                             {permisoAccionAnalisis3Cs.includes(solicitudTarjeta?.str_estado) &&
                                                 <Button className="btn_mg__primary" onClick={modalHandler}>Análisis 3C's</Button>
                                             }
-                                                                                        
+
                                             {permisoImprimirMedio.includes(solicitudTarjeta?.str_estado) &&
                                                 <Button className="btn_mg__primary ml-2" onClick={() => descargarMedio(props.solicitud.solicitud)}>Imprimir medio aprobación</Button>
                                             }
@@ -1021,7 +1045,7 @@ const VerSolicitud = (props) => {
                                                 <Button className="btn_mg__primary ml-2" onClick={openModalCambiarBandeja}>Retornar Solicitud</Button>
                                             }
 
-                                            {/*POR CONFIRMAR*/}
+                                            {/*VERIFICAR CLIENTE*/}
                                             {solicitudTarjeta?.str_estado === estadosSigConfirmPorMontoMenorAll[0]?.prm_valor_ini &&
                                                 <>
                                                     <div className="values ml-1 mb-3">
@@ -1032,40 +1056,49 @@ const VerSolicitud = (props) => {
                                         </div>
                                         <Table headers={headerTableResoluciones}>
                                             {
-                                                resoluciones.map((resolucion, index) => {
-                                                    const fecha = new Date(resolucion?.dtt_fecha_actualizacion);
-                                                    const opciones = {
-                                                        hour: "2-digit",
-                                                        minute: "2-digit",
-                                                        second: "2-digit"
-                                                    };
-                                                    return (
-                                                        <tr key={resolucion.int_rss_id}>
-                                                            <td>{resolucion.str_usuario_proc}</td>
-                                                            <td> {(fecha.toLocaleDateString('en-US', opciones))}</td>
-                                                            <td> {resolucion.str_decision_solicitud}</td>
-                                                            <td style={{ width: "60%", justifyContent: "left" }} id={index}>
-                                                                <div style={{ display: "ruby" }}>
-                                                                    {trimed[index] ?
-                                                                        <div>
-                                                                            {`${resolucion?.str_comentario_proceso}`}
-                                                                        </div>
-                                                                        :
-                                                                        <div>
-                                                                            {`${resolucion?.str_comentario_proceso.substring(0, 40)}`}
-                                                                        </div>
-                                                                    }
-                                                                    {resolucion?.str_comentario_proceso.length > 36 && <a className='see-more' onClick={() => { verMas(index) }}>{trimed[index] ? " Ver menos..." : " Ver mas..."}</a>}
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    );
-                                                })
+                                                resoluciones.length > 0 ?
+
+                                                    resoluciones.map((resolucion, index) => {
+                                                        const fecha = new Date(resolucion?.dtt_fecha_actualizacion);
+                                                        const opciones = {
+                                                            hour: "2-digit",
+                                                            minute: "2-digit",
+                                                            second: "2-digit"
+                                                        };
+                                                        return (
+                                                            <tr key={resolucion.int_rss_id}>
+                                                                <td>{resolucion.str_usuario_proc}</td>
+                                                                <td> {(fecha.toLocaleDateString('en-US', opciones))}</td>
+                                                                <td> {resolucion.str_decision_solicitud}</td>
+                                                                <td style={{ width: "60%", justifyContent: "left" }} id={index}>
+                                                                    <div style={{ display: "ruby" }}>
+                                                                        {trimed[index] ?
+                                                                            <div>
+                                                                                {`${resolucion?.str_comentario_proceso}`}
+                                                                            </div>
+                                                                            :
+                                                                            <div>
+                                                                                {`${resolucion?.str_comentario_proceso.substring(0, 40)}`}
+                                                                            </div>
+                                                                        }
+                                                                        {resolucion?.str_comentario_proceso.length > 36 && <a className='see-more' onClick={() => { verMas(index) }}>{trimed[index] ? " Ver menos..." : " Ver mas..."}</a>}
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        );
+                                                    }) :
+                                                    <tr>
+                                                        <td colSpan="4" style={{ textAlign: 'center' }}>
+                                                            Sin datos para mostrar
+                                                        </td>
+                                                    </tr>
+
+
                                             }
                                         </Table>
 
-                                        {/*SECCION APROBAR O NEGAR POR ANALISIS COMITE*/}
-                                        {solicitudTarjeta?.str_estado === "ANALISIS COMITE" &&
+                                        {/*SECCION APROBAR O NEGAR POR POR APROBAR SOLICITUD*/}
+                                        {solicitudTarjeta?.str_estado === "POR APROBAR SOLICITUD" &&
                                             <Card>
                                                 <h3>Decisión</h3>
                                                 <select disabled={isDecisionHabilitada} onChange={getDecision} value={valorDecisionSelect}>
@@ -1083,7 +1116,7 @@ const VerSolicitud = (props) => {
                                                             else {
                                                                 return (
                                                                     <Fragment key={index} >
-                                                                    <option value={resultado.prm_nemonico}> {resultado.prm_valor_ini}</option>
+                                                                        <option value={resultado.prm_nemonico}> {resultado.prm_valor_ini}</option>
                                                                     </Fragment>
                                                                 )
                                                             }
@@ -1142,20 +1175,20 @@ const VerSolicitud = (props) => {
                                     </Card>
 
                                     {/*CAMPO GENERICO PARA DEJAR COMENTARIO Y PASAR A LA SIGUIENTE BANDEJA*/}
-                                    {(solicitudTarjeta?.str_estado !== 'ANALISIS COMITE' && solicitudTarjeta?.str_estado !== 'POR CONFIRMAR') &&
+                                    {(solicitudTarjeta?.str_estado !== 'POR APROBAR SOLICITUD' && solicitudTarjeta?.str_estado !== 'VERIFICAR CLIENTE') &&
                                         <div className="mt-4">
                                             <h3 className="mb-3 strong">Observaciones</h3>
-                                            <Textarea placeholder="Ingrese su comentario" onChange={setComentarioSolicitudHandler} esRequerido={true} value={comentarioSolicitud} rows={filasTextAreaComentarioSol }></Textarea>
+                                            <Textarea placeholder="Ingrese su comentario" onChange={setComentarioSolicitudHandler} esRequerido={true} value={comentarioSolicitud} rows={filasTextAreaComentarioSol}></Textarea>
                                         </div>
                                     }
                                 </div>
 
                                 <div className="mt-2 f-row justify-content-center">
-                                    {/*APROBADA O NEGADA POR COMITE ( 11275 EST_ANALISIS_COMITE) */}
-                                    {(solicitudTarjeta?.str_estado === "ANALISIS COMITE") &&
+                                    {/*APROBADA O NEGADA POR COMITE ( 11275 EST_POR_APROBAR) */}
+                                    {(solicitudTarjeta?.str_estado === "POR APROBAR SOLICITUD") &&
                                         <Button className="btn_mg__primary" disabled={isActivoBtnDecision} onClick={guardarDecisionComiteHandler}>Enviar</Button>
                                     }
-                                    {(solicitudTarjeta?.str_estado !== 'ANALISIS COMITE' && solicitudTarjeta?.str_estado !== 'POR CONFIRMAR') &&
+                                    {(solicitudTarjeta?.str_estado !== 'POR APROBAR SOLICITUD' && solicitudTarjeta?.str_estado !== 'VERIFICAR CLIENTE') &&
                                         <Button className="btn_mg__primary" disabled={faltaComentariosAsesor} onClick={guardarComentarioSiguiente}>Enviar</Button>
                                     }
                                 </div>
@@ -1183,7 +1216,7 @@ const VerSolicitud = (props) => {
                             estadoSolicitud={props.solicitud.estado}
                             cupoSolicitado={solicitudTarjeta?.str_cupo_solicitado}
                             oficialSolicitud={solicitudTarjeta?.str_usuario_proc}
-                            calificacionRiesgo={props.solicitud.calificacionRiesgo }
+                            calificacionRiesgo={props.solicitud.calificacionRiesgo}
                         ></UploadDocumentos>
                     </div>
                 </Card>
@@ -1279,7 +1312,7 @@ const VerSolicitud = (props) => {
                             else {
                                 return (
                                     <Fragment key={index}>
-                                    <option value={resultado.prm_nemonico}> {resultado.prm_valor_ini}</option>
+                                        <option value={resultado.prm_nemonico}> {resultado.prm_valor_ini}</option>
                                     </Fragment>
                                 )
                             }
@@ -1287,7 +1320,7 @@ const VerSolicitud = (props) => {
 
 
                 </select>
-                
+
                 {(selectResolucionSocio === "EST_RECHAZADA") &&
                     <>
                         <h3 className="mt-2">Seleccione el motivo:</h3>
@@ -1305,7 +1338,7 @@ const VerSolicitud = (props) => {
                                     else {
                                         return (
                                             <Fragment key={index}>
-                                            <option value={motivo.str_nemonico}> {motivo.str_descripcion}</option>
+                                                <option value={motivo.str_nemonico}> {motivo.str_descripcion}</option>
                                             </Fragment>
                                         )
                                     }
@@ -1347,7 +1380,7 @@ const VerSolicitud = (props) => {
         >
             {modalCambioBandeja && <div>
 
-                {solicitudTarjeta?.str_estado === "ANALISIS COMITE" &&
+                {solicitudTarjeta?.str_estado === "POR APROBAR SOLICITUD" &&
                     <>
                         <h3 className="mt-4 mb-1">Seleccione a qué estado desea regresar la solicitud:</h3>
 
@@ -1376,13 +1409,13 @@ const VerSolicitud = (props) => {
                 }
                 <br />
                 <div>
-                    <h3 className={`${solicitudTarjeta?.str_estado === "ANALISIS COMITE" ? 'mt-4 mb-1' : 'mt-1 mb-1'}`}>Seleccione el motivo:</h3>
+                    <h3 className={`${solicitudTarjeta?.str_estado === "POR APROBAR SOLICITUD" ? 'mt-4 mb-1' : 'mt-1 mb-1'}`}>Seleccione el motivo:</h3>
                     <select className='w-100' onChange={cambioMotivoRetornoBandeja} value={selectMotivoRetornoBanj}>
                         {motivosRegresaAntBandeja.length > 0
                             && motivosRegresaAntBandeja?.map((motivo, index) => {
                                 if (index === 0) {
                                     return (
-                                        <Fragment key={index }>
+                                        <Fragment key={index}>
                                             <option disabled={true} value={"-1"}>Seleccione una opción</option>
                                             <option value={motivo.str_nemonico}> {motivo.str_descripcion}</option>
                                         </Fragment>
@@ -1399,7 +1432,7 @@ const VerSolicitud = (props) => {
                     </select>
 
 
-                </div>                
+                </div>
                 <div>
                     <h3 className="mt-2 mb-2">Observación: </h3>
                     <Input className="w-100" type="text" value={comentarioCambioEstado} placeholder="Ingrese comentario" setValueHandler={setComentarioCambioEstado}></Input>

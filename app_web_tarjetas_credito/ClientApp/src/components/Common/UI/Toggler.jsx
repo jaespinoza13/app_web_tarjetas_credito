@@ -17,6 +17,7 @@ const Toggler = (props) => {
         }*/
         //console.log(props.toggles)
         setActiveIndex(props.toggles[0].key);
+        togglerHandler(props.toggles[0].key); //Se agrega para primera iteracion, retorne valor por defecto
     }, []);
 
     useEffect(() => {

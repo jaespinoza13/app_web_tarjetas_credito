@@ -1,0 +1,66 @@
+﻿
+.togglerv2 {
+    height: 2.5rem;
+    padding: 0.4rem 1rem;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 0.5rem;
+}
+
+    .togglerv2.f-col {
+        height: auto;
+    }
+
+        .togglerv2.f-col > .btn_mg__togglerv2 {
+            width: 100%;
+        }
+
+.btn_mg__togglerv2 {
+    padding: 0.3rem 0.5rem;
+    border: 1px solid rgba(9, 57, 208, 0.2);
+    min-width: 15.5rem;
+    min-height: 2.2rem;
+    text-align: center;
+    justify-content: center;
+    background-color: #F1F6FF;
+    color: black;
+}
+
+    .btn_mg__togglerv2.active {
+        background-color: #D0E1FF;
+        border: 1px solid #ABC1F1;
+        box-shadow: 0px 0px 6px rgba(7, 255, 214, 0.168627451);
+    }
+
+.text-togglerv2 > * {
+    text-overflow: ellipsis;
+}
+
+p.textoToggle {
+    font-family: "Karbon-Bold", sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #525252
+}
+
+
+.inicialBotton {
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+.middBotton {
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+.endBotton {
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+}

@@ -39,6 +39,7 @@ using Domain.Models.TarjetaCredito.GetReporteAval;
 using Domain.Models.TarjetaCredito.GetAlertasCliente;
 using Domain.Models.TarjetaCredito.GetMotivos;
 using Domain.Models.TarjetaCredito.GetOficinas;
+using Domain.Models.TarjetaCredito.GetInformacionProspecto;
 
 namespace plantilla_app_web.Controllers
 {
@@ -376,6 +377,17 @@ namespace plantilla_app_web.Controllers
             ResGetOficinas res = tarjetaCreditoDat.getOficinas(req);
             return Utiles.crypt(res, Request.Headers);
         }
+
+        [Route("getInfoProspecto")]
+        [ServiceFilter(typeof(CryptoFilter))]
+        [HttpPost]
+        public ResCrypt Post(ReqGetInfoProspectos req)
+        {
+            ResGetInfoProspectos res = tarjetaCreditoDat.getInfoProspecto(req);
+            return Utiles.crypt(res, Request.Headers);
+        }
+
+
 
     }
 }

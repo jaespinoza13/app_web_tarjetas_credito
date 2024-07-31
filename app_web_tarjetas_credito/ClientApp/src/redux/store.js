@@ -15,6 +15,7 @@ import { tokenActive } from "./Token/reducers"
 import { solicitud } from "./Solicitud/reducers"
 import { GetParametrosSistema } from "./ParametrosSistema/reducers"
 import { GetParametrosTC } from "./ParametrosTC/reducers"
+import { prospecto } from "./Prospecto/reducers"
 
 const Reducers = combineReducers({
     GetParametros,
@@ -29,7 +30,8 @@ const Reducers = combineReducers({
     ListaBasesMongoDb,
     solicitud,
     GetParametrosSistema, 
-    GetParametrosTC
+    GetParametrosTC,
+    prospecto
 });
 
 export const store = createStore(

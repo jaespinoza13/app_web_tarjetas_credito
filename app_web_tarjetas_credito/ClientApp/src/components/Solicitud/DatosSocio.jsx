@@ -1,56 +1,30 @@
 ﻿import "../../css/Components/DatosSocio.css";
 import Accordion from "../Common/UI/Accordion";
 import { Fragment, useState } from "react";
-import { useDispatch } from 'react-redux';
+import { useDispatch, connect } from 'react-redux';
 import Item from "../Common/UI/Item";
 import { fetchInfoSocio, fetchInfoEconomica, fetchGetInfoFinan, fetchReporteAval } from "../../services/RestServices";
 import Switch from "../Common/UI/Switch";
 import Toggler from "../Common/UI/Toggler";
 import Textarea from "../Common/UI/Textarea";
 import Button from "../Common/UI/Button";
-import { base64ToBlob, descargarArchivo, generarFechaHoy, verificarPdf } from "../../js/utiles";
+import { IsNullOrWhiteSpace, base64ToBlob, descargarArchivo, generarFechaHoy, numberFormatMoney, verificarPdf } from "../../js/utiles";
 import { useEffect } from "react";
+
+const mapStateToProps = (state) => {
+    var bd = state.GetWebService.data;
+    if (IsNullOrWhiteSpace(bd) || Array.isArray(state.GetWebService.data)) {
+        bd = sessionStorage.getItem("WSSELECTED");
+    }
+    return {
+        token: state.tokenActive.data,
+        parametrosTC: state.GetParametrosTC.data
+    };
+};
 
 const DatosSocio = (props) => {
     const dispatch = useDispatch();
 
-    const comentarioNegacion = [
-        {
-            prm_id: 1,
-            prm_valor_ini: "Solicitará en otra IFI"
-        },
-        {
-            prm_id: 2,
-            prm_valor_ini: "Monto muy bajo"
-        },
-        {
-            prm_id: 3,
-            prm_valor_ini: "No desea por el momento"
-        },
-        {
-            prm_id: 4,
-            prm_valor_ini: "Regresará con la documentación"
-        }
-    ];
-
-    const comentarioAfirmacion = [
-        {
-            prm_id: 5,
-            prm_valor_ini: "En trámite de ser socio"
-        },
-        {
-            prm_id: 6,
-            prm_valor_ini: "Lorem Ipsum"
-        },
-        {
-            prm_id: 7,
-            prm_valor_ini: "Lorem Ipsum"
-        },
-        {
-            prm_id: 8,
-            prm_valor_ini: "Regresará con la documentación"
-        }
-    ];
     //Acordeon Score
     const [estadoAccordionScore, setEstadoAccordionScore] = useState(true);
     const [estadoLoadingScore, setEstadoLoadingScore] = useState(false);
@@ -73,14 +47,20 @@ const DatosSocio = (props) => {
 
     //ComentarioGestion
     const [deseaTarjeta, setDeseaTarjeta] = useState(false);
-    const [comentariosPositivos, setComentariosPositivos] = useState([{ image: "", textPrincipal: "Solicitará en otra IFI", textSecundario: "", key: 1 },
+    const [comentariosPositivos, setComentariosPositivos] = useState([]);
+    const [comentariosNegativos, setComentariosNegativos] = useState([]);
+    const [comentariosPositivosPrueba, setComentariosPositivosPrueba] = useState([{ image: "", textPrincipal: "Solicitará en otra IFI", textSecundario: "", key: 1 },
+    { image: "", textPrincipal: "Monto muy bajo", textSecundario: "", key: 2 },
+    { image: "", textPrincipal: "No desea por el momento", textSecundario: "", key: 3 },
+    { image: "", textPrincipal: "Regresará con la documentación", textSecundario: "", key: 4 }]);
+    /*const [comentariosPositivos, setComentariosPositivos] = useState([{ image: "", textPrincipal: "Solicitará en otra IFI", textSecundario: "", key: 1 },
     { image: "", textPrincipal: "Monto muy bajo", textSecundario: "", key: 2 },
     { image: "", textPrincipal: "No desea por el momento", textSecundario: "", key: 3 },
     { image: "", textPrincipal: "Regresará con la documentación", textSecundario: "", key: 4 }]);
     const [comentariosNegativos, setComentariosNegativos] = useState([{ image: "", textPrincipal: "En trámite de ser socio", textSecundario: "", key: 1 },
     { image: "", textPrincipal: "Lorem Ipsum", textSecundario: "", key: 2 },
     { image: "", textPrincipal: "Lorem Ipsum", textSecundario: "", key: 3 },
-    { image: "", textPrincipal: "Regresará con la documentación", textSecundario: "", key: 4 }]);
+    { image: "", textPrincipal: "Regresará con la documentación", textSecundario: "", key: 4 }]);*/
     const [comentarioAdicional, setComentarioAdicional] = useState("");
 
     //InfoEconomica
@@ -183,7 +163,50 @@ const DatosSocio = (props) => {
 
 
     useEffect(() => {
-        getInfoSocio();
+        window.scrollTo(0, 0);
+        //Obtener comentarios de la gestion para prospeccion
+
+        let ParametrosTC = props.parametrosTC.lst_parametros;
+        let comentariosPosiProspecto = ParametrosTC
+            .filter(param => param.str_nombre === "GESTION_PROSPECTO_SI")
+            .map(estado => ({
+                prm_id: estado.int_id_parametro,
+                prm_valor_ini: estado.str_valor_ini,
+            }));
+        let comentariosNegProspecto = ParametrosTC
+            .filter(param => param.str_nombre === "GESTION_PROSPECTO_NO")
+            .map(estado => ({
+                prm_id: estado.int_id_parametro,
+                prm_valor_ini: estado.str_valor_ini,
+            }));
+
+        let resultPositivos = comentariosPosiProspecto.map(
+            (param, index) => ({
+                image: "",
+                textPrincipal: param.prm_valor_ini,
+                textSecundario: "",
+                key: index+1,
+            })
+        )
+        let resultNegativos = comentariosNegProspecto.map(
+            (param,index) => ({
+                image: "",
+                textPrincipal: param.prm_valor_ini,
+                textSecundario: "",
+                key: index+1,
+            })
+        )
+        console.log(comentariosPositivosPrueba)
+        console.log(resultPositivos)
+        console.log(resultNegativos)
+
+        setComentariosPositivos(resultPositivos);
+        setComentariosNegativos(resultNegativos);
+
+
+        if (props.gestion === 'solicitud') {
+            getInfoSocio();
+        }
         setComentarioAdicional(props.comentarioAdicionalValor);
     }, [])
 
@@ -201,6 +224,7 @@ const DatosSocio = (props) => {
 
     }
 
+    /* Number(props.score.response.result.capacidadPago[0].cupoSugerido).toLocaleString('en-US') : Number('0.00').toLocaleString('en-US')}`}*/
     return (
         <div className="f-col w-100">
             <div id="montoSugerido" className="f-row w-100 ">
@@ -208,17 +232,19 @@ const DatosSocio = (props) => {
                     <img src="Imagenes/Cupo sugerido.svg" width="10%" alt="Cupo sugerido Aval"></img>
                     <div className="ml-3 datosMonto">
                         <h3 className="blue">Cupo Sugerido Aval:</h3>
-                        <h2 className="strong blue">{`$  
-                        ${props.score?.response?.result?.capacidadPago[0]?.cupoSugerido ? Number(props.score.response.result.capacidadPago[0].cupoSugerido).toLocaleString('en-US') : Number('0.00').toLocaleString('en-US')}`}
+                        <h2 className="strong blue">{`  
+                        ${props.score?.response?.result?.capacidadPago[0]?.cupoSugerido ?                            
+                                numberFormatMoney(props.score.response.result.capacidadPago[0].cupoSugerido) : "$ 0,00"}`}
                         </h2>
                     </div>
                 </div>
                 <div className="f-row justify-content-center align-content-center">
-                    <img src="Imagenes/Cupo sugerido.svg" width="10%" alt="Cupo sugerido Coopmego"></img>
+                    <img src="Imagenes/Cupo sugerido.svg" width="10%" alt="Cupo sugerido CoopMego"></img>
                     <div className="ml-3 datosMonto">
-                        <h3 className="blue">Cupo Sugerido Coopmego: </h3>
-                        <h2 className="strong blue">{`${props.score.str_cupo_sugerido ? Number(props.score.str_cupo_sugerido).toLocaleString('en-US') : Number('0.00').toLocaleString('en-US')}`}</h2>
-                        {/*<h2 className="strong blue">{`${props.score.str_cupo_sugerido_ccopmego ? Number(props.score.str_cupo_sugerido_ccopmego).toLocaleString('en-US') : Number('0.00').toLocaleString('en-US')}`}</h2>*/}
+                        <h3 className="blue">Cupo Sugerido CoopMego: </h3>
+                        <h2 className="strong blue">{
+                            `${props.score.str_cupo_sugerido ? numberFormatMoney(props.score.str_cupo_sugerido) : "$ 0,00"}`}
+                        </h2>
                     </div>
                 </div>
 
@@ -240,31 +266,37 @@ const DatosSocio = (props) => {
                             <div className="values  mb-3">
                                 <h5>Ingresos</h5>
                                 <h5 className="strong">
-                                    {`$ ${Number(props.informacionSocio.datosFinancieros.montoIngresos)?.toLocaleString("en-US") }`}
+                                {/*    {`$ ${Number(props.informacionSocio.datosFinancieros.montoIngresos)?.toLocaleString("en-US")}`}*/}
+                                    {numberFormatMoney(props.informacionSocio.datosFinancieros.montoIngresos)}
+
                                 </h5>
                             </div>
                             <div className="values  mb-3">
                                 <h5>Egresos</h5>
                                 <h5 className="strong">
-                                    {`$ ${Number(props.informacionSocio.datosFinancieros.montoEgresos)?.toLocaleString("en-US") }`}
+                                    {numberFormatMoney(props.informacionSocio.datosFinancieros.montoEgresos)}
+                                  {/*  {`$ ${Number(props.informacionSocio.datosFinancieros.montoEgresos)?.toLocaleString("en-US") }`}*/}
                                 </h5>
                             </div>
                             <div className="values  mb-3">
                                 <h5>Resta Gasto Financiero</h5>
                                 <h5 className="strong">                                 
-                                    {`$ ${Number(props.informacionSocio.datosFinancieros.montoRestaGstFinanciero)?.toLocaleString("en-US") }`}
+                                    {/*{`$ ${Number(props.informacionSocio.datosFinancieros.montoRestaGstFinanciero)?.toLocaleString("en-US")}`}*/}
+                                    {numberFormatMoney(props.informacionSocio.datosFinancieros.montoRestaGstFinanciero)}
                                 </h5>
                             </div>
                             <div className="values  mb-3">
                                 <h5>Cupo solicitado</h5>
                                 <h5 className="strong">
-                                    {`$ ${(props.informacionSocio.datosFinancieros.montoSolicitado)?.toLocaleString("en-US") }`}
+                                    {numberFormatMoney(props.informacionSocio.datosFinancieros.montoSolicitado)}
+                            {/*        {`$ ${(props.informacionSocio.datosFinancieros.montoSolicitado)?.toLocaleString("en-US") }`}*/}
                                 </h5>
                             </div>
                             <div className="values  mb-3">
                                 <h5>Cupo Sugerido Aval</h5>
                                 <h5 className="strong">
-                                    {`$ ${Number(props.score.response.result.capacidadPago[0].cupoSugerido)?.toLocaleString("en-US") }`}
+                                    {/* {`$ ${Number(props.score.response.result.capacidadPago[0].cupoSugerido)?.toLocaleString("en-US") }`}*/}
+                                    {numberFormatMoney(props.score.response.result.capacidadPago[0].cupoSugerido)}
                                 </h5>
                             </div>
                             <div className="values  mb-3">
@@ -284,15 +316,25 @@ const DatosSocio = (props) => {
                                     <div>
                                         <div className="values">
                                             <h5>Total deuda:</h5>
-                                            <h5 className="strong">$ {Number(deuda.totalDeuda).toLocaleString("en-US")}</h5>
+                                                <h5 className="strong">
+                                                    {/*{Number(deuda.totalDeuda).toLocaleString("en-US")}*/}
+                                                    {numberFormatMoney(deuda.totalDeuda)}
+                                                </h5>
                                         </div>
                                         <div className="values">
                                             <h5>Valor demanda judicial:</h5>
-                                            <h5 className="strong">$ {Number(deuda.valorDemandaJudicial).toLocaleString("en-US")}</h5>
+                                                <h5 className="strong">
+                                                   {/* $ {Number(deuda.valorDemandaJudicial).toLocaleString("en-US")}*/}
+                                                    {numberFormatMoney(deuda.valorDemandaJudicial)} 
+
+                                                </h5>
                                         </div>
                                         <div className="values">
                                             <h5>Valor por vencer:</h5>
-                                            <h5 className="strong">$ {Number(deuda.valorPorVencer).toLocaleString("en-US")}</h5>
+                                                <h5 className="strong">
+                                                   {/* $ {Number(deuda.valorPorVencer).toLocaleString("en-US")}*/}
+                                                    {numberFormatMoney(deuda.valorPorVencer)} 
+                                                </h5>
                                         </div>
                                     </div>
                                 </div>);
@@ -434,13 +476,15 @@ const DatosSocio = (props) => {
                                         <tbody>
                                             {
                                                 ingresos.map((ingreso) => {
-                                                    let valorIngreso = (ingreso.dcm_valor).toLocaleString('en-US',{
-                                                        style: 'currency',
-                                                        currency: 'USD',
-                                                    });
+                                                    //let valorIngreso = (ingreso.dcm_valor).toLocaleString('en-US',{
+                                                    //    style: 'currency',
+                                                    //    currency: 'USD',
+                                                    //});
                                                     return (<tr key={ingreso.int_codigo}>
                                                         <td>{ingreso.str_descripcion}</td>
-                                                        <td>{valorIngreso}</td>
+                                                        <td>
+                                                            {numberFormatMoney(ingreso.dcm_valor)}
+                                                        </td>
                                                     </tr>);
                                                 })
                                             }
@@ -448,10 +492,11 @@ const DatosSocio = (props) => {
                                                 <tr key={998}>
                                                     <td>TOTAL</td>
                                                     <td>
-                                                        {Number(totalIngresos).toLocaleString('en-US', {
-                                                            style: 'currency',
-                                                            currency: 'USD',
-                                                        })}
+                                                        {numberFormatMoney(totalIngresos)}
+                                                        {/*{Number(totalIngresos).toLocaleString('en-US', {*/}
+                                                        {/*    style: 'currency',*/}
+                                                        {/*    currency: 'USD',*/}
+                                                        {/*})}*/}
                                                     </td>
                                                 </tr>
                                             }
@@ -470,13 +515,13 @@ const DatosSocio = (props) => {
                                         <tbody>
                                             {
                                                 egresos.map((egreso) => {
-                                                    let valorEgreso = Number.parseFloat(egreso.dcm_valor).toLocaleString('en-US', {
-                                                        style: 'currency',
-                                                        currency: 'USD',
-                                                    });
+                                                    //let valorEgreso = Number.parseFloat(egreso.dcm_valor).toLocaleString('en-US', {
+                                                    //    style: 'currency',
+                                                    //    currency: 'USD',
+                                                    //});
                                                     return (<tr key={egreso.int_codigo}>
                                                         <td>{egreso.str_descripcion}</td>
-                                                        <td>{valorEgreso}</td>
+                                                        <td>  {numberFormatMoney(egreso.dcm_valor)}</td>
                                                     </tr>);
                                                 })
                                             }
@@ -484,10 +529,11 @@ const DatosSocio = (props) => {
                                                 <tr key={999}>
                                                     <td>TOTAL</td>
                                                     <td>
-                                                        {Number(totalEgresos).toLocaleString('en-US', {
-                                                            style: 'currency',
-                                                            currency: 'USD',
-                                                        })}
+                                                        {numberFormatMoney(totalEgresos)}
+                                                        {/*{Number(totalEgresos).toLocaleString('en-US', {*/}
+                                                        {/*    style: 'currency',*/}
+                                                        {/*    currency: 'USD',*/}
+                                                        {/*})}*/}
                                                     </td>
                                                 </tr>
                                             }
@@ -519,7 +565,7 @@ const DatosSocio = (props) => {
                                                     <td>{credito.str_tipo}</td>
                                                     <td>{credito.int_operacion}</td>
                                                     <td>{credito.str_operacion_cred}</td>
-                                                    <td>{`$ ${credito.dcm_monto_aprobado}`}</td>
+                                                    <td>{numberFormatMoney(credito.dcm_monto_aprobado)}</td>
                                                     <td>{credito.dtt_fecha_vencimiento}</td>
                                                     <td>{credito.dtt_fecha_concesion}</td>
                                                     <td>{credito.int_cuotas_vencidas}</td>
@@ -548,7 +594,7 @@ const DatosSocio = (props) => {
                                                 return (<tr key={valor.int_id_cuenta}>
                                                     <td>{valor.str_num_cuenta}</td>
                                                     <td>{valor.str_tipo_cta}</td>
-                                                    <td>{`$ ${valor.dcm_ahorro}`}</td>
+                                                    <td>{numberFormatMoney(valor.dcm_ahorro)}</td>
                                                     <td>{valor.dtt_fecha_movimiento}</td>
                                                     <td>{valor.str_estado}</td>
                                                 </tr>);
@@ -577,13 +623,13 @@ const DatosSocio = (props) => {
                 </div>
                 {props.gestion === "prospeccion" && <div>
                     <h3 className="mb-2">Comentario de la gestión</h3>
-                    {deseaTarjeta &&
+                    {(deseaTarjeta === true && comentariosPositivos.length) > 0 &&
                         <Toggler
                             selectedToggle={seleccionComentarioAfirma}
                             toggles={comentariosPositivos}>
                         </Toggler>
                     }
-                    {deseaTarjeta ||
+                    {(deseaTarjeta === false && comentariosNegativos.length > 0) &&
                         <Toggler
                             selectedToggle={seleccionComentarioNega}
                             toggles={comentariosNegativos}>
@@ -601,4 +647,4 @@ const DatosSocio = (props) => {
     );
 }
 
-export default DatosSocio;
+export default connect(mapStateToProps, {})(DatosSocio);

@@ -18,6 +18,7 @@ using Domain.Models.TarjetaCredito.GetContratos;
 using Domain.Models.TarjetaCredito.GetFlujoSolicitud;
 using Domain.Models.TarjetaCredito.GetInfoEconomica;
 using Domain.Models.TarjetaCredito.GetInfoFinanciera;
+using Domain.Models.TarjetaCredito.GetInformacionProspecto;
 using Domain.Models.TarjetaCredito.GetInfoSocio;
 using Domain.Models.TarjetaCredito.GetMedioAprobacion;
 using Domain.Models.TarjetaCredito.GetMotivos;
@@ -1177,6 +1178,41 @@ namespace Infrastructure.TarjetaCredito
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
                     res = JsonSerializer.Deserialize<ResGetOficinas>(response.Content!)!;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            return res;
+        }
+
+        public ResGetInfoProspectos getInfoProspecto(ReqGetInfoProspectos req)
+        {
+            ResGetInfoProspectos res = new ResGetInfoProspectos();
+            try
+            {
+                req.llenarDatosConfig(_settings);
+                req.str_id_servicio = "REQ_" + _settings.service_get_info_prospecto;
+                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_info_prospecto)
+                {
+                    ThrowOnAnyError = true,
+                    MaxTimeout = _settings.time_out
+                };
+
+                var client = new RestClient(options);
+                var request = new RestRequest();
+                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                request.AddHeader("Content-Type", "application/json");
+                request.AddParameter("application/json", req, ParameterType.RequestBody);
+                request.Method = Method.Post;
+
+                var response = new RestResponse();
+                response = client.Post(request);
+
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    res = JsonSerializer.Deserialize<ResGetInfoProspectos>(response.Content!)!;
                 }
             }
             catch (Exception ex)

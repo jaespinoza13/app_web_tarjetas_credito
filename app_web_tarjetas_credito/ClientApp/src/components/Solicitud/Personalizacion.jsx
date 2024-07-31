@@ -1,8 +1,22 @@
-﻿import { useDispatch } from "react-redux";
-import { fetchGetOficinas } from "../../services/RestServices";
+﻿import { useDispatch, connect } from "react-redux";
 import Card from "../Common/Card";
 import Toggler from "../Common/UI/Toggler";
 import { Fragment, useEffect, useState } from "react";
+import { IsNullOrWhiteSpace } from "../../js/utiles";
+
+const mapStateToProps = (state) => {
+    var bd = state.GetWebService.data;
+    if (IsNullOrWhiteSpace(bd) || Array.isArray(state.GetWebService.data)) {
+        bd = sessionStorage.getItem("WSSELECTED");
+    }
+    return {
+        token: state.tokenActive.data,
+        parametrosTC: state.GetParametrosTC.data
+    };
+};
+
+
+
 
 const Personalizacion = (props) => {
 
@@ -12,10 +26,13 @@ const Personalizacion = (props) => {
     const [direccionEntrega, setDireccionEntrega] = useState("-1");
     const [tiposDireccion, setTiposDireccion] = useState([]);
     const [oficinas, setOficinas] = useState([]);
-    
+
+
+    //TODO consumir lo parametrizado
     const tiposEntrega = [
         { image: "", textPrincipal: "Retiro en agencia", textSecundario: "", key: "Retiro en agencia" },
-        { image: "", textPrincipal: "Entrega en domicilio", textSecundario: "", key: "Entrega en domicilio" }
+        //Dehabilitado para se realizo este tipo de entrega
+        /*{ image: "", textPrincipal: "Entrega en domicilio", textSecundario: "", key: "Entrega en domicilio" }*/
     ];
 
     useEffect(() => {
@@ -51,9 +68,20 @@ const Personalizacion = (props) => {
 
     
     useEffect(() => {
-        fetchGetOficinas(props.token, (data) => {
-            setOficinas(data.lst_oficinas);           
-        }, dispatch);
+        window.scrollTo(0, 0);
+        //Obtener oficinas parametrizadas
+        let ParametrosTC = props.parametrosTC.lst_parametros;
+        let oficinasParametrosTC = ParametrosTC
+            .filter(param => param.str_nombre === 'OFICINAS_TC')
+            .map(estado => ({
+                prm_id: estado.int_id_parametro,
+                prm_nombre: estado.str_nombre,
+                prm_nemonico: estado.str_nemonico,
+                prm_valor_ini: estado.str_valor_ini,
+                prm_valor_fin: estado.str_valor_fin,
+                prm_descripcion: estado.str_descripcion
+            }));
+        setOficinas(oficinasParametrosTC)
 
         const defaultEntrega = tiposEntrega.shift(0);
         setTipoEntrega(defaultEntrega.textPrincipal);
@@ -116,14 +144,16 @@ const Personalizacion = (props) => {
                                     return (
                                         <Fragment key={index} >
                                             <option disabled={true} value={"-1"}>Seleccione una opción</option>
-                                            <option value={oficina.id_oficina}> {oficina.agencia}</option>
+                                            <option value={oficina.prm_valor_fin}> {oficina.prm_descripcion}</option>
+                                           {/* <option value={oficina.id_oficina}> {oficina.agencia}</option>*/}
                                         </Fragment>
                                     )
                                 }
                                 else {
                                     return (
                                         <Fragment key={index} >
-                                            <option value={oficina.id_oficina}> {oficina.agencia}</option>
+                                            {/*<option value={oficina.id_oficina}> {oficina.agencia}</option>*/}
+                                            <option value={oficina.prm_valor_fin}> {oficina.prm_descripcion}</option>
                                         </Fragment>
                                     )
                                 }
@@ -141,4 +171,4 @@ const Personalizacion = (props) => {
     );
 }
 
-export default Personalizacion;
+export default connect(mapStateToProps, {})(Personalizacion);

@@ -100,7 +100,7 @@ const DatosFinancieros = (props) => {
     }
 
     useEffect(() => {
-
+        window.scrollTo(0, 0);
         setMontoIngresos(props.dataConsultFinan.montoIngresos);
         setMontoEgresos(props.dataConsultFinan.montoEgresos);
         setRestaMontoGastosFinancieros(props.dataConsultFinan.montoRestaGstFinanciero);
@@ -131,39 +131,41 @@ const DatosFinancieros = (props) => {
                             <div className='mb-2'>
                                 <label>Ingresos</label>
                                 <div className="f-row">
-                                    <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setMontoIngresosHandler} value={montoIngresos} disabled={isCamposDesactivados} min={0} max={99999} ></Input>
+                                    <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"1.0000"} readOnly={false} setValueHandler={setMontoIngresosHandler} value={montoIngresos} disabled={isCamposDesactivados} min={0} max={99999} ></Input>
                                 </div>
                             </div>
 
                             <div className='mb-2'>
                                 <label>Egresos</label>
                                 <div className="f-row">
-                                    <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setMontoEgresosHandler} value={montoEgresos} disabled={isCamposDesactivados} min={0} max={99999} ></Input>
+                                    <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"500"} readOnly={false} setValueHandler={setMontoEgresosHandler} value={montoEgresos} disabled={isCamposDesactivados} min={0} max={99999} ></Input>
                                 </div>
                             </div>
 
                             <div className='mb-2'>
                                 <div className="f-row">
                                     <Input type="checkbox" setValueHandler={CkeckGtosFinancierosHandler} checked={isCkeckRestaGtoFinancero} ></Input>
-                                    <label>Resta Gasto Financiero</label>
+                                    <label className="ml-2">Resta Gasto Financiero</label>
                                 </div>
 
                                 <div className="f-row">
-                                    <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setRestaGastosFinancierosHandler} value={restaMontoGastosFinancieros} disabled={!isCkeckRestaGtoFinancero} min={0} max={99999} maxlength={6} ></Input>
+                                    <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"1.000"} readOnly={false} setValueHandler={setRestaGastosFinancierosHandler} value={restaMontoGastosFinancieros} disabled={!isCkeckRestaGtoFinancero} min={0} max={99999} maxlength={6} ></Input>
                                 </div>
                             </div>
 
                             <div className='mb-2'>
-                                <label>Gasto Financiero CoDeudor</label>
+                                <label>
+                                    Gasto Financiero CoDeudor
+                                </label>
                                 <div className="f-row">
-                                    <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setMontoGastoFinanCodeudorHandler} value={montoGastoFinaCodeudor} min={0} max={99999} maxlength={6} disabled={isCamposDesactivados} ></Input>
+                                    <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"}  readOnly={false} setValueHandler={setMontoGastoFinanCodeudorHandler} value={montoGastoFinaCodeudor} min={0} max={99999} maxlength={6} disabled={true} ></Input>
                                 </div>
                             </div>
 
                             <div className='mb-2'>
                                 <label>Cupo solicitado</label>
                                 <div className="f-row">
-                                    <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"10000"} readOnly={false} setValueHandler={setMontoSolicitadoHandler} value={montoSolicitado} min={0} max={99999}></Input>
+                                    <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"1.000"} readOnly={false} setValueHandler={setMontoSolicitadoHandler} value={montoSolicitado} min={0} max={99999}></Input>
                                 </div>
                                 <div className="f-row">
                                     {montoSolicitado < props.montoMinimoCupoSolicitado &&

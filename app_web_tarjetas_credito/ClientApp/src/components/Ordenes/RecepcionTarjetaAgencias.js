@@ -197,7 +197,7 @@ function RecepcionTarjetaAgencias(props) {
                         }
 
                         {lstOrdenPorConfirmar.length === 0 &&
-                            <p style={{ fontSize: '18px', paddingTop: "5px" }}> <strong> No existe tarjetas por confirmar recepción. </strong> </p>
+                            <p style={{ fontSize: '18px', paddingTop: "5px" }}> <strong> No existe tarjetas VERIFICAR CLIENTE recepción. </strong> </p>
                         }
 
 

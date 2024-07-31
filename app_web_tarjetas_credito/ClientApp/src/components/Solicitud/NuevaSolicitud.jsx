@@ -42,6 +42,7 @@ const NuevaSolicitud = (props) => {
     const [lstValidaciones, setLstValidaciones] = useState([]);
     const [gestion, setGestion] = useState("solicitud");
     const [score, setScore] = useState("");
+    const [puntajeScore, setPuntajeScore] = useState("");
 
     //Global
     const [textoSiguiente, setTextoSiguiente] = useState("Continuar");
@@ -151,7 +152,7 @@ const NuevaSolicitud = (props) => {
                 })));
             
             /*PARAMETRO PARA CONTROL DE CUPO MINIMO A SOLICITAR EN TARJETA DE CRÉDITO*/ 
-            setControlMontoMinimoParametro(Number(ParametrosTC.filter(param => param.str_nombre === 'CUPO_MINIMO_SOLICITAR_TC')[0]?.str_valor_ini));
+            setControlMontoMinimoParametro(Number(ParametrosTC.filter(param => param.str_nemonico === 'PRM_WS_TC_CUPO_MINIMO_SOL_TC')[0]?.str_valor_ini));
         }
 
 
@@ -269,8 +270,14 @@ const NuevaSolicitud = (props) => {
         if (step === -1) {
             setTextoSiguiente("Volver al inicio")
         }
-        if (step === 5 && validaCamposPersonalizacion()) {
-            setEstadoBotonSiguiente(false);
+        if (step === 4) {
+            setTextoSiguiente("Continuar")
+        }
+        if (step === 5) {
+            setTextoSiguiente("Registrar")
+            if (validaCamposPersonalizacion()) {
+                setEstadoBotonSiguiente(false);
+            }            
         }
     }, [step]);
 
@@ -306,7 +313,8 @@ const NuevaSolicitud = (props) => {
             setDatosFinancierosObj(datosFinan);
             //console.log(`ingresos, ${data.dcm_total_ingresos}; egresos, ${data.dcm_total_egresos}; `,);
             //console.log("FINAN, ", datosFinan);
-            anteriorStepHandler();
+
+            //anteriorStepHandler();
         }, dispatch);
 
     }
@@ -479,6 +487,7 @@ const NuevaSolicitud = (props) => {
                 await fetchScore("C", "1150214375", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, datosUsuario[0].strUserOficial,  datosUsuario[0].strOficial, datosUsuario[0].strCargo, props.token, (data) => {
                     setScore(data);
                     setIdClienteScore(data.int_cliente);
+                    setPuntajeScore(data?.response?.result?.scoreFinanciero[0]?.score)
 
                     //TODO VALIDAR  CAMPO capacidadPago
                     setCupoSugeridoAval(data.response.result?.capacidadPago[0].cupoSugerido.toString());
@@ -524,7 +533,7 @@ const NuevaSolicitud = (props) => {
 
             let fechaNac = infoSocio.str_fecha_nacimiento.split('-');
             let fechaNacFormatoReq = fechaNac[2] + '-' + fechaNac[0] + '-' + fechaNac[1]
-            let intEstadoCreado = parametrosTC.filter(param => param.prm_nemonico === "EST_SOL_CREADA");
+            let intEstadoCreado = parametrosTC.filter(param => param.prm_nemonico === "EST_CREADA");
 
             let int_oficina_entrega = 0;
             let direccion = "";
@@ -534,7 +543,7 @@ const NuevaSolicitud = (props) => {
             let cod_postal = "";
 
             if (tipoEntrega === "Retiro en agencia") {
-                int_oficina_entrega = direccionEntrega;
+                int_oficina_entrega = Number(direccionEntrega);
 
             } else {
                 if (direccionEntrega.textPrincipal === "Casa") {
@@ -576,7 +585,7 @@ const NuevaSolicitud = (props) => {
                 str_denominacion_tarjeta: nombrePersonalTarjeta,
                 str_comentario_proceso: comentario,
                 str_comentario_adicional: comentarioAdic,
-                int_oficina_proc: datosUsuario[0].strUserOficina,
+                int_oficina_proc: Number(datosUsuario[0].strUserOficina),
                 mny_cupo_solicitado: datosFinancierosObj.montoSolicitado.toString(),
                 mny_cupo_sugerido_aval: cupoSugeridoAval,
                 mny_cupo_sugerido_coopmego: cupoSugeridoCoopM.toString(),
@@ -609,7 +618,8 @@ const NuevaSolicitud = (props) => {
                 mny_excedente: "0",
                 mny_cuota_estimada: "0",
                 str_segmento: "",
-                str_calificacion_buro: calificacionRiesgo
+                str_calificacion_buro: calificacionRiesgo,
+                str_score_buro: puntajeScore.toString(),
 
             }
 
@@ -702,116 +712,125 @@ const NuevaSolicitud = (props) => {
         <div className="f-row w-100" >
            {/* <Sidebar enlace={props.location.pathname}></Sidebar>*/}
             {/* {showAutorizacion.toString()}*/}
-            <Card className={["m-max w-100 justify-content-space-between align-content-center"]}>
-                <div className="f-col justify-content-center">
+            {/*<div className={["w-100"]}>   */}          
 
-                    <div className="stepper">
-                        <Stepper steps={steps} setStepsVisited={visitadosSteps} setActualStep={actualStepper} />
-                    </div>
+                    {/*<button className="btn_mg_icons" onClick={anteriorStepHandler}>*/}
+                    {/*<img src="/Imagenes/right.svg" alt="Cumplir requisito"></img> <p>Anterior</p>*/}
+                    {/*</button>*/}
 
+                <Card className={["m-max w-100 justify-content-space-between align-content-center"]}>
+                    <div className="f-col justify-content-center">
 
-                    {(step === 0 || step === 1) &&
-                        <div className="f-row w-100 justify-content-center sliding-div ">
-                            <ValidacionSocio paso={step}
-                                token={props.token}
-                                cedulaSocioValue={cedulaSocio}
-                                setCedulaSocio={cedulaSocioHandler}
-                                infoSocio={infoSocio}
-                                isVisibleBloque={isVisibleBloque}
-                                requiereActualizar={refrescarInformacionHandler}
-                                AtajoHandler={AtajoTecladoHandler}
-                            ></ValidacionSocio>
+                        <div className="stepper">
+                            <Stepper steps={steps} setStepsVisited={visitadosSteps} setActualStep={actualStepper} />
                         </div>
-                    }
 
-                    {(step === 2) &&
-                        <div className="f-row w-100 justify-content-center">
-                            <ValidacionesGenerales token={props.token}
-                                lst_validaciones={lstValidaciones}
-                                onFileUpload={getFileHandler}
-                                onShowAutorizacion={showAutorizacion}
-                                infoSocio={infoSocio}
-                                datosUsuario={datosUsuario}
-                                onSetShowAutorizacion={showAutorizacionHandler}
-                                cedula={cedulaSocio}
-                            ></ValidacionesGenerales>
-                        </div>
-                    }
-                    {(step === 3) &&
-                        <div className="f-row w-100">
-                            <DatosFinancieros
-                                dataConsultFinan={datosFinancierosObj}
-                                setDatosFinancierosFunc={datosFinancierosHandler}
-                                isCkeckGtosFinancierosHandler={checkGastosFinancieroHandler}
-                                gestion={gestion}
-                                requiereActualizar={refrescarDatosInformativos}
-                                isCheckMontoRestaFinanciera={isCkeckRestaGtoFinananciero}
-                                montoMinimoCupoSolicitado={controlMontoMinimoParametro}
-                            >
-                            </DatosFinancieros>
-                        </div>
-                    }
 
-                    {(step === 4) &&
-                        <DatosSocio
-                            informacionSocio={infoSocio}
-                            score={score}
-                            token={props.token}
-                            gestion={gestion}
-                            onInfoSocio={getInfoSocioHandler}
-                            onComentario={handleComentario}
-                            onComentarioAdic={handleComentarioAdic}
-                            idClienteScore={idClienteScore}
-                            comentarioAdicionalValor={comentarioAdic}
-                            calificacionRiesgo={calificacionRiesgo}
-
-                        ></DatosSocio>
-                    }
-                    {step === 5 &&
-                        <div className="f-row w-100 justify-content-center">
-                            <Personalizacion
-                                token={props.token}
-                                nombres={nombreSocio}
-                                str_apellido_paterno={apellidoPaterno}
-                                str_apellido_materno={apellidoMaterno}
-                                lstDomicilio={dirDocimicilioSocio}
-                                lstTrabajo={dirTrabajoSocio}
-                                onNombreTarjeta={nombreTarjetaHandler}
-                                onTipoEntrega={tipoEntregaHandler}
-                                onDireccionEntrega={direccionEntregaHandler}
-                            ></Personalizacion>
-                        </div>
-                    }
-                    {step === 6}
-
-                    {step === -1 &&
-                        <FinProceso gestion={gestion}
-                            nombres={`${nombreSocio} ${apellidoPaterno} ${apellidoMaterno}`}
-                            cedula={cedulaSocio}
-                            telefono={celularSocio}
-                            email={correoSocio}
-                        ></FinProceso>}
-                </div>
-                <div id="botones" className="f-row ">
-                    <Item xs={2} sm={2} md={2} lg={2} xl={2} className="">
-                        {(step !== 0 || step === -1) &&
-                            <Button className={["btn_mgprev mt-2"]} onClick={anteriorStepHandler}>{"Anterior"}</Button>
+                        {(step === 0 || step === 1) &&
+                            <div className="f-row w-100 justify-content-center sliding-div ">
+                                <ValidacionSocio paso={step}
+                                    token={props.token}
+                                    cedulaSocioValue={cedulaSocio}
+                                    setCedulaSocio={cedulaSocioHandler}
+                                    infoSocio={infoSocio}
+                                    isVisibleBloque={isVisibleBloque}
+                                    requiereActualizar={refrescarInformacionHandler}
+                                    AtajoHandler={AtajoTecladoHandler}
+                                ></ValidacionSocio>
+                            </div>
                         }
 
-                    </Item>
-                    <Item xs={8} sm={8} md={8} lg={8} xl={8} className="f-row justify-content-center align-content-center">
-                        {(step === 1) &&
-                            <Button className={["btn_mg btn_mg__primary mt-2 mr-2"]} onClick={() => refrescarInformacionHandler(true)}>{"Actualizar"}</Button>
+                        {(step === 2) &&
+                            <div className="f-row w-100 justify-content-center">
+                                <ValidacionesGenerales token={props.token}
+                                    lst_validaciones={lstValidaciones}
+                                    onFileUpload={getFileHandler}
+                                    onShowAutorizacion={showAutorizacion}
+                                    infoSocio={infoSocio}
+                                    datosUsuario={datosUsuario}
+                                    onSetShowAutorizacion={showAutorizacionHandler}
+                                    cedula={cedulaSocio}
+                                ></ValidacionesGenerales>
+                            </div>
                         }
                         {(step === 3) &&
-                            <Button className={["btn_mg btn_mg__primary mt-2 mr-2"]} onClick={refrescarDatosInformativos}>{"Actualizar"}</Button>
+                            <div className="f-row w-100">
+                                <DatosFinancieros
+                                    dataConsultFinan={datosFinancierosObj}
+                                    setDatosFinancierosFunc={datosFinancierosHandler}
+                                    isCkeckGtosFinancierosHandler={checkGastosFinancieroHandler}
+                                    gestion={gestion}
+                                    requiereActualizar={refrescarDatosInformativos}
+                                    isCheckMontoRestaFinanciera={isCkeckRestaGtoFinananciero}
+                                    montoMinimoCupoSolicitado={controlMontoMinimoParametro}
+                                >
+                                </DatosFinancieros>
+                            </div>
                         }
-                        <Button className={["btn_mg btn_mg__primary mt-2 ml-2"]} disabled={estadoBotonSiguiente} onClick={() => nextHandler(step)}>{textoSiguiente}</Button>
-                    </Item>
 
-                </div>
+                        {(step === 4) &&
+                            <DatosSocio
+                                informacionSocio={infoSocio}
+                                score={score}
+                                token={props.token}
+                                gestion={gestion}
+                                onInfoSocio={getInfoSocioHandler}
+                                onComentario={handleComentario}
+                                onComentarioAdic={handleComentarioAdic}
+                                idClienteScore={idClienteScore}
+                                comentarioAdicionalValor={comentarioAdic}
+                                calificacionRiesgo={calificacionRiesgo}
 
-            </Card>
+                            ></DatosSocio>
+                        }
+                        {step === 5 &&
+                            <div className="f-row w-100 justify-content-center">
+                                <Personalizacion
+                                    token={props.token}
+                                    nombres={nombreSocio}
+                                    str_apellido_paterno={apellidoPaterno}
+                                    str_apellido_materno={apellidoMaterno}
+                                    lstDomicilio={dirDocimicilioSocio}
+                                    lstTrabajo={dirTrabajoSocio}
+                                    onNombreTarjeta={nombreTarjetaHandler}
+                                    onTipoEntrega={tipoEntregaHandler}
+                                    onDireccionEntrega={direccionEntregaHandler}
+                                ></Personalizacion>
+                            </div>
+                        }
+
+                        {step === -1 &&
+                            <FinProceso gestion={gestion}
+                                nombres={`${nombreSocio} ${apellidoPaterno} ${apellidoMaterno}`}
+                                cedula={cedulaSocio}
+                                telefono={celularSocio}
+                                email={correoSocio}
+                            ></FinProceso>}
+                    </div>
+                    <div id="botones" className="f-row ">
+                        <Item xs={2} sm={2} md={2} lg={2} xl={2} className="">
+                            {(step !== 0 && step !== -1) &&
+                                <Button className={["btn_mgprev mt-2"]} onClick={anteriorStepHandler}>{"Anterior"}</Button>
+                            }
+
+                        </Item>
+                        <Item xs={8} sm={8} md={8} lg={8} xl={8} className="f-row justify-content-center align-content-center">
+                            {(step === 1) &&
+                                <Button className={["btn_mg btn_mg__primary mt-2 mr-2"]} onClick={() => refrescarInformacionHandler(true)}>{"Actualizar"}</Button>
+                            }
+                            {(step === 3) &&
+                                <Button className={["btn_mg btn_mg__primary mt-2 mr-2"]} onClick={refrescarDatosInformativos}>{"Actualizar"}</Button>
+                            }
+                            <Button className={["btn_mg btn_mg__primary mt-2 ml-2"]} disabled={estadoBotonSiguiente} onClick={() => nextHandler(step)}>{textoSiguiente}</Button>
+                        </Item>
+
+                    </div>
+
+                </Card>
+
+            {/*</div>*/}
+
+            
 
 
 

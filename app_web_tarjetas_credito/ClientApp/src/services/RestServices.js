@@ -1,4 +1,4 @@
-import { ServicioGetExecute, getMenuPrincipal, getPreguntaUsuario, ServicioPostExecute, getValidarPreguntaUsuario, setResetPassword, getLogin, getLoginPerfil, getPreguntas, setPreguntas, setPassword, setPasswordPrimeraVez, getListaBases, getListaConexiones, setConexion, addConexion, getListaSeguimiento, getListaDocumentos, getListaColecciones, getDescargarLogsTexto, getLogsTexto, getContenidoLogsTexto, getValidaciones, getScore, getInfoSocio, getInfoEco, addAutorizacion, getSolicitudes, addSolicitud, getContrato, getInfoFinan, addProspecto, getFlujoSolicitud, addComentarioAsesor, addComentarioSolicitud, updResolucion, addResolucion, getResolucion, addProcEspecifico, updSolicitud, getParametros, getReporteOrden, getOrdenes, getTarjetasCredito, getInforme, getMedioAprobacion, getSeparadores, addDocumentosAxentria, getDocumentosAxentria, crearSeparadores, getReporteAval, getAlertasCliente, getMotivos, getOficinas } from './Services';
+import { ServicioGetExecute, getMenuPrincipal, getPreguntaUsuario, ServicioPostExecute, getValidarPreguntaUsuario, setResetPassword, getLogin, getLoginPerfil, getPreguntas, setPreguntas, setPassword, setPasswordPrimeraVez, getListaBases, getListaConexiones, setConexion, addConexion, getListaSeguimiento, getListaDocumentos, getListaColecciones, getDescargarLogsTexto, getLogsTexto, getContenidoLogsTexto, getValidaciones, getScore, getInfoSocio, getInfoEco, addAutorizacion, getSolicitudes, addSolicitud, getContrato, getInfoFinan, addProspecto, getFlujoSolicitud, addComentarioAsesor, addComentarioSolicitud, updResolucion, addResolucion, getResolucion, addProcEspecifico, updSolicitud, getParametros, getReporteOrden, getOrdenes, getTarjetasCredito, getInforme, getMedioAprobacion, getSeparadores, addDocumentosAxentria, getDocumentosAxentria, crearSeparadores, getReporteAval, getAlertasCliente, getMotivos, getOficinas, getInfoProspecto } from './Services';
 import { setAlertText, setErrorRedirigir } from "../redux/Alert/actions";
 import hex_md5 from '../js/md5';
 import { desencriptar, generate, get, set } from '../js/crypt';
@@ -785,7 +785,7 @@ export function fetchValidacionSocio(strCedula, strTipoValidacion, token, onSucc
     };
     //console.log("BODY SERVICE,", body)
     ServicioPostExecute(getValidaciones, body, token, { dispatch: dispatch }).then((data) => {
-        console.log("VALIDACION SERVICE," ,data)
+        //console.log("VALIDACION SERVICE," ,data)
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
@@ -1080,9 +1080,8 @@ export function fetchGetSolicitudes(token, onSucces, dispatch) {
 
 export function fetchAddSolicitud(body,token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
-    //console.log("BODY ADD SOL ", body);
     ServicioPostExecute(addSolicitud, body, token, { dispatch: dispatch }).then((data) => {
-        //console.log("RES ADD SOL", data);
+        console.log("RES ADD SOL", data);
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
@@ -1142,7 +1141,7 @@ export function fetchGetInfoFinan(ente, token, onSucces, dispatch) {
 * @param {(contenido:string, nroTotalRegistros: number) => void} onSuccess
 * @param {Function} dispatch
 */
-export function fetchAddProspecto(str_num_documento, ente, nombres, apellidos, celular, correo, cupoSoli, comentario, comentarioAdic, token, onSucces, dispatch) {
+export function fetchAddProspecto(str_num_documento, ente, nombres, apellidos, celular, correo, cupoSoli, comentario, comentarioAdic, ingresos, egresos, gastoFinanciero, gastoCodeudor, cupoAval,cupoCoopmego, score, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
@@ -1152,14 +1151,23 @@ export function fetchAddProspecto(str_num_documento, ente, nombres, apellidos, c
         str_apellidos: apellidos,
         str_celular: celular,
         str_correo: correo,
-        dec_cupo_solicitado: cupoSoli,
+        mny_cupo_solicitado: cupoSoli,
         str_id_autoriza_cons_buro: "",
         str_id_autoriza_datos_per: "",
         str_comentario: comentario,
-        str_comentario_adicional: comentarioAdic
+        str_comentario_adicional: comentarioAdic,
+        mny_total_ingresos: ingresos,
+        mny_total_egresos: egresos,
+        mny_gastos_financiero: gastoFinanciero,
+        mny_gastos_codeudor: gastoCodeudor,
+        mny_cupo_sugerido_aval: cupoAval,
+        mny_cupo_sug_coopmego: cupoCoopmego,
+        str_score: score
     }
+
+    console.log("body", body)
     ServicioPostExecute(addProspecto, body, token, { dispatch: dispatch }).then((data) => {
-        //console.log("DATA",  data)
+        console.log("DATA",  data)
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
@@ -1304,6 +1312,7 @@ export function fetchAddComentarioSolicitud(idSolicitud, comentario, estadoSolic
     console.log(body);
     ServicioPostExecute(addComentarioSolicitud, body, token, { dispatch: dispatch }).then((data) => {
         if (data) {
+            console.log(data);
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
             } else {
@@ -1890,6 +1899,33 @@ export function fetchGetOficinas(token, onSucces, dispatch) {
 
     }
     ServicioPostExecute(getOficinas, body, token, { dispatch: dispatch }).then((data) => {
+        if (data) {
+            if (data.error) {
+                if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
+            } else {
+                if (data.str_res_estado_transaccion === "OK") {
+                    onSucces(data);
+                } else {
+                    let codigo = data.codigo || data.str_res_codigo;
+                    let mensaje = data.mensaje || data.str_res_info_adicional;
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
+                }
+            }
+        } else {
+            if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
+        }
+    });
+}
+
+
+export function fetchGetInfoProspecto(cedula, prospectoId, token, onSucces, dispatch) {
+    if (dispatch) dispatch(setErrorRedirigir(""));
+    let body = {
+        str_num_documento: cedula,
+        int_id_prospecto: Number(prospectoId)
+    }
+    ServicioPostExecute(getInfoProspecto, body, token, { dispatch: dispatch }).then((data) => {
+        console.log("data ", data)
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
