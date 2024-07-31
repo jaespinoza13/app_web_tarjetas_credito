@@ -28,6 +28,7 @@ namespace Domain.Models.TarjetaCredito.GetSolicitudes
         public int int_oficina_crea { get; set; }
         public string str_estado { get; set; } = String.Empty;
         public int int_estado { get; set; }
+        public string str_canal_crea { get; set; } = String.Empty;
     }
 
     public class Prospecto
@@ -46,5 +47,6 @@ namespace Domain.Models.TarjetaCredito.GetSolicitudes
         public string pro_usuario_crea { get; set; } = String.Empty;
         public int pro_oficina_crea { get; set; }
         public string pro_estado { get; set; } = String.Empty;
+        public string pro_canal_crea { get; set; } = String.Empty;
     }
 }

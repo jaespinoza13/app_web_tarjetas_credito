@@ -113,6 +113,7 @@
         public string service_get_alertas_cliente { get; set; } = String.Empty;
         public string service_get_motivos { get; set; } = String.Empty;
         public string service_get_oficinas { get; set; } = String.Empty;
+        public string service_get_info_prospecto { get; set; } = String.Empty;
 
 
         #endregion

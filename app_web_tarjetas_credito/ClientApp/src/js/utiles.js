@@ -722,12 +722,13 @@ export function validarCorreo(correo) {
 
 
 export function numberFormatMoney(numero) {
-    let IsNaNNumero = isNaN(numero);
+    let numeroTransformar = Number.parseFloat(numero);
+    let IsNaNNumero = isNaN(numeroTransformar);
     let valor = "$ 0,00";
     if (IsNaNNumero) {
         return valor;
     } else {
-        valor = (numero).toLocaleString('en-US', {
+        valor = (numeroTransformar).toLocaleString('en-US', {
             style: 'currency',
             currency: 'USD',
         });

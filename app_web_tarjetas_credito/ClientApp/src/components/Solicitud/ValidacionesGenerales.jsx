@@ -3,16 +3,47 @@ import '../../scss/components/ValidacionesGenerales.css';
 import { useState, Fragment, useEffect } from "react";
 import Button from "../Common/UI/Button";
 import { fetchScore } from "../../services/RestServices";
-import { useDispatch } from 'react-redux';
+import { useDispatch, connect } from 'react-redux';
 import Uploader from "../Common/UI/Uploader";
-import { base64ToBlob, descargarArchivo, generarFechaHoy, verificarPdf, conversionBase64 } from "../../js/utiles";
+import { base64ToBlob, descargarArchivo, generarFechaHoy, verificarPdf, conversionBase64, IsNullOrWhiteSpace } from "../../js/utiles";
+
+
+const mapStateToProps = (state) => {
+    var bd = state.GetWebService.data;
+    if (IsNullOrWhiteSpace(bd) || Array.isArray(state.GetWebService.data)) {
+        bd = sessionStorage.getItem("WSSELECTED");
+    }
+    return {
+        token: state.tokenActive.data,
+        parametrosTC: state.GetParametrosTC.data
+    };
+};
+
+
 
 const ValidacionesGenerales = (props) => {
     const dispatch = useDispatch();
     const [isGenerandoAutorizacion, setIsGenerandoAutorizacion] = useState(false);
     const [archivoAutorizacion, setArchivoAutorizacion] = useState('');
     const [isDocCargado, setIsDocCargado] = useState(false);
+    const [oficinas, setOficinas] = useState([]);
 
+
+    useEffect(() => {
+
+        //Obtener oficinas parametrizadas
+        let ParametrosTC = props.parametrosTC.lst_parametros;
+        let oficinasParametrosTC = ParametrosTC
+            .filter(param => param.str_nombre === 'OFICINAS_TC')
+            .map(estado => ({
+                prm_id: estado.int_id_parametro,
+                prm_valor_fin: estado.str_valor_fin,
+                prm_descripcion: estado.str_descripcion
+            }));
+        setOficinas(oficinasParametrosTC)
+
+
+    }, []);
 
     useEffect(() => {
         if (!props.onShowAutorizacion) {
@@ -40,9 +71,11 @@ const ValidacionesGenerales = (props) => {
 
 
     const getContrato = async () => {
-        
         const nombresApellidos = props.infoSocio.str_nombres + " " + props.infoSocio.str_apellido_paterno + " " + props.infoSocio.str_apellido_materno;
-        await fetchScore("C", props.infoSocio.cedula, nombresApellidos, props.datosUsuario[0].strUserOficial, props.datosUsuario[0].strOficial, props.datosUsuario[0].strCargo, props.token, (data) =>
+
+        const oficinaFormato = oficinas.find(ofic => Number(ofic.prm_valor_fin) === Number(props.datosUsuario[0].strUserOficina))
+
+        await fetchScore("C", props.infoSocio.cedula, nombresApellidos, oficinaFormato.prm_descripcion, props.datosUsuario[0].strOficial, props.datosUsuario[0].strCargo, props.token, (data) =>
         {
             descargarArchivoConsulta(data);
         }, dispatch);
@@ -76,38 +109,43 @@ const ValidacionesGenerales = (props) => {
                 </Fragment>
                 :
                 <div className="f-col">
-                    <h2>Validaciones</h2>
-
                     {props.lst_validaciones && props.lst_validaciones?.lst_validaciones_ok?.length > 0 &&
-                        <Card className={["w-100"]}>
-                            {props.lst_validaciones.lst_validaciones_ok.map((validacion) => {
-                                return (
-                                    <div className="f-row validacion mb-3" key={validacion.str_descripcion_alerta}>
-                                        <img className="btn_mg mr-3" style={{ width: "15px", height: "15px" }} src="Imagenes/statusActive.png" alt="Validación OK"></img>
-                                        <h3>{validacion.str_descripcion_alerta}</h3>
-                                    </div>
-                                );
+                        <Fragment key= "1">
+                            <h3 className="mb-1">Validaciones correctas</h3>
+                            <Card className={["w-100"]}>
+                                {props.lst_validaciones.lst_validaciones_ok.map((validacion) => {
+                                    return (
+                                        <div className="f-row validacion mb-3" key={validacion.str_descripcion_alerta}>
+                                            <img className="btn_mg mr-3" style={{ width: "15px", height: "15px" }} src="Imagenes/statusActive.png" alt="Validación OK"></img>
+                                            <h3>{validacion.str_descripcion_alerta}</h3>
+                                        </div>
+                                    );
 
-                            })}
-                        </Card>
+                                })}
+                            </Card>
+                        </Fragment>                        
                     }
                     {props.lst_validaciones && props.lst_validaciones?.lst_validaciones_err?.length > 0 &&
-                        <Card className={[`W-100 ${props.lst_validaciones?.lst_validaciones_ok?.length !== 0 ? 'mt-4' : ''}`]}>
-                            {props.lst_validaciones.lst_validaciones_err.map((validacion) => {
-                                return (
-                                    <div className="f-row validacion mt-2" key={validacion.str_descripcion_alerta}>
-                                        <img className="btn_mg mr-3" style={{ width: "15px", height: "15px" }} src="/Imagenes/statusBlocked.png" alt="Se requiere cumplir"></img>
-                                        <h3>{validacion.str_descripcion_alerta}</h3>
-                                        {(validacion.str_nemonico === "ALERTA_SOLICITUD_TC_090" && validacion.str_estado_alerta === "False") &&
-                                            <button className="btn_mg_icons" onClick={getDocAutorizacion}>
-                                                <img src="/Imagenes/right.svg" alt="Cumplir requisito"></img>
-                                            </button>
-                                        }
-                                    </div>
-                                );
+                        <Fragment key="2">
+                            <h3 className={`${props.lst_validaciones?.lst_validaciones_ok?.length !== 0 ? 'mt-4' : ''} mb-1`}>Validaciones pendientes</h3>
+                            <Card className={[`W-100`]}>
+                                {props.lst_validaciones.lst_validaciones_err.map((validacion) => {
+                                    return (
+                                        <div className="f-row validacion mt-2" key={validacion.str_descripcion_alerta}>
+                                            <img className="btn_mg mr-3" style={{ width: "15px", height: "15px" }} src="/Imagenes/statusBlocked.png" alt="Se requiere cumplir"></img>
+                                            <h3>{validacion.str_descripcion_alerta}</h3>
+                                            {(validacion.str_nemonico === "ALERTA_SOLICITUD_TC_090" && validacion.str_estado_alerta === "False") &&
+                                                <button className="btn_mg_icons" onClick={getDocAutorizacion}>
+                                                    <img src="/Imagenes/right.svg" alt="Cumplir requisito"></img>
+                                                </button>
+                                            }
+                                        </div>
+                                    );
 
-                            })}
-                        </Card>
+                                })}
+                            </Card>
+                        </Fragment>
+                        
                     }
 
                 </div>
@@ -115,5 +153,4 @@ const ValidacionesGenerales = (props) => {
         </div>
     );
 }
-
-export default ValidacionesGenerales;
+export default connect(mapStateToProps, {})(ValidacionesGenerales);

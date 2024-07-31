@@ -15,10 +15,19 @@ namespace Domain.Models.TarjetaCredito.AddProspeccion
         public string str_apellidos { get; set; } = String.Empty;
         public string str_celular { get; set; } = String.Empty;
         public string str_correo { get; set; } = String.Empty;
-        public decimal dec_cupo_solicitado {  get; set; }
+        public string mny_cupo_solicitado {  get; set; }
         public string str_id_autoriza_cons_buro { get; set; } = String.Empty;
         public string str_id_autoriza_datos_per { get; set; } = String.Empty;
         public string str_comentario { get; set; } = String.Empty;
         public string str_comentario_adicional { get; set; } = String.Empty;
+
+        public string mny_total_ingresos { get; set; } = string.Empty;
+        public string mny_total_egresos { get; set; } = string.Empty;
+        public string mny_gastos_financiero { get; set; } = string.Empty;
+        public string mny_gastos_codeudor { get; set; } = string.Empty;
+        public string mny_cupo_sugerido_aval { get; set; } = string.Empty;
+        public string mny_cupo_sug_coopmego { get; set; } = string.Empty;
+        public string str_score { get; set; } = string.Empty;
+
     }
 }

@@ -223,7 +223,7 @@ const VerSolicitud = (props) => {
                     prm_valor_ini: estado.str_valor_ini
                 })));
 
-            /* ESTADOS SIGUIENTES CUANDO SOLICITUD ESTA EN POR CONFIRMAR SOCIO POR MONTO MENOR APROBADO */
+            /* ESTADOS SIGUIENTES CUANDO SOLICITUD ESTA EN VERIFICAR CLIENTE SOCIO POR MONTO MENOR APROBADO */
             setEstadosSigConfirmPorMontoMenorAll(ParametrosTC
                 .filter(param => param.str_nombre === 'APROBACION_SOLICITUD_MONTO_MENOR')
                 .map(estado => ({
@@ -413,19 +413,21 @@ const VerSolicitud = (props) => {
         //Debe guardar comentario de Resolucion
 
         //TODO VALIDAR QUE DECISION QUEDA 
-        let decisionPasoBandeja = props.solicitud.idSolicitud !== "ANALISIS COMITE" ? "REVISADO" : '-';
+        let decisionPasoBandeja = props.solicitud.idSolicitud !== "POR APROBAR SOLICITUD" ? "REVISADO" : '-';
         fetchAddComentarioSolicitud(props.solicitud.solicitud, comentarioSolicitud, props.solicitud.idSolicitud, false, props.token, (data) => {
             if (data.str_res_codigo === "000") {
                 let cupoResolucion = Number(solicitudTarjeta?.str_cupo_sugerido_coopmego) !== 0 ? parseFloat(solicitudTarjeta?.str_cupo_sugerido_coopmego)
                     : parseFloat(solicitudTarjeta?.str_cupo_sugerido_aval);
 
+                    /* TODO: comentardo temporalmente
                 //let cupoSugeridoAval = solicitudTarjeta?.str_cupo_sugerido_aval ? parseFloat(solicitudTarjeta?.str_cupo_sugerido_aval) : 0;
                 fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, cupoResolucion, datosUsuario[0].strOficial, decisionPasoBandeja, comentarioSolicitud, props.token, (data) => {
                     setModalVisibleOk(true);
                     setTextoModal("Su comentario se ha guardado correctamente");
                     //navigate.push('/solicitud');
                 }, dispatch)
-
+                */
+                navigate.push('/solicitud');
 
             }
         }, dispatch);
@@ -473,7 +475,7 @@ const VerSolicitud = (props) => {
     const getDecision = (event) => {
         setObservacionComite("");
         setValorDecisionSelect(event.target.value);
-        if (event.target.value === "EST_APROBADA") {// || Number(event.target.value) === 11278) { //APROBADO o POR CONFIRMAR
+        if (event.target.value === "EST_APROBADA") {// || Number(event.target.value) === 11278) { //APROBADO o VERIFICAR CLIENTE
             setIsMontoAprobarse(true);
             setIsRechazaComite(false);
         }
@@ -534,18 +536,21 @@ const VerSolicitud = (props) => {
             let cupoResolucion = Number(solicitudTarjeta?.str_cupo_sugerido_coopmego) !== 0 ? parseFloat(solicitudTarjeta?.str_cupo_sugerido_coopmego)
                 : parseFloat(solicitudTarjeta?.str_cupo_sugerido_aval);
 
-            //Comite retorna a un estado de bandeja especifica para ANALISIS COMITE
-            if (solicitudTarjeta?.str_estado === "ANALISIS COMITE") {
+            //Comite retorna a un estado de bandeja especifica para POR APROBAR SOLICITUD
+            if (solicitudTarjeta?.str_estado === "POR APROBAR SOLICITUD") {
                 //fetchAddProcEspecifico(props.solicitud.solicitud, 0, selectCambioEstadoSol, comentarioCambioEstado, props.token, (data) => {
                 fetchAddProcEspecifico(props.solicitud.solicitud, 0, selectCambioEstadoSol, descripcionMotivoRetorno, props.token, (data) => {
                     if (data.str_res_codigo === "000") {
 
+                        /* TODO: comentardo temporalmente
                         //let decision = parametrosTC.find(param => param.prm_nemonico === selectCambioEstadoSol);
                         let decision = 'REVISAR';
                         fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, cupoResolucion, datosUsuario[0].strOficial, decision, comentarioCambioEstado, props.token, (data) => {
                             setModalCambioBandeja(false);
                             navigate.push('/solicitud');
                         }, dispatch)
+                        */
+                        navigate.push('/solicitud');
 
                     }
                 }, dispatch)
@@ -553,14 +558,18 @@ const VerSolicitud = (props) => {
             } else { //Otros perfiles solo retornan a bandeja anterior
                 //Variable true para retornar bandeja anterior
                 fetchAddComentarioSolicitud(props.solicitud.solicitud, descripcionMotivoRetorno, props.solicitud.idSolicitud, true, props.token, (data) => {
-                    if (data.str_res_codigo === "000") {
+                    console.log("RETORNAR sol", data)
+                    if (data.str_res_codigo === "000") {                        
 
+                        /* TODO: comentardo temporalmente
                         let decision = 'REVISAR';
-
                         fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, cupoResolucion, datosUsuario[0].strOficial, decision, comentarioCambioEstado, props.token, (data) => {
                             setModalCambioBandeja(false);
+
                             navigate.push('/solicitud');
                         }, dispatch)
+                        */
+                        navigate.push('/solicitud');
                     }
                 }, dispatch);
             }
@@ -613,9 +622,9 @@ const VerSolicitud = (props) => {
     useEffect(() => {
 
         if (selectMotivoRetornoBanj !== "" && selectMotivoRetornoBanj !== "-1" && comentarioCambioEstado !== "") {
-            if (solicitudTarjeta?.str_estado === "ANALISIS COMITE" && selectCambioEstadoSol !== "" && selectCambioEstadoSol !== "-1") {
+            if (solicitudTarjeta?.str_estado === "POR APROBAR SOLICITUD" && selectCambioEstadoSol !== "" && selectCambioEstadoSol !== "-1") {
                 setIsBtnDisableCambioBandeja(false);
-            } else if (solicitudTarjeta?.str_estado !== "ANALISIS COMITE") {
+            } else if (solicitudTarjeta?.str_estado !== "POR APROBAR SOLICITUD") {
                 setIsBtnDisableCambioBandeja(false);
             } else {
                 setIsBtnDisableCambioBandeja(true);
@@ -649,9 +658,13 @@ const VerSolicitud = (props) => {
                     let cupoResolucion = Number(solicitudTarjeta?.str_cupo_sugerido_coopmego) !== 0 ? parseFloat(solicitudTarjeta?.str_cupo_sugerido_coopmego)
                         : parseFloat(solicitudTarjeta?.str_cupo_sugerido_aval);
                     let decision = parametrosTC.find(param => param.prm_nemonico === valorDecisionSelect);
+
+                    /* TODO: comentardo temporalmente
                     fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, cupoResolucion, datosUsuario[0].strOficial, decision.prm_valor_ini, observacionComite, props.token, (data) => {
                         navigate.push('/solicitud');
                     }, dispatch)
+                    */
+                    navigate.push('/solicitud');
                 }
             }, dispatch)
         }
@@ -679,9 +692,12 @@ const VerSolicitud = (props) => {
                         : parseFloat(solicitudTarjeta?.str_cupo_sugerido_aval);
                     let decision = parametrosTC.find(param => param.prm_nemonico === valorDecisionSelect);
 
+                    /* TODO: comentardo temporalmente
                     fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, cupoResolucion, datosUsuario[0].strOficial, decision.prm_valor_ini, observacionComite, props.token, (data) => {
                         navigate.push('/solicitud');
                     }, dispatch)
+                    */
+                    navigate.push('/solicitud');
                 }
                 else {
                     console.log("No cuenta con permisos ", data);
@@ -692,14 +708,16 @@ const VerSolicitud = (props) => {
 
         }
         //Si cupo que se va aprobar es menor al que solicita el socio
-        else if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_POR_CONFIRMAR") { //POR CONFIRMAR
-            fetchAddProcEspecifico(props.solicitud.solicitud, Number.parseFloat(montoAprobado).toFixed(2), "EST_POR_CONFIRMAR", observacionComite, props.token, (data) => { //POR CONFIRMAR 11278
+        else if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_POR_CONFIRMAR") { //VERIFICAR CLIENTE
+            fetchAddProcEspecifico(props.solicitud.solicitud, Number.parseFloat(montoAprobado).toFixed(2), "EST_POR_CONFIRMAR", observacionComite, props.token, (data) => { //VERIFICAR CLIENTE 11278
                 if (data.str_res_codigo === "000") {
-
+                    /* TODO: comentardo temporalmente
                     let decision = parametrosTC.find(param => param.prm_nemonico === "EST_APROBADA");
                     fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, Number.parseFloat(montoAprobado).toFixed(2), datosUsuario[0].strOficial, decision.prm_valor_ini, observacionComite, props.token, (data) => {
                         navigate.push('/solicitud');
                     }, dispatch)
+                    */
+                    navigate.push('/solicitud');
                 }
             }, dispatch)
         }
@@ -774,17 +792,19 @@ const VerSolicitud = (props) => {
     const guardarResolucionSocio = () => {
         // ENVIAR EL CUPO APROBADO CUANDO SE ENVIE A APROBAR
         let cupoSugeridoAval = solicitudTarjeta?.str_cupo_sugerido_aval ? parseFloat(solicitudTarjeta?.str_cupo_sugerido_aval) : 0;
-        if (selectResolucionSocio === "EST_APROBADA_SOCIO") {
-            //fetchAddProcEspecifico(props.solicitud.solicitud, solicitudTarjeta.str_cupo_aprobado, "EST_APROBADA_SOCIO", comentarioCambioEstado, props.token, (data) => { //EST_APROBADA_SOCIO 11279
-            fetchAddProcEspecifico(props.solicitud.solicitud, solicitudTarjeta.str_cupo_aprobado, "EST_APROBADA_SOCIO", comentarioResolucionSocio, props.token, (data) => {
+        if (selectResolucionSocio === "EST_APROBADA_CLIENTE") {
+            //fetchAddProcEspecifico(props.solicitud.solicitud, solicitudTarjeta.str_cupo_aprobado, "EST_APROBADA_CLIENTE", comentarioCambioEstado, props.token, (data) => { //EST_APROBADA_CLIENTE 11279
+            fetchAddProcEspecifico(props.solicitud.solicitud, solicitudTarjeta.str_cupo_aprobado, "EST_APROBADA_CLIENTE", comentarioResolucionSocio, props.token, (data) => {
                 if (data.str_res_codigo === "000") {
 
                     //let decision = parametrosTC.find(param => param.prm_nemonico === selectResolucionSocio);
                     let decision = "APROBADA";
-
+                    /* TODO: comentardo temporalmente
                     fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, cupoSugeridoAval, datosUsuario[0].strOficial, decision, comentarioResolucionSocio, props.token, (data) => {
                         navigate.push('/solicitud');
                     }, dispatch)
+                    */
+                    navigate.push('/solicitud');
 
 
                 }
@@ -800,12 +820,14 @@ const VerSolicitud = (props) => {
 
                         //let decision = parametrosTC.find(param => param.prm_nemonico === selectResolucionSocio);
 
-
+                        /* TODO: comentardo temporalmente
                         let decision = "RECHAZA SOCIO"
                         fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, cupoSugeridoAval, datosUsuario[0].strOficial, decision, comentarioResolucionSocio, props.token, (data) => {
 
                             navigate.push('/solicitud');
                         }, dispatch)
+                        */
+                        navigate.push('/solicitud');
 
                     }
                 }, dispatch)
@@ -974,7 +996,7 @@ const VerSolicitud = (props) => {
                                                 <h5 className="strong f-row">
                                                     {/*{`$ ${solicitudTarjeta?.str_cupo_solicitado || Number('0.00').toLocaleString("en-US")}`}*/}
                                                     {numberFormatMoney(solicitudTarjeta?.str_cupo_solicitado)}
-                                                    {solicitudTarjeta?.str_estado === "SOLICITUD CREADA" &&
+                                                    {solicitudTarjeta?.str_estado === "CREADA" &&
                                                         <Button className="btn_mg__auto ml-2" onClick={updateMonto}>
                                                             <img src="/Imagenes/edit.svg" alt="Editar cupo"></img>
                                                         </Button>
@@ -1023,7 +1045,7 @@ const VerSolicitud = (props) => {
                                                 <Button className="btn_mg__primary ml-2" onClick={openModalCambiarBandeja}>Retornar Solicitud</Button>
                                             }
 
-                                            {/*POR CONFIRMAR*/}
+                                            {/*VERIFICAR CLIENTE*/}
                                             {solicitudTarjeta?.str_estado === estadosSigConfirmPorMontoMenorAll[0]?.prm_valor_ini &&
                                                 <>
                                                     <div className="values ml-1 mb-3">
@@ -1075,8 +1097,8 @@ const VerSolicitud = (props) => {
                                             }
                                         </Table>
 
-                                        {/*SECCION APROBAR O NEGAR POR ANALISIS COMITE*/}
-                                        {solicitudTarjeta?.str_estado === "ANALISIS COMITE" &&
+                                        {/*SECCION APROBAR O NEGAR POR POR APROBAR SOLICITUD*/}
+                                        {solicitudTarjeta?.str_estado === "POR APROBAR SOLICITUD" &&
                                             <Card>
                                                 <h3>Decisión</h3>
                                                 <select disabled={isDecisionHabilitada} onChange={getDecision} value={valorDecisionSelect}>
@@ -1153,7 +1175,7 @@ const VerSolicitud = (props) => {
                                     </Card>
 
                                     {/*CAMPO GENERICO PARA DEJAR COMENTARIO Y PASAR A LA SIGUIENTE BANDEJA*/}
-                                    {(solicitudTarjeta?.str_estado !== 'ANALISIS COMITE' && solicitudTarjeta?.str_estado !== 'POR CONFIRMAR') &&
+                                    {(solicitudTarjeta?.str_estado !== 'POR APROBAR SOLICITUD' && solicitudTarjeta?.str_estado !== 'VERIFICAR CLIENTE') &&
                                         <div className="mt-4">
                                             <h3 className="mb-3 strong">Observaciones</h3>
                                             <Textarea placeholder="Ingrese su comentario" onChange={setComentarioSolicitudHandler} esRequerido={true} value={comentarioSolicitud} rows={filasTextAreaComentarioSol}></Textarea>
@@ -1162,11 +1184,11 @@ const VerSolicitud = (props) => {
                                 </div>
 
                                 <div className="mt-2 f-row justify-content-center">
-                                    {/*APROBADA O NEGADA POR COMITE ( 11275 EST_ANALISIS_COMITE) */}
-                                    {(solicitudTarjeta?.str_estado === "ANALISIS COMITE") &&
+                                    {/*APROBADA O NEGADA POR COMITE ( 11275 EST_POR_APROBAR) */}
+                                    {(solicitudTarjeta?.str_estado === "POR APROBAR SOLICITUD") &&
                                         <Button className="btn_mg__primary" disabled={isActivoBtnDecision} onClick={guardarDecisionComiteHandler}>Enviar</Button>
                                     }
-                                    {(solicitudTarjeta?.str_estado !== 'ANALISIS COMITE' && solicitudTarjeta?.str_estado !== 'POR CONFIRMAR') &&
+                                    {(solicitudTarjeta?.str_estado !== 'POR APROBAR SOLICITUD' && solicitudTarjeta?.str_estado !== 'VERIFICAR CLIENTE') &&
                                         <Button className="btn_mg__primary" disabled={faltaComentariosAsesor} onClick={guardarComentarioSiguiente}>Enviar</Button>
                                     }
                                 </div>
@@ -1358,7 +1380,7 @@ const VerSolicitud = (props) => {
         >
             {modalCambioBandeja && <div>
 
-                {solicitudTarjeta?.str_estado === "ANALISIS COMITE" &&
+                {solicitudTarjeta?.str_estado === "POR APROBAR SOLICITUD" &&
                     <>
                         <h3 className="mt-4 mb-1">Seleccione a qué estado desea regresar la solicitud:</h3>
 
@@ -1387,7 +1409,7 @@ const VerSolicitud = (props) => {
                 }
                 <br />
                 <div>
-                    <h3 className={`${solicitudTarjeta?.str_estado === "ANALISIS COMITE" ? 'mt-4 mb-1' : 'mt-1 mb-1'}`}>Seleccione el motivo:</h3>
+                    <h3 className={`${solicitudTarjeta?.str_estado === "POR APROBAR SOLICITUD" ? 'mt-4 mb-1' : 'mt-1 mb-1'}`}>Seleccione el motivo:</h3>
                     <select className='w-100' onChange={cambioMotivoRetornoBandeja} value={selectMotivoRetornoBanj}>
                         {motivosRegresaAntBandeja.length > 0
                             && motivosRegresaAntBandeja?.map((motivo, index) => {

@@ -38,6 +38,11 @@ const ValidacionSocio = (props) => {
         setCedulaSocio(props.cedulaSocioValue);
     }, [props.cedulaSocioValue])
 
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [])
+
     return (
         <>
             {props.paso === 0 &&

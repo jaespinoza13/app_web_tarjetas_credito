@@ -98,6 +98,8 @@ namespace Domain.Models.TarjetaCredito.AddSolicitud
         public string str_cred_vig_json { get; set; } = string.Empty;
         public string str_gar_cns_json { get; set; } = string.Empty;
         public string str_calificacion_buro { get; set; } = string.Empty;
+        public string str_score_buro { get; set; } = string.Empty;
+
 
 
 

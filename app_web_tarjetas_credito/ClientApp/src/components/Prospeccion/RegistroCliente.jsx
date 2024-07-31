@@ -5,7 +5,6 @@ import { validaCedula, validarCorreo } from '../../js/utiles';
 import Item from "../Common/UI/Item";
 import { useEffect } from "react";
 import Button from "../Common/UI/Button";
-import $ from 'jquery'; 
 
 
 const RegistroCliente = (props) => {
@@ -19,21 +18,15 @@ const RegistroCliente = (props) => {
     const [documento, setDocumento] = useState("");
     const [fechaNacimiento, setFechaNacimiento] = useState("");
 
-
-    //console.log(nombresCliente)
-    //console.log(apellidoMaterno)
-
     //Estado validacion
     const [isCedulaValida, setIsCedulaValida] = useState(false);
     const [isCorreoValido, setIsCorreoValido] = useState(false);
     const [isCelularValido, setIsCelularValido] = useState(false);
     const [isFechaNacValido, setFechaNacValido] = useState(false);
 
-
     const setCedulaHandler = (value) => {
         let validezCedula = validaCedula(value);
         setDocumento(value);
-        //$("#cedulaPaso1").val(value)
         setIsCedulaValida(validezCedula);
         props.setCedulaSocio({
             valido: validezCedula,
@@ -85,7 +78,8 @@ const RegistroCliente = (props) => {
         setCelularCliente(valor);
         props.datosIngresados({
             nombres: nombresCliente,
-            apellidos: apellidoPaterno,
+            apellidoPaterno: apellidoPaterno,
+            apellidoMaterno: apellidoMaterno,
             celular: valor,
             correo: correoCliente,
             documento: documento,
@@ -97,7 +91,8 @@ const RegistroCliente = (props) => {
         setCorreoCliente(valor);
         props.datosIngresados({
             nombres: nombresCliente,
-            apellidos: apellidoPaterno,
+            apellidoPaterno: apellidoPaterno,
+            apellidoMaterno: apellidoMaterno,
             celular: celularCliente,
             correo: valor,
             documento: documento,
@@ -120,8 +115,9 @@ const RegistroCliente = (props) => {
 
 
     const fechaNacimientoHandler = (valor) => {
+
         setFechaNacValido(valor !== "undefined--undefined")
-        setFechaNacimiento(valor)
+        setFechaNacimiento(convertDateFormat(valor))
         props.datosIngresados({
             nombres: nombresCliente,
             apellidoPaterno: apellidoPaterno,
@@ -129,38 +125,34 @@ const RegistroCliente = (props) => {
             celular: celularCliente,
             correo: correoCliente,
             documento: documento,
-            fechaNacimiento: valor
+            fechaNacimiento: convertDateFormat(valor)
         })
     }
-
-
-    const prueba = (objeto) => {
-
-        setDocumento(objeto.cedula);
-        setNombresCliente(objeto.nombres);
-        setApellidoPaterno(objeto.apellidoPaterno);
-        setApellidoMaterno(objeto.apellidoMaterno);
-        setCelularCliente(objeto.celularCliente);
-        setCorreoCliente(objeto.correoCliente);
-        const partesFecha = objeto.fechaNacimiento.split('-');
-        setFechaNacimiento(`${partesFecha[2]}-${partesFecha[0]}-${partesFecha[1]}`)
-
-        setIsCorreoValido(validarCorreo(objeto.correoCliente))
-        setIsCelularValido(objeto.celularCliente.length === 10)
-        setFechaNacValido(partesFecha !== "undefined--undefined")
-
-
-        /*
-        $('#nombres').val(objeto.nombres);
-        $('#apellido_paterno').val(objeto.apellidoPaterno);
-        */
+    
+    //Convertir una fecha
+    const convertDateFormat = (dateStr) => {
+        const [year, month, day] = dateStr.split('-');
+        return `${month}-${day}-${year}`;
     }
 
     useEffect(() => {
+        window.scrollTo(0, 0);
         if (props.infoSocio && props.paso === 1) {
-
+            setNombresCliente(props.infoSocio.nombres);
             console.log("INFO SOC/CL ", props.infoSocio)
-            prueba(props.infoSocio);
+
+            setDocumento(props.infoSocio.cedula);
+            setNombresCliente(props.infoSocio.nombres);
+            setApellidoPaterno(props.infoSocio.apellidoPaterno);
+            setApellidoMaterno(props.infoSocio.apellidoMaterno);
+            setCelularCliente(props.infoSocio.celularCliente);
+            setCorreoCliente(props.infoSocio.correoCliente);
+            const partesFecha = props.infoSocio.fechaNacimiento.split('-');
+            setFechaNacimiento(`${partesFecha[2]}-${partesFecha[0]}-${partesFecha[1]}`)
+
+            setIsCorreoValido(validarCorreo(props.infoSocio.correoCliente))
+            setIsCelularValido(props.infoSocio.celularCliente.length === 10)
+            setFechaNacValido(partesFecha !== "undefined--undefined")
     
         }
     }, [props.infoSocio, props.paso])

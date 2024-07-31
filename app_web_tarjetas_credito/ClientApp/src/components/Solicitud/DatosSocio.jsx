@@ -1,56 +1,30 @@
 ﻿import "../../css/Components/DatosSocio.css";
 import Accordion from "../Common/UI/Accordion";
 import { Fragment, useState } from "react";
-import { useDispatch } from 'react-redux';
+import { useDispatch, connect } from 'react-redux';
 import Item from "../Common/UI/Item";
 import { fetchInfoSocio, fetchInfoEconomica, fetchGetInfoFinan, fetchReporteAval } from "../../services/RestServices";
 import Switch from "../Common/UI/Switch";
 import Toggler from "../Common/UI/Toggler";
 import Textarea from "../Common/UI/Textarea";
 import Button from "../Common/UI/Button";
-import { base64ToBlob, descargarArchivo, generarFechaHoy, numberFormatMoney, verificarPdf } from "../../js/utiles";
+import { IsNullOrWhiteSpace, base64ToBlob, descargarArchivo, generarFechaHoy, numberFormatMoney, verificarPdf } from "../../js/utiles";
 import { useEffect } from "react";
+
+const mapStateToProps = (state) => {
+    var bd = state.GetWebService.data;
+    if (IsNullOrWhiteSpace(bd) || Array.isArray(state.GetWebService.data)) {
+        bd = sessionStorage.getItem("WSSELECTED");
+    }
+    return {
+        token: state.tokenActive.data,
+        parametrosTC: state.GetParametrosTC.data
+    };
+};
 
 const DatosSocio = (props) => {
     const dispatch = useDispatch();
 
-    const comentarioNegacion = [
-        {
-            prm_id: 1,
-            prm_valor_ini: "Solicitará en otra IFI"
-        },
-        {
-            prm_id: 2,
-            prm_valor_ini: "Monto muy bajo"
-        },
-        {
-            prm_id: 3,
-            prm_valor_ini: "No desea por el momento"
-        },
-        {
-            prm_id: 4,
-            prm_valor_ini: "Regresará con la documentación"
-        }
-    ];
-
-    const comentarioAfirmacion = [
-        {
-            prm_id: 5,
-            prm_valor_ini: "En trámite de ser socio"
-        },
-        {
-            prm_id: 6,
-            prm_valor_ini: "Lorem Ipsum"
-        },
-        {
-            prm_id: 7,
-            prm_valor_ini: "Lorem Ipsum"
-        },
-        {
-            prm_id: 8,
-            prm_valor_ini: "Regresará con la documentación"
-        }
-    ];
     //Acordeon Score
     const [estadoAccordionScore, setEstadoAccordionScore] = useState(true);
     const [estadoLoadingScore, setEstadoLoadingScore] = useState(false);
@@ -73,14 +47,20 @@ const DatosSocio = (props) => {
 
     //ComentarioGestion
     const [deseaTarjeta, setDeseaTarjeta] = useState(false);
-    const [comentariosPositivos, setComentariosPositivos] = useState([{ image: "", textPrincipal: "Solicitará en otra IFI", textSecundario: "", key: 1 },
+    const [comentariosPositivos, setComentariosPositivos] = useState([]);
+    const [comentariosNegativos, setComentariosNegativos] = useState([]);
+    const [comentariosPositivosPrueba, setComentariosPositivosPrueba] = useState([{ image: "", textPrincipal: "Solicitará en otra IFI", textSecundario: "", key: 1 },
+    { image: "", textPrincipal: "Monto muy bajo", textSecundario: "", key: 2 },
+    { image: "", textPrincipal: "No desea por el momento", textSecundario: "", key: 3 },
+    { image: "", textPrincipal: "Regresará con la documentación", textSecundario: "", key: 4 }]);
+    /*const [comentariosPositivos, setComentariosPositivos] = useState([{ image: "", textPrincipal: "Solicitará en otra IFI", textSecundario: "", key: 1 },
     { image: "", textPrincipal: "Monto muy bajo", textSecundario: "", key: 2 },
     { image: "", textPrincipal: "No desea por el momento", textSecundario: "", key: 3 },
     { image: "", textPrincipal: "Regresará con la documentación", textSecundario: "", key: 4 }]);
     const [comentariosNegativos, setComentariosNegativos] = useState([{ image: "", textPrincipal: "En trámite de ser socio", textSecundario: "", key: 1 },
     { image: "", textPrincipal: "Lorem Ipsum", textSecundario: "", key: 2 },
     { image: "", textPrincipal: "Lorem Ipsum", textSecundario: "", key: 3 },
-    { image: "", textPrincipal: "Regresará con la documentación", textSecundario: "", key: 4 }]);
+    { image: "", textPrincipal: "Regresará con la documentación", textSecundario: "", key: 4 }]);*/
     const [comentarioAdicional, setComentarioAdicional] = useState("");
 
     //InfoEconomica
@@ -183,9 +163,50 @@ const DatosSocio = (props) => {
 
 
     useEffect(() => {
+        window.scrollTo(0, 0);
+        //Obtener comentarios de la gestion para prospeccion
+
+        let ParametrosTC = props.parametrosTC.lst_parametros;
+        let comentariosPosiProspecto = ParametrosTC
+            .filter(param => param.str_nombre === "GESTION_PROSPECTO_SI")
+            .map(estado => ({
+                prm_id: estado.int_id_parametro,
+                prm_valor_ini: estado.str_valor_ini,
+            }));
+        let comentariosNegProspecto = ParametrosTC
+            .filter(param => param.str_nombre === "GESTION_PROSPECTO_NO")
+            .map(estado => ({
+                prm_id: estado.int_id_parametro,
+                prm_valor_ini: estado.str_valor_ini,
+            }));
+
+        let resultPositivos = comentariosPosiProspecto.map(
+            (param, index) => ({
+                image: "",
+                textPrincipal: param.prm_valor_ini,
+                textSecundario: "",
+                key: index+1,
+            })
+        )
+        let resultNegativos = comentariosNegProspecto.map(
+            (param,index) => ({
+                image: "",
+                textPrincipal: param.prm_valor_ini,
+                textSecundario: "",
+                key: index+1,
+            })
+        )
+        console.log(comentariosPositivosPrueba)
+        console.log(resultPositivos)
+        console.log(resultNegativos)
+
+        setComentariosPositivos(resultPositivos);
+        setComentariosNegativos(resultNegativos);
+
+
         if (props.gestion === 'solicitud') {
             getInfoSocio();
-        }        
+        }
         setComentarioAdicional(props.comentarioAdicionalValor);
     }, [])
 
@@ -212,8 +233,7 @@ const DatosSocio = (props) => {
                     <div className="ml-3 datosMonto">
                         <h3 className="blue">Cupo Sugerido Aval:</h3>
                         <h2 className="strong blue">{`  
-                        ${props.score?.response?.result?.capacidadPago[0]?.cupoSugerido ?
-                            /* Number(props.score.response.result.capacidadPago[0].cupoSugerido).toLocaleString('en-US') : Number('0.00').toLocaleString('en-US')}`}*/
+                        ${props.score?.response?.result?.capacidadPago[0]?.cupoSugerido ?                            
                                 numberFormatMoney(props.score.response.result.capacidadPago[0].cupoSugerido) : "$ 0,00"}`}
                         </h2>
                     </div>
@@ -224,11 +244,7 @@ const DatosSocio = (props) => {
                         <h3 className="blue">Cupo Sugerido CoopMego: </h3>
                         <h2 className="strong blue">{
                             `${props.score.str_cupo_sugerido ? numberFormatMoney(props.score.str_cupo_sugerido) : "$ 0,00"}`}
-                            {/*Number(props.score.str_cupo_sugerido).toLocaleString('en-US') : Number('0.00').toLocaleString('en-US')}`*/}
-                            
-
                         </h2>
-                        {/*<h2 className="strong blue">{`${props.score.str_cupo_sugerido_ccopmego ? Number(props.score.str_cupo_sugerido_ccopmego).toLocaleString('en-US') : Number('0.00').toLocaleString('en-US')}`}</h2>*/}
                     </div>
                 </div>
 
@@ -607,13 +623,13 @@ const DatosSocio = (props) => {
                 </div>
                 {props.gestion === "prospeccion" && <div>
                     <h3 className="mb-2">Comentario de la gestión</h3>
-                    {deseaTarjeta &&
+                    {(deseaTarjeta === true && comentariosPositivos.length) > 0 &&
                         <Toggler
                             selectedToggle={seleccionComentarioAfirma}
                             toggles={comentariosPositivos}>
                         </Toggler>
                     }
-                    {deseaTarjeta ||
+                    {(deseaTarjeta === false && comentariosNegativos.length > 0) &&
                         <Toggler
                             selectedToggle={seleccionComentarioNega}
                             toggles={comentariosNegativos}>
@@ -631,4 +647,4 @@ const DatosSocio = (props) => {
     );
 }
 
-export default DatosSocio;
+export default connect(mapStateToProps, {})(DatosSocio);

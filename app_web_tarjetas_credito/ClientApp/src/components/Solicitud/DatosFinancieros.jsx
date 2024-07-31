@@ -100,7 +100,7 @@ const DatosFinancieros = (props) => {
     }
 
     useEffect(() => {
-
+        window.scrollTo(0, 0);
         setMontoIngresos(props.dataConsultFinan.montoIngresos);
         setMontoEgresos(props.dataConsultFinan.montoEgresos);
         setRestaMontoGastosFinancieros(props.dataConsultFinan.montoRestaGstFinanciero);
@@ -145,7 +145,7 @@ const DatosFinancieros = (props) => {
                             <div className='mb-2'>
                                 <div className="f-row">
                                     <Input type="checkbox" setValueHandler={CkeckGtosFinancierosHandler} checked={isCkeckRestaGtoFinancero} ></Input>
-                                    <label>Resta Gasto Financiero</label>
+                                    <label className="ml-2">Resta Gasto Financiero</label>
                                 </div>
 
                                 <div className="f-row">

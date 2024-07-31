@@ -35,6 +35,7 @@ import Distribucion from './components/Ordenes/Distribucion';
 import RecibirOrdenesOficinas from './components/Ordenes/RecibirOrdenesOficinas';
 import EntregaSocio from './components/EntregaTarjetaCredito/EntregaSocio';
 import Activacion from './components/EntregaTarjetaCredito/Activacion';
+import VerDetalle from './components/Prospeccion/VerDetalle';
 
 
 const mapStateToProps = (state) => {
@@ -213,6 +214,7 @@ class App extends Component {
                         {this.state.isAuthenticated ? (
                             <>                                
                                 <Route path='/prospeccion/nueva' component={NuevaProspeccion} /> 
+                                <Route path='/prospeccion/ver' component={VerDetalle}/>
                             </>
                         ) : (
                             <Route render={() => <Redirect to="/auth" />} />

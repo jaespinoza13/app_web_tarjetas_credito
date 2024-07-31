@@ -3,18 +3,16 @@ import Accordion from "../Common/UI/Accordion";
 import { Fragment, useState } from "react";
 import { useDispatch, connect } from 'react-redux';
 import Item from "../Common/UI/Item";
-import {  fetchInfoEconomica, fetchGetInfoFinan, fetchReporteAval, fetchValidacionSocio, fetchScore } from "../../services/RestServices";
-import Switch from "../Common/UI/Switch";
+import { fetchGetAlertasCliente, fetchValidacionSocio, fetchGetInfoFinan, fetchReporteAval, fetchScore, fetchGetInfoProspecto } from "../../services/RestServices";
 import Toggler from "../Common/UI/Toggler";
-import Textarea from "../Common/UI/Textarea";
 import Button from "../Common/UI/Button";
 import { IsNullOrWhiteSpace, base64ToBlob, descargarArchivo, generarFechaHoy, numberFormatMoney, verificarPdf } from "../../js/utiles";
 import { useEffect } from "react";
 import { get } from "../../js/crypt";
+import Card from "../Common/Card";
+import ValidacionesGenerales from "../Solicitud/ValidacionesGenerales";
 
 //TODO PENDIENTE TRAER INFORMACION DE DATOS FINANCIEROS Y OROS
-
-
 
 const mapStateToProps = (state) => {
     var bd = state.GetWebService.data;
@@ -22,49 +20,22 @@ const mapStateToProps = (state) => {
         bd = sessionStorage.getItem("WSSELECTED");
     }
     return {
-        ws: bd,
-        listaFuncionalidades: state.GetListaFuncionalidades.data,
         token: state.tokenActive.data,
-        parametrosTC: state.GetParametrosTC.data
+        parametrosTC: state.GetParametrosTC.data,
+        prospecto: state.prospecto.data,
     };
 };
 
 
 
-const DatosSocio = (props) => {
+const VerDetalle = (props) => {
     const dispatch = useDispatch();
 
     const [informacionSocio, setInformacionSocio] = useState([]);
     const [score, setScore] = useState("");
     const [datosUsuario, setDatosUsuario] = useState([]);
-
-
-    const consultarInformacionGeneral = () => {
-        fetchValidacionSocio(props.cedulaSocio, '', props.token, (data) => {
-            setInformacionSocio(data);
-
-            //Consultar al buro
-            dataBuro(props.cedulaSocio, data.str_nombres + " " + data.str_apellido_paterno + " " + data.str_apellido_materno);
-
-        }, dispatch);
-
-    }
-
-
-    const dataBuro = async (cedula, nombreCompletoSocio) => {
-        //TODO CAMBIAR CEDULA REVISAR SI QUEDA CEDULA
-        await fetchScore("C", "1150214375", nombreCompletoSocio, datosUsuario[0].strUserOficial, datosUsuario[0].strOficial, datosUsuario[0].strCargo, props.token, (data) => {
-            setScore(data);
-
-            //TODO VALIDAR  CAMPO capacidadPago
-            //setCupoSugeridoAval(data.response.result?.capacidadPago[0].cupoSugerido.toString());
-//Se captura la calificacion que retorna de la consulta al buro
-            //setCalificacionRiesgo(data.response.result.modeloCoopmego[0].decisionModelo)
-            
-
-        }, dispatch);
-
-    }
+    const [dataProspecto, setDataProspecto] = useState([]);
+    const [lstValidaciones, setLstValidaciones] = useState([]);
 
 
 
@@ -100,51 +71,71 @@ const DatosSocio = (props) => {
 
 
 
-    //InfoFinanciera
-    const [dpf, setDpf] = useState([]);
-    const [creditosHis, setCreditosHis] = useState([]);
-
-    //Filas del text Area comentarioAdicional
-
-    const toggleAccordionScore = () => {
-        setEstadoAccordionScore(!estadoAccordionScore);
-    }
-
-    const comentarioAdicionalHanlder = (e) => {
-        setComentarioAdicional(e);
-        props.onComentarioAdic(e);
-    }
 
 
 
    
 
-    const getInfoFinan = () => {
-          setEstadoLoadingInfoFinan(true);
-        if (!contentReadyInfoFinan && dpf.length === 0) {
-            fetchGetInfoFinan(informacionSocio.str_ente, props.token, (data) => {
-                setDpf(...[data.lst_dep_plazo_fijo]);
-                setCreditosHis(...[data.lst_creditos_historicos]);
-                setEstadoAccordionInfoFinan(!estadoAccordionInfoFinan);
-                setContentReadyInfoFinan(!setContentReadyInfoFinan);
-            }, dispatch);
-        } else {
-            setEstadoAccordionInfoFinan(!estadoAccordionInfoFinan);
-        }          
-        setEstadoLoadingInfoFinan(false);
-    }
-
-    const seleccionComentarioAfirma = (value) => {
-        const comentarioSeleccionado = comentariosPositivos.find((element) => { return element.key === value });
-        props.onComentario(comentarioSeleccionado.textPrincipal);
-    }
-    const seleccionComentarioNega = (value) => {
-        const comentarioSeleccionado = comentariosNegativos.find((element) => { return element.key === value });
-        props.onComentario(comentarioSeleccionado.textPrincipal);
-    }
 
     const getInfoMediosNotif = () => {
         setEstadoMediosNotif(!estadoMediosNotif);
+    }
+
+    const consultaAlertas =  () => {
+        fetchValidacionSocio(props.prospecto.prospecto_cedula, '', props.token, (data) => {
+
+            fetchGetAlertasCliente(props.prospecto.prospecto_cedula, '', data.str_fecha_nacimiento, props.prospecto.prospecto_nombres, props.prospecto.prospecto_apellidos, props.token, (data) => {
+
+                let alertasIniciales_Validas = [...data.alertas_iniciales.lst_datos_alerta_true];
+                let alertasIniciales_Invalidas = [...data.alertas_iniciales.lst_datos_alerta_false];
+                let alertasRestriccion_Validas = [...data.alertas_restriccion.lst_datos_alerta_true];
+                let alertasRestriccion_Invalidas = [...data.alertas_restriccion.lst_datos_alerta_false];
+
+                let lst_validaciones_ok = [];
+                if (alertasIniciales_Validas.length > 0) {
+                    alertasIniciales_Validas.forEach(alertaN1 => {
+                        lst_validaciones_ok.push(alertaN1)
+                    });
+                }
+                if (alertasRestriccion_Validas.length > 0) {
+                    alertasRestriccion_Validas.forEach(alertaN2 => {
+                        lst_validaciones_ok.push(alertaN2)
+                    });
+                }
+
+                let lst_validaciones_err = [];
+                if (alertasIniciales_Invalidas.length > 0) {
+                    alertasIniciales_Invalidas.forEach(alertaN3 => {
+                        lst_validaciones_err.push(alertaN3)
+                    });
+                }
+                if (alertasRestriccion_Invalidas.length > 0) {
+                    alertasRestriccion_Invalidas.forEach(alertaN4 => {
+                        lst_validaciones_err.push(alertaN4)
+                    });
+                }
+
+                const objValidaciones = {
+                    lst_validaciones_ok: [...lst_validaciones_ok],
+                    lst_validaciones_err: [...lst_validaciones_err]
+                }
+                setLstValidaciones(objValidaciones);
+
+
+
+            }, dispatch);
+            
+
+        }, dispatch);
+        
+    }
+
+    const consultaInfoProspeccion = () => {
+
+        fetchGetInfoProspecto(props.prospecto.prospecto_cedula, props.prospecto.prospecto_id, props.token, (data) => {
+            setDataProspecto(data.info_prospecto?.[0]);
+        }, dispatch);
+
     }
 
 
@@ -158,8 +149,22 @@ const DatosSocio = (props) => {
         setDatosUsuario([{ strCargo: strRol, strOficial: strOficial, strUserOficial: userOficial, strUserOficina: userOficina }]);
 
         setComentarioAdicional(props.comentarioAdicionalValor);
-        consultarInformacionGeneral();
+        //consultarInformacionGeneral();
+
+
+        //Obtener alertas
+        consultaAlertas();
+
+        //Consulta info Prospecto
+        consultaInfoProspeccion();
+
+
+
     }, [])
+
+    const toggleAccordionScore = () => {
+        setEstadoAccordionScore(!estadoAccordionScore);
+    }
 
     const descargarReporte = async () => {
 
@@ -176,154 +181,119 @@ const DatosSocio = (props) => {
     }
 
     return (
-        <div className="f-col w-100">
-            <div id="montoSugerido" className="f-row w-100 ">
-                <div className="f-row justify-content-center align-content-center">
-                    <img src="Imagenes/Cupo sugerido.svg" width="10%" alt="Cupo sugerido Aval"></img>
-                    <div className="ml-3 datosMonto">
-                        <h3 className="blue">Cupo Sugerido Aval:</h3>
-                        <h2 className="strong blue">{`  
-                        ${score?.response?.result?.capacidadPago[0]?.cupoSugerido ?
-                                numberFormatMoney(score.response.result.capacidadPago[0].cupoSugerido) : "$ 0,00"}`}
-                        </h2>
-                    </div>
+        <div className="f-row w-100" >
+            <Card className={["marginTopLeftProsp w-40 justify-content-space-between align-content-center"]}>
+                <ValidacionesGenerales token={props.token}
+                    lst_validaciones={lstValidaciones}
+                    onShowAutorizacion={false}
+                ></ValidacionesGenerales>
+
+
+            </Card>
+
+            <Card className={["marginTopProsp w-40 justify-content-space-between align-content-center"]}>
+                <div className="f-col w-100 mb-3">
+                    <Card className={[" mt-5 justify-content-space-between align-content-center"]}>
+                        <section className="f-col w-100">
+                            <h3 className="strong mb-2">Datos Personales</h3>
+
+                            <div className="f-row w-90 justify-content-space-between">
+                                <label>Cédula:</label>
+                                <h4 className="strong">{dataProspecto.str_num_identificacion}</h4>
+                            </div> 
+                            <hr className="dashed"></hr>
+                            <div className="f-row w-90 justify-content-space-between">
+                                <label>Nombre:</label>
+                                <h4 className="strong">{dataProspecto.str_nombre} {dataProspecto.str_apellidos}</h4>
+                            </div>
+                            <hr className="dashed"></hr>
+                            <div className="f-row w-90 justify-content-space-between">
+                                <label>Correo:</label>
+                                <h4 className="strong">{dataProspecto.str_email}</h4>
+                            </div>   
+                        </section>
+                    </Card>
+
+                    <Card className={["mt-2 justify-content-space-between align-content-center"]}>
+                        <section className="f-col w-100">
+                            <h3 className="strong  mb-2">Datos Financieros</h3>
+                            <div className="f-row w-90 justify-content-space-between">
+                                <label>Ingresos:</label>
+                                <h4 className="strong">{numberFormatMoney(dataProspecto.mny_ingresos)}</h4>
+                            </div>
+                            <hr className="f-row dashed"></hr>
+                            <div className="f-row w-90 justify-content-space-between">
+                                <label>Egresos:</label>
+                                <h4 className="strong">{numberFormatMoney(dataProspecto.mny_egresos)}</h4>
+                            </div>
+                            <hr className="dashed"></hr>
+                            <div className="f-row w-90 justify-content-space-between">
+                                <label>Resta Gasto Financiero:</label>
+                                <h4 className="strong">{numberFormatMoney(dataProspecto.mny_gastos_financieros)}</h4>
+                            </div>
+                            <hr className="dashed"></hr>
+                            <div className="f-row w-90 justify-content-space-between">
+                                    <label>Gasto Financiero CoDeudor:</label>
+                                    <h4 className="strong">{numberFormatMoney(dataProspecto.mny_gastos_codeudor)}</h4>
+
+                                
+                            </div>
+                            <hr className="dashed"></hr>
+                            <div className="f-row w-90 justify-content-space-between">
+                                <label>Cupo solicitado:</label>
+                                <h4 className="strong">{numberFormatMoney(dataProspecto.mny_cupo_solicitado)}</h4>
+                            </div>
+                            <hr className="dashed"></hr>
+                            <div className="f-row w-90 justify-content-space-between">
+                                <label>Cupo Sugerido Aval:</label>
+                                <h4 className="strong">{numberFormatMoney(dataProspecto.mny_cupo_sugerido_aval)}  </h4>
+                            </div>
+                            <hr className="dashed"></hr>
+                            <div className="f-row w-90 justify-content-space-between">
+                                <label>Cupo Sugerido Coopmego:</label>
+                                <h4 className="strong">{numberFormatMoney(dataProspecto.mny_cupo_sugerido_coopmego)}</h4>
+                            </div>
+                            <hr className="dashed w-100"></hr>
+                            <div className="f-row w-90 justify-content-space-between">
+                                <label>Score:</label>
+                                <h4 className="strong">{dataProspecto.str_score_buro}</h4>
+                            </div>
+                        </section>
+                    </Card>
+
+                    <Card className={["mt-2 justify-content-space-between align-content-center"]}>
+                        <section className="f-col w-100">
+                            <h3 className="strong  mb-2">Información adicional</h3>
+                            <div className="f-row w-90 justify-content-space-between">
+                                <label>Comentario de la gestión:</label>
+                                <h4 className="strong">{dataProspecto.str_comentario_proceso}</h4>
+                            </div>
+                            <hr className="f-row dashed w-100"></hr>
+                            <div className="f-row w-90 justify-content-space-between">
+                                <label>Observación:</label>
+                                <h4 className="strong">{dataProspecto.str_comentario_adicional}</h4>
+                            </div>                            
+                        </section>
+                    </Card>
+
                 </div>
-                <div className="f-row justify-content-center align-content-center">
-                    <img src="Imagenes/Cupo sugerido.svg" width="10%" alt="Cupo sugerido CoopMego"></img>
-                    <div className="ml-3 datosMonto">
-                        <h3 className="blue">Cupo Sugerido CoopMego: </h3>
-                        <h2 className="strong blue">{
-                            `${score.str_cupo_sugerido ? numberFormatMoney(score.str_cupo_sugerido) : "$ 0,00"}`}   
-                        </h2>
-
-                    </div>
-                </div>
+            </Card>
 
 
-            </div>
-            <div className="info f-row mb-4 mt-4">
-                <h3 className="strong">{score.response.result.identificacionTitular[0]?.nombreRazonSocial}</h3>
-            </div>
-            <div id="infoSocio" className="w-100">
-                <Accordion contentReady={contentReadyScore} title="Score" rotate={estadoAccordionScore} loading={estadoLoadingScore} toggleAccordion={toggleAccordionScore}>
-                    <div className="m-4 f-row">
-                        <Item xs={6} sm={6} md={6} lg={6} xl={6}>
-                            <h4 className="strong mb-3">Resultado de la calificación</h4>
-                            <div className="values  mb-3">
-                                <h5>Ingresos</h5>
-                                <h5 className="strong">
-                                {/*    {`$ ${Number(informacionSocio.datosFinancieros.montoIngresos)?.toLocaleString("en-US")}`}*/}
-                                    {numberFormatMoney(informacionSocio.datosFinancieros.montoIngresos)}
+            
 
-                                </h5>
-                            </div>
-                            <div className="values  mb-3">
-                                <h5>Egresos</h5>
-                                <h5 className="strong">
-                                    {numberFormatMoney(informacionSocio.datosFinancieros.montoEgresos)}
-                                </h5>
-                            </div>
-                            <div className="values  mb-3">
-                                <h5>Resta Gasto Financiero</h5>
-                                <h5 className="strong"> 
-                                    {numberFormatMoney(informacionSocio.datosFinancieros.montoRestaGstFinanciero)}
-                                </h5>
-                            </div>
-                            <div className="values  mb-3">
-                                <h5>Cupo solicitado</h5>
-                                <h5 className="strong">
-                                    {numberFormatMoney(informacionSocio.datosFinancieros.montoSolicitado)}
-                                </h5>
-                            </div>
-                            <div className="values  mb-3">
-                                <h5>Cupo Sugerido Aval</h5>
-                                <h5 className="strong">
-                                    {numberFormatMoney(score.response.result.capacidadPago[0].cupoSugerido)}
-                                </h5>
-                            </div>
-                            <div className="values  mb-3">
-                                <h5>Score</h5>
-                                <h5 className="strong">
-                                    {score.response.result && score.response.result.scoreFinanciero && score.response.result.scoreFinanciero[0] && score.response.result.scoreFinanciero[0].score ? score.response.result.scoreFinanciero[0].score : 0}
-                                </h5>
-                            </div>
-                            <Button className={["btn_mg btn_mg__primary mt-2 mr-2"]} disabled={false} onClick={descargarReporte}>Descargar reporte</Button>
-                        </Item>
-                        <Item xs={6} sm={6} md={6} lg={6} xl={6}>
-                            <h4 className="strong mb-3" >Detalle de deudas:</h4>
-                            {score.response.result.deudaVigenteTotal.map((deuda,index) => {
-                                return (
-                                    <div key={index }>
-                                    <h3 className="strong">{deuda.sistemaCrediticio}</h3>
-                                    <div>
-                                        <div className="values">
-                                            <h5>Total deuda:</h5>
-                                                <h5 className="strong">
-                                                    {numberFormatMoney(deuda.totalDeuda)}
-                                                </h5>
-                                        </div>
-                                        <div className="values">
-                                            <h5>Valor demanda judicial:</h5>
-                                                <h5 className="strong">
-                                                    {numberFormatMoney(deuda.valorDemandaJudicial)} 
-
-                                                </h5>
-                                        </div>
-                                        <div className="values">
-                                            <h5>Valor por vencer:</h5>
-                                                <h5 className="strong">
-                                                    {numberFormatMoney(deuda.valorPorVencer)} 
-                                                </h5>
-                                        </div>
-                                    </div>
-                                </div>);
-                            })
-                            }
-
-                        </Item>
-                    </div>
-                </Accordion>
-                
-            </div>
-
-            {/*<div id="comentarioGestion">*/}
-            {/*    <div className="tipoComentario mt-4 mb-4">*/}
-            {/*        <Fragment>*/}
-                        
-            {/*            {props.gestion === 'prospeccion' && (*/}
-            {/*                <>*/}
-            {/*                    <h3>Está interesado en adquirir la tarjeta de crédito</h3>*/}
-            {/*                    <Switch onChange={deseaTarjetaHandler} value={deseaTarjeta}></Switch>*/}
-            {/*                </>*/}
-            {/*            )*/}
-            {/*        }*/}
-
-            {/*        </Fragment>*/}
-            {/*    </div>*/}
-            {/*    {props.gestion === "prospeccion" && <div>*/}
-            {/*        <h3 className="mb-2">Comentario de la gestión</h3>*/}
-            {/*        {deseaTarjeta &&*/}
-            {/*            <Toggler*/}
-            {/*                selectedToggle={seleccionComentarioAfirma}*/}
-            {/*                toggles={comentariosPositivos}>*/}
-            {/*            </Toggler>*/}
-            {/*        }*/}
-            {/*        {deseaTarjeta ||*/}
-            {/*            <Toggler*/}
-            {/*                selectedToggle={seleccionComentarioNega}*/}
-            {/*                toggles={comentariosNegativos}>*/}
-            {/*            </Toggler>*/}
-            {/*        }*/}
-            {/*    </div>}*/}
-            {/*    <div className="mt-4">*/}
-            {/*        <h3 className="mb-2">Comentario Adicional</h3>*/}
-            {/*        <Textarea placeholder="Ej. Ingrese algún detalle" onChange={comentarioAdicionalHanlder} esRequerido={false} value={comentarioAdicional}*/}
-            {/*            rows={filasTextAreaComentarioAd }></Textarea>*/}
-            {/*    </div>*/}
-
-            {/*</div>*/}
         </div>
+
+       
     );
+
+
 }
 
-export default connect(mapStateToProps, {})(DatosSocio);
+export default connect(mapStateToProps, {})(VerDetalle);
+
+
+
+
+
+

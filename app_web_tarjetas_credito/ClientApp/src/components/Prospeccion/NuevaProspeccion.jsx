@@ -44,6 +44,9 @@ const NuevaProspeccion = (props) => {
     const [lstValidaciones, setLstValidaciones] = useState([]);
     const [gestion, setGestion] = useState("prospeccion");
     const [score, setScore] = useState("");
+    const [puntajeScore, setPuntajeScore] = useState("");
+    const [cupoSugeridoAval, setCupoSugeridoAval] = useState("");
+    const [cupoSugeridoCoopmego, setCupoSugeridoCoopmego] = useState("0");
 
     //Global
     const [textoSiguiente, setTextoSiguiente] = useState("Continuar");
@@ -62,6 +65,7 @@ const NuevaProspeccion = (props) => {
     const [celularSocio, setCelularSocio] = useState('');
     const [correoSocio, setCorreoSocio] = useState('');
     const [fechaNacimiento, setFechaNacimiento] = useState('');
+    const [keyRegistroCliente, setKeyRegistroCliente] = useState(0);
     
     const [infoSocio, setInfoSocio] = useState([]);
     const [documento, setDocumento] = useState('');
@@ -74,6 +78,34 @@ const NuevaProspeccion = (props) => {
         montoRestaGstFinanciero: 0,
 
     })
+
+
+
+    const [objetoDatosGenerales, setObjetoDatosGenerales] = useState({
+        cedula: "",
+        nombres: "",
+        apellidoPaterno: "",
+        apellidoMaterno: "",
+        celularCliente: "",
+        correoCliente: "",
+        fechaNacimiento: "",
+    })
+
+    useEffect(() => {
+        let data = {
+            cedula: documento,
+            nombres: nombreSocio,
+            apellidoPaterno: apellidoPaterno,
+            apellidoMaterno: apellidoMaterno,
+            celularCliente: celularSocio,
+            correoCliente: correoSocio,
+            fechaNacimiento: fechaNacimiento,
+        }
+        setObjetoDatosGenerales(data)
+
+    }, [celularSocio, correoSocio, documento, nombreSocio, apellidoPaterno, apellidoMaterno, fechaNacimiento]) //enteSocio
+
+
 
     const [comentario, setComentario] = useState("");
     const [comentarioAdic, setComentarioAdic] = useState("");
@@ -127,7 +159,7 @@ const NuevaProspeccion = (props) => {
         if (props.parametrosTC?.lst_parametros?.length > 0) {
             let ParametrosTC = props.parametrosTC.lst_parametros;
             /*PARAMETRO PARA CONTROL DE CUPO MINIMO A SOLICITAR EN TARJETA DE CRÉDITO*/
-            setControlMontoMinimoParametro(Number(ParametrosTC.filter(param => param.str_nombre === 'CUPO_MINIMO_SOLICITAR_TC')[0]?.str_valor_ini));
+            setControlMontoMinimoParametro(Number(ParametrosTC.filter(param => param.str_nemonico === 'PRM_WS_TC_CUPO_MINIMO_SOL_TC')[0]?.str_valor_ini));
         }
 
     }, []);
@@ -149,19 +181,25 @@ const NuevaProspeccion = (props) => {
 
     useEffect(() => {
         if (step === 0 && documento !== '' && !setCedulaValida) {
-                    
 
-            setNombreSocio("")
-            setApellidoPaterno("")
-            setApellidoMaterno("")
-            setEnteSocio("")
-            setCorreoSocio("")
-            setFechaNacimiento("")
+            setDocumento(" ")
+            setNombreSocio(" ")
+            setApellidoPaterno(" ")
+            setApellidoMaterno(" ")
+            setEnteSocio(" ")
+            setCorreoSocio(" ")
+            setFechaNacimiento(" ")
             setEstadoBotonSiguiente(true);
            
         }
         if (step === 1) {
             setEstadoBotonSiguiente(true);
+        }
+        if (step === 3) {
+            setTextoSiguiente("Continuar")
+        }
+        if (step === 4) {
+            setTextoSiguiente("Registrar")
         }
         if (step === -1) {
             setTextoSiguiente("Volver al inicio")
@@ -278,6 +316,9 @@ const NuevaProspeccion = (props) => {
     }, [comentario, comentarioAdic])
 
 
+    useEffect(() => {
+        console.log(datosUsuario)
+    }, [datosUsuario])
 
     const refrescarInformacionHandler = (actualizarInfo) => {
         fetchValidacionSocio(documento, '', props.token, (data) => {
@@ -288,6 +329,8 @@ const NuevaProspeccion = (props) => {
             setCelularSocio(data.str_celular);
             setCorreoSocio(data.str_email);
             setFechaNacimiento(data.str_fecha_nacimiento)
+            setKeyRegistroCliente(prevState => prevState+1) //se actualiza key para nuevo renderizado del componente
+
 
             data.cedula = documento
             data.nombres = data.str_nombres
@@ -307,6 +350,7 @@ const NuevaProspeccion = (props) => {
             }
             setDatosFinancierosObj(datosFinan);
             setInfoSocio(data);
+            //TODO validar que no tenga ente
             setEnteSocio("")
             if (!actualizarInfo) {
                 setStep(1);
@@ -404,8 +448,10 @@ const NuevaProspeccion = (props) => {
 
             if (!realizaNuevaSimulacion.current) {
                 //TODO: CAMBIAR LA CEDULA por "documento"
-                await fetchScore("C", "1150214375", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, datosUsuario[0].strUserOficial, datosUsuario[0].strOficial, datosUsuario[0].strCargo, props.token, (data) => {
+                await fetchScore("C", "1150214375", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, datosUsuario[0].strUserOficina, datosUsuario[0].strOficial, datosUsuario[0].strCargo, props.token, (data) => {
                     setScore(data);
+                    setPuntajeScore(data?.response?.result?.scoreFinanciero[0]?.score)
+                    setCupoSugeridoAval(data.response?.result?.capacidadPago[0]?.cupoSugerido)
                     setIdClienteScore(data.int_cliente);
                     //console.log("SCORE int_cliente, ", data.int_cliente)
                     //setRealizaNuevaSimulacion(true);
@@ -425,18 +471,30 @@ const NuevaProspeccion = (props) => {
                 if (!datosFinan.montoRestaGstFinanciero || datosFinan.montoRestaGstFinanciero === "" || datosFinan.montoRestaGstFinanciero === " " || IsNullOrEmpty(datosFinan.montoRestaGstFinanciero)) datosFinan.montoRestaGstFinanciero = 0;
                 if (!datosFinan.montoGastoFinaCodeudor || datosFinan.montoGastoFinaCodeudor === "" || datosFinan.montoGastoFinaCodeudor === " " || IsNullOrEmpty(datosFinan.montoGastoFinaCodeudor)) datosFinan.montoGastoFinaCodeudor = 0;
 
-                //TODO CAMBIAR LA CEDULA
+                //TODO CAMBIAR LA CEDULA, oficina matriz
                 await fetchNuevaSimulacionScore("C", "1150214375", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, "Matriz", datosUsuario[0].strOficial, datosUsuario[0].strCargo, datosFinan.montoIngresos, datosFinan.montoEgresos, datosFinan.montoRestaGstFinanciero, datosFinan.montoGastoFinaCodeudor,
                     props.token, (data) => {
                         setScore(data);
                         setEstadoBotonSiguiente(true);
+                        setCupoSugeridoCoopmego(data.str_cupo_sugerido)
                     }, dispatch);
 
             }              
         }
 
-        if (step === 4) {
-            fetchAddProspecto(documento, 0, nombreSocio, apellidoPaterno + " " + apellidoMaterno, celularSocio, correoSocio, datosFinancierosObj.montoSolicitado, comentario, comentarioAdic, props.token, (data) => {
+        if (step === 4) { //  ingresos, egresos, gastoFinanciero, gastoCodeudor, cupoAval, cupoCoopmego, score,
+
+            let datosFinan = datosFinancierosObj;
+            if (!datosFinan.montoIngresos) datosFinan.montoIngresos = 0;
+            if (!datosFinan.montoEgresos) datosFinan.montoEgresos = 0;
+            if (!datosFinan.montoRestaGstFinanciero || datosFinan.montoRestaGstFinanciero === "" || datosFinan.montoRestaGstFinanciero === " " || IsNullOrEmpty(datosFinan.montoRestaGstFinanciero)) datosFinan.montoRestaGstFinanciero = 0;
+            if (!datosFinan.montoGastoFinaCodeudor || datosFinan.montoGastoFinaCodeudor === "" || datosFinan.montoGastoFinaCodeudor === " " || IsNullOrEmpty(datosFinan.montoGastoFinaCodeudor)) datosFinan.montoGastoFinaCodeudor = 0;
+
+            //str_num_documento, ente, nombres, apellidos, celular, correo, cupoSoli, comentario, comentarioAdic, ingresos, egresos, gastoFinanciero, gastoCodeudor, cupoAval,cupoCoopmego, score, token, onSucces, dispatch
+
+            fetchAddProspecto(documento, 0, nombreSocio, apellidoPaterno + " " + apellidoMaterno, celularSocio, correoSocio, datosFinancierosObj.montoSolicitado, comentario, comentarioAdic,
+                datosFinan.montoIngresos.toString(), datosFinan.montoEgresos.toString(), datosFinan.montoRestaGstFinanciero.toString(),datosFinan.montoGastoFinaCodeudor.toString(), cupoSugeridoAval.toString(), cupoSugeridoCoopmego.toString(), puntajeScore.toString(),
+                props.token, (data) => {
                 setVisitadosSteps([...visitadosSteps, actualStepper + 1])
                 setActualStepper(4);
                 setStep(-1);
@@ -492,6 +550,14 @@ const NuevaProspeccion = (props) => {
         setCorreoSocio(e.correo);
         setDocumento(e.documento);
         setFechaNacimiento(e.fechaNacimiento);
+
+        //Se actualiza los campos conforme se edite en el componente de Registrar cliente
+        let datosInfo = infoSocio;
+        datosInfo.cedula =e.documento;
+        datosInfo.str_nombres= e.nombres;
+        datosInfo.str_apellido_paterno = e.apellidoPaterno;
+        datosInfo.str_apellido_materno= e.apellidoMaterno;
+        setInfoSocio(datosInfo)
     }
 
 
@@ -554,16 +620,13 @@ const NuevaProspeccion = (props) => {
             }
             setDatosFinancierosObj(datosFinan);
 
-            anteriorStepHandler();
+            //anteriorStepHandler();
         }, dispatch);
 
     }
 
     return (
         <div className="f-row w-100" >
-            {/*<Sidebar enlace={props.location.pathname}></Sidebar>*/}
-            
-            {/*{showAutorizacion.toString()}*/}
             <Card className={["m-max w-100 justify-content-space-between align-content-center"]}>
                 <div className="f-col justify-content-center">
 
@@ -573,10 +636,12 @@ const NuevaProspeccion = (props) => {
 
                     {(step === 0 || step === 1) &&
                         <div className={"f-row w-100 justify-content-center"}>
-                            <RegistroCliente paso={step}
+                            <RegistroCliente
+                                key={keyRegistroCliente }
+                                paso={step}
                                 token={props.token}
                                 setCedulaSocio={cedulaSocioHandler}
-                                infoSocio={infoSocio}
+                                infoSocio={objetoDatosGenerales}
                                 datosIngresados={datosIngresadosHandler} 
                                 isVisibleBloque={isVisibleBloque}
                                 requiereActualizar={refrescarInformacionHandler}
@@ -601,7 +666,6 @@ const NuevaProspeccion = (props) => {
 
 
                     {(step === 3) &&
-                        /*habilitaRestaGstFinancieros={realizaNuevaSimulacion}*/
                         <div className="f-row w-100">
                             <DatosFinancieros
                                 dataConsultFinan={datosFinancierosObj}

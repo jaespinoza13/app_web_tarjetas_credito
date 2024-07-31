@@ -3,8 +3,8 @@ import { useHistory } from 'react-router-dom';
 import '../../scss/main.css';
 import '../../scss/components/solicitud.css';
 import { useState, useEffect} from "react";
-import { fetchGetOficinas, fetchGetSolicitudes} from "../../services/RestServices";
-import { IsNullOrWhiteSpace } from '../../js/utiles';
+import { fetchGetSolicitudes} from "../../services/RestServices";
+import { IsNullOrWhiteSpace, numberFormatMoney } from '../../js/utiles';
 import Modal from '../Common/Modal/Modal';
 import Sidebar from '../Common/Navs/Sidebar';
 import Card from '../Common/Card';
@@ -13,6 +13,7 @@ import Button from '../Common/UI/Button';
 import Toggler from '../Common/UI/Toggler';
 import Table from '../Common/Table';
 import { setSolicitudStateAction } from '../../redux/Solicitud/actions';
+import { setProspectoStateAction } from '../../redux/Prospecto/actions';
 import Paginacion from '../Common/Paginacion';
 
 
@@ -54,17 +55,25 @@ function Solicitud(props) {
     const [registrosPagActual, setRegistrosPagActual] = useState();
     const [numPaginas, setNumPaginas] = useState(0);
 
+
+    const [oficinasParametros, setOficinasParametros] = useState([]);
   
     //Headers tablas Solicitudes y Prospectos
     const headerTableSolicitantes = [
-        { nombre: 'Nro. Solicitud', key: 0 }, { nombre: 'Identificación', key: 1 }, { nombre: 'Ente', key: 2 }, { nombre: 'Nombre solicitante', key: 3 },
-        { nombre: 'Monto', key: 5 }, { nombre: 'Calificación', key: 6 },
-        { nombre: 'Estado', key: 7 }, { nombre: 'Oficina Crea', key: 8 }, //{ nombre: 'Acciones', key: 9 },
+        { nombre: 'Nro. Solicitud', key: 0 },
+        { nombre: 'Fecha', key: 1 },
+        { nombre: 'Cédula', key: 2 },
+        /*{ nombre: 'Ente', key: 2 },*/
+        { nombre: 'Nombre solicitante', key: 3 },
+        { nombre: 'Cupo Solicitado', key: 5 }, { nombre: 'Calificación', key: 6 },
+        { nombre: 'Estado', key: 7 }, { nombre: 'Oficina', key: 8 },
+        { nombre: 'Canal', key: 9 },
+        { nombre: 'Usuario', key: 10 } //{ nombre: 'Acciones', key: 9 },
     ];
 
     const headerTableProspectos = [
-        { nombre: 'Id', key: 1 }, { nombre: 'Cédula', key: 2 }, { nombre: 'Nombres', key: 3 },
-        { nombre: 'Celular', key: 4 }, { nombre: 'Correo', key: 5 }, { nombre: 'Cupo solicitado', key: 6 }, { nombre: 'Usuario Crea', key: 7 }
+        { nombre: 'Nro. Prospecto', key: 0 }, { nombre: 'Fecha', key: 1 },  { nombre: 'Cédula', key: 2 }, { nombre: 'Nombre', key: 3 },
+        { nombre: 'Celular', key: 4 }, { nombre: 'Correo', key: 5 }, { nombre: 'Cupo solicitado', key: 6 }, { nombre: 'Oficina', key: 7 }, { nombre: 'Canal', key: 8 }, { nombre: 'Usuario', key: 9 }
     ];
 
 
@@ -72,7 +81,6 @@ function Solicitud(props) {
     const [lstProstectos, stLstProspectos] = useState([]);
     const [lstSolicitudes, stLstSolicitudes] = useState([]);
 
-    const [oficinas, setOficinas] = useState([]);
     const [controlConsultaCargaComp, setControlConsultaCargaComp] = useState(false);
 
     //OBTENER PARAMETROS
@@ -90,9 +98,6 @@ function Solicitud(props) {
                 setNumPaginas(Math.ceil(data.solicitudes.length / paginasEnVista))
                 
             }, dispatch)
-            fetchGetOficinas(props.token, (data) => {
-                setOficinas(data.lst_oficinas);
-            }, dispatch);
 
             const strRol = get(localStorage.getItem("role"));
             setRol(strRol);
@@ -111,6 +116,19 @@ function Solicitud(props) {
                     prm_valor_ini: estado.str_valor_ini
                 })));
             if (perfilesAutorizados.length > 0) setHabilitarPerfilesVerSolicitud(perfilesAutorizados[0].prm_valor_ini.split('|'))
+
+            //Obtener oficinas parametrizadas
+            let oficinasParametrosTC = ParametrosTC
+                .filter(param => param.str_nombre === 'OFICINAS_TC')
+                .map(estado => ({
+                    prm_id: estado.int_id_parametro,
+                    prm_nombre: estado.str_nombre,
+                    prm_nemonico: estado.str_nemonico,
+                    prm_valor_ini: estado.str_valor_ini,
+                    prm_valor_fin: estado.str_valor_fin,
+                    prm_descripcion: estado.str_descripcion
+                }));
+            setOficinasParametros(oficinasParametrosTC)
         }
     }, [props])
 
@@ -196,6 +214,21 @@ function Solicitud(props) {
         }
     }
 
+    const moveToProspecto= (prospectoId) => {
+        const prospectoSeleccionado = registrosPagActual.find((prospect) => { return prospect.pro_id === prospectoId });
+        console.log(prospectoSeleccionado)
+        dispatch(setProspectoStateAction({
+            prospecto_id: prospectoSeleccionado.pro_id,
+            prospecto_cedula: prospectoSeleccionado.pro_num_documento,
+            prospecto_nombres: prospectoSeleccionado.pro_nombres,
+            prospecto_apellidos: prospectoSeleccionado.pro_apellidos
+
+        }))
+        navigate.push('/prospeccion/ver');
+       
+    }
+
+
     const siguientePasoHandler = () => {
         setModalVisible(false);
     }
@@ -218,8 +251,9 @@ function Solicitud(props) {
     }
 
     const validarNombreOficina = (idOficina) => {        
-        let nombreOficina = oficinas.find(ofic => Number(ofic.id_oficina) === Number(idOficina));
-        return nombreOficina?.agencia ? nombreOficina.agencia : '';
+        //let nombreOficina = oficinas.find(ofic => Number(ofic.id_oficina) === Number(idOficina));
+        let nombreOficina = oficinasParametros.find(ofic => Number(ofic.prm_valor_fin) === Number(idOficina));
+        return nombreOficina?.prm_descripcion ? nombreOficina.prm_descripcion : '';
     }
 
     return (
@@ -272,10 +306,11 @@ function Solicitud(props) {
                                     <td style={{ width:"10%" }}>
                                         {solicitud.int_id}
                                     </td>
+                                    <td>{solicitud.dtt_fecha_solicitud}</td>
                                     <td>{solicitud.str_identificacion}</td>
-                                    <td>{solicitud.int_ente}</td>
+                                    {/*<td>{solicitud.int_ente}</td>*/}
                                     <td>{solicitud.str_nombres}</td>
-                                    <td>{`$ ${Number(solicitud.dec_cupo_solicitado).toLocaleString('en-US')}`}</td>
+                                    <td>{numberFormatMoney(solicitud.dec_cupo_solicitado)}</td>
                                     <td>{solicitud.str_calificacion}</td>
                                     <td>
                                         {solicitud.str_analista ? <div>
@@ -286,9 +321,9 @@ function Solicitud(props) {
                                             </div>
                                         </div> : '' }                                        
                                     </td>
-                                    <td>
-                                        {validarNombreOficina(solicitud.int_oficina_crea)}
-                                    </td>
+                                    <td>{validarNombreOficina(solicitud.int_oficina_crea)}</td>
+                                    <td>{solicitud.str_canal_crea}</td>
+                                    <td>{solicitud.str_usuario_crea}</td>
 
                                 </tr>
                             );
@@ -304,13 +339,16 @@ function Solicitud(props) {
                         {/*BODY*/}
                         {registrosPagActual && registrosPagActual.map((prospecto) => {
                             return (
-                                <tr key={prospecto.pro_id}>
+                                <tr key={prospecto.pro_id} onClick={() => { moveToProspecto(prospecto.pro_id) }}>
                                     <td style={{ width: "10%" }}>{prospecto.pro_id}</td>
+                                    <td>{prospecto.pro_fecha_solicitud}</td>
                                     <td>{prospecto.pro_num_documento}</td>
                                     <td>{`${prospecto.pro_nombres} ${prospecto.pro_apellidos}`}</td>
                                     <td>{prospecto.pro_celular}</td>
                                     <td>{prospecto.pro_email}</td>
-                                    <td>{`$ ${prospecto.pro_cupo_solicitado}`}</td>
+                                    <td>{numberFormatMoney(prospecto.pro_cupo_solicitado) }</td>
+                                    <td>{validarNombreOficina(prospecto.pro_oficina_crea)}</td>
+                                    <td>{prospecto.pro_canal_crea}</td>
                                     <td>{prospecto.pro_usuario_crea}</td>
                                 </tr>);
                         })}
