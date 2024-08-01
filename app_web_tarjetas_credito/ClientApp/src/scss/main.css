@@ -1715,6 +1715,21 @@ input[type=radio] {
     flex-direction: column;
 }
 
+.icon-botton {
+    cursor: pointer;
+    align-items: center;
+    border: none;
+    border-radius: 100%;
+    display: contents;
+    justify-content: center;
+    width: 31px;
+    color: #004CAC; /*rojo #FF0000;*/
+    background-color: #F8F8F8;
+    padding: 0px;
+    height: 29px;
+}
+
+
 @keyframes ripple {
     to {
         transform: scale(4);
