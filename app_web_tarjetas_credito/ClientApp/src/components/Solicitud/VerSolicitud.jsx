@@ -449,7 +449,7 @@ const VerSolicitud = (props) => {
     const descargarMedio = (numSolicitud) => {
         //console.log("Num Sol,", numSolicitud)
 
-        fetchGetMedioAprobacion(solicitudTarjeta?.str_estado, props.solicitud.solicitud, props.token, (data) => {
+        fetchGetMedioAprobacion(solicitudTarjeta?.str_estado, props.solicitud.solicitud, props.solicitud.cedulaPersona, props.token, (data) => {
             //console.log("RESP MEDIO", data)
             if (data.str_res_codigo === "000" && verificarPdf(data.str_med_apro_bas_64)) {
                 const blob = base64ToBlob(data.str_med_apro_bas_64, 'application/pdf');
@@ -708,8 +708,8 @@ const VerSolicitud = (props) => {
 
         }
         //Si cupo que se va aprobar es menor al que solicita el socio
-        else if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_POR_CONFIRMAR") { //VERIFICAR CLIENTE
-            fetchAddProcEspecifico(props.solicitud.solicitud, Number.parseFloat(montoAprobado).toFixed(2), "EST_POR_CONFIRMAR", observacionComite, props.token, (data) => { //VERIFICAR CLIENTE 11278
+        else if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_VERIFICAR_CLIENTE") { //VERIFICAR CLIENTE
+            fetchAddProcEspecifico(props.solicitud.solicitud, Number.parseFloat(montoAprobado).toFixed(2), "EST_VERIFICAR_CLIENTE", observacionComite, props.token, (data) => { //VERIFICAR CLIENTE 11278
                 if (data.str_res_codigo === "000") {
                     /* TODO: comentardo temporalmente
                     let decision = parametrosTC.find(param => param.prm_nemonico === "EST_APROBADA");
@@ -735,7 +735,7 @@ const VerSolicitud = (props) => {
             controlBool.estadoSig = "EST_APROBADA" // EST_APROBADA (COMITE)
         } else if (Number.parseFloat(montoAprobado) > 0 && (Number.parseFloat(montoAprobado) < Number.parseFloat(solicitudTarjeta?.str_cupo_solicitado)) && valorDecisionSelect === "EST_APROBADA") {
             controlBool.validador = true;
-            controlBool.estadoSig = "EST_POR_CONFIRMAR" // EST_POR_CONFIRMAR (SE VA HACIA ASESOR CREDITO NUEVAMENTE)
+            controlBool.estadoSig = "EST_VERIFICAR_CLIENTE" // EST_VERIFICAR_CLIENTE (SE VA HACIA ASESOR CREDITO NUEVAMENTE)
         } else if (Number.parseFloat(montoAprobado) > Number.parseFloat(solicitudTarjeta?.str_cupo_solicitado)) {
             controlBool.validador = false;
             controlBool.estadoSig = "0" // NO ES POSIBLE PASAR BANDEJA
@@ -767,7 +767,7 @@ const VerSolicitud = (props) => {
         else if (valorDecisionSelect !== "-1" && montoAprobado > 0 && observacionComite !== "" && validaCupo.validador) {
             if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_APROBADA") {// EST_APROBADA 11276
                 setIsActivoBtnDecision(false);
-            } else if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_POR_CONFIRMAR") { //EST_POR_CONFIRMAR 11278 por cupo inferior 
+            } else if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_VERIFICAR_CLIENTE") { //EST_VERIFICAR_CLIENTE 11278 por cupo inferior 
                 setIsActivoBtnDecision(false);
             } else {
                 setIsActivoBtnDecision(true);
@@ -1034,7 +1034,7 @@ const VerSolicitud = (props) => {
                                         <div className={["f-row"]}>
 
                                             {permisoAccionAnalisis3Cs.includes(solicitudTarjeta?.str_estado) &&
-                                                <Button className="btn_mg__primary" onClick={modalHandler}>Análisis 3C's</Button>
+                                                <Button className="btn_mg__primary" onClick={modalHandler}>Análisis C's</Button>
                                             }
 
                                             {permisoImprimirMedio.includes(solicitudTarjeta?.str_estado) &&

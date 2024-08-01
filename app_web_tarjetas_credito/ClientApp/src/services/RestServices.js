@@ -1657,12 +1657,13 @@ export function fetchGetTarjetasCredito(nemonico_producto, tipo_tarjeta, estado_
     });
 }
 
-export function fetchGetMedioAprobacion(estadoSoli, idSolicitud, token, onSucces, dispatch) {
+export function fetchGetMedioAprobacion(estadoSoli, idSolicitud, cedula, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
         str_est_sol: estadoSoli,
-        int_id_sol: Number(idSolicitud)
+        int_id_sol: Number(idSolicitud),
+        str_num_documento: cedula
     }
     //console.log("BOD ", body)
     ServicioPostExecute(getMedioAprobacion, body, token, { dispatch: dispatch }).then((data) => {
