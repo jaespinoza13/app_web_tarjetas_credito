@@ -3,10 +3,9 @@ import { useHistory } from 'react-router-dom';
 import '../../scss/main.css';
 import '../../scss/components/solicitud.css';
 import { useState, useEffect} from "react";
-import { fetchGetSolicitudes} from "../../services/RestServices";
+import { fetchAddProcEspecifico, fetchGetSolicitudes} from "../../services/RestServices";
 import { IsNullOrWhiteSpace, numberFormatMoney } from '../../js/utiles';
 import Modal from '../Common/Modal/Modal';
-import Sidebar from '../Common/Navs/Sidebar';
 import Card from '../Common/Card';
 import { get } from '../../js/crypt';
 import Button from '../Common/UI/Button';
@@ -15,7 +14,7 @@ import Table from '../Common/Table';
 import { setSolicitudStateAction } from '../../redux/Solicitud/actions';
 import { setProspectoStateAction } from '../../redux/Prospecto/actions';
 import Paginacion from '../Common/Paginacion';
-
+import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
 
 const mapStateToProps = (state) => {
     var bd = state.GetWebService.data;
@@ -57,6 +56,11 @@ function Solicitud(props) {
 
 
     const [oficinasParametros, setOficinasParametros] = useState([]);
+    const [modalAnularVisible, setModalAnularVisible] = useState(false);
+    const [solicitudAnularId, setSolicitudAnularId] = useState(false);
+    const [solicitudCupoAnulacion, setSolicitudCupoAnulacion] = useState(false);
+
+
   
     //Headers tablas Solicitudes y Prospectos
     const headerTableSolicitantes = [
@@ -68,7 +72,8 @@ function Solicitud(props) {
         { nombre: 'Cupo Solicitado', key: 5 }, { nombre: 'Calificación', key: 6 },
         { nombre: 'Estado', key: 7 }, { nombre: 'Oficina', key: 8 },
         { nombre: 'Canal', key: 9 },
-        { nombre: 'Usuario', key: 10 } //{ nombre: 'Acciones', key: 9 },
+        { nombre: 'Usuario', key: 10 }, //{ nombre: 'Acciones', key: 9 },
+        { nombre: 'Acción', key: 11 },
     ];
 
     const headerTableProspectos = [
@@ -104,6 +109,11 @@ function Solicitud(props) {
             setControlConsultaCargaComp(true);
         }
     }, [props.token]);
+
+
+    useEffect(() => {
+        console.log(rol)
+    },[rol])
 
     useEffect(() => {
         if (props.token && props.parametrosTC.lst_parametros?.length > 0) {
@@ -142,7 +152,7 @@ function Solicitud(props) {
     }, [paginaActual])
 
 
-
+    /*
     useEffect(() => {
         if (rol) {
             validaPermiso("CREAR SOLICITUD");
@@ -160,7 +170,7 @@ function Solicitud(props) {
                 setPermisoNuevaSol(permis);
             }
         }
-    }
+    }*/
 
     const handleSelectedToggle = (index) => {
         setPaginaActual(1);
@@ -195,6 +205,9 @@ function Solicitud(props) {
         const solicitudSeleccionada = registrosPagActual.find((solicitud) => { return solicitud.int_id === solId });
         let nombreOficinaDeSolicitud = validarNombreOficina(solicitudSeleccionada.int_oficina_crea);
         /* PARA VER SOLICITUD POR PARTE DEL ASESOR DE NEGOCIOS*/
+        console.log("ROL ", rol)
+        console.log("habilitarPerfilesVerSolicitud ", habilitarPerfilesVerSolicitud)
+
         if (rol === "ASESOR DE CRÉDITO") {
             dispatch(setSolicitudStateAction({
                 solicitud: solicitudSeleccionada.int_id, cedulaPersona: solicitudSeleccionada.str_identificacion, idSolicitud: solicitudSeleccionada.int_estado, rol: rol, estado: solicitudSeleccionada.str_estado, oficinaSolicitud: nombreOficinaDeSolicitud, calificacionRiesgo: solicitudSeleccionada.str_calificacion
@@ -251,9 +264,21 @@ function Solicitud(props) {
     }
 
     const validarNombreOficina = (idOficina) => {        
-        //let nombreOficina = oficinas.find(ofic => Number(ofic.id_oficina) === Number(idOficina));
         let nombreOficina = oficinasParametros.find(ofic => Number(ofic.prm_valor_fin) === Number(idOficina));
         return nombreOficina?.prm_descripcion ? nombreOficina.prm_descripcion : '';
+    }
+
+    const deleteSolicitudHandler = () => {
+        fetchAddProcEspecifico(solicitudAnularId, solicitudCupoAnulacion, "EST_ANULADA", "", props.token, (data) => {
+            if (data.str_res_codigo === "000") {
+                setModalAnularVisible(false);
+                navigate.push('/')
+            }
+        }, dispatch)
+    }
+
+    const closeModalRechazo = () => {
+        setModalAnularVisible(false);
     }
 
     return (
@@ -261,8 +286,8 @@ function Solicitud(props) {
         {/*<Sidebar enlace={props.location.pathname}></Sidebar>*/}
         
         <div className="container_mg mb-4">
-            {permisoNuevaSol && 
-                <>
+           {/* {permisoNuevaSol && 
+                <>*/}
                 <div className="content-cards mt-2">
                     
                     <Card>
@@ -289,9 +314,9 @@ function Solicitud(props) {
                    
                 </div>
 
-                </>
+                {/* </>
 
-            }
+            }*/}
             
             <Toggler className="mt-2" toggles={accionesSolicitud}
                 selectedToggle={handleSelectedToggle}>
@@ -302,17 +327,16 @@ function Solicitud(props) {
                         {/*BODY*/}
                         {registrosPagActual && registrosPagActual.map((solicitud) => {
                             return (
-                                <tr key={solicitud.int_id} onClick={() => { moveToSolicitud(solicitud.int_id) }}>
-                                    <td style={{ width:"10%" }}>
+                                <tr key={solicitud.int_id}>
+                                    <td style={{ width: "10%" }} onClick={() => { moveToSolicitud(solicitud.int_id) }}>
                                         {solicitud.int_id}
                                     </td>
-                                    <td>{solicitud.dtt_fecha_solicitud}</td>
-                                    <td>{solicitud.str_identificacion}</td>
-                                    {/*<td>{solicitud.int_ente}</td>*/}
-                                    <td>{solicitud.str_nombres}</td>
-                                    <td>{numberFormatMoney(solicitud.dec_cupo_solicitado)}</td>
-                                    <td>{solicitud.str_calificacion}</td>
-                                    <td>
+                                    <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{solicitud.dtt_fecha_solicitud}</td>
+                                    <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{solicitud.str_identificacion}</td>
+                                    <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{solicitud.str_nombres}</td>
+                                    <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{numberFormatMoney(solicitud.dec_cupo_solicitado)}</td>
+                                    <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{solicitud.str_calificacion}</td>
+                                    <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>
                                         {solicitud.str_analista ? <div>
                                             {solicitud.str_estado}
                                             <div className='tooltip ml-1'>
@@ -321,9 +345,26 @@ function Solicitud(props) {
                                             </div>
                                         </div> : '' }                                        
                                     </td>
-                                    <td>{validarNombreOficina(solicitud.int_oficina_crea)}</td>
-                                    <td>{solicitud.str_canal_crea}</td>
-                                    <td>{solicitud.str_usuario_crea}</td>
+                                    <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{validarNombreOficina(solicitud.int_oficina_crea)}</td>
+                                    <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{solicitud.str_canal_crea}</td>
+                                    <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{solicitud.str_usuario_crea}</td>
+                                    <td>          
+                                        <div className="icon-botton" 
+                                            onClick={() => {
+                                                setSolicitudCupoAnulacion(solicitud.dec_cupo_solicitado);
+                                                setSolicitudAnularId(solicitud.int_id);
+                                                setModalAnularVisible(true)
+                                            }}>
+                                            <DeleteForeverRoundedIcon
+                                                sx={{
+                                                    fontSize: 26,
+                                                }}
+                                            ></DeleteForeverRoundedIcon>
+                                        </div>
+
+
+                                        
+                                    </td>
 
                                 </tr>
                             );
@@ -379,7 +420,20 @@ function Solicitud(props) {
                 <p className="mt-2 mb-2">No tiene permiso para acceder a esta solicitud</p>
             </div>}
         </Modal>
-       
+
+            <Modal
+                modalIsVisible={modalAnularVisible}
+                titulo={`Aviso!!!`}
+                onNextClick={deleteSolicitudHandler}
+                onCloseClick={closeModalRechazo}
+                isBtnDisabled={false}
+                type="sm"
+                mainText="Anular tarjeta"
+            >
+                <div>
+                    <h3 className="mt-4 mb-3">¿Esta seguro que anular la solicitud de la tarjeta?</h3>
+                </div>
+            </Modal>
 
     </div>);
 
