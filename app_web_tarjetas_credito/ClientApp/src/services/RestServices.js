@@ -1081,7 +1081,7 @@ export function fetchGetSolicitudes(token, onSucces, dispatch) {
 export function fetchAddSolicitud(body,token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
     ServicioPostExecute(addSolicitud, body, token, { dispatch: dispatch }).then((data) => {
-        console.log("RES ADD SOL", data);
+        //console.log("RES ADD SOL", data);
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
@@ -1372,17 +1372,17 @@ export function fetchGetResolucion(idSolicitud, token, onSucces, dispatch) {
 * @param {(contenido:string, nroTotalRegistros: number) => void} onSuccess
 * @param {Function} dispatch
 */
-export function fetchAddResolucion(idSolicitud, cupo_solicitado, cupo_sugerido, usuario_proc, decision_solicitud, comentario_proceso, token, onSucces, dispatch) {
+export function fetchAddResolucion(idSolicitud, cupo_solicitado, usuario_proc, decision_solicitud, comentario_proceso, solicitudNemonico,  token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
         int_id_sol: Number(idSolicitud),
         dec_cupo_solicitado: parseFloat(cupo_solicitado),
-        dec_cupo_sugerido: parseFloat(cupo_sugerido),
         str_usuario_proc: usuario_proc,
         dtt_fecha_actualizacion: new Date().toISOString(),
         str_decision_solicitud: decision_solicitud,
         str_comentario_proceso: comentario_proceso,
+        str_nem_est_sol: solicitudNemonico
     }
 
     ServicioPostExecute(addResolucion, body, token, { dispatch: dispatch }).then((data) => {
@@ -1552,7 +1552,7 @@ export function fetchUpdateCupoSolicitud(idSolicitud, idFlujoSol, estadoSol, dec
         int_id_solicitud: idSolicitud,
         int_id_flujo_sol: idFlujoSol,
         int_estado: Number(estadoSol),
-        dec_cupo_solicitado: parseFloat(decMonto)
+        mny_cupo_solicitado: parseFloat(decMonto)
     }
 
     console.log(body);

@@ -11,8 +11,8 @@ namespace Domain.Models.TarjetaCredito.UpdSolicitud
     {
         public int int_id_solicitud { get; set; }
         public int int_id_flujo_sol { get; set; }
-        public int int_estado { get; set; }
+        public decimal mny_cupo_solicitado { get; set; }
+        public int int_estado { get; set; } = 0;
 
-        public decimal dec_cupo_solicitado { get; set; }
     }
 }
