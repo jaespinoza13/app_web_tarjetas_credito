@@ -12,5 +12,6 @@ namespace Domain.Models.TarjetaCredito.GetMedioAprobacion
     {
         public int int_id_sol { get; set; }
         public string str_est_sol { get; set; } = string.Empty;
+        public string str_num_documento { get; set; } = string.Empty;
     }
 }
