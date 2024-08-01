@@ -16,5 +16,7 @@ namespace Domain.Models.TarjetaCredito.AddResolucion
         public DateTime dtt_fecha_actualizacion { get; set; }
         public string str_decision_solicitud { get; set; } = string.Empty;
         public string str_comentario_proceso { get; set; } = string.Empty;
+        public string str_nem_est_sol { get; set; } = string.Empty;
+
     }
 }
