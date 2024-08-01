@@ -410,27 +410,21 @@ const VerSolicitud = (props) => {
     }
 
     const guardarComentarioSiguiente = () => {
-        //Debe guardar comentario de Resolucion
-
-        //TODO VALIDAR QUE DECISION QUEDA 
-        let decisionPasoBandeja = props.solicitud.idSolicitud !== "POR APROBAR SOLICITUD" ? "REVISADO" : '-';
-        fetchAddComentarioSolicitud(props.solicitud.solicitud, comentarioSolicitud, props.solicitud.idSolicitud, false, props.token, (data) => {
-            if (data.str_res_codigo === "000") {
-                let cupoResolucion = Number(solicitudTarjeta?.str_cupo_sugerido_coopmego) !== 0 ? parseFloat(solicitudTarjeta?.str_cupo_sugerido_coopmego)
-                    : parseFloat(solicitudTarjeta?.str_cupo_sugerido_aval);
-
-                    /* TODO: comentardo temporalmente
-                //let cupoSugeridoAval = solicitudTarjeta?.str_cupo_sugerido_aval ? parseFloat(solicitudTarjeta?.str_cupo_sugerido_aval) : 0;
-                fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, cupoResolucion, datosUsuario[0].strOficial, decisionPasoBandeja, comentarioSolicitud, props.token, (data) => {
-                    setModalVisibleOk(true);
-                    setTextoModal("Su comentario se ha guardado correctamente");
-                    //navigate.push('/solicitud');
-                }, dispatch)
-                */
-                navigate.push('/solicitud');
-
-            }
-        }, dispatch);
+        let nemonico = parametrosTC.find(param => param.prm_valor_ini === props.solicitud.estado)
+        if (nemonico) {
+            fetchAddComentarioSolicitud(props.solicitud.solicitud, comentarioSolicitud, props.solicitud.idSolicitud, false, props.token, (data) => {
+                if (data.str_res_codigo === "000") {
+                    fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, datosUsuario[0].strOficial, '', comentarioSolicitud, nemonico.prm_nemonico, props.token, (data) => {
+                        setModalVisibleOk(true);
+                        setTextoModal("Su comentario se ha guardado correctamente");
+                        //navigate.push('/solicitud');
+                    }, dispatch)
+                }
+            }, dispatch);
+        }
+        else {
+            window.alert("Error en el proceso de cambio de bandeja, por favor comuniquese con el administrador");
+        }
     }
 
 
@@ -530,27 +524,26 @@ const VerSolicitud = (props) => {
     const cambioEstadoBandeja = () => {
 
         let descripcionMotivoRetorno = motivosRegresaAntBandeja.find(motivo => motivo.str_nemonico === selectMotivoRetornoBanj);
-        if (selectMotivoRetornoBanj !== undefined) {
+        let nemonico = parametrosTC.find(param => param.prm_valor_ini === props.solicitud.estado)
+        if (selectMotivoRetornoBanj !== undefined && nemonico !== undefined) {
             descripcionMotivoRetorno = descripcionMotivoRetorno.str_descripcion
-            //let cupoSugeridoAval = solicitudTarjeta?.str_cupo_sugerido_aval ? parseFloat(solicitudTarjeta?.str_cupo_sugerido_aval) : 0;
-            let cupoResolucion = Number(solicitudTarjeta?.str_cupo_sugerido_coopmego) !== 0 ? parseFloat(solicitudTarjeta?.str_cupo_sugerido_coopmego)
-                : parseFloat(solicitudTarjeta?.str_cupo_sugerido_aval);
 
             //Comite retorna a un estado de bandeja especifica para POR APROBAR SOLICITUD
             if (solicitudTarjeta?.str_estado === "POR APROBAR SOLICITUD") {
-                //fetchAddProcEspecifico(props.solicitud.solicitud, 0, selectCambioEstadoSol, comentarioCambioEstado, props.token, (data) => {
                 fetchAddProcEspecifico(props.solicitud.solicitud, 0, selectCambioEstadoSol, descripcionMotivoRetorno, props.token, (data) => {
                     if (data.str_res_codigo === "000") {
-
-                        /* TODO: comentardo temporalmente
-                        //let decision = parametrosTC.find(param => param.prm_nemonico === selectCambioEstadoSol);
-                        let decision = 'REVISAR';
-                        fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, cupoResolucion, datosUsuario[0].strOficial, decision, comentarioCambioEstado, props.token, (data) => {
-                            setModalCambioBandeja(false);
-                            navigate.push('/solicitud');
-                        }, dispatch)
-                        */
+                        //TODO REVISAR POR DEBE IR AL SIGUIENTE PERO, NO HACIA ATRAS
                         navigate.push('/solicitud');
+
+                        /*
+                        if (selectResolucionSocio === "EST_CREADA" || selectResolucionSocio === "EST_POR_ANALIZAR" || selectResolucionSocio === "EST_POR_REVISAR_JEFE_UAC") {
+                            navigate.push('/solicitud');
+                        } else {
+                            fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, datosUsuario[0].strOficial, selectResolucionSocio, comentarioCambioEstado, nemonico, props.token, (data) => {
+                                setModalCambioBandeja(false);
+                                navigate.push('/solicitud');
+                            }, dispatch)
+                        } */                       
 
                     }
                 }, dispatch)
@@ -559,20 +552,17 @@ const VerSolicitud = (props) => {
                 //Variable true para retornar bandeja anterior
                 fetchAddComentarioSolicitud(props.solicitud.solicitud, descripcionMotivoRetorno, props.solicitud.idSolicitud, true, props.token, (data) => {
                     console.log("RETORNAR sol", data)
-                    if (data.str_res_codigo === "000") {                        
-
-                        /* TODO: comentardo temporalmente
-                        let decision = 'REVISAR';
-                        fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, cupoResolucion, datosUsuario[0].strOficial, decision, comentarioCambioEstado, props.token, (data) => {
+                    /*if (data.str_res_codigo === "000") {                       
+                        fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado,  datosUsuario[0].strOficial, decision, comentarioCambioEstado, props.token, (data) => {
                             setModalCambioBandeja(false);
-
                             navigate.push('/solicitud');
                         }, dispatch)
-                        */
-                        navigate.push('/solicitud');
-                    }
+                    }*/
+                    navigate.push('/solicitud');
                 }, dispatch);
             }
+        } else {
+            window.alert("Error en el proceso de cambio de bandeja, por favor comuniquese con el administrador");
         }
 
     }
@@ -654,16 +644,14 @@ const VerSolicitud = (props) => {
                 if (data.str_res_codigo === "000") {
                     setModalRechazo(false);
 
-                    //let cupoSugeridoAval = solicitudTarjeta?.str_cupo_sugerido_aval ? parseFloat(solicitudTarjeta?.str_cupo_sugerido_aval) : 0;
-                    let cupoResolucion = Number(solicitudTarjeta?.str_cupo_sugerido_coopmego) !== 0 ? parseFloat(solicitudTarjeta?.str_cupo_sugerido_coopmego)
-                        : parseFloat(solicitudTarjeta?.str_cupo_sugerido_aval);
-                    let decision = parametrosTC.find(param => param.prm_nemonico === valorDecisionSelect);
-
-                    /* TODO: comentardo temporalmente
-                    fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, cupoResolucion, datosUsuario[0].strOficial, decision.prm_valor_ini, observacionComite, props.token, (data) => {
-                        navigate.push('/solicitud');
+                    let decision = parametrosTC.find(param => param.prm_nemonico === "EST_RECHAZADA")
+                    let parametroDecNec = parametrosTC.find(param => param.prm_valor_ini === props.solicitud.estado)
+                    fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, datosUsuario[0].strOficial, decision.prm_valor_ini, observacionComite, parametroDecNec.prm_nemonico, props.token, (data) => {
+                        setModalVisibleOk(true);
+                        setTextoModal("Su comentario se ha guardado correctamente");
+                        //navigate.push('/solicitud');
                     }, dispatch)
-                    */
+
                     navigate.push('/solicitud');
                 }
             }, dispatch)
@@ -684,28 +672,17 @@ const VerSolicitud = (props) => {
 
             fetchAddProcEspecifico(props.solicitud.solicitud, solicitudTarjeta.str_cupo_solicitado, "EST_APROBADA", observacionComite, props.token, (data) => { //APROBADO 11276
                 if (data.str_res_codigo === "000") {
-
-                    //TODO validar que cuando se vaya aprobar, sea por el cupo solicitado por socio
-
-                    //let cupoSugeridoAval = solicitudTarjeta?.str_cupo_sugerido_aval ? parseFloat(solicitudTarjeta?.str_cupo_sugerido_aval) : 0;
-                    let cupoResolucion = Number(solicitudTarjeta?.str_cupo_sugerido_coopmego) !== 0 ? parseFloat(solicitudTarjeta?.str_cupo_sugerido_coopmego)
-                        : parseFloat(solicitudTarjeta?.str_cupo_sugerido_aval);
-                    let decision = parametrosTC.find(param => param.prm_nemonico === valorDecisionSelect);
-
-                    /* TODO: comentardo temporalmente
-                    fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, cupoResolucion, datosUsuario[0].strOficial, decision.prm_valor_ini, observacionComite, props.token, (data) => {
-                        navigate.push('/solicitud');
+                    let decision = parametrosTC.find(param => param.prm_nemonico === valorDecisionSelect)
+                    let parametroDecNec = parametrosTC.find(param => param.prm_valor_ini === props.solicitud.estado)
+                    fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, datosUsuario[0].strOficial, decision.prm_valor_ini, observacionComite, parametroDecNec.prm_nemonico, props.token, (data) => {
+                        setModalVisibleOk(true);
+                        setTextoModal("Su comentario se ha guardado correctamente");
+                        //navigate.push('/solicitud');
                     }, dispatch)
-                    */
-                    navigate.push('/solicitud');
-                }
-                else {
-                    console.log("No cuenta con permisos ", data);
+
+
                 }
             }, dispatch)
-
-
-
         }
         //Si cupo que se va aprobar es menor al que solicita el socio
         else if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_VERIFICAR_CLIENTE") { //VERIFICAR CLIENTE
@@ -717,6 +694,15 @@ const VerSolicitud = (props) => {
                         navigate.push('/solicitud');
                     }, dispatch)
                     */
+
+                    let decision = parametrosTC.find(param => param.prm_nemonico === valorDecisionSelect)
+                    let parametroDecNec = parametrosTC.find(param => param.prm_valor_ini === props.solicitud.estado)
+                    fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, datosUsuario[0].strOficial, decision.prm_valor_ini, observacionComite, parametroDecNec.prm_nemonico, props.token, (data) => {
+                        setModalVisibleOk(true);
+                        setTextoModal("Su comentario se ha guardado correctamente");
+                        //navigate.push('/solicitud');
+                    }, dispatch)
+
                     navigate.push('/solicitud');
                 }
             }, dispatch)
@@ -798,13 +784,23 @@ const VerSolicitud = (props) => {
                 if (data.str_res_codigo === "000") {
 
                     //let decision = parametrosTC.find(param => param.prm_nemonico === selectResolucionSocio);
-                    let decision = "APROBADA";
+                    //let decision = "APROBADA";
                     /* TODO: comentardo temporalmente
                     fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, cupoSugeridoAval, datosUsuario[0].strOficial, decision, comentarioResolucionSocio, props.token, (data) => {
                         navigate.push('/solicitud');
                     }, dispatch)
                     */
-                    navigate.push('/solicitud');
+                    //navigate.push('/solicitud');
+
+
+
+                    let decision = parametrosTC.find(param => param.prm_nemonico === selectResolucionSocio)
+                    let parametroDecNec = parametrosTC.find(param => param.prm_valor_ini === props.solicitud.estado)
+                    fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, datosUsuario[0].strOficial, decision.prm_valor_ini, comentarioResolucionSocio, parametroDecNec.prm_nemonico, props.token, (data) => {
+                        setModalVisibleOk(true);
+                        setTextoModal("Su comentario se ha guardado correctamente");
+                        //navigate.push('/solicitud');
+                    }, dispatch)
 
 
                 }
@@ -827,7 +823,15 @@ const VerSolicitud = (props) => {
                             navigate.push('/solicitud');
                         }, dispatch)
                         */
-                        navigate.push('/solicitud');
+                        // navigate.push('/solicitud');
+
+                        let decision = parametrosTC.find(param => param.prm_nemonico === selectResolucionSocio)
+                        let parametroDecNec = parametrosTC.find(param => param.prm_valor_ini === props.solicitud.estado)
+                        fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, datosUsuario[0].strOficial, decision.prm_valor_ini, comentarioResolucionSocio, parametroDecNec.prm_nemonico, props.token, (data) => {
+                            setModalVisibleOk(true);
+                            setTextoModal("Su comentario se ha guardado correctamente");
+                            //navigate.push('/solicitud');
+                        }, dispatch)
 
                     }
                 }, dispatch)
@@ -910,14 +914,14 @@ const VerSolicitud = (props) => {
                                             <div className="values  mb-3">
                                                 <h5>Cupo solicitado:</h5>
                                                 <h5 className="strong f-row">
-                                                   {/* {`$ ${Number(solicitudTarjeta?.str_cupo_solicitado).toLocaleString("en-US") || Number('0.00').toLocaleString("en-US")}`}*/}
+                                                    {/* {`$ ${Number(solicitudTarjeta?.str_cupo_solicitado).toLocaleString("en-US") || Number('0.00').toLocaleString("en-US")}`}*/}
                                                     {numberFormatMoney(solicitudTarjeta?.str_cupo_solicitado)}
                                                 </h5>
                                             </div>
                                             <div className="values  mb-3">
                                                 <h5>Cupo sugerido Aval:</h5>
                                                 <h5 className="strong">
-                                                   {/* {`$ ${Number(solicitudTarjeta?.str_cupo_sugerido_aval).toLocaleString("en-US") || Number('0.00').toLocaleString("en-US")}`}*/}
+                                                    {/* {`$ ${Number(solicitudTarjeta?.str_cupo_sugerido_aval).toLocaleString("en-US") || Number('0.00').toLocaleString("en-US")}`}*/}
                                                     {numberFormatMoney(solicitudTarjeta?.str_cupo_sugerido_aval)}
                                                 </h5>
                                             </div>
@@ -934,7 +938,7 @@ const VerSolicitud = (props) => {
                                                 <h5>Cupo aprobado:</h5>
                                                 <h5 className="strong">
                                                     {/*{`$ ${Number(solicitudTarjeta?.str_cupo_aprobado).toLocaleString("en-US") || Number('0.00').toLocaleString("en-US")}`}*/}
-                                                    {numberFormatMoney(solicitudTarjeta?.str_cupo_aprobado)}                                                   
+                                                    {numberFormatMoney(solicitudTarjeta?.str_cupo_aprobado)}
                                                 </h5>
                                             </div>
                                         </Item>
