@@ -77,6 +77,10 @@ function Login(props) {
                     setCodigo(data.codigo);
                 } else if (data.codigo === "002") {
                     localStorage.setItem('sender', set(data.datosUsuario.login));
+                    localStorage.setItem('office', set(data.datosUsuario.id_oficina.toString()));
+                    localStorage.setItem('role', set(data.datosUsuario.nombre_perfil));
+                    localStorage.setItem('sender_name', set(data.datosUsuario.nombre));
+
                     data.datosUsuario.canRedirect = false;
                     saveUser({ data: await encriptar(key, JSON.stringify(data.datosUsuario)) });
                     setIsLogin(2);
@@ -86,11 +90,20 @@ function Login(props) {
                     data.datosUsuario.str_sesion = data.datosUsuario.id_usuario + "" + data.datosUsuario.id_perfil + "" + ts + "" + data.datosUsuario.id_persona;
                     data.datosUsuario.canRedirect = false;
                     localStorage.setItem('sender', set(data.datosUsuario.login));
+                    localStorage.setItem('office', set(data.datosUsuario.id_oficina.toString()));
+                    localStorage.setItem('role', set(data.datosUsuario.nombre_perfil));
+                    localStorage.setItem('sender_name', set(data.datosUsuario.nombre));
+
                     saveUser({ data: await encriptar(key, JSON.stringify(data.datosUsuario)) });
                     setIsLogin(3);
                     setProgress(90);
                     setOpenPass(true);
                 } else if (data.codigo === "004") {
+                    localStorage.setItem('sender', set(data.datosUsuario.login));
+                    localStorage.setItem('office', set(data.datosUsuario.id_oficina.toString()));
+                    localStorage.setItem('role', set(data.datosUsuario.nombre_perfil));
+                    localStorage.setItem('sender_name', set(data.datosUsuario.nombre));
+
                     data.datosUsuario.str_sesion = data.datosUsuario.id_usuario + "" + data.datosUsuario.id_perfil + "" + ts + "" + data.datosUsuario.id_persona;
                     data.datosUsuario.canRedirect = false;
                     localStorage.setItem('sender', set(data.datosUsuario.login));
@@ -209,8 +222,10 @@ function Login(props) {
                                         const sender = localStorage.getItem('sender');
                                         let key = generate(navigator.userAgent, ts, get(remitente), get(sender));
                                         var datosUsuario = await desencriptar(key, getUser().data);
+                                        
                                         datosUsuario.id_perfil = Number(e.target.value);
                                         datosUsuario.nombre_perfil = e.target.selectedOptions[0].innerText;
+                                        localStorage.setItem('role', set(e.target.selectedOptions[0].innerText));
                                         datosUsuario.str_sesion = datosUsuario.id_usuario + "" + datosUsuario.id_perfil + "" + ts + "" + datosUsuario.id_persona;
                                         saveUser({ data: await encriptar(key, JSON.stringify(datosUsuario)) });
                                     }}>

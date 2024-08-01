@@ -110,6 +110,11 @@ function Solicitud(props) {
         }
     }, [props.token]);
 
+
+    useEffect(() => {
+        console.log(rol)
+    },[rol])
+
     useEffect(() => {
         if (props.token && props.parametrosTC.lst_parametros?.length > 0) {
             let ParametrosTC = props.parametrosTC.lst_parametros;
@@ -200,6 +205,9 @@ function Solicitud(props) {
         const solicitudSeleccionada = registrosPagActual.find((solicitud) => { return solicitud.int_id === solId });
         let nombreOficinaDeSolicitud = validarNombreOficina(solicitudSeleccionada.int_oficina_crea);
         /* PARA VER SOLICITUD POR PARTE DEL ASESOR DE NEGOCIOS*/
+        console.log("ROL ", rol)
+        console.log("habilitarPerfilesVerSolicitud ", habilitarPerfilesVerSolicitud)
+
         if (rol === "ASESOR DE CRÉDITO") {
             dispatch(setSolicitudStateAction({
                 solicitud: solicitudSeleccionada.int_id, cedulaPersona: solicitudSeleccionada.str_identificacion, idSolicitud: solicitudSeleccionada.int_estado, rol: rol, estado: solicitudSeleccionada.str_estado, oficinaSolicitud: nombreOficinaDeSolicitud, calificacionRiesgo: solicitudSeleccionada.str_calificacion
