@@ -16,7 +16,7 @@ import RegistroCliente from './RegistroCliente';
 import DatosFinancieros from '../Solicitud/DatosFinancieros';
 import Stepper from '../Common/Stepper';
 import $ from 'jquery'; 
-import { setDatoSocioTCState } from '../../redux/DatosSocio-Solicitud/actions';
+import { setDatoSocioState} from '../../redux/DatosSocio-Solicitud/actions';
 
 
 const mapStateToProps = (state) => {
@@ -476,7 +476,7 @@ const NuevaProspeccion = (props) => {
 
                
                 //TODO: cambiar cedula
-                dispatch(setDatoSocioTCState({
+                dispatch(setDatoSocioState({
                     cedula: "1150214375", nombresApellidos: nombreSocioTC, oficina: datosUsuario[0].strUserOficina, usuarioLogin: datosUsuario[0].strOficial, cargoUsuario: datosUsuario[0].strCargo,
 
                 }))
