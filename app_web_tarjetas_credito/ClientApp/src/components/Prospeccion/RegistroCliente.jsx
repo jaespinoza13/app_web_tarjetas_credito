@@ -44,7 +44,7 @@ const RegistroCliente = (props) => {
             celular: celularCliente,
             correo: correoCliente,
             documento: documento,
-            fechaNacimiento: fechaNacimiento
+            fechaNacimiento: (fechaNacimiento !== "undefined--undefined" && fechaNacimiento !== "") ? fechaNacimiento : ''
         })
     }
     const apellidoPaternoHandler = (valor) => {
@@ -115,7 +115,7 @@ const RegistroCliente = (props) => {
 
 
     const fechaNacimientoHandler = (valor) => {
-
+        console.log("PRUEBA ",valor)
         setFechaNacValido(valor !== "undefined--undefined")
         setFechaNacimiento(convertDateFormat(valor))
         props.datosIngresados({
@@ -133,6 +133,7 @@ const RegistroCliente = (props) => {
     const convertDateFormat = (dateStr) => {
         const [year, month, day] = dateStr.split('-');
         return `${month}-${day}-${year}`;
+        //return `${year}-${month}-${day}`;
     }
 
     useEffect(() => {
@@ -147,12 +148,19 @@ const RegistroCliente = (props) => {
             setApellidoMaterno(props.infoSocio.apellidoMaterno);
             setCelularCliente(props.infoSocio.celularCliente);
             setCorreoCliente(props.infoSocio.correoCliente);
-            const partesFecha = props.infoSocio.fechaNacimiento.split('-');
-            setFechaNacimiento(`${partesFecha[2]}-${partesFecha[0]}-${partesFecha[1]}`)
+            const partesFecha = "";
+
+            if (props.infoSocio.fechaNacimiento !== "") {
+                props.infoSocio.fechaNacimiento.split('-');
+                setFechaNacimiento(`${partesFecha[2]}-${partesFecha[0]}-${partesFecha[1]}`)
+            } else {
+                setFechaNacimiento("")
+            }           
+           
 
             setIsCorreoValido(validarCorreo(props.infoSocio.correoCliente))
             setIsCelularValido(props.infoSocio.celularCliente.length === 10)
-            setFechaNacValido(partesFecha !== "undefined--undefined")
+            setFechaNacValido(partesFecha !== "undefined--undefined" && partesFecha !== "")
     
         }
     }, [props.infoSocio, props.paso])
