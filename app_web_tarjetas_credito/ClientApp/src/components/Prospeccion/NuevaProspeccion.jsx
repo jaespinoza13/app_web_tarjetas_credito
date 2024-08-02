@@ -16,6 +16,7 @@ import RegistroCliente from './RegistroCliente';
 import DatosFinancieros from '../Solicitud/DatosFinancieros';
 import Stepper from '../Common/Stepper';
 import $ from 'jquery'; 
+import { setDatoSocioTCState } from '../../redux/DatosSocio-Solicitud/actions';
 
 
 const mapStateToProps = (state) => {
@@ -446,9 +447,11 @@ const NuevaProspeccion = (props) => {
             dataSocio.datosFinancieros = datosFinancierosObj;
             setInfoSocio(dataSocio);
 
+            let nombreSocioTC = nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno;
+
             if (!realizaNuevaSimulacion.current) {
                 //TODO: CAMBIAR LA CEDULA por "documento"
-                await fetchScore("C", "1150214375", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, datosUsuario[0].strUserOficina, datosUsuario[0].strOficial, datosUsuario[0].strCargo, props.token, (data) => {
+                await fetchScore("C", "1150214375", nombreSocioTC, datosUsuario[0].strUserOficina, datosUsuario[0].strOficial, datosUsuario[0].strCargo, props.token, (data) => {
                     setScore(data);
                     setPuntajeScore(data?.response?.result?.scoreFinanciero[0]?.score)
                     setCupoSugeridoAval(data.response?.result?.capacidadPago[0]?.cupoSugerido)
@@ -471,8 +474,15 @@ const NuevaProspeccion = (props) => {
                 if (!datosFinan.montoRestaGstFinanciero || datosFinan.montoRestaGstFinanciero === "" || datosFinan.montoRestaGstFinanciero === " " || IsNullOrEmpty(datosFinan.montoRestaGstFinanciero)) datosFinan.montoRestaGstFinanciero = 0;
                 if (!datosFinan.montoGastoFinaCodeudor || datosFinan.montoGastoFinaCodeudor === "" || datosFinan.montoGastoFinaCodeudor === " " || IsNullOrEmpty(datosFinan.montoGastoFinaCodeudor)) datosFinan.montoGastoFinaCodeudor = 0;
 
+               
+                //TODO: cambiar cedula
+                dispatch(setDatoSocioTCState({
+                    cedula: "1150214375", nombresApellidos: nombreSocioTC, oficina: datosUsuario[0].strUserOficina, usuarioLogin: datosUsuario[0].strOficial, cargoUsuario: datosUsuario[0].strCargo,
+
+                }))
+
                 //TODO CAMBIAR LA CEDULA, oficina matriz
-                await fetchNuevaSimulacionScore("C", "1150214375", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, "Matriz", datosUsuario[0].strOficial, datosUsuario[0].strCargo, datosFinan.montoIngresos, datosFinan.montoEgresos, datosFinan.montoRestaGstFinanciero, datosFinan.montoGastoFinaCodeudor,
+                await fetchNuevaSimulacionScore("C", "1150214375", nombreSocioTC, datosUsuario[0].strUserOficina, datosUsuario[0].strOficial, datosUsuario[0].strCargo, datosFinan.montoIngresos, datosFinan.montoEgresos, datosFinan.montoRestaGstFinanciero, datosFinan.montoGastoFinaCodeudor,
                     props.token, (data) => {
                         setScore(data);
                         setEstadoBotonSiguiente(true);
