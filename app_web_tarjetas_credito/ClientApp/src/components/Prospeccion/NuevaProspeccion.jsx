@@ -3,7 +3,6 @@ import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import Card from "../Common/Card";
 import { IsNullOrEmpty, IsNullOrWhiteSpace, validarCorreo } from "../../js/utiles";
-import Sidebar from '../Common/Navs/Sidebar';
 import Button from '../Common/UI/Button';
 import { useState, useEffect, useRef } from 'react';
 import Item from '../Common/UI/Item';
@@ -15,7 +14,6 @@ import FinProceso from '../Solicitud/FinProceso';
 import RegistroCliente from './RegistroCliente';
 import DatosFinancieros from '../Solicitud/DatosFinancieros';
 import Stepper from '../Common/Stepper';
-import $ from 'jquery'; 
 import { setDatoSocioState} from '../../redux/DatosSocio-Solicitud/actions';
 
 
@@ -208,10 +206,8 @@ const NuevaProspeccion = (props) => {
     }, [step]);
 
     const validaCamposSocio = () => {  
-
-
-
-        if (documento !== "" && nombreSocio !== "" && apellidoPaterno !== "" && apellidoMaterno !== "" &&
+        //apellidoMaterno !== "" &&
+        if (documento !== "" && nombreSocio !== "" && apellidoPaterno !== "" && 
             (correoSocio !== "" && validarCorreo(correoSocio)) && (celularSocio !== "" && celularSocio.length > 0 && celularSocio.length === 10 &&
             fechaNacimiento !== "undefined--undefined")) {
             return true;
@@ -322,11 +318,13 @@ const NuevaProspeccion = (props) => {
     }, [datosUsuario])
 
     const refrescarInformacionHandler = (actualizarInfo) => {
-        fetchValidacionSocio(documento, '', props.token, (data) => {
-            
+        fetchValidacionSocio(documento, '', props.token, (data, error) => {
+            //console.log("ERR ", error)
+
             setNombreSocio(data.str_nombres);
             setApellidoPaterno(data.str_apellido_paterno);
-            setApellidoMaterno(data.str_apellido_materno);
+            let apellidoMaterno = data?.str_apellido_materno ? data.str_apellido_materno : '';
+            setApellidoMaterno(apellidoMaterno);
             setCelularSocio(data.str_celular);
             setCorreoSocio(data.str_email);
             setFechaNacimiento(data.str_fecha_nacimiento)
@@ -336,7 +334,7 @@ const NuevaProspeccion = (props) => {
             data.cedula = documento
             data.nombres = data.str_nombres
             data.apellidoPaterno = data.str_apellido_paterno
-            data.apellidoMaterno = data.str_apellido_materno
+            data.apellidoMaterno = apellidoMaterno
             data.celularCliente = data.str_celular
             data.correoCliente = data.str_email
             data.fechaNacimiento = data.str_fecha_nacimiento
@@ -361,11 +359,22 @@ const NuevaProspeccion = (props) => {
                 }, 100);
             } 
 
-        }, dispatch);
+        },
+            (errorCallback) => {
+                if (errorCallback.error) {
+                    setStep(0);
+                    let retrasoEfecto = setTimeout(function () {
+                        setIsVisibleBloque(true);
+                        clearTimeout(retrasoEfecto);
+                    }, 100);
+                }
+            }, dispatch);
+            
     }
 
     const consultaAlertas = async (seguirAlSigPaso) => {
-        await fetchGetAlertasCliente(documento, '', fechaNacimiento, nombreSocio, apellidoPaterno + " " +apellidoMaterno, props.token, (data) => {
+        let apellidosCliente = (apellidoMaterno !== null && apellidoMaterno !== '') ? apellidoPaterno + " " + apellidoMaterno : apellidoPaterno;
+        await fetchGetAlertasCliente(documento, '', fechaNacimiento, nombreSocio, apellidosCliente, props.token, (data) => {
             let alertasIniciales_Validas = [...data.alertas_iniciales.lst_datos_alerta_true];
             let alertasIniciales_Invalidas = [...data.alertas_iniciales.lst_datos_alerta_false];
             let alertasRestriccion_Validas = [...data.alertas_restriccion.lst_datos_alerta_true];
@@ -425,7 +434,8 @@ const NuevaProspeccion = (props) => {
         if (step === 2) {
             //console.log("STEP 1, SHOW ", showAutorizacion)
             if (showAutorizacion) {
-                await fetchAddAutorizacion("C", 1, "F", documento, nombreSocio, apellidoPaterno, apellidoMaterno,
+
+                await fetchAddAutorizacion("C", 1, "F", documento, nombreSocio, apellidoPaterno, apellidoMaterno ? apellidoMaterno : '',
                     archivoAutorizacion, props.token, (data) => {
                         //console.log("AUTOR, ", data);
                         if (data.str_res_codigo === "000") {
@@ -447,8 +457,8 @@ const NuevaProspeccion = (props) => {
             dataSocio.datosFinancieros = datosFinancierosObj;
             setInfoSocio(dataSocio);
 
-            let nombreSocioTC = nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno;
-
+            let nombreSocioTC = nombreSocio + " " + apellidoPaterno;
+            nombreSocioTC = (apellidoMaterno !== null && apellidoMaterno !== '') ? nombreSocioTC + " " + apellidoMaterno : nombreSocioTC;
             if (!realizaNuevaSimulacion.current) {
                 //TODO: CAMBIAR LA CEDULA por "documento"
                 await fetchScore("C", "1150214375", nombreSocioTC, datosUsuario[0].strUserOficina, datosUsuario[0].strOficial, datosUsuario[0].strCargo, props.token, (data) => {
@@ -501,8 +511,8 @@ const NuevaProspeccion = (props) => {
             if (!datosFinan.montoGastoFinaCodeudor || datosFinan.montoGastoFinaCodeudor === "" || datosFinan.montoGastoFinaCodeudor === " " || IsNullOrEmpty(datosFinan.montoGastoFinaCodeudor)) datosFinan.montoGastoFinaCodeudor = 0;
 
             //str_num_documento, ente, nombres, apellidos, celular, correo, cupoSoli, comentario, comentarioAdic, ingresos, egresos, gastoFinanciero, gastoCodeudor, cupoAval,cupoCoopmego, score, token, onSucces, dispatch
-
-            fetchAddProspecto(documento, 0, nombreSocio, apellidoPaterno + " " + apellidoMaterno, celularSocio, correoSocio, datosFinancierosObj.montoSolicitado.toString(), comentario, comentarioAdic,
+            let apellidosCliente = (apellidoMaterno !== null && apellidoMaterno !== '') ? apellidoPaterno + " " + apellidoMaterno : apellidoPaterno;
+            fetchAddProspecto(documento, 0, nombreSocio, apellidosCliente, celularSocio, correoSocio, datosFinancierosObj.montoSolicitado.toString(), comentario, comentarioAdic,
                 datosFinan.montoIngresos.toString(), datosFinan.montoEgresos.toString(), datosFinan.montoRestaGstFinanciero.toString(),datosFinan.montoGastoFinaCodeudor.toString(), cupoSugeridoAval.toString(), cupoSugeridoCoopmego.toString(), puntajeScore.toString(),
                 props.token, (data) => {
                 setVisitadosSteps([...visitadosSteps, actualStepper + 1])
@@ -631,10 +641,16 @@ const NuevaProspeccion = (props) => {
             setDatosFinancierosObj(datosFinan);
 
             //anteriorStepHandler();
-        }, dispatch);
+        },
+            (errorCallback) => {
+                if (errorCallback.error) {
+                    setStep(3);
+                }
+            }, dispatch);
 
     }
 
+    /*<div className={`f-col ${step === 0 ? 'w-100' : ''} ${step === 0 ? 'w-50' : ''} justify-content-center`}>*/
     return (
         <div className="f-row w-100" >
             <Card className={["m-max w-100 justify-content-space-between align-content-center"]}>
@@ -645,7 +661,7 @@ const NuevaProspeccion = (props) => {
                     </div>
 
                     {(step === 0 || step === 1) &&
-                        <div className={"f-row w-100 justify-content-center"}>
+                     <div className={"f-row w-100 justify-content-center"}>
                             <RegistroCliente
                                 key={keyRegistroCliente }
                                 paso={step}
@@ -662,15 +678,15 @@ const NuevaProspeccion = (props) => {
 
                     {(step === 2) &&
                         <div className="f-row w-100 justify-content-center">
-                        <ValidacionesGenerales token={props.token}
-                            infoSocio={infoSocio}
-                            lst_validaciones={lstValidaciones}
-                            onFileUpload={getFileHandler}
-                            onShowAutorizacion={showAutorizacion}
-                            datosUsuario={datosUsuario}
-                            onSetShowAutorizacion={showAutorizacionHandler}
-                            cedula={documento}
-                            ></ValidacionesGenerales>
+                            <ValidacionesGenerales token={props.token}
+                                infoSocio={infoSocio}
+                                lst_validaciones={lstValidaciones}
+                                onFileUpload={getFileHandler}
+                                onShowAutorizacion={showAutorizacion}
+                                datosUsuario={datosUsuario}
+                                onSetShowAutorizacion={showAutorizacionHandler}
+                                cedula={documento}
+                                ></ValidacionesGenerales>
                         </div>
                     }
 

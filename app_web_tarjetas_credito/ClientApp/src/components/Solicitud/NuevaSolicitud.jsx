@@ -3,7 +3,6 @@ import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import Card from "../Common/Card";
 import { IsNullOrEmpty, IsNullOrWhiteSpace } from "../../js/utiles";
-import Sidebar from '../Common/Navs/Sidebar';
 import Button from '../Common/UI/Button';
 import { useState, useEffect, useRef } from 'react';
 import ValidacionSocio from './ValidacionSocio';
@@ -75,7 +74,7 @@ const NuevaSolicitud = (props) => {
     const [fechaNacimiento, setFechaNacimiento] = useState('');
     const [isCkeckRestaGtoFinananciero, setIsCkeckRestaGtoFinananciero] = useState(false);
 
- 
+
     //Boton siguiente
     const [estadoBotonSiguiente, setEstadoBotonSiguiente] = useState(true);
 
@@ -150,8 +149,8 @@ const NuevaSolicitud = (props) => {
                     prm_valor_ini: estado.str_valor_ini,
                     prm_valor_fin: estado.str_valor_fin
                 })));
-            
-            /*PARAMETRO PARA CONTROL DE CUPO MINIMO A SOLICITAR EN TARJETA DE CRÉDITO*/ 
+
+            /*PARAMETRO PARA CONTROL DE CUPO MINIMO A SOLICITAR EN TARJETA DE CRÉDITO*/
             setControlMontoMinimoParametro(Number(ParametrosTC.filter(param => param.str_nemonico === 'PRM_WS_TC_CUPO_MINIMO_SOL_TC')[0]?.str_valor_ini));
         }
 
@@ -168,7 +167,7 @@ const NuevaSolicitud = (props) => {
         let validaRestoMontoGstFinanciero = false;
 
         //console.log(`montoSolicitado ${datosFinancierosObj.montoSolicitado}, montoEgresos ${datosFinancierosObj.montoIngresos},  montoEgresos ${datosFinancierosObj.montoEgresos} `)
-        if ((datosFinancierosObj.montoSolicitado > 0 && datosFinancierosObj.montoSolicitado <= 99999 && datosFinancierosObj.montoSolicitado >= controlMontoMinimoParametro) &&  
+        if ((datosFinancierosObj.montoSolicitado > 0 && datosFinancierosObj.montoSolicitado <= 99999 && datosFinancierosObj.montoSolicitado >= controlMontoMinimoParametro) &&
             (datosFinancierosObj.montoIngresos > 0 && datosFinancierosObj.montoIngresos <= 99999) &&
             (datosFinancierosObj.montoEgresos > 0 && datosFinancierosObj.montoEgresos <= 99999)
         ) {
@@ -206,17 +205,17 @@ const NuevaSolicitud = (props) => {
 
 
     useEffect(() => {
-        if (step === 2 && archivoAutorizacion) {
+        if (step === 1 && archivoAutorizacion) {
             setEstadoBotonSiguiente(false);
         }
-        else if (step === 2 && !archivoAutorizacion) {
+        else if (step === 1 && !archivoAutorizacion) {
             setEstadoBotonSiguiente(true);
         }
     }, [archivoAutorizacion]);
 
 
     useEffect(() => {
-        if (step === 3) {
+        if (step === 2) {
             const index = validacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_090" && validacion.str_estado_alerta === "False");
             if (validaCamposFinancieros() && !index) {
                 setEstadoBotonSiguiente(false);
@@ -233,7 +232,7 @@ const NuevaSolicitud = (props) => {
         const index = validacionesErr.find((validacion) => validacion.str_nemonico === "ALERTA_SOLICITUD_TC_090" && validacion.str_estado_alerta === "False");
         const validacionesErrorTotal = validacionesErr.length;
         //console.log("TOTAL validaciones ok, ", validacionesErrorTotal);        
-        if (step === 2 && showAutorizacion === false) {
+        if (step === 1 && showAutorizacion === false) {
             if (!index && validacionesErrorTotal === 0) {
                 setEstadoBotonSiguiente(false);
             } else {
@@ -247,14 +246,14 @@ const NuevaSolicitud = (props) => {
         if (comentarioAdic !== "") {
             setEstadoBotonSiguiente(false);
         } else {
-            setEstadoBotonSiguiente(true); 
+            setEstadoBotonSiguiente(true);
         }
     }, [comentarioAdic])
 
     useEffect(() => {
         if (score.str_res_codigo === "000") {
             setStep(step + 1); // VA AL step(3)
-            setActualStepper(3);
+            setActualStepper(2);
             setVisitadosSteps([...visitadosSteps, actualStepper + 1])
         }
     }, [score]);
@@ -270,14 +269,14 @@ const NuevaSolicitud = (props) => {
         if (step === -1) {
             setTextoSiguiente("Volver al inicio")
         }
-        if (step === 4) {
+        if (step === 3) {
             setTextoSiguiente("Continuar")
         }
-        if (step === 5) {
+        if (step === 4) {
             setTextoSiguiente("Registrar")
             if (validaCamposPersonalizacion()) {
                 setEstadoBotonSiguiente(false);
-            }            
+            }
         }
     }, [step]);
 
@@ -331,7 +330,7 @@ const NuevaSolicitud = (props) => {
             setApellidoMaterno(data.str_apellido_materno);
             setEstadoCivil(data.str_estado_civil);
             setFechaNacimiento(data.str_fecha_nacimiento);
-            
+
             let datosFinan = {
                 montoSolicitado: 0,
                 montoIngresos: Number(data.dcm_total_ingresos),
@@ -351,6 +350,7 @@ const NuevaSolicitud = (props) => {
             }
             if (data.str_res_codigo === "000") {
                 if (!actualizarInfo) {
+                    consultaAlertas(cedulaSocio, data.str_fecha_nacimiento, data.str_nombres, data.str_apellido_paterno + " " + data.str_apellido_materno, true);
                     setStep(1);
                     let retrasoEfecto = setTimeout(function () {
                         setIsVisibleBloque(true);
@@ -364,14 +364,25 @@ const NuevaSolicitud = (props) => {
                 setModalMensajeAviso(true);
             }
 
-        }, dispatch);
+        },
+            (errorCallback) => {
+                if (errorCallback.error) {
+                    setStep(0);
+                    let retrasoEfecto = setTimeout(function () {
+                        setIsVisibleBloque(true);
+                        clearTimeout(retrasoEfecto);
+                    }, 100);
+                }
+
+            }, dispatch);
 
     }
 
 
     const steps = [
-        "Datos personales",
-        "Requisitos",
+        //"Datos personales",
+        //"Requisitos",
+        "Validaciones",
         "Datos financieros",
         "Simulación",
         "Personalización",
@@ -399,8 +410,8 @@ const NuevaSolicitud = (props) => {
     }
 
 
-    const consultaAlertas = async (seguirAlSigPaso) => {
-        await fetchGetAlertasCliente(cedulaSocio, '', fechaNacimiento, nombreSocio, apellidoPaterno + " " + apellidoMaterno, props.token, (data) => {
+    const consultaAlertas = async (cedulaSocioAlert, fechaNacimientoAlert, nombreSocioAlert, apellidosAlert, seguirAlSigPaso) => {
+        await fetchGetAlertasCliente(cedulaSocioAlert, '', fechaNacimientoAlert, nombreSocioAlert, apellidosAlert, props.token, (data) => {
             let alertasIniciales_Validas = [...data.alertas_iniciales.lst_datos_alerta_true];
             let alertasIniciales_Invalidas = [...data.alertas_iniciales.lst_datos_alerta_false];
             let alertasRestriccion_Validas = [...data.alertas_restriccion.lst_datos_alerta_true];
@@ -440,9 +451,9 @@ const NuevaSolicitud = (props) => {
             handleLists(objValidaciones);
 
             if (seguirAlSigPaso) {
-                setStep(2);
-                setVisitadosSteps([...visitadosSteps, actualStepper + 1])
-                setActualStepper(1);
+                //setStep(1);
+                //setVisitadosSteps([...visitadosSteps, actualStepper + 1])
+                //setActualStepper(1);
             }
         }, dispatch);
     }
@@ -453,10 +464,10 @@ const NuevaSolicitud = (props) => {
             refrescarInformacionHandler(false);
 
         }
-        if (step === 1) {
+        /*if (step === 1) {
             await consultaAlertas(true);
-        }
-        if (step === 2) {
+        }*/
+        if (step === 1) {
             if (showAutorizacion) {
                 await fetchAddAutorizacion("C", 1, "F", cedulaSocio, nombreSocio, apellidoPaterno, apellidoMaterno, archivoAutorizacion, props.token, (data) => {
                     if (data.str_res_codigo === "000") {
@@ -466,16 +477,16 @@ const NuevaSolicitud = (props) => {
                 }, dispatch);
                 return;
             } else {
-                setActualStepper(2);
+                setActualStepper(1);
                 setVisitadosSteps([...visitadosSteps, actualStepper + 1])
-                setStep(3)
+                setStep(2)
             }
 
 
 
         }
 
-        if (step === 3) {
+        if (step === 2) {
             //DATOS FINANCIEROS SE GUARDA EN VARIABLES
             const dataSocio = infoSocio;
             dataSocio.datosFinancieros = datosFinancierosObj;
@@ -484,7 +495,7 @@ const NuevaSolicitud = (props) => {
 
             if (!realizaNuevaSimulacion.current) {
                 //TODO cambiar cedula a a -> cedulaSocio
-                await fetchScore("C", "1150214375", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, datosUsuario[0].strUserOficial,  datosUsuario[0].strOficial, datosUsuario[0].strCargo, props.token, (data) => {
+                await fetchScore("C", "1150214375", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, datosUsuario[0].strUserOficial, datosUsuario[0].strOficial, datosUsuario[0].strCargo, props.token, (data) => {
                     setScore(data);
                     setIdClienteScore(data.int_cliente);
                     setPuntajeScore(data?.response?.result?.scoreFinanciero[0]?.score)
@@ -511,7 +522,7 @@ const NuevaSolicitud = (props) => {
                 if (!datosFinan.montoGastoFinaCodeudor || datosFinan.montoGastoFinaCodeudor === "" || datosFinan.montoGastoFinaCodeudor === " " || IsNullOrEmpty(datosFinan.montoGastoFinaCodeudor)) datosFinan.montoGastoFinaCodeudor = 0;
 
                 //TODO CAMBIAR LA CEDULA ->cedulaSocio
-                await fetchNuevaSimulacionScore("C", "1150214375", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, datosUsuario[0].strUserOficial,  datosUsuario[0].strOficial, datosUsuario[0].strCargo, datosFinan.montoIngresos, datosFinan.montoEgresos, datosFinan.montoRestaGstFinanciero, datosFinan.montoGastoFinaCodeudor,
+                await fetchNuevaSimulacionScore("C", "1150214375", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, datosUsuario[0].strUserOficial, datosUsuario[0].strOficial, datosUsuario[0].strCargo, datosFinan.montoIngresos, datosFinan.montoEgresos, datosFinan.montoRestaGstFinanciero, datosFinan.montoGastoFinaCodeudor,
                     props.token, (data) => {
                         setIdClienteScore(data.int_cliente);
                         setCupoSugeridoCoopM(data.str_cupo_sugerido);
@@ -522,14 +533,14 @@ const NuevaSolicitud = (props) => {
             }
 
         }
-        if (step === 4) {
+        if (step === 3) {
             //setCambioRetorno(true)
             setVisitadosSteps([...visitadosSteps, actualStepper + 1])
-            setActualStepper(4);
-            setStep(5);
+            setActualStepper(3);
+            setStep(4);
             setEstadoBotonSiguiente(true);
         }
-        if (step === 5) {
+        if (step === 4) {
 
             let fechaNac = infoSocio.str_fecha_nacimiento.split('-');
             let fechaNacFormatoReq = fechaNac[2] + '-' + fechaNac[0] + '-' + fechaNac[1]
@@ -626,7 +637,7 @@ const NuevaSolicitud = (props) => {
             fetchAddSolicitud(body, props.token, (data) => {
                 //setCambioRetorno(true)
                 setVisitadosSteps([...visitadosSteps, actualStepper + 1])
-                setActualStepper(5);
+                setActualStepper(4);
                 setStep(-1);
 
             }, dispatch);
@@ -710,24 +721,27 @@ const NuevaSolicitud = (props) => {
 
     return (
         <div className="f-row w-100" >
-           {/* <Sidebar enlace={props.location.pathname}></Sidebar>*/}
+            {/* <Sidebar enlace={props.location.pathname}></Sidebar>*/}
             {/* {showAutorizacion.toString()}*/}
-            {/*<div className={["w-100"]}>   */}          
+            {/*<div className={["w-100"]}>   */}
 
-                    {/*<button className="btn_mg_icons" onClick={anteriorStepHandler}>*/}
-                    {/*<img src="/Imagenes/right.svg" alt="Cumplir requisito"></img> <p>Anterior</p>*/}
-                    {/*</button>*/}
+            {/*<button className="btn_mg_icons" onClick={anteriorStepHandler}>*/}
+            {/*<img src="/Imagenes/right.svg" alt="Cumplir requisito"></img> <p>Anterior</p>*/}
+            {/*</button>*/}
 
-                <Card className={["m-max w-100 justify-content-space-between align-content-center"]}>
-                    <div className="f-col justify-content-center">
+            <Card className={["m-max w-100 justify-content-space-between align-content-center"]}>
+                <div className="f-col justify-content-center">
 
-                        <div className="stepper">
-                            <Stepper steps={steps} setStepsVisited={visitadosSteps} setActualStep={actualStepper} />
-                        </div>
+                    <div className="stepper">
+                        <Stepper steps={steps} setStepsVisited={visitadosSteps} setActualStep={actualStepper} />
+                    </div>
 
 
-                        {(step === 0 || step === 1) &&
-                            <div className="f-row w-100 justify-content-center sliding-div ">
+                    {(step === 0 || step === 1) &&
+
+                        <div className={`f-row w-100' justify-content-center sliding-div `}>
+                            <div className={`${step === 0 ? 'f-row w-80 justify-content-center' : ''} ${step === 1 ? 'f-col w-40 justify-content-start mt-5' : ''} `}>
+                                <div className={"f-row justify-content-end mt-1"}></div>
                                 <ValidacionSocio paso={step}
                                     token={props.token}
                                     cedulaSocioValue={cedulaSocio}
@@ -738,99 +752,121 @@ const NuevaSolicitud = (props) => {
                                     AtajoHandler={AtajoTecladoHandler}
                                 ></ValidacionSocio>
                             </div>
+                            {(step === 1) &&
+                                <div className="f-col w-40 justify-content-start">
+                                    <div className={"f-row justify-content-end"}>
+                                        <Button className="btn_mg__auto " >
+                                            <img src="/Imagenes/refresh.svg" style={{ transform: "scaleX(-1)", width:"1.8rem" }} alt="Volver a consultar"></img>
+                                        </Button>
+                                    </div>
+
+                                    <ValidacionesGenerales token={props.token}
+                                        lst_validaciones={lstValidaciones}
+                                        onFileUpload={getFileHandler}
+                                        onShowAutorizacion={showAutorizacion}
+                                        infoSocio={infoSocio}
+                                        datosUsuario={datosUsuario}
+                                        onSetShowAutorizacion={showAutorizacionHandler}
+                                        cedula={cedulaSocio}
+                                    ></ValidacionesGenerales>
+                                </div>
+                            }
+
+
+                        </div>
+                    }
+
+                    {/*{(step === 1) &&*/}
+                    {/*    <div className="f-col w-50 justify-content-center">*/}
+                    {/*        <ValidacionesGenerales token={props.token}*/}
+                    {/*            lst_validaciones={lstValidaciones}*/}
+                    {/*            onFileUpload={getFileHandler}*/}
+                    {/*            onShowAutorizacion={showAutorizacion}*/}
+                    {/*            infoSocio={infoSocio}*/}
+                    {/*            datosUsuario={datosUsuario}*/}
+                    {/*            onSetShowAutorizacion={showAutorizacionHandler}*/}
+                    {/*            cedula={cedulaSocio}*/}
+                    {/*        ></ValidacionesGenerales>*/}
+                    {/*    </div>*/}
+                    {/*}*/}
+                    {(step === 2) &&
+                        <div className="f-row w-100">
+                            <DatosFinancieros
+                                dataConsultFinan={datosFinancierosObj}
+                                setDatosFinancierosFunc={datosFinancierosHandler}
+                                isCkeckGtosFinancierosHandler={checkGastosFinancieroHandler}
+                                gestion={gestion}
+                                requiereActualizar={refrescarDatosInformativos}
+                                isCheckMontoRestaFinanciera={isCkeckRestaGtoFinananciero}
+                                montoMinimoCupoSolicitado={controlMontoMinimoParametro}
+                            >
+                            </DatosFinancieros>
+                        </div>
+                    }
+
+                    {(step === 3) &&
+                        <DatosSocio
+                            informacionSocio={infoSocio}
+                            score={score}
+                            token={props.token}
+                            gestion={gestion}
+                            onInfoSocio={getInfoSocioHandler}
+                            onComentario={handleComentario}
+                            onComentarioAdic={handleComentarioAdic}
+                            idClienteScore={idClienteScore}
+                            comentarioAdicionalValor={comentarioAdic}
+                            calificacionRiesgo={calificacionRiesgo}
+
+                        ></DatosSocio>
+                    }
+                    {step === 4 &&
+                        <div className="f-row w-100 justify-content-center">
+                            <Personalizacion
+                                token={props.token}
+                                nombres={nombreSocio}
+                                str_apellido_paterno={apellidoPaterno}
+                                str_apellido_materno={apellidoMaterno}
+                                lstDomicilio={dirDocimicilioSocio}
+                                lstTrabajo={dirTrabajoSocio}
+                                onNombreTarjeta={nombreTarjetaHandler}
+                                onTipoEntrega={tipoEntregaHandler}
+                                onDireccionEntrega={direccionEntregaHandler}
+                            ></Personalizacion>
+                        </div>
+                    }
+
+                    {step === -1 &&
+                        <FinProceso gestion={gestion}
+                            nombres={`${nombreSocio} ${apellidoPaterno} ${apellidoMaterno}`}
+                            cedula={cedulaSocio}
+                            telefono={celularSocio}
+                            email={correoSocio}
+                        ></FinProceso>}
+                </div>
+                <div id="botones" className="f-row ">
+                    <Item xs={2} sm={2} md={2} lg={2} xl={2} className="">
+                        {(step !== 0 && step !== -1) &&
+                            <Button className={["btn_mgprev mt-2"]} onClick={anteriorStepHandler}>{"Anterior"}</Button>
                         }
 
-                        {(step === 2) &&
-                            <div className="f-row w-100 justify-content-center">
-                                <ValidacionesGenerales token={props.token}
-                                    lst_validaciones={lstValidaciones}
-                                    onFileUpload={getFileHandler}
-                                    onShowAutorizacion={showAutorizacion}
-                                    infoSocio={infoSocio}
-                                    datosUsuario={datosUsuario}
-                                    onSetShowAutorizacion={showAutorizacionHandler}
-                                    cedula={cedulaSocio}
-                                ></ValidacionesGenerales>
-                            </div>
+                    </Item>
+                    <Item xs={8} sm={8} md={8} lg={8} xl={8} className="f-row justify-content-center align-content-center">
+                        {(step === 1) &&
+                            <Button className={["btn_mg btn_mg__primary mt-2 mr-2"]} onClick={() => refrescarInformacionHandler(true)}>{"Actualizar"}</Button>
                         }
                         {(step === 3) &&
-                            <div className="f-row w-100">
-                                <DatosFinancieros
-                                    dataConsultFinan={datosFinancierosObj}
-                                    setDatosFinancierosFunc={datosFinancierosHandler}
-                                    isCkeckGtosFinancierosHandler={checkGastosFinancieroHandler}
-                                    gestion={gestion}
-                                    requiereActualizar={refrescarDatosInformativos}
-                                    isCheckMontoRestaFinanciera={isCkeckRestaGtoFinananciero}
-                                    montoMinimoCupoSolicitado={controlMontoMinimoParametro}
-                                >
-                                </DatosFinancieros>
-                            </div>
+                            <Button className={["btn_mg btn_mg__primary mt-2 mr-2"]} onClick={refrescarDatosInformativos}>{"Actualizar"}</Button>
                         }
+                        <Button className={["btn_mg btn_mg__primary mt-2 ml-2"]} disabled={estadoBotonSiguiente} onClick={() => nextHandler(step)}>{textoSiguiente}</Button>
+                    </Item>
 
-                        {(step === 4) &&
-                            <DatosSocio
-                                informacionSocio={infoSocio}
-                                score={score}
-                                token={props.token}
-                                gestion={gestion}
-                                onInfoSocio={getInfoSocioHandler}
-                                onComentario={handleComentario}
-                                onComentarioAdic={handleComentarioAdic}
-                                idClienteScore={idClienteScore}
-                                comentarioAdicionalValor={comentarioAdic}
-                                calificacionRiesgo={calificacionRiesgo}
+                </div>
 
-                            ></DatosSocio>
-                        }
-                        {step === 5 &&
-                            <div className="f-row w-100 justify-content-center">
-                                <Personalizacion
-                                    token={props.token}
-                                    nombres={nombreSocio}
-                                    str_apellido_paterno={apellidoPaterno}
-                                    str_apellido_materno={apellidoMaterno}
-                                    lstDomicilio={dirDocimicilioSocio}
-                                    lstTrabajo={dirTrabajoSocio}
-                                    onNombreTarjeta={nombreTarjetaHandler}
-                                    onTipoEntrega={tipoEntregaHandler}
-                                    onDireccionEntrega={direccionEntregaHandler}
-                                ></Personalizacion>
-                            </div>
-                        }
-
-                        {step === -1 &&
-                            <FinProceso gestion={gestion}
-                                nombres={`${nombreSocio} ${apellidoPaterno} ${apellidoMaterno}`}
-                                cedula={cedulaSocio}
-                                telefono={celularSocio}
-                                email={correoSocio}
-                            ></FinProceso>}
-                    </div>
-                    <div id="botones" className="f-row ">
-                        <Item xs={2} sm={2} md={2} lg={2} xl={2} className="">
-                            {(step !== 0 && step !== -1) &&
-                                <Button className={["btn_mgprev mt-2"]} onClick={anteriorStepHandler}>{"Anterior"}</Button>
-                            }
-
-                        </Item>
-                        <Item xs={8} sm={8} md={8} lg={8} xl={8} className="f-row justify-content-center align-content-center">
-                            {(step === 1) &&
-                                <Button className={["btn_mg btn_mg__primary mt-2 mr-2"]} onClick={() => refrescarInformacionHandler(true)}>{"Actualizar"}</Button>
-                            }
-                            {(step === 3) &&
-                                <Button className={["btn_mg btn_mg__primary mt-2 mr-2"]} onClick={refrescarDatosInformativos}>{"Actualizar"}</Button>
-                            }
-                            <Button className={["btn_mg btn_mg__primary mt-2 ml-2"]} disabled={estadoBotonSiguiente} onClick={() => nextHandler(step)}>{textoSiguiente}</Button>
-                        </Item>
-
-                    </div>
-
-                </Card>
+            </Card>
 
             {/*</div>*/}
 
-            
+
 
 
 

@@ -3,6 +3,7 @@ import Card from "../Common/Card";
 import Toggler from "../Common/UI/Toggler";
 import { Fragment, useEffect, useState } from "react";
 import { IsNullOrWhiteSpace } from "../../js/utiles";
+import { fetchGetParametrosSistema } from "../../services/RestServices";
 
 const mapStateToProps = (state) => {
     var bd = state.GetWebService.data;
@@ -23,6 +24,7 @@ const Personalizacion = (props) => {
     const dispatch = useDispatch();
     const [nombresTarjeta, setNombresTarjeta] = useState([]);
     const [tipoEntrega, setTipoEntrega] = useState("");
+    const [lstTiposEntrega, setLstTiposEntrega] = useState([]);
     const [direccionEntrega, setDireccionEntrega] = useState("-1");
     const [tiposDireccion, setTiposDireccion] = useState([]);
     const [oficinas, setOficinas] = useState([]);
@@ -66,9 +68,59 @@ const Personalizacion = (props) => {
     }, [props]);
 
 
-    
+    const consultarTiposEntregaHandler = async () => {
+        //Obtener parametros para tipo de entrega para la TC
+        await fetchGetParametrosSistema("TIPO_ENTREGA_WS_TC", props.token, (data) => {
+            /*let formasEntregaTC = data.lst_parametros.map(formEntrega => ({
+                prm_id: formEntrega.int_id_parametro,
+                prm_nombre: formEntrega.str_nombre,
+                prm_nemonico: formEntrega.str_nemonico,
+                prm_valor_ini: formEntrega.str_valor_ini,
+                prm_valor_fin: formEntrega.str_valor_fin,
+                prm_vigencia: formEntrega.bl_vigencia
+            }));*/
+
+            //TODO VALIDAR
+            let formasEntregaTC = data.lst_parametros.map((formEnt,index) => {
+                return {
+                    textPrincipal: formEnt.str_valor_ini, 
+                    vigencia: formEnt.bl_vigencia,     
+                    key: formEnt.str_valor_ini,          
+                    formEntId: formEnt.int_id_parametro,  
+                }
+            });
+
+
+            /*
+            let toggleFormasEntregaFinal = formasEntregaTC.map(formEnt => ({
+                image: "",
+                textPrincipal: formEnt.prm_valor_ini,
+                textSecundario: "",
+                key: formEnt.prm_valor_ini,
+                vigencia: formEnt.prm_vigencia,
+                id: formEnt.prm_id
+            }));*/
+
+            //toggleFormasEntregaFinal = toggleFormasEntregaFinal.sort((a, b) => a.id - b.id)
+            console.log("FORMAS ", formasEntregaTC)
+            //console.log("FORMAS ", toggleFormasEntregaFinal)
+            setLstTiposEntrega(formasEntregaTC);
+
+            const defaultEntrega = formasEntregaTC.shift(0);
+            setTipoEntrega(defaultEntrega.textPrincipal);
+        }, dispatch)
+    }
+
+
     useEffect(() => {
         window.scrollTo(0, 0);
+
+        consultarTiposEntregaHandler();
+
+        //const defaultEntrega = tiposEntrega.shift(0);
+        //setTipoEntrega(defaultEntrega.textPrincipal);
+
+
         //Obtener oficinas parametrizadas
         let ParametrosTC = props.parametrosTC.lst_parametros;
         let oficinasParametrosTC = ParametrosTC
@@ -83,10 +135,8 @@ const Personalizacion = (props) => {
             }));
         setOficinas(oficinasParametrosTC)
 
-        const defaultEntrega = tiposEntrega.shift(0);
-        setTipoEntrega(defaultEntrega.textPrincipal);
 
-        const defaultNombre = `${props.nombres.split(" ")[0]} ${ props.str_apellido_paterno }`;
+        const defaultNombre = `${props.nombres.split(" ")[0]} ${props.str_apellido_paterno}`;
         props.onNombreTarjeta(defaultNombre);
     }, []);
 
@@ -106,7 +156,7 @@ const Personalizacion = (props) => {
     }
 
     const tipoEntregaHandler = (index) => {
-        const entregas = tiposEntrega.find((entrega) => entrega.key === index);
+        const entregas = lstTiposEntrega.find((entrega) => entrega.key === index);
         setTipoEntrega(entregas.textPrincipal);
     }
 
@@ -114,7 +164,7 @@ const Personalizacion = (props) => {
         if (tipoEntrega === "Retiro en agencia") {
             setDireccionEntrega(event.target.value);
         } else {
-            setDireccionEntrega(tiposDireccion.find(direccion => direccion.key === event)); 
+            setDireccionEntrega(tiposDireccion.find(direccion => direccion.key === event));
         }
 
     }
@@ -132,10 +182,14 @@ const Personalizacion = (props) => {
             <div>
                 <h3 className="mb-3">Entrega de la tarjeta</h3>
                 <h5 className={"mb-2"}>Forma de entrega</h5>
-                <Toggler className={"mb-3"} selectedToggle={tipoEntregaHandler} toggles={tiposEntrega}>
-                </Toggler>
+
+                {lstTiposEntrega.length > 0 &&
+                    <Toggler className={"mb-3"} selectedToggle={tipoEntregaHandler} toggles={lstTiposEntrega}>
+                    </Toggler>
+                }
+
                 {tipoEntrega !== "" && <h3 className={"mb-2"}>Selecciona una opción para la entrega</h3>}
-                {tipoEntrega === "Retiro en agencia" && <div>
+                {tipoEntrega === "OFICINA" && <div>
 
                     <select disabled={false} onChange={direccionEntregaHandler} value={direccionEntrega}>
                         {oficinas.length > 0
@@ -145,7 +199,7 @@ const Personalizacion = (props) => {
                                         <Fragment key={index} >
                                             <option disabled={true} value={"-1"}>Seleccione una opción</option>
                                             <option value={oficina.prm_valor_fin}> {oficina.prm_descripcion}</option>
-                                           {/* <option value={oficina.id_oficina}> {oficina.agencia}</option>*/}
+                                            {/* <option value={oficina.id_oficina}> {oficina.agencia}</option>*/}
                                         </Fragment>
                                     )
                                 }
@@ -160,7 +214,7 @@ const Personalizacion = (props) => {
                             })}
                     </select>
                 </div>}
-                {tipoEntrega === "Entrega en domicilio" &&
+                {tipoEntrega === "COURRIER" &&
                     <div>
                         <Toggler className={"f-col"} selectedToggle={direccionEntregaHandler} toggles={tiposDireccion}></Toggler>
                     </div>

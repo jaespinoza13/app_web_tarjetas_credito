@@ -120,13 +120,17 @@ const VerDetalle = (props) => {
                     lst_validaciones_err: [...lst_validaciones_err]
                 }
                 setLstValidaciones(objValidaciones);
-
-
-
-            }, dispatch);
+            }, 
+            dispatch);
             
 
+        },
+        (errorCallback) => {
+            if (errorCallback.error) {
+                //setStep(3);
+            }
         }, dispatch);
+
         
     }
 

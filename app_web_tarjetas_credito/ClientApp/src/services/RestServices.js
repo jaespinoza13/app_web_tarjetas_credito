@@ -776,7 +776,7 @@ export function fetchContenidoArchivoLogs(ws, archivo, desde, hasta, token, onSu
  * @param {(contenido:string, nroTotalRegistros: number) => void} onSuccess
  * @param {Function} dispatch
  */
-export function fetchValidacionSocio(strCedula, strTipoValidacion, token, onSucces, dispatch) {
+export function fetchValidacionSocio(strCedula, strTipoValidacion, token, onSucces, errorCallback, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
@@ -796,6 +796,7 @@ export function fetchValidacionSocio(strCedula, strTipoValidacion, token, onSucc
                 else {
                     let codigo = data.codigo || data.str_res_codigo;
                     let mensaje = data.mensaje || data.str_res_info_adicional;
+                    errorCallback({error:true })
                     if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
                 }
             }
@@ -1485,11 +1486,11 @@ export function fetchAddProcEspecifico(idSolicitud, cupo, estado, comentario, to
 * @param {(contenido:string, nroTotalRegistros: number) => void} onSuccess
 * @param {Function} dispatch
 */
-export function fetchGetParametrosSistema(token, onSucces, dispatch) {
+export function fetchGetParametrosSistema(nombreParametro,token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
-       
+        str_nombre: nombreParametro
     }
     ServicioPostExecute(getParametros, body, token, { dispatch: dispatch }).then((data) => {
         if (data) {

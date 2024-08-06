@@ -1046,6 +1046,12 @@ button.close-modal {
     opacity: 0;
 }
 
+.modal-content-lg2 {
+    height: auto;
+    max-height: 70vh;
+    width: 90%;
+}
+
 .modal-content-lg {
     height: auto;
     max-height: 70vh;
@@ -1235,9 +1241,19 @@ h3.chip {
     padding: 1.4rem 0.5rem;
 }
 
-    .toggler.f-col {
-        height: auto;
-    }
+.toogle_resp {
+    width: 100%;
+    display: flex;
+    min-height: 49.6px;
+    justify-content: center;
+    flex-direction: row;
+    padding: 0rem 0rem;
+}
+
+
+.toggler.f-col {
+    height: auto;
+}
 
         .toggler.f-col > .btn_mg__toggler {
             width: 100%;
@@ -1251,6 +1267,14 @@ h3.chip {
     text-align: center;
     min-height: 1.5rem;
     justify-content: flex-start;
+}
+
+
+.scrolling {
+    display: flex;
+    overflow-x: auto; /* Permite el desplazamiento horizontal si los ítems son más anchos que el contenedor */
+    white-space: nowrap; /* Previene el salto de línea de los ítems */
+    border: 1px solid #ccc; /* Opcional, para ver los bordes del contenedor */
 }
 
     .btn_mg__toggler.active {
@@ -1498,6 +1522,10 @@ input:checked + .slider::before {
 
 .justify-content-center {
     justify-content: center;
+}
+
+.justify-content-start {
+    justify-content: start;
 }
 
 .align-content-center {

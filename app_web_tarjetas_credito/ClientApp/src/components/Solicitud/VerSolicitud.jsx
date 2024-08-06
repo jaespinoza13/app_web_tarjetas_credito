@@ -110,8 +110,7 @@ const VerSolicitud = (props) => {
 
     const [toggleResetIndex, setToggleResetIndex] = useState(1);
 
-    //Filas del text Area comentarioAdicional
-    const [filasTextAreaComentarioSol, setFilasTextAreaComentarioSol] = useState(3);
+
 
     const seleccionAccionSolicitud = (value) => {
         const accionSelecciona = accionesSolicitud.find((element) => { return element.key === value });
@@ -788,12 +787,13 @@ const VerSolicitud = (props) => {
         }
     }
 
+    /*
     //Control para el numero de filas del text area
     useEffect(() => {
         let filasActuales = comentarioSolicitud.split('\n');
         if (filasActuales.length >= 3) setFilasTextAreaComentarioSol(filasActuales.length + 1);
         else if (filasActuales.length < 3) setFilasTextAreaComentarioSol(3);
-    }, [comentarioSolicitud])
+    }, [comentarioSolicitud])*/
 
     return <div className="f-row w-100" >
         {/*<Sidebar enlace={props.location.pathname}></Sidebar>*/}
@@ -1087,7 +1087,7 @@ const VerSolicitud = (props) => {
 
                                                 <Card className={["mt-2"]}>
                                                     <h3>Observación:</h3>
-                                                    <Textarea placeholder="Ingrese su comentario" onChange={setObservacionComiteHandler} esRequerido={true} value={observacionComite}></Textarea>
+                                                <Textarea placeholder="Ingrese su comentario" onChange={setObservacionComiteHandler} esRequerido={true} value={observacionComite} controlAnchoTexArea={false}></Textarea>
                                                 </Card>
                                             </>
                                         }
@@ -1118,7 +1118,7 @@ const VerSolicitud = (props) => {
 
                                                 <Card className={["mt-2"]}>
                                                     <h3>Observación:</h3>
-                                                    <Textarea placeholder="Ingrese su comentario" onChange={setObservacionComiteHandler} esRequerido={true} value={observacionComite}></Textarea>
+                                                <Textarea placeholder="Ingrese su comentario" onChange={setObservacionComiteHandler} esRequerido={true} value={observacionComite} controlAnchoTexArea={false}></Textarea>
                                                 </Card>
                                             </>
 
@@ -1131,7 +1131,8 @@ const VerSolicitud = (props) => {
                                     {(solicitudTarjeta?.str_estado !== 'POR APROBAR SOLICITUD' && solicitudTarjeta?.str_estado !== 'VERIFICAR CLIENTE') &&
                                         <div className="mt-4">
                                             <h3 className="mb-3 strong">Observaciones</h3>
-                                            <Textarea placeholder="Ingrese su comentario" onChange={setComentarioSolicitudHandler} esRequerido={true} value={comentarioSolicitud} rows={filasTextAreaComentarioSol}></Textarea>
+                                            <Textarea placeholder="Ingrese su comentario" onChange={setComentarioSolicitudHandler} esRequerido={true} value={comentarioSolicitud}
+                                                controlAnchoTexArea={ false}></Textarea>
                                         </div>
                                     }
                                 </div>
@@ -1185,30 +1186,79 @@ const VerSolicitud = (props) => {
             onNextClick={siguientePasoHandler}
             onCloseClick={closeModalHandler}
             isBtnDisabled={isBtnComentariosActivo}
-            type="lg"
-            mainText="Enviar y guardar"
+            type="lg2"
+            mainText="Guardar"
         >
             {modalVisible && <div>
-                <Table headers={headerTableComentarios}>
-                    {
-                        informe.map((comentario, index) => {
-                            return (
-                                <tr key={comentario.int_id_parametro}>
-                                    <td style={{ width: "40%", justifyContent: "left" }}>
-                                        <div className='f-row' style={{ paddingLeft: "1rem" }}>
-                                            <div className='tooltip'>
-                                                <img className='tooltip-icon' src='/Imagenes/info.svg' alt="Analista a cargo de solicitud"></img>
-                                                <span className='tooltip-info'>{comentario.str_descripcion}</span>
-                                            </div>
-                                            {comentario.str_tipo}
-                                        </div>
-                                    </td>
-                                    <td style={{ width: "40%" }}><Textarea placeholder="Ej. Texto de ejemplo" type="textarea" onChange={(event, key = comentario.int_id_parametro) => { comentarioAdicionalHanlder(event, key) }} esRequerido={false} value={comentario.str_detalle}></Textarea></td>
-                                </tr>
-                            );
-                        })
-                    }
-                </Table>
+                {/*<Table headers={headerTableComentarios}>*/}
+                {/*    {*/}
+                {/*        informe.map((comentario, index) => {*/}
+                {/*            return (*/}
+                {/*                <tr key={comentario.int_id_parametro}>*/}
+                {/*                    <td style={{ width: "40%", justifyContent: "left" }}>*/}
+                {/*                        <div className='f-row' style={{ paddingLeft: "1rem" }}>*/}
+                {/*                            <div className='tooltip'>*/}
+                {/*                                <img className='tooltip-icon' src='/Imagenes/info.svg' alt="Analista a cargo de solicitud"></img>*/}
+                {/*                                <span className='tooltip-info'>{comentario.str_descripcion}</span>*/}
+                {/*                            </div>*/}
+                {/*                            {comentario.str_tipo}*/}
+                {/*                        </div>*/}
+                {/*                    </td>*/}
+                {/*                    <td style={{ width: "40%" }}><Textarea placeholder="Ej. Texto de ejemplo" type="textarea" onChange={(event, key = comentario.int_id_parametro) => { comentarioAdicionalHanlder(event, key) }} esRequerido={false} value={comentario.str_detalle}></Textarea></td>*/}
+                {/*                </tr>*/}
+                {/*            );*/}
+                {/*        })*/}
+                {/*    }*/}
+                {/*</Table>*/}
+
+                <table>
+                    <thead>
+                        {/*<tr>*/}
+                        {/*    {*/}
+                        {/*        headerTableComentarios.map((comentario, index) => {*/}
+                        {/*            return (*/}
+                        {/*                <th key={comentario.key} >{comentario.nombre}</th>*/}
+                        {/*            );*/}
+                        {/*        })*/}
+                        {/*    }*/}
+                        {/*</tr>*/}
+                        <tr>
+                            {
+                                informe.map((comentario, index) => {
+                                    return (
+                                        <th key={comentario.int_id_parametro}>
+                                            <div className='f-row justify-content-center'>
+                                                    <div className='tooltip'>
+                                                        <img className='tooltip-icon' src='/Imagenes/info.svg' alt="Analista a cargo de solicitud"></img>
+                                                        <span className='tooltip-info'>{comentario.str_descripcion}</span>
+                                                    </div>
+                                                    {comentario.str_tipo}
+                                                </div>      
+                                        </th>
+                                    );
+                                })
+                            }  
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            {
+                                informe.map((comentario, index) => {
+                                    return (
+                                        <td key={comentario.int_id_parametro}>
+                                            <Textarea placeholder="Ej. Texto de ejemplo" type="textarea" onChange={(event, key = comentario.int_id_parametro) => { comentarioAdicionalHanlder(event, key) }} esRequerido={false} value={comentario.str_detalle} controlAnchoTexArea={true }></Textarea>
+                                        </td>
+
+                                    );
+                                })
+                            }
+                        </tr>                       
+                    </tbody>                    
+                </table>
+
+
+
+
             </div>}
         </Modal>
         <Modal

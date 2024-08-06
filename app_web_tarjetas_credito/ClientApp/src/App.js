@@ -97,7 +97,7 @@ function Menus({ listaMenus, id_perfil, token, setListas, setListaFunc, listaFun
             if (idPerfil > 0 && !IsNullOrWhiteSpace(tokeni) && validateToken(tokeni) && parametrosSistema.length === 0 && !sendedParams) {
                 setSendedParams(true); 
                 //Obtener parametros y se almacena por medio de redux
-                fetchGetParametrosSistema(tokeni, (data) => {
+                fetchGetParametrosSistema("",tokeni, (data) => {
                     setParametrosSistema([data.lst_parametro]);
                     dispatch(getParametrosTCStateAction({ lst_parametros: data.lst_parametros }));
                 }, dispatch)

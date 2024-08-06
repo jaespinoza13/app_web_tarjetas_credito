@@ -731,7 +731,7 @@ const UploadDocumentos = (props) => {
             </section>
 
 
-            <Modal modalIsVisible={isModalVisible} type="md" onCloseClick={hideModalSeparadores} onNextClick={generarSeparadores} mainText="Generar" titulo="Generar Separadores">
+            <Modal modalIsVisible={isModalVisible} type="lg" onCloseClick={hideModalSeparadores} onNextClick={generarSeparadores} mainText="Generar" titulo="Generar Separadores">
 
                 <table className='archivos mt-4'>
                     <thead>

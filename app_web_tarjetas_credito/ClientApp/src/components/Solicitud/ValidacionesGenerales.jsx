@@ -109,25 +109,9 @@ const ValidacionesGenerales = (props) => {
                 </Fragment>
                 :
                 <div className="f-col">
-                    {props.lst_validaciones && props.lst_validaciones?.lst_validaciones_ok?.length > 0 &&
-                        <Fragment key= "1">
-                            <h3 className="mb-1">Validaciones correctas</h3>
-                            <Card className={["w-100"]}>
-                                {props.lst_validaciones.lst_validaciones_ok.map((validacion) => {
-                                    return (
-                                        <div className="f-row validacion mb-3" key={validacion.str_descripcion_alerta}>
-                                            <img className="btn_mg mr-3" style={{ width: "15px", height: "15px" }} src="Imagenes/statusActive.png" alt="Validación OK"></img>
-                                            <h3>{validacion.str_descripcion_alerta}</h3>
-                                        </div>
-                                    );
-
-                                })}
-                            </Card>
-                        </Fragment>                        
-                    }
                     {props.lst_validaciones && props.lst_validaciones?.lst_validaciones_err?.length > 0 &&
                         <Fragment key="2">
-                            <h3 className={`${props.lst_validaciones?.lst_validaciones_ok?.length !== 0 ? 'mt-4' : ''} mb-1`}>Validaciones pendientes</h3>
+                            <h2 className={`mb-1`}>Validaciones pendientes</h2>
                             <Card className={[`W-100`]}>
                                 {props.lst_validaciones.lst_validaciones_err.map((validacion) => {
                                     return (
@@ -145,9 +129,24 @@ const ValidacionesGenerales = (props) => {
                                 })}
                             </Card>
                         </Fragment>
-                        
-                    }
 
+                    }
+                    {props.lst_validaciones && props.lst_validaciones?.lst_validaciones_ok?.length > 0 &&
+                        <Fragment key= "1">
+                            <h2 className={`${props.lst_validaciones?.lst_validaciones_err?.length !== 0 ? 'mt-4' : ''} mb-1`}>Validaciones correctas</h2>
+                            <Card className={["w-100"]}>
+                                {props.lst_validaciones.lst_validaciones_ok.map((validacion) => {
+                                    return (
+                                        <div className="f-row validacion mb-3" key={validacion.str_descripcion_alerta}>
+                                            <img className="btn_mg mr-3" style={{ width: "15px", height: "15px" }} src="Imagenes/statusActive.png" alt="Validación OK"></img>
+                                            <h3>{validacion.str_descripcion_alerta}</h3>
+                                        </div>
+                                    );
+
+                                })}
+                            </Card>
+                        </Fragment>                        
+                    }
                 </div>
                 }
         </div>

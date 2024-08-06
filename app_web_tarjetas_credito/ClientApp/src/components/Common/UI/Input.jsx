@@ -4,8 +4,15 @@ const Input = (props) => {
     const [inputValue, setInputValue] = useState('');
     const changeHandler = (e) => {
         const newValue = e.target.value;
-        setInputValue(newValue);
-        props.setValueHandler(newValue);
+
+        if (props.maxlength !== null && newValue.length <= props.maxlength) {
+            setInputValue(newValue);
+            props.setValueHandler(newValue);
+        } else {
+            setInputValue(newValue);
+            props.setValueHandler(newValue);
+        }
+
     }
     let inputClass = 'default';
     if (props.rounded) {
@@ -17,6 +24,11 @@ const Input = (props) => {
             setInputValue(props.value);
         }
     }, [props.value])
+
+    const styleMayuscText = {
+        textTransform: 'uppercase'
+    }
+    const inputStyle = props.controlMayusText ? styleMayuscText : {};
 
     return (
         <input
@@ -36,7 +48,9 @@ const Input = (props) => {
             max={props.max}
             disabled={props.disabled}
             onKeyDown={props.keyDown}
-            id={props.id }
+            id={props.id}
+            style={inputStyle}
+
         /*  key={props.key} */
 
         ></input>
