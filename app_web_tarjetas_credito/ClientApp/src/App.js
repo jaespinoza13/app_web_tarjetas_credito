@@ -121,7 +121,7 @@ function Menus({ listaMenus, id_perfil, token, setListas, setListaFunc, listaFun
                             break;
                         }
                     }
-                    console.log(lstDecode)
+                    //console.log(lstDecode)
                     setListaFunc(lstDecode);
                     if (!match) {
                         history.push("/");
