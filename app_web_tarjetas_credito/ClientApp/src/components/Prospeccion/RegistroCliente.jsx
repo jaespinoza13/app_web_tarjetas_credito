@@ -187,6 +187,9 @@ const RegistroCliente = (props) => {
                         <div className="f-col w-100">
                             <label>Número de cédula</label>
                             <Input id="cedulaPaso1" type="number" className={`mt-3 ${isCedulaValida ? '' : 'no_valido'}`} placeholder="Ej. 1105970717" readOnly={false} value={documento} setValueHandler={setCedulaHandler} keyDown={(e) => isCedulaValida ? atajosHandler(e) : ''} tabIndex={0} maxlength={maxLengthCedula}></Input>
+                            {!isCedulaValida &&
+                                <h4 className="ml-1 mt-1 strong">*Ingrese una cédula válida</h4>
+                            }
                         </div>
                     </Item>
                     <Item xs={3} sm={3} md={3} lg={3} xl={3} className=""></Item>

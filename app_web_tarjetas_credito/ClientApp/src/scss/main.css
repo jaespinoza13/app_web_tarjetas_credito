@@ -1241,13 +1241,15 @@ h3.chip {
     padding: 1.4rem 0.5rem;
 }
 
-.toogle_resp {
-    width: 100%;
-    display: flex;
+.toggler.responsiveToogle {
     min-height: 49.6px;
     justify-content: center;
     flex-direction: row;
-    padding: 0rem 0rem;
+    width: 100%;
+    display: flex;
+    /* Se eliminan las siguientes propiedades de la clase base */
+    padding: 0; 
+    align-items: initial;
 }
 
 

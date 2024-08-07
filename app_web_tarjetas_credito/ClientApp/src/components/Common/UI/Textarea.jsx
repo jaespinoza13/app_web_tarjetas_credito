@@ -19,7 +19,6 @@ const Textarea = (props) => {
     useEffect(() => {
         let filasActuales = props.value.split('\n');
         if (filasActuales.length >= 3 && props.controlAnchoTexArea === false) setFilasTextAreaComentarioSol(filasActuales.length + 1);
-        console.log(" TAM text ", props.value.length)
         if (anchoCampo !== null && props.value.length > anchoCampo && props.controlAnchoTexArea === true) {
             let filasXancho = Math.floor(props.value.length / anchoCampo);
             if (numFilasXAnchoCampo !== filasXancho ){

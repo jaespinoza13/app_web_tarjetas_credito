@@ -249,7 +249,7 @@ const VerDetalle = (props) => {
                             </div>
                             <hr className="dashed"></hr>
                             <div className="f-row w-90 justify-content-space-between">
-                                <label>Cupo Sugerido Aval:</label>
+                                <label>Cupo Sugerido Buró:</label>
                                 <h4 className="strong">{numberFormatMoney(dataProspecto.mny_cupo_sugerido_aval)}  </h4>
                             </div>
                             <hr className="dashed"></hr>

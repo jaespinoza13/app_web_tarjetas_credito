@@ -115,12 +115,10 @@ const DatosFinancieros = (props) => {
 
             <Item xs={3} sm={3} md={3} lg={3} xl={3} className=""></Item>
             <Item xs={6} sm={6} md={6} lg={6} xl={6} className="justify-content-center">
-                <div className={"f-row"}>
+                <div className={"f-row w-100 justify-content-space-between mb-1"}>
                     <h2>Datos de Financieros</h2>
-
-
                     <Button className="btn_mg__auto" onClick={updGastosFinancieros}>
-                        <img src="/Imagenes/refresh.svg" style={{ transform: "scaleX(-1)" }} alt="Volver a consultar."></img>
+                        <img src="/Imagenes/refresh.svg" style={{ transform: "scaleX(-1)", width: "2.2rem" }} alt="Volver a consultar."></img>
                     </Button>
 
                 </div>
@@ -131,14 +129,14 @@ const DatosFinancieros = (props) => {
                             <div className='mb-2'>
                                 <label>Ingresos</label>
                                 <div className="f-row">
-                                    <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"1.0000"} readOnly={false} setValueHandler={setMontoIngresosHandler} value={montoIngresos} disabled={isCamposDesactivados} min={0} max={99999} ></Input>
+                                    <h2 className='mr-2'>$</h2><Input className={`w-90  ${(montoIngresos !== "" && montoIngresos !== 0)  ? '' : 'no_valido'}`} type={"number"} placeholder={"1.0000"} readOnly={false} setValueHandler={setMontoIngresosHandler} value={montoIngresos} disabled={isCamposDesactivados} min={0} max={99999} ></Input>
                                 </div>
                             </div>
 
                             <div className='mb-2'>
                                 <label>Egresos</label>
                                 <div className="f-row">
-                                    <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"500"} readOnly={false} setValueHandler={setMontoEgresosHandler} value={montoEgresos} disabled={isCamposDesactivados} min={0} max={99999} ></Input>
+                                    <h2 className='mr-2'>$</h2><Input className={`w-90  ${(montoEgresos !== "" && montoEgresos !== 0) ? '' : 'no_valido'}`} type={"number"} placeholder={"500"} readOnly={false} setValueHandler={setMontoEgresosHandler} value={montoEgresos} disabled={isCamposDesactivados} min={0} max={99999} ></Input>
                                 </div>
                             </div>
 
@@ -165,7 +163,7 @@ const DatosFinancieros = (props) => {
                             <div className='mb-2'>
                                 <label>Cupo solicitado</label>
                                 <div className="f-row">
-                                    <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"1.000"} readOnly={false} setValueHandler={setMontoSolicitadoHandler} value={montoSolicitado} min={0} max={99999}></Input>
+                                    <h2 className='mr-2'>$</h2><Input className={`w-90  ${(montoSolicitado !== "" && montoSolicitado !== 0) ? '' : 'no_valido'}`} type={"number"} placeholder={"1.000"} readOnly={false} setValueHandler={setMontoSolicitadoHandler} value={montoSolicitado} min={0} max={99999}></Input>
                                 </div>
                                 <div className="f-row">
                                     {montoSolicitado < props.montoMinimoCupoSolicitado &&

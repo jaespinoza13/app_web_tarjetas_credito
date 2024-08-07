@@ -16,6 +16,7 @@ import { solicitud } from "./Solicitud/reducers"
 import { GetParametrosSistema } from "./ParametrosSistema/reducers"
 import { GetParametrosTC } from "./ParametrosTC/reducers"
 import { prospecto } from "./Prospecto/reducers"
+import { dataSimulacionCupo } from "./DataSimulacion/reducers"
 
 const Reducers = combineReducers({
     GetParametros,
@@ -31,7 +32,8 @@ const Reducers = combineReducers({
     solicitud,
     GetParametrosSistema, 
     GetParametrosTC,
-    prospecto
+    prospecto,
+    dataSimulacionCupo
 });
 
 export const store = createStore(

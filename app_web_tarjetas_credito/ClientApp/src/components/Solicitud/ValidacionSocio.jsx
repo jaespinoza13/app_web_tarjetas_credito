@@ -53,6 +53,9 @@ const ValidacionSocio = (props) => {
                         <div className="f-col w-100">
                             <label>Número de cédula</label>
                             <Input type="number" className={`mt-3 ${isCedulaValida ? '' : 'no_valido'}`} placeholder="Ej. 1105970717" readOnly={false} value={cedulaSocio} setValueHandler={setCedulaHandler} keyDown={(e) => isCedulaValida ? atajosHandler(e) : ''} tabIndex={0} maxlength={maxLengthCedula}></Input>
+                            {!isCedulaValida &&
+                                <h4 className="ml-1 mt-1 strong">*Ingrese una cédula válida</h4>    
+                            }
                         </div>
 
                     </Item>

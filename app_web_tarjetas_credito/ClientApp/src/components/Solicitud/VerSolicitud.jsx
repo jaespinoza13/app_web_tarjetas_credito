@@ -868,7 +868,7 @@ const VerSolicitud = (props) => {
                                                 </h5>
                                             </div>
                                             <div className="values  mb-3">
-                                                <h5>Cupo sugerido Aval:</h5>
+                                                <h5>Cupo sugerido Buró:</h5>
                                                 <h5 className="strong">
                                                     {/* {`$ ${Number(solicitudTarjeta?.str_cupo_sugerido_aval).toLocaleString("en-US") || Number('0.00').toLocaleString("en-US")}`}*/}
                                                     {numberFormatMoney(solicitudTarjeta?.str_cupo_sugerido_aval)}
@@ -957,7 +957,7 @@ const VerSolicitud = (props) => {
                                                 </h5>
                                             </div>
                                             <div className="values  mb-3">
-                                                <h5>Cupo sugerido Aval:</h5>
+                                                <h5>Cupo sugerido Buró:</h5>
                                                 <h5 className="strong">
                                                     {/*{`$ ${Number(solicitudTarjeta?.str_cupo_sugerido_aval).toLocaleString("en-US") || Number('0.00').toLocaleString("en-US")}`}*/}
                                                     {numberFormatMoney(solicitudTarjeta?.str_cupo_sugerido_aval)}

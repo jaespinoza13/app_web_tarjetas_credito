@@ -885,7 +885,7 @@ export function fetchNuevaSimulacionScore(strTipoDocumento, strCedula, strNombre
         str_lugar: strLugar,
         str_oficial: strOficial
     };
-    //console.log("SCORE BODY, ",body)
+    console.log("SCORE BODY, ",body)
 
     ServicioPostExecute(getScore, body, token, { dispatch: dispatch }).then((data) => {
         if (data) {
@@ -1486,13 +1486,14 @@ export function fetchAddProcEspecifico(idSolicitud, cupo, estado, comentario, to
 * @param {(contenido:string, nroTotalRegistros: number) => void} onSuccess
 * @param {Function} dispatch
 */
-export function fetchGetParametrosSistema(nombreParametro,token, onSucces, dispatch) {
+export async function fetchGetParametrosSistema(nombreParametro, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
-        str_nombre: nombreParametro
+        str_nombre: nombreParametro,
+        int_id_sis: 0 //Parametro se sobrescribe en el controller
     }
-    ServicioPostExecute(getParametros, body, token, { dispatch: dispatch }).then((data) => {
+    await ServicioPostExecute(getParametros, body, token, { dispatch: dispatch }).then((data) => {
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));

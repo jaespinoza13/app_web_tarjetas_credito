@@ -9,13 +9,16 @@ import ValidacionSocio from './ValidacionSocio';
 import Item from '../Common/UI/Item';
 import ValidacionesGenerales from './ValidacionesGenerales';
 import DatosSocio from './DatosSocio';
-import { fetchScore, fetchValidacionSocio, fetchAddAutorizacion, fetchAddSolicitud, fetchNuevaSimulacionScore, fetchGetAlertasCliente } from '../../services/RestServices';
+import { fetchScore, fetchValidacionSocio, fetchAddAutorizacion, fetchAddSolicitud, fetchNuevaSimulacionScore, fetchGetAlertasCliente, fetchGetParametrosSistema } from '../../services/RestServices';
 import { get } from '../../js/crypt';
 import Modal from '../Common/Modal/Modal';
 import Personalizacion from './Personalizacion';
 import FinProceso from './FinProceso';
 import DatosFinancieros from './DatosFinancieros';
 import Stepper from '../Common/Stepper';
+import { v4 as uuidv4 } from 'uuid';
+import { setDataSimulacionStateAction } from '../../redux/DataSimulacion/actions';
+
 
 const mapStateToProps = (state) => {
     var bd = state.GetWebService.data;
@@ -33,6 +36,12 @@ const mapStateToProps = (state) => {
 
 
 const NuevaSolicitud = (props) => {
+    const generarKey = () => {
+        let myUUID = uuidv4();
+        setKeyComponente(myUUID);
+    }
+    const [keyComponente, setKeyComponente] = useState();
+
     const dispatch = useDispatch();
     const navigate = useHistory();
     //Info sesión
@@ -128,6 +137,11 @@ const NuevaSolicitud = (props) => {
     //PARAMETROS REQUERIDOS
     const [parametrosTC, setParametrosTC] = useState([]);
 
+    //Parametros para tipo de entrega en vista Personalizacion de TC
+    const [lstTiposEntrega, setLstTiposEntrega] = useState([]);
+
+
+
 
     useEffect(() => {
         const strOficial = get(localStorage.getItem("sender_name"));
@@ -154,7 +168,35 @@ const NuevaSolicitud = (props) => {
             setControlMontoMinimoParametro(Number(ParametrosTC.filter(param => param.str_nemonico === 'PRM_WS_TC_CUPO_MINIMO_SOL_TC')[0]?.str_valor_ini));
         }
 
+        //TODO REVISAR
+        fetchGetParametrosSistema("TIPO_ENTREGA_WS_TC", props.token, (data) => {
+            console.log("data.lst_parametros ", data.lst_parametros)
+            if (data.lst_parametros.length > 0) {
+                /*let informacion = [];
+                data.lst_parametros.forEach((param) => {
+                    let nuevoTipoEntrega = {
+                        textPrincipal: param.str_valor_ini,
+                        key: param.str_valor_ini,
+                        vigencia: param.bl_vigencia,
+                        idETC: Number(param.int_id_parametro),
+                        image: "",
+                        textSecundario: "",
+                    }
+                    informacion.push(nuevoTipoEntrega)
+                    nuevoTipoEntrega = null;
+                });
+                setLstTiposEntrega(informacion);*/
+                let ParametrosEntregaTC = data.lst_parametros.map(estadoEnt => ({
+                    key: estadoEnt.str_valor_ini,
+                    textPrincipal: estadoEnt.str_valor_ini,
+                    vigencia: estadoEnt.bl_vigencia,
+                    image: "",
+                    textSecundario: "",
+                }));
+                setLstTiposEntrega(ParametrosEntregaTC);
 
+            }
+        }, dispatch)
     }, []);
 
 
@@ -346,10 +388,11 @@ const NuevaSolicitud = (props) => {
             if (data.str_res_codigo === "004") {
                 setTextoAviso(data.str_res_info_adicional ? data.str_res_info_adicional : "Ya se encuentra registrada una solicitud con esa cédula.")
                 setModalMensajeAviso(true);
-                console.log("SOLIC YA CREADA ", data.str_res_info_adicional);
+                //console.log("SOLIC YA CREADA ", data.str_res_info_adicional);
             }
             if (data.str_res_codigo === "000") {
                 if (!actualizarInfo) {
+                    generarKey();
                     consultaAlertas(cedulaSocio, data.str_fecha_nacimiento, data.str_nombres, data.str_apellido_paterno + " " + data.str_apellido_materno, true);
                     setStep(1);
                     let retrasoEfecto = setTimeout(function () {
@@ -493,9 +536,17 @@ const NuevaSolicitud = (props) => {
             setInfoSocio(dataSocio);
             //console.log("INFO SOCI SOL, ", dataSocio)
 
+            let nombreSocioTC = nombreSocio + " " + apellidoPaterno;
+            nombreSocioTC = (apellidoMaterno !== null && apellidoMaterno !== '' && apellidoMaterno !== ' ') ? nombreSocioTC + " " + apellidoMaterno : nombreSocioTC;
+
+            //Redux guardar informaciion necesaria para nueva simulacion en DatosSocio
+            dispatch(setDataSimulacionStateAction({
+                cedula: "1150214375", nombresApellidos: nombreSocioTC
+            }))
+
             if (!realizaNuevaSimulacion.current) {
                 //TODO cambiar cedula a a -> cedulaSocio
-                await fetchScore("C", "1150214375", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, datosUsuario[0].strUserOficial, datosUsuario[0].strOficial, datosUsuario[0].strCargo, props.token, (data) => {
+                await fetchScore("C", "1150214375", nombreSocioTC, datosUsuario[0].strUserOficial, datosUsuario[0].strOficial, datosUsuario[0].strCargo, props.token, (data) => {
                     setScore(data);
                     setIdClienteScore(data.int_cliente);
                     setPuntajeScore(data?.response?.result?.scoreFinanciero[0]?.score)
@@ -522,7 +573,7 @@ const NuevaSolicitud = (props) => {
                 if (!datosFinan.montoGastoFinaCodeudor || datosFinan.montoGastoFinaCodeudor === "" || datosFinan.montoGastoFinaCodeudor === " " || IsNullOrEmpty(datosFinan.montoGastoFinaCodeudor)) datosFinan.montoGastoFinaCodeudor = 0;
 
                 //TODO CAMBIAR LA CEDULA ->cedulaSocio
-                await fetchNuevaSimulacionScore("C", "1150214375", nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno, datosUsuario[0].strUserOficial, datosUsuario[0].strOficial, datosUsuario[0].strCargo, datosFinan.montoIngresos, datosFinan.montoEgresos, datosFinan.montoRestaGstFinanciero, datosFinan.montoGastoFinaCodeudor,
+                await fetchNuevaSimulacionScore("C", "1150214375", nombreSocioTC, datosUsuario[0].strUserOficial, datosUsuario[0].strOficial, datosUsuario[0].strCargo, datosFinan.montoIngresos, datosFinan.montoEgresos, datosFinan.montoRestaGstFinanciero, datosFinan.montoGastoFinaCodeudor,
                     props.token, (data) => {
                         setIdClienteScore(data.int_cliente);
                         setCupoSugeridoCoopM(data.str_cupo_sugerido);
@@ -741,7 +792,7 @@ const NuevaSolicitud = (props) => {
 
                         <div className={`f-row w-100' justify-content-center sliding-div `}>
                             <div className={`${step === 0 ? 'f-row w-80 justify-content-center' : ''} ${step === 1 ? 'f-col w-40 justify-content-start mt-5' : ''} `}>
-                                <div className={"f-row justify-content-end mt-1"}></div>
+                                <div className={"f-row justify-content-end mt-2"}></div>
                                 <ValidacionSocio paso={step}
                                     token={props.token}
                                     cedulaSocioValue={cedulaSocio}
@@ -755,12 +806,14 @@ const NuevaSolicitud = (props) => {
                             {(step === 1) &&
                                 <div className="f-col w-40 justify-content-start">
                                     <div className={"f-row justify-content-end"}>
-                                        <Button className="btn_mg__auto " >
-                                            <img src="/Imagenes/refresh.svg" style={{ transform: "scaleX(-1)", width:"1.8rem" }} alt="Volver a consultar"></img>
+                                        <Button className="btn_mg__auto " onClick={() =>refrescarInformacionHandler(false) }>
+                                            <img src="/Imagenes/refresh.svg" style={{ transform: "scaleX(-1)", width:"2.1rem" }} alt="Volver a consultar"></img>
                                         </Button>
                                     </div>
 
-                                    <ValidacionesGenerales token={props.token}
+                                    <ValidacionesGenerales
+                                        key={keyComponente}
+                                        token={props.token}
                                         lst_validaciones={lstValidaciones}
                                         onFileUpload={getFileHandler}
                                         onShowAutorizacion={showAutorizacion}
@@ -816,6 +869,9 @@ const NuevaSolicitud = (props) => {
                             idClienteScore={idClienteScore}
                             comentarioAdicionalValor={comentarioAdic}
                             calificacionRiesgo={calificacionRiesgo}
+                            isCheckMontoRestaFinanciera={isCkeckRestaGtoFinananciero}
+                            setDatosFinancierosFunc={datosFinancierosHandler}
+                            isCkeckGtosFinancierosHandler={checkGastosFinancieroHandler}
 
                         ></DatosSocio>
                     }
@@ -831,6 +887,7 @@ const NuevaSolicitud = (props) => {
                                 onNombreTarjeta={nombreTarjetaHandler}
                                 onTipoEntrega={tipoEntregaHandler}
                                 onDireccionEntrega={direccionEntregaHandler}
+                                lstTiposEntregaTC={lstTiposEntrega }
                             ></Personalizacion>
                         </div>
                     }
@@ -851,12 +908,6 @@ const NuevaSolicitud = (props) => {
 
                     </Item>
                     <Item xs={8} sm={8} md={8} lg={8} xl={8} className="f-row justify-content-center align-content-center">
-                        {(step === 1) &&
-                            <Button className={["btn_mg btn_mg__primary mt-2 mr-2"]} onClick={() => refrescarInformacionHandler(true)}>{"Actualizar"}</Button>
-                        }
-                        {(step === 3) &&
-                            <Button className={["btn_mg btn_mg__primary mt-2 mr-2"]} onClick={refrescarDatosInformativos}>{"Actualizar"}</Button>
-                        }
                         <Button className={["btn_mg btn_mg__primary mt-2 ml-2"]} disabled={estadoBotonSiguiente} onClick={() => nextHandler(step)}>{textoSiguiente}</Button>
                     </Item>
 

@@ -287,13 +287,6 @@ function Solicitud(props) {
            {/* {permisoNuevaSol && 
                 <>*/}
                 <div className="content-cards mt-2">
-                    
-                    <Card>
-                        <img style={{ width: "25px" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg" alt="Solicitud"></img>
-                        <h4 className="mt-2">Solicitud</h4>
-                        <h5 className="mt-5">Genera una nueva solicitud de tarjeta de crédito</h5>
-                        <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={irNuevaSolicitud}>Siguiente</Button>
-                    </Card>
 
                     <Card>
                         <img style={{ width: "25px" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg" alt="Prospección"></img>
@@ -301,6 +294,15 @@ function Solicitud(props) {
                             <h5 className="mt-2">Genera una nueva prospección de tarjeta de crédito</h5>
                             <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={irNuevaProspección}>Siguiente</Button>
                     </Card>
+
+
+                    <Card>
+                        <img style={{ width: "25px" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg" alt="Solicitud"></img>
+                        <h4 className="mt-2">Solicitud</h4>
+                        <h5 className="mt-5">Genera una nueva solicitud de tarjeta de crédito</h5>
+                        <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={irNuevaSolicitud}>Siguiente</Button>
+                    </Card>
+
 
 
                     <Card>
@@ -347,7 +349,7 @@ function Solicitud(props) {
                                     <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{solicitud.str_canal_crea}</td>
                                     <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{solicitud.str_usuario_crea}</td>
                                     <td>          
-                                        <div className="icon-botton" 
+                                        <div className="f-col justify-content-center icon-botton" 
                                             onClick={() => {
                                                 setSolicitudCupoAnulacion(solicitud.dec_cupo_solicitado);
                                                 setSolicitudAnularId(solicitud.int_id);
@@ -355,7 +357,9 @@ function Solicitud(props) {
                                             }}>
                                             <DeleteForeverRoundedIcon
                                                 sx={{
-                                                    fontSize: 26,
+                                                    fontSize: 33,
+                                                    margin: 0,
+                                                    padding: 0
                                                 }}
                                             ></DeleteForeverRoundedIcon>
                                         </div>

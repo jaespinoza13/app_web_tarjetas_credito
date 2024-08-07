@@ -14,8 +14,8 @@ import FinProceso from '../Solicitud/FinProceso';
 import RegistroCliente from './RegistroCliente';
 import DatosFinancieros from '../Solicitud/DatosFinancieros';
 import Stepper from '../Common/Stepper';
-import { setDatoSocioState} from '../../redux/DatosSocio-Solicitud/actions';
-
+import { v4 as uuidv4 } from 'uuid';
+import { setDataSimulacionStateAction } from '../../redux/DataSimulacion/actions';
 
 const mapStateToProps = (state) => {
     var bd = state.GetWebService.data;
@@ -33,6 +33,12 @@ const mapStateToProps = (state) => {
 
 
 const NuevaProspeccion = (props) => {
+    const [keyComponente, setKeyComponente] = useState();
+    const generarKey = () => {
+        let myUUID = uuidv4();
+        setKeyComponente(myUUID);
+    }
+
     const dispatch = useDispatch();
     const navigate = useHistory();
     //Info sesión
@@ -396,7 +402,7 @@ const NuevaProspeccion = (props) => {
             if (alertasIniciales_Invalidas.length > 0) {
                 alertasIniciales_Invalidas.forEach(alertaN3 => {
                     lst_validaciones_err.push(alertaN3)
-                    lst_validaciones_ok.push(alertaN3)
+                    //lst_validaciones_ok.push(alertaN3)
                 });
             }
             if (alertasRestriccion_Invalidas.length > 0) {
@@ -415,6 +421,7 @@ const NuevaProspeccion = (props) => {
             handleLists(objValidaciones);
 
             if (seguirAlSigPaso) {
+                generarKey();
                 setStep(2);
                 setVisitadosSteps([...visitadosSteps, actualStepper + 1])
                 setActualStepper(1);
@@ -458,7 +465,13 @@ const NuevaProspeccion = (props) => {
             setInfoSocio(dataSocio);
 
             let nombreSocioTC = nombreSocio + " " + apellidoPaterno;
-            nombreSocioTC = (apellidoMaterno !== null && apellidoMaterno !== '') ? nombreSocioTC + " " + apellidoMaterno : nombreSocioTC;
+            nombreSocioTC = (apellidoMaterno !== null && apellidoMaterno !== '' && apellidoMaterno !== ' ') ? nombreSocioTC + " " + apellidoMaterno : nombreSocioTC;
+            //Redux guardar informaciion necesaria para nueva simulacion en DatosSocio
+            dispatch(setDataSimulacionStateAction({
+                cedula: "1150214375", nombresApellidos: nombreSocioTC
+            }))
+
+
             if (!realizaNuevaSimulacion.current) {
                 //TODO: CAMBIAR LA CEDULA por "documento"
                 await fetchScore("C", "1150214375", nombreSocioTC, datosUsuario[0].strUserOficina, datosUsuario[0].strOficial, datosUsuario[0].strCargo, props.token, (data) => {
@@ -484,12 +497,6 @@ const NuevaProspeccion = (props) => {
                 if (!datosFinan.montoRestaGstFinanciero || datosFinan.montoRestaGstFinanciero === "" || datosFinan.montoRestaGstFinanciero === " " || IsNullOrEmpty(datosFinan.montoRestaGstFinanciero)) datosFinan.montoRestaGstFinanciero = 0;
                 if (!datosFinan.montoGastoFinaCodeudor || datosFinan.montoGastoFinaCodeudor === "" || datosFinan.montoGastoFinaCodeudor === " " || IsNullOrEmpty(datosFinan.montoGastoFinaCodeudor)) datosFinan.montoGastoFinaCodeudor = 0;
 
-               
-                //TODO: cambiar cedula
-                dispatch(setDatoSocioState({
-                    cedula: "1150214375", nombresApellidos: nombreSocioTC, oficina: datosUsuario[0].strUserOficina, usuarioLogin: datosUsuario[0].strOficial, cargoUsuario: datosUsuario[0].strCargo,
-
-                }))
 
                 //TODO CAMBIAR LA CEDULA, oficina matriz
                 await fetchNuevaSimulacionScore("C", "1150214375", nombreSocioTC, datosUsuario[0].strUserOficina, datosUsuario[0].strOficial, datosUsuario[0].strCargo, datosFinan.montoIngresos, datosFinan.montoEgresos, datosFinan.montoRestaGstFinanciero, datosFinan.montoGastoFinaCodeudor,
@@ -529,6 +536,7 @@ const NuevaProspeccion = (props) => {
     }
 
     const handleLists = (e) => {
+        console.log("ALERTAS ",e)
         setLstValidaciones(e);
     }
 
@@ -678,7 +686,9 @@ const NuevaProspeccion = (props) => {
 
                     {(step === 2) &&
                         <div className="f-row w-100 justify-content-center">
-                            <ValidacionesGenerales token={props.token}
+                            <ValidacionesGenerales
+                                key={keyComponente }
+                                token={props.token}
                                 infoSocio={infoSocio}
                                 lst_validaciones={lstValidaciones}
                                 onFileUpload={getFileHandler}
@@ -717,6 +727,9 @@ const NuevaProspeccion = (props) => {
                             onComentarioAdic={handleComentarioAdic}
                             idClienteScore={idClienteScore}
                             comentarioAdicionalValor={comentarioAdic}
+                            isCheckMontoRestaFinanciera={isCkeckRestaGtoFinananciero}
+                            setDatosFinancierosFunc={datosFinancierosHandler}
+                            isCkeckGtosFinancierosHandler={checkGastosFinancieroHandler}
                             ></DatosSocio>                        
                     }
                   
