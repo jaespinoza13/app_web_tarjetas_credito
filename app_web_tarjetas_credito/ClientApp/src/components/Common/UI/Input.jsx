@@ -5,10 +5,25 @@ const Input = (props) => {
     const changeHandler = (e) => {
         const newValue = e.target.value;
 
-        if (props.maxlength !== null && newValue.length <= props.maxlength) {
+
+
+        //En caso exista las dos propiedades evalua la de "max""
+        if (props.maxlength !== undefined && props.max !== undefined && Number(newValue) <= Number(props.max)) {
             setInputValue(newValue);
             props.setValueHandler(newValue);
-        } else {
+        }
+        //Control para tamaño de caracteres
+        else if (props.maxlength !== undefined && newValue.length <= props.maxlength && props.max === undefined) {
+            setInputValue(newValue);
+            props.setValueHandler(newValue);
+        }
+        //Control para valor maximo
+        else if (props.max !== undefined && Number(newValue) <= Number(props.max) && props.maxlength === undefined) {
+            console.log("ENTRA")
+            setInputValue(newValue);
+            props.setValueHandler(newValue);
+        }
+        else if (props.maxlength === undefined && props.max === undefined) {
             setInputValue(newValue);
             props.setValueHandler(newValue);
         }

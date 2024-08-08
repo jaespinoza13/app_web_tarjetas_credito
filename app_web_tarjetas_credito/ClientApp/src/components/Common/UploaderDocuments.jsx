@@ -544,7 +544,7 @@ const UploadDocumentos = (props) => {
 
 
                         <div style={{ display: "flex" }}>
-                            <p className='normal'>MONTO SOLICITADO: </p>
+                            <p className='normal'>VALOR SOLICITADO: </p>
                             <p className="negrita">{`$ ${Number(props.cupoSolicitado).toLocaleString("en-US") || Number('0.00').toLocaleString("en-US")}`} </p>
                         </div>
 

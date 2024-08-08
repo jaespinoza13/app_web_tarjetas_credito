@@ -28,7 +28,7 @@ body {
 
 nav {
     height: 4rem;
-    min-width: calc(100vh - 4rem);
+    min-width: calc(100vw - 4rem);
     background: transparent linear-gradient(89deg, #005CB9 0%, #00FFFF 150%) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1607843137);
     opacity: 1;

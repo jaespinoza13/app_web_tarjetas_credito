@@ -185,11 +185,11 @@ const DatosFinancieros = (props) => {
                             <div className='mb-2'>
                                 <label>Cupo solicitado</label>
                                 <div className="f-row">
-                                    <h2 className='mr-2'>$</h2><Input className={`w-90  ${(montoSolicitado !== "" && montoSolicitado !== 0) ? '' : 'no_valido'}`} type={"number"} placeholder={"1.000"} readOnly={false} setValueHandler={setMontoSolicitadoHandler} value={montoSolicitado} min={0} max={99999}></Input>
+                                    <h2 className='mr-2'>$</h2><Input className={`w-90  ${(montoSolicitado !== "" && montoSolicitado !== 0 && Number(montoSolicitado) < Number(props.montoMinimoCupoSolicitado)) ? '' : 'no_valido'}`} type={"number"} placeholder={"1.000"} readOnly={false} setValueHandler={setMontoSolicitadoHandler} value={montoSolicitado} min={0} max={99999}></Input>
                                 </div>
                                 <div className="f-row">
                                     {montoSolicitado < props.montoMinimoCupoSolicitado &&
-                                        <h5 className="ml-4">*El monto mínimo a solicitar debe superar los {`$ ${Number(props.montoMinimoCupoSolicitado)?.toLocaleString("en-US")}`}</h5>
+                                        <h5 className="ml-4">*El valor mínimo a solicitar debe superar los {`$ ${Number(props.montoMinimoCupoSolicitado)?.toLocaleString("en-US")}`}</h5>
                                     }
                                 </div>
                                 

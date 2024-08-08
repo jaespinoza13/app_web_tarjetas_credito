@@ -524,7 +524,7 @@ const DatosSocio = (props) => {
                                                 <tr key={998}>
                                                     <td>TOTAL</td>
                                                     <td>
-                                                        {numberFormatMoney(totalIngresos)}
+                                                        <h4 className="strong">{numberFormatMoney(totalIngresos)}</h4>
                                                     </td>
                                                 </tr>
                                             }
@@ -553,7 +553,7 @@ const DatosSocio = (props) => {
                                                 <tr key={999}>
                                                     <td>TOTAL</td>
                                                     <td>
-                                                        {numberFormatMoney(totalEgresos)}
+                                                        <h4 className="strong">{numberFormatMoney(totalEgresos)}</h4>
                                                     </td>
                                                 </tr>
                                             }
@@ -571,7 +571,7 @@ const DatosSocio = (props) => {
                                             <th>Id.</th>
                                             <th>Tipo</th>
                                             <th>Operación</th>
-                                            <th>Monto Aprobado</th>
+                                            <th>Valor Aprobado</th>
                                             <th>Fecha vencimiento</th>
                                             <th>Fecha concesión</th>
                                             <th>Cuotas vencidas</th>
@@ -603,7 +603,7 @@ const DatosSocio = (props) => {
                                         <tr>
                                             <th>Número cta</th>
                                             <th>Tipo cta</th>
-                                            <th>Monto disponible</th>
+                                            <th>Valor disponible</th>
                                             <th>Fecha</th>
                                             <th>Estado</th>
                                         </tr>

@@ -201,7 +201,7 @@ const RegistroCliente = (props) => {
                     <Item xs={3} sm={3} md={3} lg={3} xl={3} className=""></Item>
                     <Item xs={6} sm={6} md={6} lg={6} xl={6} className="justify-content-center">
                         <div className={"f-row w-100 justify-content-space-between mb-1"}>
-                            <h2>Registro Datos del Cliente</h2>
+                            <h2>Registro Datos del Socio</h2>
                             <Button className="btn_mg__auto" onClick={updDatosHandler}>
                                 <img src="/Imagenes/refresh.svg" style={{ transform: "scaleX(-1)", width: "2.2rem" }} alt="Volver a consultar."></img>
                             </Button>

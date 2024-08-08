@@ -193,7 +193,7 @@ const DatosFinanDatosSocio = (props) => {
                     <Item xs={1} sm={1} md={1} lg={1} xl={1} className="f-col justify-content-center">
                         <div className={"f-row w-100 justify-content-start"}>
                             <Button className="btn_mg__secondary " onClick={nuevaSimulacionHandler} disabled={isHabilitaBtnCalcular}>
-                               Calcular
+                               Simular
                             </Button>
                         </div>
                     </Item>

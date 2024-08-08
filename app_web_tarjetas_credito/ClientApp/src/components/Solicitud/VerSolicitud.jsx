@@ -71,6 +71,7 @@ const VerSolicitud = (props) => {
     const [isActivoBtnDecision, setIsActivoBtnDecision] = useState(true);
     const [isBtnDisableCambioBandeja, setIsBtnDisableCambioBandeja] = useState(true);
     const [isBtnResolucionSocio, setIsBtnResolucionSocio] = useState(true);
+    const [isDisableBtnGuardarNuevoCupo, setIsDisableBtnGuardarNuevoCupo] = useState(true);
 
 
     //DATOS DEL USUARIO
@@ -110,7 +111,7 @@ const VerSolicitud = (props) => {
 
     const [toggleResetIndex, setToggleResetIndex] = useState(1);
 
-
+    const [controlMontoMinimoParametro, setControlMontoMinimoParametro] = useState(0);
 
     const seleccionAccionSolicitud = (value) => {
         const accionSelecciona = accionesSolicitud.find((element) => { return element.key === value });
@@ -119,9 +120,6 @@ const VerSolicitud = (props) => {
         setAccionSeleccionada(accionSelecciona.key);
     }
 
-    const headerTableComentarios = [
-        { nombre: 'Tipo', key: 1 }, { nombre: 'Comentario', key: 2 }
-    ];
 
     const headerTableResoluciones = [
         { nombre: 'Usuario', key: 0 }, { nombre: 'Fecha actualización', key: 1 }, { nombre: "Decisión", key: 2 }, { nombre: "Comentario", key: 3 }
@@ -195,6 +193,9 @@ const VerSolicitud = (props) => {
                     prm_valor_ini: estado.str_valor_ini,
                     prm_valor_fin: estado.str_valor_fin
                 })));
+
+            /*PARAMETRO PARA CONTROL DE CUPO MINIMO A SOLICITAR EN TARJETA DE CRÉDITO*/
+            setControlMontoMinimoParametro(Number(ParametrosTC.filter(param => param.str_nemonico === 'PRM_WS_TC_CUPO_MINIMO_SOL_TC')[0]?.str_valor_ini));
 
             /* ESTADOS PARA DECISION FINAL DEL COMITE */
             setEstadosDecBanjComiteAll(ParametrosTC
@@ -503,6 +504,17 @@ const VerSolicitud = (props) => {
         setNuevoMonto(value);
     }
 
+    /*CONTROLAR QUE PUEDA ACTUALIZA EL CUPO POR MENOS MONTO DEL SOLICITADO POR EL SOCIO*/ 
+    useEffect(() => {
+        if (Number(nuevoMonto) >= Number(controlMontoMinimoParametro) && Number(nuevoMonto) <= Number(solicitudTarjeta.str_cupo_solicitado)) {
+            setIsDisableBtnGuardarNuevoCupo(false);
+        } else {
+            setIsDisableBtnGuardarNuevoCupo(true);
+        }
+
+    }, [nuevoMonto])
+
+
     const cambioMotivoRetornoBandeja = (e) => {
         setSelectMotivoRetornoBanj(e.target.value);
     }
@@ -810,7 +822,7 @@ const VerSolicitud = (props) => {
                 <>
 
                     {
-                        solicitudTarjeta?.str_estado === "APROBADA"
+                        (solicitudTarjeta?.str_estado === "APROBADA" || solicitudTarjeta?.str_estado === "APROBADA SOCIO")
                             ?
                             <Card className={["w-100 justify-content-space-between align-content-center"]}>
                                 <div>
@@ -991,7 +1003,7 @@ const VerSolicitud = (props) => {
                                             }
 
                                             {permisoImprimirMedio.includes(solicitudTarjeta?.str_estado) &&
-                                                <Button className="btn_mg__primary ml-2" onClick={() => descargarMedio(props.solicitud.solicitud)}>Imprimir medio aprobación</Button>
+                                                <Button className="btn_mg__primary ml-2" onClick={() => descargarMedio(props.solicitud.solicitud)}>Medio de aprobación</Button>
                                             }
 
                                             {estadosPuedenRegresarBandeja.includes(solicitudTarjeta?.str_estado) &&
@@ -1081,7 +1093,7 @@ const VerSolicitud = (props) => {
                                         {isMontoAprobarse &&
                                             <>
                                                 <Card className={["mt-2"]}>
-                                                    <h3>Monto a aprobarse</h3>
+                                                    <h3>Valor a aprobarse</h3>
                                                     <Input type="number" placeholder="Ej. 1000" disabled={false} setValueHandler={(e) => setMontoAprobado(e)} value={montoAprobado}></Input>
                                                 </Card>
 
@@ -1278,16 +1290,20 @@ const VerSolicitud = (props) => {
         </Modal>
         <Modal
             modalIsVisible={modalMonto}
-            titulo={`Actualizar monto solicitado`}
+            titulo={`Actualizar valor solicitado`}
             onNextClick={actualizarMonto}
             onCloseClick={closeModalMonto}
-            isBtnDisabled={false}
+            isBtnDisabled={isDisableBtnGuardarNuevoCupo}
             type="sm"
             mainText="Guardar"
         >
-            {modalMonto && <div>
-                <h3 className="mt-4 mb-3">Ingrese el nuevo monto:</h3>
-                <Input className="mb-4 w-100" type="number" value={solicitudTarjeta?.str_cupo_solicitado} placeholder="Ingrese el nuevo monto" setValueHandler={nuevoMontoHandler}></Input>
+            {modalMonto &&
+                <div className="f-row w-100">
+                    <div className="f-col w-100 ml-2 mt-4">
+                        <h3 className="mb-3">Ingrese el nuevo valor:</h3>
+                        <Input className={`"f-row w-100 mb-4"  ${(nuevoMonto === "" || nuevoMonto === 0 || Number(nuevoMonto) < Number(controlMontoMinimoParametro)) || Number(nuevoMonto) > Number(solicitudTarjeta.str_cupo_solicitado) ? 'no_valido' : ''}`} type="number" value={solicitudTarjeta?.str_cupo_solicitado} placeholder="1000.00" setValueHandler={nuevoMontoHandler} maxlength={8} max={solicitudTarjeta.str_cupo_solicitado }></Input>
+                        <h5 className="strong ml-1 mt-1 mb-4">*El valor mínimo a actualizar debe ser mayor a los {`${numberFormatMoney(controlMontoMinimoParametro)}`} y menor al valor solicitado {`${numberFormatMoney(solicitudTarjeta.str_cupo_solicitado)}`}.</h5>
+                    </div>
                 <br/>
             </div>}
         </Modal>
