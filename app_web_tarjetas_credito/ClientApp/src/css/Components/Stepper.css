@@ -1,5 +1,5 @@
 ﻿.step-largo-barra {
-    width: 95%; /* modificar si se elimina propiedad transform  */
+    width: 96.5%; /* modificar si se elimina propiedad transform  */
     display: inline-flex;
     /* transform: translateX(-10px); */ /*eliminar si no se colocar ningun "span_step" como titulo del Step*/
 }

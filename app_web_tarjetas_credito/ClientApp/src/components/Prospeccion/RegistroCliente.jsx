@@ -16,7 +16,7 @@ const RegistroCliente = (props) => {
     const [celularCliente, setCelularCliente] = useState("");
     const [correoCliente, setCorreoCliente] = useState("");
     const [documento, setDocumento] = useState("");
-    const [fechaNacimiento, setFechaNacimiento] = useState("");
+    const [fechaNacimiento, setFechaNacimiento] = useState(null);
 
     //Estado validacion
     const [isCedulaValida, setIsCedulaValida] = useState(false);
@@ -115,10 +115,9 @@ const RegistroCliente = (props) => {
     }
 
 
-    const fechaNacimientoHandler = (valor) => {
-        console.log("PRUEBA ",valor)
-        setFechaNacValido(valor !== "undefined--undefined")
-        setFechaNacimiento(convertDateFormat(valor))
+    const fechaNacimientoHandler = (valor) => {        
+        setFechaNacValido((valor.includes("undefined") || valor === null || valor === "" || valor === " ") ? true : false)
+        setFechaNacimiento((!valor.includes("undefined") && valor !== null && valor !== "" && valor !== " ") ? valor : null)
         props.datosIngresados({
             nombres: nombresCliente,
             apellidoPaterno: apellidoPaterno,
@@ -126,19 +125,18 @@ const RegistroCliente = (props) => {
             celular: celularCliente,
             correo: correoCliente,
             documento: documento,
-            fechaNacimiento: convertDateFormat(valor)
+            fechaNacimiento: (valor)
         })
     }
     
-    //Convertir una fecha
-    const convertDateFormat = (dateStr) => {
-        const [year, month, day] = dateStr.split('-');
-        return `${month}-${day}-${year}`;
-        //return `${year}-${month}-${day}`;
-    }
 
     useEffect(() => {
         window.scrollTo(0, 0);
+        if (props.paso === 0) {
+            let validezCedula = validaCedula(documento);
+            setIsCedulaValida(validezCedula);
+        }
+
         if (props.infoSocio && props.paso === 1) {
             setNombresCliente(props.infoSocio.nombres);
             //console.log("INFO SOC/CL ", props.infoSocio)
@@ -149,19 +147,21 @@ const RegistroCliente = (props) => {
             setApellidoMaterno(props.infoSocio.apellidoMaterno);
             setCelularCliente(props.infoSocio.celularCliente);
             setCorreoCliente(props.infoSocio.correoCliente);
-            const partesFecha = "";
 
-            if (props.infoSocio.fechaNacimiento !== "") {
-                props.infoSocio.fechaNacimiento.split('-');
-                setFechaNacimiento(`${partesFecha[2]}-${partesFecha[0]}-${partesFecha[1]}`)
+            let partesFecha = props.infoSocio.fechaNacimiento.split('-');
+            if (props.infoSocio.fechaNacimiento === null || props.infoSocio.fechaNacimiento === "" || props.infoSocio.fechaNacimiento === " ") {
+                setFechaNacimiento(null);
+                setFechaNacValido(false);
+            }
+            else if (partesFecha[0]?.length <= 2) {
+                setFechaNacimiento(`${partesFecha[2]}-${partesFecha[0]}-${partesFecha[1]}`);
+                setFechaNacValido(true);
             } else {
-                setFechaNacimiento("")
-            }           
-           
-
+                setFechaNacimiento(props.infoSocio.fechaNacimiento);
+                setFechaNacValido(true);
+            }         
             setIsCorreoValido(validarCorreo(props.infoSocio.correoCliente))
-            setIsCelularValido(props.infoSocio.celularCliente.length === 10)
-            setFechaNacValido(partesFecha !== "undefined--undefined" && partesFecha !== "")
+            setIsCelularValido(props.infoSocio.celularCliente.length === 10)            
     
         }
     }, [props.infoSocio, props.paso])
@@ -200,18 +200,19 @@ const RegistroCliente = (props) => {
                 <div className={`f-row w-100 sliding-div ${props.isVisibleBloque ? 'visibleX' : 'hiddenX'}`}>   
                     <Item xs={3} sm={3} md={3} lg={3} xl={3} className=""></Item>
                     <Item xs={6} sm={6} md={6} lg={6} xl={6} className="justify-content-center">
-                        <div className={"f-row"}>
+                        <div className={"f-row w-100 justify-content-space-between mb-1"}>
                             <h2>Registro Datos del Cliente</h2>
-                            <Button className="btn_mg__auto " onClick={updDatosHandler}>
-                                <img src="/Imagenes/refresh.svg" style={{ transform: "scaleX(-1)" }} alt="Volver a consultar"></img>
+                            <Button className="btn_mg__auto" onClick={updDatosHandler}>
+                                <img src="/Imagenes/refresh.svg" style={{ transform: "scaleX(-1)", width: "2.2rem" }} alt="Volver a consultar."></img>
                             </Button>
+
                         </div>
                             <Card>
                                 <section>
                                     <div className='mb-2'>
                                         <label>Cédula:</label>
                                         <div className="f-row">
-                                            <Input id="cedula" className={`w-100 ${documento !== "" ? '' : 'no_valido'}`} type="text" placeholder="1150216791" setValueHandler={documentoHandler} value={documento} disabled={true} maxlength={10}  ></Input>
+                                        <Input id="cedula" className={`w-100`} type="number" placeholder="1150216791" setValueHandler={documentoHandler} value={documento} disabled={true}></Input>
                                         </div>
                                     </div>
 

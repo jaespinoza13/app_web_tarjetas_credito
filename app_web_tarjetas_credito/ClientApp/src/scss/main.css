@@ -1759,6 +1759,12 @@ input[type=radio] {
     height: 29px;
 }
 
+.icon-retorno {
+    cursor: pointer;
+    border: none;
+    color: #004CAC;
+}
+
 
 @keyframes ripple {
     to {

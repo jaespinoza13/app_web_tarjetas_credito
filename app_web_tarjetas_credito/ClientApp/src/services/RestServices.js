@@ -776,7 +776,7 @@ export function fetchContenidoArchivoLogs(ws, archivo, desde, hasta, token, onSu
  * @param {(contenido:string, nroTotalRegistros: number) => void} onSuccess
  * @param {Function} dispatch
  */
-export function fetchValidacionSocio(strCedula, strTipoValidacion, token, onSucces, errorCallback, dispatch) {
+export async function fetchValidacionSocio(strCedula, strTipoValidacion, token, onSucces, errorCallback, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
@@ -784,7 +784,7 @@ export function fetchValidacionSocio(strCedula, strTipoValidacion, token, onSucc
         str_nemonico_alerta: strTipoValidacion
     };
     //console.log("BODY SERVICE,", body)
-    ServicioPostExecute(getValidaciones, body, token, { dispatch: dispatch }).then((data) => {
+    await ServicioPostExecute(getValidaciones, body, token, { dispatch: dispatch }).then((data) => {
         //console.log("VALIDACION SERVICE," ,data)
         if (data) {
             if (data.error) {

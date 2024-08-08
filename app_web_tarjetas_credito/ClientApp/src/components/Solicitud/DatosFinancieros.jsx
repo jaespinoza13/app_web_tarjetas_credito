@@ -98,7 +98,7 @@ const DatosFinancieros = (props) => {
     const updGastosFinancieros = () => {
         props.requiereActualizar(true)
     }
-
+    
     useEffect(() => {
         window.scrollTo(0, 0);
         setMontoIngresos(props.dataConsultFinan.montoIngresos);
@@ -108,7 +108,29 @@ const DatosFinancieros = (props) => {
         setMontoSolicitado(props.dataConsultFinan.montoSolicitado);
         setIsCkeckRestaGtoFinancero(props.isCheckMontoRestaFinanciera);
 
+        return () => {
+            setMontoIngresos(0);
+            setMontoEgresos(0);
+            setRestaMontoGastosFinancieros(0);
+            setMontoGastoFinanCodeudor(0);
+            setMontoSolicitado(0);
+            setIsCkeckRestaGtoFinancero(false);
+            setIsCamposDesactivados(true);
+        }
+
     }, [])
+    /*
+    useEffect(() => {
+        window.scrollTo(0, 0);
+        setMontoIngresos(props.dataConsultFinan.montoIngresos);
+        setMontoEgresos(props.dataConsultFinan.montoEgresos);
+        setRestaMontoGastosFinancieros(props.dataConsultFinan.montoRestaGstFinanciero);
+        setMontoGastoFinanCodeudor(props.dataConsultFinan.montoGastoFinaCodeudor);
+        setMontoSolicitado(props.dataConsultFinan.montoSolicitado);
+        setIsCkeckRestaGtoFinancero(props.isCheckMontoRestaFinanciera);
+
+    }, [props.dataConsultFinan, props.isCheckMontoRestaFinanciera])
+    */
 
     return (
         <>

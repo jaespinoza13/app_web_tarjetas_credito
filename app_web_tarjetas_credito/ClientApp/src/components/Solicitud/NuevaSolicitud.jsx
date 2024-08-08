@@ -18,6 +18,8 @@ import DatosFinancieros from './DatosFinancieros';
 import Stepper from '../Common/Stepper';
 import { v4 as uuidv4 } from 'uuid';
 import { setDataSimulacionStateAction } from '../../redux/DataSimulacion/actions';
+import KeyboardArrowLeftRoundedIcon from '@mui/icons-material/KeyboardArrowLeftRounded';
+import { Fragment } from 'react';
 
 
 const mapStateToProps = (state) => {
@@ -342,26 +344,28 @@ const NuevaSolicitud = (props) => {
         setIsCkeckRestaGtoFinananciero(e);
     }
 
-    const refrescarDatosInformativos = () => {
-        fetchValidacionSocio(cedulaSocio, '', props.token, (data) => {
+    const refrescarDatosInformativos = async () => {
+        await fetchValidacionSocio(cedulaSocio, '', props.token, (data) => {
             let datosFinan = {
                 montoSolicitado: datosFinancierosObj.montoSolicitado,
                 montoIngresos: data.dcm_total_ingresos,
                 montoEgresos: data.dcm_total_egresos,
                 montoGastoFinaCodeudor: datosFinancierosObj.montoGastoFinaCodeudor,
-                montoRestaGstFinanciero: 0,
+                montoRestaGstFinanciero: datosFinancierosObj.montoRestaGstFinanciero,
             }
             setDatosFinancierosObj(datosFinan);
-            //console.log(`ingresos, ${data.dcm_total_ingresos}; egresos, ${data.dcm_total_egresos}; `,);
-            //console.log("FINAN, ", datosFinan);
+        },
+        (errorCallback) => {
+            if (errorCallback.error) {
+                console.log("ERROR AL OBTENER DATOS DEL SOCIO");
+            }
 
-            //anteriorStepHandler();
         }, dispatch);
 
     }
 
-    const refrescarInformacionHandler = (actualizarInfo) => {
-        fetchValidacionSocio(cedulaSocio, '', props.token, (data) => {
+    const refrescarInformacionHandler = async  (actualizarInfo) => {
+        await fetchValidacionSocio(cedulaSocio, '', props.token, (data) => {
             data.cedula = cedulaSocio;
             setEnteSocio(data.str_ente);
             setCelularSocio(data.str_celular);
@@ -436,15 +440,18 @@ const NuevaSolicitud = (props) => {
 
     const anteriorStepHandler = (paso) => {
 
+        if (step === 0 || step === -1) {
+            navigate.push("/");
+        }
         if (actualStepper !== 0) {
             const updateSteps = visitadosSteps.filter((index) => index !== actualStepper);
             setVisitadosSteps(updateSteps);
             setActualStepper(actualStepper - 1);
         }
-        if (step === 2) {
+        if (step === 1) {
             setShowAutorizacion(false);
         }
-        if (step === 4) {
+        if (step === 3) {
             setNombrePersonalTarjeta("");
         }
 
@@ -520,9 +527,12 @@ const NuevaSolicitud = (props) => {
                 }, dispatch);
                 return;
             } else {
+                //Se actuliza la informacion, de manera que se guarde la mas actualizada, en caso no se de click al actualizar
+                refrescarInformacionHandler(true);
+
                 setActualStepper(1);
                 setVisitadosSteps([...visitadosSteps, actualStepper + 1])
-                setStep(2)
+                setStep(2);
             }
 
 
@@ -761,10 +771,6 @@ const NuevaSolicitud = (props) => {
     }
 
     const AtajoTecladoHandler = (event, accion) => {
-        //ENTER
-        /*console.log("Even ", event)
-        console.log("Accion ", accion)
-        console.log("Accion ", cedulaValida)*/
         if (accion === "Enter" && cedulaValida && step === 0) {
             nextHandler(step);
         }
@@ -779,6 +785,21 @@ const NuevaSolicitud = (props) => {
             {/*<button className="btn_mg_icons" onClick={anteriorStepHandler}>*/}
             {/*<img src="/Imagenes/right.svg" alt="Cumplir requisito"></img> <p>Anterior</p>*/}
             {/*</button>*/}
+
+            <div style={{ marginLeft: "9rem", marginTop: "2.5rem", position: "absolute" }} >
+                <div className="f-row w-100 icon-retorno" onClick={anteriorStepHandler}>
+                    <KeyboardArrowLeftRoundedIcon
+                        sx={{
+                            fontSize: 35,
+                            marginTop: 0.5,
+                            padding: 0, 
+                        }}
+                    ></KeyboardArrowLeftRoundedIcon>
+                    <h2 className="blue ml-2 mt-1">Solicitudes</h2>
+
+                </div>
+            </div>
+            
 
             <Card className={["m-max w-100 justify-content-space-between align-content-center"]}>
                 <div className="f-col justify-content-center">
@@ -898,18 +919,26 @@ const NuevaSolicitud = (props) => {
                             cedula={cedulaSocio}
                             telefono={celularSocio}
                             email={correoSocio}
+                            cupoSolicitado={datosFinancierosObj.montoSolicitado}
                         ></FinProceso>}
                 </div>
                 <div id="botones" className="f-row ">
-                    <Item xs={2} sm={2} md={2} lg={2} xl={2} className="">
-                        {(step !== 0 && step !== -1) &&
-                            <Button className={["btn_mgprev mt-2"]} onClick={anteriorStepHandler}>{"Anterior"}</Button>
-                        }
-
-                    </Item>
-                    <Item xs={8} sm={8} md={8} lg={8} xl={8} className="f-row justify-content-center align-content-center">
-                        <Button className={["btn_mg btn_mg__primary mt-2 ml-2"]} disabled={estadoBotonSiguiente} onClick={() => nextHandler(step)}>{textoSiguiente}</Button>
-                    </Item>
+                    {step !== -1 && 
+                       <Item xs={12} sm={12} md={12} lg={12} xl={12} className="f-row justify-content-center align-content-center">
+                        <Button className={["btn_mg btn_mg__primary mt-2"]} disabled={estadoBotonSiguiente} onClick={() => nextHandler(step)}>{textoSiguiente}</Button>
+                    </Item>  
+                    }
+                    {step === -1 && 
+                        <Fragment>
+                            <Item xs={3} sm={3} md={3} lg={3} xl={3} ></Item>
+                            <Item xs={6} sm={6} md={6} lg={6} xl={6} className="f-row justify-content-space-evenly  align-content-center">
+                                <Button className={["btn_mg__secondary mt-2"]} disabled={estadoBotonSiguiente} onClick={() => nextHandler(step)}>{textoSiguiente}</Button>
+                                {/*TODO mover la solicitud al detalle*/}
+                                <Button className="btn_mg btn_mg__primary mt-2">Ver Solicitud</Button>
+                            </Item>
+                            <Item xs={3} sm={3} md={3} lg={3} xl={3} ></Item>
+                    </Fragment>                        
+                    }
 
                 </div>
 
