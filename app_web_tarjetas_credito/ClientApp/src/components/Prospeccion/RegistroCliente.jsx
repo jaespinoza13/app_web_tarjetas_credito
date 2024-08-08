@@ -16,13 +16,14 @@ const RegistroCliente = (props) => {
     const [celularCliente, setCelularCliente] = useState("");
     const [correoCliente, setCorreoCliente] = useState("");
     const [documento, setDocumento] = useState("");
-    const [fechaNacimiento, setFechaNacimiento] = useState("");
+    const [fechaNacimiento, setFechaNacimiento] = useState(null);
 
     //Estado validacion
     const [isCedulaValida, setIsCedulaValida] = useState(false);
     const [isCorreoValido, setIsCorreoValido] = useState(false);
     const [isCelularValido, setIsCelularValido] = useState(false);
     const [isFechaNacValido, setFechaNacValido] = useState(false);
+    const [maxLengthCedula, setMaxLengthCedula] = useState(10);
 
     const setCedulaHandler = (value) => {
         let validezCedula = validaCedula(value);
@@ -114,10 +115,9 @@ const RegistroCliente = (props) => {
     }
 
 
-    const fechaNacimientoHandler = (valor) => {
-        console.log("PRUEBA ",valor)
-        setFechaNacValido(valor !== "undefined--undefined")
-        setFechaNacimiento(convertDateFormat(valor))
+    const fechaNacimientoHandler = (valor) => {        
+        setFechaNacValido((valor.includes("undefined") || valor === null || valor === "" || valor === " ") ? true : false)
+        setFechaNacimiento((!valor.includes("undefined") && valor !== null && valor !== "" && valor !== " ") ? valor : null)
         props.datosIngresados({
             nombres: nombresCliente,
             apellidoPaterno: apellidoPaterno,
@@ -125,22 +125,21 @@ const RegistroCliente = (props) => {
             celular: celularCliente,
             correo: correoCliente,
             documento: documento,
-            fechaNacimiento: convertDateFormat(valor)
+            fechaNacimiento: (valor)
         })
     }
     
-    //Convertir una fecha
-    const convertDateFormat = (dateStr) => {
-        const [year, month, day] = dateStr.split('-');
-        return `${month}-${day}-${year}`;
-        //return `${year}-${month}-${day}`;
-    }
 
     useEffect(() => {
         window.scrollTo(0, 0);
+        if (props.paso === 0) {
+            let validezCedula = validaCedula(documento);
+            setIsCedulaValida(validezCedula);
+        }
+
         if (props.infoSocio && props.paso === 1) {
             setNombresCliente(props.infoSocio.nombres);
-            console.log("INFO SOC/CL ", props.infoSocio)
+            //console.log("INFO SOC/CL ", props.infoSocio)
 
             setDocumento(props.infoSocio.cedula);
             setNombresCliente(props.infoSocio.nombres);
@@ -148,19 +147,21 @@ const RegistroCliente = (props) => {
             setApellidoMaterno(props.infoSocio.apellidoMaterno);
             setCelularCliente(props.infoSocio.celularCliente);
             setCorreoCliente(props.infoSocio.correoCliente);
-            const partesFecha = "";
 
-            if (props.infoSocio.fechaNacimiento !== "") {
-                props.infoSocio.fechaNacimiento.split('-');
-                setFechaNacimiento(`${partesFecha[2]}-${partesFecha[0]}-${partesFecha[1]}`)
+            let partesFecha = props.infoSocio.fechaNacimiento.split('-');
+            if (props.infoSocio.fechaNacimiento === null || props.infoSocio.fechaNacimiento === "" || props.infoSocio.fechaNacimiento === " ") {
+                setFechaNacimiento(null);
+                setFechaNacValido(false);
+            }
+            else if (partesFecha[0]?.length <= 2) {
+                setFechaNacimiento(`${partesFecha[2]}-${partesFecha[0]}-${partesFecha[1]}`);
+                setFechaNacValido(true);
             } else {
-                setFechaNacimiento("")
-            }           
-           
-
+                setFechaNacimiento(props.infoSocio.fechaNacimiento);
+                setFechaNacValido(true);
+            }         
             setIsCorreoValido(validarCorreo(props.infoSocio.correoCliente))
-            setIsCelularValido(props.infoSocio.celularCliente.length === 10)
-            setFechaNacValido(partesFecha !== "undefined--undefined" && partesFecha !== "")
+            setIsCelularValido(props.infoSocio.celularCliente.length === 10)            
     
         }
     }, [props.infoSocio, props.paso])
@@ -185,7 +186,10 @@ const RegistroCliente = (props) => {
                     <Item xs={6} sm={6} md={6} lg={6} xl={6} className="justify-content-center">
                         <div className="f-col w-100">
                             <label>Número de cédula</label>
-                            <Input id="cedulaPaso1" type="number" className={`mt-3 ${isCedulaValida ? '' : 'no_valido'}`} placeholder="Ej. 1105970717" readOnly={false} value={documento} setValueHandler={setCedulaHandler} keyDown={(e) => isCedulaValida ? atajosHandler(e) : ''} tabIndex={0}></Input>
+                            <Input id="cedulaPaso1" type="number" className={`mt-3 ${isCedulaValida ? '' : 'no_valido'}`} placeholder="Ej. 1105970717" readOnly={false} value={documento} setValueHandler={setCedulaHandler} keyDown={(e) => isCedulaValida ? atajosHandler(e) : ''} tabIndex={0} maxlength={maxLengthCedula}></Input>
+                            {!isCedulaValida &&
+                                <h4 className="ml-1 mt-1 strong">*Ingrese una cédula válida</h4>
+                            }
                         </div>
                     </Item>
                     <Item xs={3} sm={3} md={3} lg={3} xl={3} className=""></Item>
@@ -196,40 +200,41 @@ const RegistroCliente = (props) => {
                 <div className={`f-row w-100 sliding-div ${props.isVisibleBloque ? 'visibleX' : 'hiddenX'}`}>   
                     <Item xs={3} sm={3} md={3} lg={3} xl={3} className=""></Item>
                     <Item xs={6} sm={6} md={6} lg={6} xl={6} className="justify-content-center">
-                        <div className={"f-row"}>
-                            <h2>Registro Datos del Cliente</h2>
-                            <Button className="btn_mg__auto " onClick={updDatosHandler}>
-                                <img src="/Imagenes/refresh.svg" style={{ transform: "scaleX(-1)" }} alt="Volver a consultar"></img>
+                        <div className={"f-row w-100 justify-content-space-between mb-1"}>
+                            <h2>Registro Datos del Socio</h2>
+                            <Button className="btn_mg__auto" onClick={updDatosHandler}>
+                                <img src="/Imagenes/refresh.svg" style={{ transform: "scaleX(-1)", width: "2.2rem" }} alt="Volver a consultar."></img>
                             </Button>
+
                         </div>
                             <Card>
                                 <section>
                                     <div className='mb-2'>
                                         <label>Cédula:</label>
                                         <div className="f-row">
-                                            <Input id="cedula" className={`w-100 ${documento !== "" ? '' : 'no_valido'}`} type="text" placeholder="1150216791" setValueHandler={documentoHandler} value={documento} disabled={true} maxlength={10}  ></Input>
+                                        <Input id="cedula" className={`w-100`} type="number" placeholder="1150216791" setValueHandler={documentoHandler} value={documento} disabled={true}></Input>
                                         </div>
                                     </div>
 
                                     <div className='mb-2'>
                                         <label>Nombres:</label>
                                         <div className="f-row">
-                                        <Input id="nombres" className={`w-100 ${nombresCliente !== "" ? '' : 'no_valido'}`} type="text" placeholder="Ej. Luis Miguel" setValueHandler={nombresClienteHandler} value={nombresCliente}></Input>
+                                        <Input id="nombres" className={`w-100 ${nombresCliente !== "" ? '' : 'no_valido'}`} type="text" placeholder="Ej. Luis Miguel" setValueHandler={nombresClienteHandler} value={nombresCliente} controlMayusText={true}></Input>
                                         </div>
 
                                     </div>
 
                                     <div className='mb-2'>
-                                        <label>Apellidos paterno:</label>
+                                        <label>Primer Apellido:</label>
                                         <div className="f-row">
-                                        <Input id="apellido_paterno" className={`w-100 ${apellidoPaterno !== "" ? '' : 'no_valido'}`} type="text" placeholder="Ej. Salazar" setValueHandler={apellidoPaternoHandler} value={apellidoPaterno}></Input>
+                                        <Input id="apellido_paterno" className={`w-100 ${apellidoPaterno !== "" ? '' : 'no_valido'}`} type="text" placeholder="Ej. Salazar" setValueHandler={apellidoPaternoHandler} value={apellidoPaterno} controlMayusText={true}></Input>
                                         </div>
                                     </div>
 
                                     <div className='mb-2'>
-                                        <label>Apellido materno:</label>
+                                        <label>Segundo Apellido:</label>
                                         <div className="f-row">
-                                            <Input className={`w-100 ${apellidoMaterno !== "" ? '' : 'no_valido'}`} type="text" placeholder="Ej. Benitez" setValueHandler={apellidoMaternoHandler} value={apellidoMaterno}></Input>
+                                        <Input className={`w-100`} type="text" placeholder="Ej. Benitez" setValueHandler={apellidoMaternoHandler} value={apellidoMaterno} controlMayusText={true}></Input>
                                         </div>
 
                                     </div>
@@ -237,7 +242,7 @@ const RegistroCliente = (props) => {
                                     <div className='mb-2'>
                                         <label>Correo:</label>
                                         <div className="f-row">
-                                            <Input className={`w-100 ${isCorreoValido === true ? '' : 'no_valido'}`} type="text" placeholder="Ej. test@test.com" setValueHandler={correoClienteHandler} value={correoCliente}></Input>
+                                        <Input className={`w-100 ${isCorreoValido === true ? '' : 'no_valido'}`} type="text" placeholder="Ej. test@test.com" setValueHandler={correoClienteHandler} value={correoCliente}></Input>
                                         </div>
                                     </div>
 

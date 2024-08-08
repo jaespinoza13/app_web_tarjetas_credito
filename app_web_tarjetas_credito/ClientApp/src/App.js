@@ -42,10 +42,11 @@ const mapStateToProps = (state) => {
     return {
         token: state.tokenActive.data,
         listaFuncionalidades: state.GetListaFuncionalidades.data,
+        parametrosTC: state.GetParametrosTC.data
     };
 };
 
-function Menus({ listaMenus, id_perfil, token, setListas, setListaFunc, listaFuncionalidades }) {
+function Menus({ listaMenus, id_perfil, token, setListas, setListaFunc, listaFuncionalidades, parametrosSis }) {
     const dispatch = useDispatch();
     const history = useHistory();
     const location = useLocation();
@@ -54,7 +55,7 @@ function Menus({ listaMenus, id_perfil, token, setListas, setListaFunc, listaFun
     const [idPerfil, setIdPerfil] = useState(id_perfil);
     const [listaMenusi, setListaMenus] = useState([]);
     const [listaUrls, setListaUrls] = useState([]);
-    const [parametrosSistema, setParametrosSistema] = useState([]);
+    const [existeParametrosSistema, setExisteParametrosSistema] = useState(false);
     const [sended, setSended] = useState(false);
     const [sendedParams, setSendedParams] = useState(false);
 
@@ -93,19 +94,15 @@ function Menus({ listaMenus, id_perfil, token, setListas, setListaFunc, listaFun
 
     //OBTENCION DE PARAMETROS DEL SISTEMA
     useEffect(() => {
-        let params = setTimeout(() => {
-            if (idPerfil > 0 && !IsNullOrWhiteSpace(tokeni) && validateToken(tokeni) && parametrosSistema.length === 0 && !sendedParams) {
-                setSendedParams(true); 
-                //Obtener parametros y se almacena por medio de redux
-                fetchGetParametrosSistema(tokeni, (data) => {
-                    setParametrosSistema([data.lst_parametro]);
-                    dispatch(getParametrosTCStateAction({ lst_parametros: data.lst_parametros }));
-                }, dispatch)
-                
-            }
-            clearTimeout(params);
-        }, 400);
-    }, [idPerfil, tokeni, parametrosSistema.length, dispatch, sendedParams]);
+        if (idPerfil > 0 && !IsNullOrWhiteSpace(tokeni) && validateToken(tokeni) && existeParametrosSistema === false && !sendedParams) {
+            setSendedParams(true);
+            //Obtener parametros y se almacena por medio de redux
+            fetchGetParametrosSistema("", tokeni, (data) => {
+                setExisteParametrosSistema(true);
+                dispatch(getParametrosTCStateAction({ lst_parametros: data.lst_parametros }));
+            }, dispatch)
+        }
+    }, [idPerfil, tokeni, existeParametrosSistema.length, dispatch, sendedParams, existeParametrosSistema]);
        
 
     useEffect(() => {
@@ -191,6 +188,7 @@ class App extends Component {
                     setListas={(lstMenus, lstUrls) => this.setState({ listaMenus: lstMenus, listUrls: lstUrls })}
                     listaParametros={this.state.listaParams}
                     setListaParametros={(listaParam) => this.setState({ listaParams: listaParam })}
+                    parametrosSis={this.props.parametrosTC}
                     
                 />
                 <Switch>

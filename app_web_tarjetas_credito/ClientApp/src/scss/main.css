@@ -28,7 +28,7 @@ body {
 
 nav {
     height: 4rem;
-    min-width: calc(100vh - 4rem);
+    min-width: calc(100vw - 4rem);
     background: transparent linear-gradient(89deg, #005CB9 0%, #00FFFF 150%) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1607843137);
     opacity: 1;
@@ -1046,6 +1046,12 @@ button.close-modal {
     opacity: 0;
 }
 
+.modal-content-lg2 {
+    height: auto;
+    max-height: 70vh;
+    width: 90%;
+}
+
 .modal-content-lg {
     height: auto;
     max-height: 70vh;
@@ -1235,9 +1241,21 @@ h3.chip {
     padding: 1.4rem 0.5rem;
 }
 
-    .toggler.f-col {
-        height: auto;
-    }
+.toggler.responsiveToogle {
+    min-height: 49.6px;
+    justify-content: center;
+    flex-direction: row;
+    width: 100%;
+    display: flex;
+    /* Se eliminan las siguientes propiedades de la clase base */
+    padding: 0; 
+    align-items: initial;
+}
+
+
+.toggler.f-col {
+    height: auto;
+}
 
         .toggler.f-col > .btn_mg__toggler {
             width: 100%;
@@ -1251,6 +1269,14 @@ h3.chip {
     text-align: center;
     min-height: 1.5rem;
     justify-content: flex-start;
+}
+
+
+.scrolling {
+    display: flex;
+    overflow-x: auto; /* Permite el desplazamiento horizontal si los ítems son más anchos que el contenedor */
+    white-space: nowrap; /* Previene el salto de línea de los ítems */
+    border: 1px solid #ccc; /* Opcional, para ver los bordes del contenedor */
 }
 
     .btn_mg__toggler.active {
@@ -1500,6 +1526,10 @@ input:checked + .slider::before {
     justify-content: center;
 }
 
+.justify-content-start {
+    justify-content: start;
+}
+
 .align-content-center {
     align-content: center;
 }
@@ -1727,6 +1757,12 @@ input[type=radio] {
     background-color: #F8F8F8;
     padding: 0px;
     height: 29px;
+}
+
+.icon-retorno {
+    cursor: pointer;
+    border: none;
+    color: #004CAC;
 }
 
 

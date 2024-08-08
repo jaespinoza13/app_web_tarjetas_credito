@@ -4,8 +4,30 @@ const Input = (props) => {
     const [inputValue, setInputValue] = useState('');
     const changeHandler = (e) => {
         const newValue = e.target.value;
-        setInputValue(newValue);
-        props.setValueHandler(newValue);
+
+
+
+        //En caso exista las dos propiedades evalua la de "max""
+        if (props.maxlength !== undefined && props.max !== undefined && Number(newValue) <= Number(props.max)) {
+            setInputValue(newValue);
+            props.setValueHandler(newValue);
+        }
+        //Control para tamaño de caracteres
+        else if (props.maxlength !== undefined && newValue.length <= props.maxlength && props.max === undefined) {
+            setInputValue(newValue);
+            props.setValueHandler(newValue);
+        }
+        //Control para valor maximo
+        else if (props.max !== undefined && Number(newValue) <= Number(props.max) && props.maxlength === undefined) {
+            console.log("ENTRA")
+            setInputValue(newValue);
+            props.setValueHandler(newValue);
+        }
+        else if (props.maxlength === undefined && props.max === undefined) {
+            setInputValue(newValue);
+            props.setValueHandler(newValue);
+        }
+
     }
     let inputClass = 'default';
     if (props.rounded) {
@@ -17,6 +39,11 @@ const Input = (props) => {
             setInputValue(props.value);
         }
     }, [props.value])
+
+    const styleMayuscText = {
+        textTransform: 'uppercase'
+    }
+    const inputStyle = props.controlMayusText ? styleMayuscText : {};
 
     return (
         <input
@@ -36,7 +63,9 @@ const Input = (props) => {
             max={props.max}
             disabled={props.disabled}
             onKeyDown={props.keyDown}
-            id={props.id }
+            id={props.id}
+            style={inputStyle}
+
         /*  key={props.key} */
 
         ></input>

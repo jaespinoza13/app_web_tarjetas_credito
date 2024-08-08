@@ -40,6 +40,7 @@ using Domain.Models.TarjetaCredito.GetAlertasCliente;
 using Domain.Models.TarjetaCredito.GetMotivos;
 using Domain.Models.TarjetaCredito.GetOficinas;
 using Domain.Models.TarjetaCredito.GetInformacionProspecto;
+using Domain.Models.TarjetaCredito.GetPermisosPerfil;
 
 namespace plantilla_app_web.Controllers
 {
@@ -387,6 +388,15 @@ namespace plantilla_app_web.Controllers
             return Utiles.crypt(res, Request.Headers);
         }
 
+
+        [Route("getPermisosPerfil")]
+        [ServiceFilter(typeof(CryptoFilter))]
+        [HttpPost]
+        public ResCrypt Post(ReqGetPermisosPerfil req)
+        {
+            ResGetPermisosPerfil res = tarjetaCreditoDat.getPermisosPerfil(req);
+            return Utiles.crypt(res, Request.Headers);
+        }
 
 
     }

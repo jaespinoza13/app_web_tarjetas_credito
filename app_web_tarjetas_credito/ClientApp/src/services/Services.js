@@ -127,6 +127,7 @@ export const getAlertasCliente = "GET_ALERTAS_CLIENTE"
 export const getMotivos = "GET_MOTIVOS"
 export const getOficinas = "GET_OFICNAS"
 export const getInfoProspecto = "GET_INFO_PROSPECTOS"
+export const getPermisosPerfil = "GET_PERMISOS_PERFIL"
 
 /**
  * Obtener la Url de un servicio de acuerdo a su nombre de Proceso Unico
@@ -306,6 +307,9 @@ export function ServiceUrl(request, params = []) {
             break;           
         case getInfoProspecto:
             pathOut = "tc/getInfoProspecto"
+            break;            
+        case getPermisosPerfil:
+            pathOut = "tc/getPermisosPerfil"
             break;        
         default:
             return null;
@@ -568,7 +572,8 @@ function pathRewrite(path) {
         "tc/getAlertasCliente": '/tarjetacredito/getAlertasCliente',
         "tc/getMotivos": '/tarjetacredito/getMotivos',
         "tc/getOficinas": '/tarjetacredito/getOficinas',
-        "tc/getInfoProspecto": '/tarjetacredito/getInfoProspecto'
+        "tc/getInfoProspecto": '/tarjetacredito/getInfoProspecto',
+        "tc/getPermisosPerfil": '/tarjetacredito/getPermisosPerfil'
     };
     if (path) {
         var p = context[path];

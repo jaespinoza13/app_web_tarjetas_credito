@@ -3,7 +3,6 @@ import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import Card from "../Common/Card";
 import { IsNullOrEmpty, IsNullOrWhiteSpace, validarCorreo } from "../../js/utiles";
-import Sidebar from '../Common/Navs/Sidebar';
 import Button from '../Common/UI/Button';
 import { useState, useEffect, useRef } from 'react';
 import Item from '../Common/UI/Item';
@@ -15,9 +14,10 @@ import FinProceso from '../Solicitud/FinProceso';
 import RegistroCliente from './RegistroCliente';
 import DatosFinancieros from '../Solicitud/DatosFinancieros';
 import Stepper from '../Common/Stepper';
-import $ from 'jquery'; 
-import { setDatoSocioState} from '../../redux/DatosSocio-Solicitud/actions';
-
+import { v4 as uuidv4 } from 'uuid';
+import { setDataSimulacionStateAction } from '../../redux/DataSimulacion/actions';
+import KeyboardArrowLeftRoundedIcon from '@mui/icons-material/KeyboardArrowLeftRounded';
+import { Fragment } from 'react';
 
 const mapStateToProps = (state) => {
     var bd = state.GetWebService.data;
@@ -35,6 +35,12 @@ const mapStateToProps = (state) => {
 
 
 const NuevaProspeccion = (props) => {
+    const [keyComponente, setKeyComponente] = useState();
+    const generarKey = () => {
+        let myUUID = uuidv4();
+        setKeyComponente(myUUID);
+    }
+
     const dispatch = useDispatch();
     const navigate = useHistory();
     //Info sesión
@@ -208,10 +214,8 @@ const NuevaProspeccion = (props) => {
     }, [step]);
 
     const validaCamposSocio = () => {  
-
-
-
-        if (documento !== "" && nombreSocio !== "" && apellidoPaterno !== "" && apellidoMaterno !== "" &&
+        //apellidoMaterno !== "" &&
+        if (documento !== "" && nombreSocio !== "" && apellidoPaterno !== "" && 
             (correoSocio !== "" && validarCorreo(correoSocio)) && (celularSocio !== "" && celularSocio.length > 0 && celularSocio.length === 10 &&
             fechaNacimiento !== "undefined--undefined")) {
             return true;
@@ -322,11 +326,13 @@ const NuevaProspeccion = (props) => {
     }, [datosUsuario])
 
     const refrescarInformacionHandler = (actualizarInfo) => {
-        fetchValidacionSocio(documento, '', props.token, (data) => {
-            
+        fetchValidacionSocio(documento, '', props.token, (data, error) => {
+            //console.log("ERR ", error)
+
             setNombreSocio(data.str_nombres);
             setApellidoPaterno(data.str_apellido_paterno);
-            setApellidoMaterno(data.str_apellido_materno);
+            let apellidoMaterno = data?.str_apellido_materno ? data.str_apellido_materno : '';
+            setApellidoMaterno(apellidoMaterno);
             setCelularSocio(data.str_celular);
             setCorreoSocio(data.str_email);
             setFechaNacimiento(data.str_fecha_nacimiento)
@@ -336,7 +342,7 @@ const NuevaProspeccion = (props) => {
             data.cedula = documento
             data.nombres = data.str_nombres
             data.apellidoPaterno = data.str_apellido_paterno
-            data.apellidoMaterno = data.str_apellido_materno
+            data.apellidoMaterno = apellidoMaterno
             data.celularCliente = data.str_celular
             data.correoCliente = data.str_email
             data.fechaNacimiento = data.str_fecha_nacimiento
@@ -361,11 +367,22 @@ const NuevaProspeccion = (props) => {
                 }, 100);
             } 
 
-        }, dispatch);
+        },
+            (errorCallback) => {
+                if (errorCallback.error) {
+                    setStep(0);
+                    let retrasoEfecto = setTimeout(function () {
+                        setIsVisibleBloque(true);
+                        clearTimeout(retrasoEfecto);
+                    }, 100);
+                }
+            }, dispatch);
+            
     }
 
     const consultaAlertas = async (seguirAlSigPaso) => {
-        await fetchGetAlertasCliente(documento, '', fechaNacimiento, nombreSocio, apellidoPaterno + " " +apellidoMaterno, props.token, (data) => {
+        let apellidosCliente = (apellidoMaterno !== null && apellidoMaterno !== '') ? apellidoPaterno + " " + apellidoMaterno : apellidoPaterno;
+        await fetchGetAlertasCliente(documento, '', fechaNacimiento, nombreSocio, apellidosCliente, props.token, (data) => {
             let alertasIniciales_Validas = [...data.alertas_iniciales.lst_datos_alerta_true];
             let alertasIniciales_Invalidas = [...data.alertas_iniciales.lst_datos_alerta_false];
             let alertasRestriccion_Validas = [...data.alertas_restriccion.lst_datos_alerta_true];
@@ -387,7 +404,7 @@ const NuevaProspeccion = (props) => {
             if (alertasIniciales_Invalidas.length > 0) {
                 alertasIniciales_Invalidas.forEach(alertaN3 => {
                     lst_validaciones_err.push(alertaN3)
-                    lst_validaciones_ok.push(alertaN3)
+                    //lst_validaciones_ok.push(alertaN3)
                 });
             }
             if (alertasRestriccion_Invalidas.length > 0) {
@@ -406,6 +423,7 @@ const NuevaProspeccion = (props) => {
             handleLists(objValidaciones);
 
             if (seguirAlSigPaso) {
+                generarKey();
                 setStep(2);
                 setVisitadosSteps([...visitadosSteps, actualStepper + 1])
                 setActualStepper(1);
@@ -420,12 +438,15 @@ const NuevaProspeccion = (props) => {
             refrescarInformacionHandler(false);
         }
         if (step === 1) {
+            //Se actuliza la informacion, de manera que se guarde la mas actualizada, en caso no se de click al actualizar
+            refrescarInformacionHandler(true);
             await consultaAlertas(true);    
         }
         if (step === 2) {
             //console.log("STEP 1, SHOW ", showAutorizacion)
             if (showAutorizacion) {
-                await fetchAddAutorizacion("C", 1, "F", documento, nombreSocio, apellidoPaterno, apellidoMaterno,
+
+                await fetchAddAutorizacion("C", 1, "F", documento, nombreSocio, apellidoPaterno, apellidoMaterno ? apellidoMaterno : '',
                     archivoAutorizacion, props.token, (data) => {
                         //console.log("AUTOR, ", data);
                         if (data.str_res_codigo === "000") {
@@ -435,9 +456,10 @@ const NuevaProspeccion = (props) => {
                     }, dispatch);
                 return;
             } else {
+                generarKey();
                 setActualStepper(2);
                 setVisitadosSteps([...visitadosSteps, actualStepper + 1])
-                setStep(3)
+                setStep(3);                
             }
 
         }
@@ -447,7 +469,13 @@ const NuevaProspeccion = (props) => {
             dataSocio.datosFinancieros = datosFinancierosObj;
             setInfoSocio(dataSocio);
 
-            let nombreSocioTC = nombreSocio + " " + apellidoPaterno + " " + apellidoMaterno;
+            let nombreSocioTC = nombreSocio + " " + apellidoPaterno;
+            nombreSocioTC = (apellidoMaterno !== null && apellidoMaterno !== '' && apellidoMaterno !== ' ') ? nombreSocioTC + " " + apellidoMaterno : nombreSocioTC;
+            //Redux guardar informaciion necesaria para nueva simulacion en DatosSocio
+            dispatch(setDataSimulacionStateAction({
+                cedula: "1150214375", nombresApellidos: nombreSocioTC
+            }))
+
 
             if (!realizaNuevaSimulacion.current) {
                 //TODO: CAMBIAR LA CEDULA por "documento"
@@ -474,12 +502,6 @@ const NuevaProspeccion = (props) => {
                 if (!datosFinan.montoRestaGstFinanciero || datosFinan.montoRestaGstFinanciero === "" || datosFinan.montoRestaGstFinanciero === " " || IsNullOrEmpty(datosFinan.montoRestaGstFinanciero)) datosFinan.montoRestaGstFinanciero = 0;
                 if (!datosFinan.montoGastoFinaCodeudor || datosFinan.montoGastoFinaCodeudor === "" || datosFinan.montoGastoFinaCodeudor === " " || IsNullOrEmpty(datosFinan.montoGastoFinaCodeudor)) datosFinan.montoGastoFinaCodeudor = 0;
 
-               
-                //TODO: cambiar cedula
-                dispatch(setDatoSocioState({
-                    cedula: "1150214375", nombresApellidos: nombreSocioTC, oficina: datosUsuario[0].strUserOficina, usuarioLogin: datosUsuario[0].strOficial, cargoUsuario: datosUsuario[0].strCargo,
-
-                }))
 
                 //TODO CAMBIAR LA CEDULA, oficina matriz
                 await fetchNuevaSimulacionScore("C", "1150214375", nombreSocioTC, datosUsuario[0].strUserOficina, datosUsuario[0].strOficial, datosUsuario[0].strCargo, datosFinan.montoIngresos, datosFinan.montoEgresos, datosFinan.montoRestaGstFinanciero, datosFinan.montoGastoFinaCodeudor,
@@ -501,8 +523,8 @@ const NuevaProspeccion = (props) => {
             if (!datosFinan.montoGastoFinaCodeudor || datosFinan.montoGastoFinaCodeudor === "" || datosFinan.montoGastoFinaCodeudor === " " || IsNullOrEmpty(datosFinan.montoGastoFinaCodeudor)) datosFinan.montoGastoFinaCodeudor = 0;
 
             //str_num_documento, ente, nombres, apellidos, celular, correo, cupoSoli, comentario, comentarioAdic, ingresos, egresos, gastoFinanciero, gastoCodeudor, cupoAval,cupoCoopmego, score, token, onSucces, dispatch
-
-            fetchAddProspecto(documento, 0, nombreSocio, apellidoPaterno + " " + apellidoMaterno, celularSocio, correoSocio, datosFinancierosObj.montoSolicitado.toString(), comentario, comentarioAdic,
+            let apellidosCliente = (apellidoMaterno !== null && apellidoMaterno !== '') ? apellidoPaterno + " " + apellidoMaterno : apellidoPaterno;
+            fetchAddProspecto(documento, 0, nombreSocio, apellidosCliente, celularSocio, correoSocio, datosFinancierosObj.montoSolicitado.toString(), comentario, comentarioAdic,
                 datosFinan.montoIngresos.toString(), datosFinan.montoEgresos.toString(), datosFinan.montoRestaGstFinanciero.toString(),datosFinan.montoGastoFinaCodeudor.toString(), cupoSugeridoAval.toString(), cupoSugeridoCoopmego.toString(), puntajeScore.toString(),
                 props.token, (data) => {
                 setVisitadosSteps([...visitadosSteps, actualStepper + 1])
@@ -519,6 +541,7 @@ const NuevaProspeccion = (props) => {
     }
 
     const handleLists = (e) => {
+        console.log("ALERTAS ",e)
         setLstValidaciones(e);
     }
 
@@ -603,6 +626,12 @@ const NuevaProspeccion = (props) => {
     ];
 
     const anteriorStepHandler = (paso) => {
+        if (step === 0 || step === -1) {
+            navigate.push("/");
+        }
+        if (step === 2) {
+            setShowAutorizacion(false);
+        }
         if (actualStepper !== 0) {
             const updateSteps = visitadosSteps.filter((index) => index !== actualStepper);
             setVisitadosSteps(updateSteps);
@@ -620,23 +649,45 @@ const NuevaProspeccion = (props) => {
     }
 
     const refrescarDatosInformativos = () => {
+        generarKey();
         fetchValidacionSocio(documento, '', props.token, (data) => {
             let datosFinan = {
                 montoSolicitado: datosFinancierosObj.montoSolicitado,
                 montoIngresos: data.dcm_total_ingresos,
                 montoEgresos: data.dcm_total_egresos,
                 montoGastoFinaCodeudor: datosFinancierosObj.montoGastoFinaCodeudor,
-                montoRestaGstFinanciero: "",
+                montoRestaGstFinanciero: datosFinancierosObj.montoRestaGstFinanciero,
             }
             setDatosFinancierosObj(datosFinan);
 
             //anteriorStepHandler();
-        }, dispatch);
+        },
+            (errorCallback) => {
+                if (errorCallback.error) {
+                    setStep(3);
+                }
+            }, dispatch);
 
     }
 
+    /*<div className={`f-col ${step === 0 ? 'w-100' : ''} ${step === 0 ? 'w-50' : ''} justify-content-center`}>*/
     return (
         <div className="f-row w-100" >
+
+            <div style={{ marginLeft: "9rem", marginTop: "2.5rem", position: "absolute" }} >
+                <div className="f-row w-100 icon-retorno" onClick={anteriorStepHandler}>
+                    <KeyboardArrowLeftRoundedIcon
+                        sx={{
+                            fontSize: 35,
+                            marginTop: 0.5,
+                            padding: 0,
+                        }}
+                    ></KeyboardArrowLeftRoundedIcon>
+                    <h2 className="blue ml-2 mt-1">Prospecciones</h2>
+
+                </div>
+            </div>
+
             <Card className={["m-max w-100 justify-content-space-between align-content-center"]}>
                 <div className="f-col justify-content-center">
 
@@ -645,7 +696,7 @@ const NuevaProspeccion = (props) => {
                     </div>
 
                     {(step === 0 || step === 1) &&
-                        <div className={"f-row w-100 justify-content-center"}>
+                     <div className={"f-row w-100 justify-content-center"}>
                             <RegistroCliente
                                 key={keyRegistroCliente }
                                 paso={step}
@@ -662,15 +713,17 @@ const NuevaProspeccion = (props) => {
 
                     {(step === 2) &&
                         <div className="f-row w-100 justify-content-center">
-                        <ValidacionesGenerales token={props.token}
-                            infoSocio={infoSocio}
-                            lst_validaciones={lstValidaciones}
-                            onFileUpload={getFileHandler}
-                            onShowAutorizacion={showAutorizacion}
-                            datosUsuario={datosUsuario}
-                            onSetShowAutorizacion={showAutorizacionHandler}
-                            cedula={documento}
-                            ></ValidacionesGenerales>
+                            <ValidacionesGenerales
+                                key={keyComponente }
+                                token={props.token}
+                                infoSocio={infoSocio}
+                                lst_validaciones={lstValidaciones}
+                                onFileUpload={getFileHandler}
+                                onShowAutorizacion={showAutorizacion}
+                                datosUsuario={datosUsuario}
+                                onSetShowAutorizacion={showAutorizacionHandler}
+                                cedula={documento}
+                                ></ValidacionesGenerales>
                         </div>
                     }
 
@@ -678,6 +731,7 @@ const NuevaProspeccion = (props) => {
                     {(step === 3) &&
                         <div className="f-row w-100">
                             <DatosFinancieros
+                                key={keyComponente }
                                 dataConsultFinan={datosFinancierosObj}
                                 setDatosFinancierosFunc={datosFinancierosHandler}
                                 isCkeckGtosFinancierosHandler={checkGastosFinancieroHandler}
@@ -701,6 +755,9 @@ const NuevaProspeccion = (props) => {
                             onComentarioAdic={handleComentarioAdic}
                             idClienteScore={idClienteScore}
                             comentarioAdicionalValor={comentarioAdic}
+                            isCheckMontoRestaFinanciera={isCkeckRestaGtoFinananciero}
+                            setDatosFinancierosFunc={datosFinancierosHandler}
+                            isCkeckGtosFinancierosHandler={checkGastosFinancieroHandler}
                             ></DatosSocio>                        
                     }
                   
@@ -710,25 +767,27 @@ const NuevaProspeccion = (props) => {
                             cedula={documento}
                             telefono={celularSocio}
                             email={correoSocio}
+                            cupoSolicitado={datosFinancierosObj.montoSolicitado}
                         ></FinProceso>}
                 </div>
                 <div id="botones" className="f-row ">
-                    <Item xs={2} sm={2} md={2} lg={2} xl={2} className="">
-                        {(step !== 0 && step !== -1) &&
-                            <Button className={["btn_mgprev mt-2"]} onClick={anteriorStepHandler}>{"Anterior"}</Button>
-                        } 
-                    </Item>
-                    <Item xs={8} sm={8} md={8} lg={8} xl={8} className="f-row justify-content-space-evenly">
-                        {(step === 1) &&
-                            <Button className={["btn_mg btn_mg__primary mt-2 mr-2"]} onClick={refrescarInformacionHandler}>{"Actualizar"}</Button>
-                        }  
+                    {step !== -1 &&
+                        <Item xs={12} sm={12} md={12} lg={12} xl={12} className="f-row justify-content-center align-content-center">
+                            <Button className={["btn_mg btn_mg__primary mt-2"]} disabled={estadoBotonSiguiente} onClick={() => nextHandler(step)}>{textoSiguiente}</Button>
+                        </Item>
+                    }
+                    {step === -1 &&
+                        <Fragment>
+                            <Item xs={3} sm={3} md={3} lg={3} xl={3} ></Item>
+                            <Item xs={6} sm={6} md={6} lg={6} xl={6} className="f-row justify-content-space-evenly  align-content-center">
+                                <Button className={["btn_mg__secondary mt-2"]} disabled={estadoBotonSiguiente} onClick={() => nextHandler(step)}>{textoSiguiente}</Button>
+                                {/*TODO mover la solicitud al detalle*/}
+                                <Button className="btn_mg btn_mg__primary mt-2">Ver Prospecto</Button>
+                            </Item>
+                            <Item xs={3} sm={3} md={3} lg={3} xl={3} ></Item>
+                        </Fragment>
+                    }
 
-                        {(step === 3) &&
-                            <Button className={["btn_mg btn_mg__primary mt-2 mr-2"]} onClick={refrescarDatosInformativos}>{"Actualizar"}</Button>
-                        } 
-
-                        <Button className={["btn_mg btn_mg__primary mt-2"]} disabled={estadoBotonSiguiente} onClick={nextHandler}>{textoSiguiente}</Button>
-                    </Item>
 
                 </div>
 

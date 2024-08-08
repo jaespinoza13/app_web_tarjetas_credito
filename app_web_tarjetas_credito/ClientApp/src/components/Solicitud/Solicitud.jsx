@@ -15,6 +15,7 @@ import { setSolicitudStateAction } from '../../redux/Solicitud/actions';
 import { setProspectoStateAction } from '../../redux/Prospecto/actions';
 import Paginacion from '../Common/Paginacion';
 import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
+import SortableTable from '../Common/SortableTable';
 
 const mapStateToProps = (state) => {
     var bd = state.GetWebService.data;
@@ -51,8 +52,9 @@ function Solicitud(props) {
     const [paginasEnVista, setPaginasEnVista] = useState(10); //Número de registros listados por página
     const indexOfLastRecord = paginaActual * paginasEnVista;
     const indexOfFirstRecord = indexOfLastRecord - paginasEnVista;
-    const [registrosPagActual, setRegistrosPagActual] = useState();
+    const [registrosPagActual, setRegistrosPagActual] = useState([]);
     const [numPaginas, setNumPaginas] = useState(0);
+    const [isPuedeListarFiltrado, setIsPuedeListarFiltrado] = useState(false);
 
 
     const [oficinasParametros, setOficinasParametros] = useState([]);
@@ -64,21 +66,30 @@ function Solicitud(props) {
   
     //Headers tablas Solicitudes y Prospectos
     const headerTableSolicitantes = [
-        { nombre: 'Nro. Solicitud', key: 0 },
-        { nombre: 'Fecha', key: 1 },
-        { nombre: 'Cédula', key: 2 },
-        /*{ nombre: 'Ente', key: 2 },*/
-        { nombre: 'Nombre solicitante', key: 3 },
-        { nombre: 'Cupo Solicitado', key: 5 }, { nombre: 'Calificación', key: 6 },
-        { nombre: 'Estado', key: 7 }, { nombre: 'Oficina', key: 8 },
-        { nombre: 'Canal', key: 9 },
-        { nombre: 'Usuario', key: 10 }, //{ nombre: 'Acciones', key: 9 },
-        { nombre: 'Acción', key: 11 },
+        { nombre: 'Nro. Solicitud', key: 0, shortableColumn: true, keyName: "int_id" },
+        { nombre: 'Fecha', key: 1, shortableColumn: true, keyName: "dtt_fecha_solicitud" },
+        { nombre: 'Cédula', key: 2, shortableColumn: true, keyName: "str_identificacion" },
+        { nombre: 'Nombre solicitante', key: 3, shortableColumn: true, keyName: "str_nombres" },
+        { nombre: 'Cupo Solicitado', key: 5, shortableColumn: true, keyName: "dec_cupo_solicitado" },
+        { nombre: 'Calificación', key: 6, shortableColumn: true, keyName: "str_calificacion" },
+        { nombre: 'Estado', key: 7, keyName: "int_estado" },
+        { nombre: 'Oficina', key: 8, shortableColumn: true, keyName: "int_oficina_crea" },
+        { nombre: 'Canal', key: 9, shortableColumn: true, keyName: "str_canal_crea" },
+        { nombre: 'Usuario', key: 10, shortableColumn: true, keyName: "str_analista" }, //{ nombre: 'Acciones', key: 9 },
+        { nombre: 'Acción', key: 11, shortableColumn: true, keyName: "" },
     ];
 
     const headerTableProspectos = [
-        { nombre: 'Nro. Prospecto', key: 0 }, { nombre: 'Fecha', key: 1 },  { nombre: 'Cédula', key: 2 }, { nombre: 'Nombre', key: 3 },
-        { nombre: 'Celular', key: 4 }, { nombre: 'Correo', key: 5 }, { nombre: 'Cupo solicitado', key: 6 }, { nombre: 'Oficina', key: 7 }, { nombre: 'Canal', key: 8 }, { nombre: 'Usuario', key: 9 }
+        { nombre: 'Nro. Prospecto', key: 0, shortableColumn: true, keyName: "pro_id" },
+        { nombre: 'Fecha', key: 1, shortableColumn: true, keyName: "pro_fecha_solicitud" },
+        { nombre: 'Cédula', key: 2, shortableColumn: true, keyName: "pro_num_documento" },
+        { nombre: 'Nombre', key: 3, shortableColumn: true, keyName: "pro_nombres" },
+        { nombre: 'Celular', key: 4, shortableColumn: true, keyName: "pro_celular" },
+        { nombre: 'Correo', key: 5, shortableColumn: true, keyName: "pro_email" },
+        { nombre: 'Cupo solicitado', key: 6, shortableColumn: true, keyName: "pro_cupo_solicitado" },
+        { nombre: 'Oficina', key: 7, shortableColumn: true, keyName: "pro_oficina_crea" },
+        { nombre: 'Canal', key: 8, shortableColumn: true, keyName: "pro_canal_crea" },
+        { nombre: 'Usuario', key: 9, shortableColumn: true, keyName: "pro_usuario_crea" },
     ];
 
 
@@ -202,6 +213,12 @@ function Solicitud(props) {
         let nombreOficinaDeSolicitud = validarNombreOficina(solicitudSeleccionada.int_oficina_crea);
         /* PARA VER SOLICITUD POR PARTE DEL ASESOR DE NEGOCIOS*/
 
+
+        console.log("solId ", solId)
+        //console.log("solicitudSeleccionada ", solicitudSeleccionada)
+        //console.log("nombreOficinaDeSolicitud ", nombreOficinaDeSolicitud)
+
+
         if (rol === "ASESOR DE CRÉDITO") {
             dispatch(setSolicitudStateAction({
                 solicitud: solicitudSeleccionada.int_id, cedulaPersona: solicitudSeleccionada.str_identificacion, idSolicitud: solicitudSeleccionada.int_estado, rol: rol, estado: solicitudSeleccionada.str_estado, oficinaSolicitud: nombreOficinaDeSolicitud, calificacionRiesgo: solicitudSeleccionada.str_calificacion
@@ -279,6 +296,17 @@ function Solicitud(props) {
         setModalAnularVisible(false);
     }
 
+    const dataFiltradaHandler = (data, puedeFiltrar) => {
+        //console.log("DATA RET ", data)
+        //console.log("DATA Ahora ", registrosPagActual)
+        setRegistrosPagActual([...data])
+        setIsPuedeListarFiltrado(puedeFiltrar)
+    }
+
+    const puedeFiltrarHandler = (valor) => {
+        setIsPuedeListarFiltrado(valor)
+    }
+
     return (
         <div className="f-row w-100" >
         {/*<Sidebar enlace={props.location.pathname}></Sidebar>*/}
@@ -287,13 +315,6 @@ function Solicitud(props) {
            {/* {permisoNuevaSol && 
                 <>*/}
                 <div className="content-cards mt-2">
-                    
-                    <Card>
-                        <img style={{ width: "25px" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg" alt="Solicitud"></img>
-                        <h4 className="mt-2">Solicitud</h4>
-                        <h5 className="mt-5">Genera una nueva solicitud de tarjeta de crédito</h5>
-                        <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={irNuevaSolicitud}>Siguiente</Button>
-                    </Card>
 
                     <Card>
                         <img style={{ width: "25px" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg" alt="Prospección"></img>
@@ -301,6 +322,15 @@ function Solicitud(props) {
                             <h5 className="mt-2">Genera una nueva prospección de tarjeta de crédito</h5>
                             <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={irNuevaProspección}>Siguiente</Button>
                     </Card>
+
+
+                    <Card>
+                        <img style={{ width: "25px" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg" alt="Solicitud"></img>
+                        <h4 className="mt-2">Solicitud</h4>
+                        <h5 className="mt-5">Genera una nueva solicitud de tarjeta de crédito</h5>
+                        <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={irNuevaSolicitud}>Siguiente</Button>
+                    </Card>
+
 
 
                     <Card>
@@ -321,9 +351,15 @@ function Solicitud(props) {
             </Toggler>
             {isLstSolicitudes &&
                 <div id="listado_solicitudes" className="mt-2">
-                    <Table headers={headerTableSolicitantes}>
-                        {/*BODY*/}
-                        {registrosPagActual && registrosPagActual.map((solicitud) => {
+                        <SortableTable
+                            headers={headerTableSolicitantes}
+                            paginaActual={paginaActual}
+                            informacion={registrosPagActual}
+                            dataFiltrada={dataFiltradaHandler}
+                            sortConfig={{ key: 'int_id', direction: 'descending' } }
+                        >
+                            {/*BODY*/}
+                            {registrosPagActual.length>0 && isPuedeListarFiltrado && registrosPagActual.map((solicitud) => {
                             return (
                                 <tr key={solicitud.int_id}>
                                     <td style={{ width: "10%" }} onClick={() => { moveToSolicitud(solicitud.int_id) }}>
@@ -347,7 +383,7 @@ function Solicitud(props) {
                                     <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{solicitud.str_canal_crea}</td>
                                     <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{solicitud.str_usuario_crea}</td>
                                     <td>          
-                                        <div className="icon-botton" 
+                                        <div className="f-col justify-content-center icon-botton" 
                                             onClick={() => {
                                                 setSolicitudCupoAnulacion(solicitud.dec_cupo_solicitado);
                                                 setSolicitudAnularId(solicitud.int_id);
@@ -355,7 +391,9 @@ function Solicitud(props) {
                                             }}>
                                             <DeleteForeverRoundedIcon
                                                 sx={{
-                                                    fontSize: 26,
+                                                    fontSize: 33,
+                                                    margin: 0,
+                                                    padding: 0
                                                 }}
                                             ></DeleteForeverRoundedIcon>
                                         </div>
@@ -368,13 +406,19 @@ function Solicitud(props) {
                             );
                         })}
                         
-                    </Table>
+                    </SortableTable>
                    
                 </div>
-            }
+                }
             {isLstProspecciones &&
                 <div id="listado_prospectos" className="mt-2">
-                    <Table headers={headerTableProspectos}>
+                        <SortableTable
+                            headers={headerTableProspectos}
+                            paginaActual={paginaActual}
+                            informacion={registrosPagActual}
+                            dataFiltrada={dataFiltradaHandler}
+                            sortConfig={{ key: 'pro_id', direction: 'descending' }}
+                        >
                         {/*BODY*/}
                         {registrosPagActual && registrosPagActual.map((prospecto) => {
                             return (
@@ -392,10 +436,9 @@ function Solicitud(props) {
                                 </tr>);
                         })}
 
-                    </Table>
+                    </SortableTable>
                 </div>
             }
-
             {(isLstSolicitudes || isLstProspecciones) && numPaginas > 1 &&
                 <div>
                     <Paginacion numPaginas={numPaginas}

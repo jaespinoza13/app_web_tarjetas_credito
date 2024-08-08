@@ -71,6 +71,7 @@ const VerSolicitud = (props) => {
     const [isActivoBtnDecision, setIsActivoBtnDecision] = useState(true);
     const [isBtnDisableCambioBandeja, setIsBtnDisableCambioBandeja] = useState(true);
     const [isBtnResolucionSocio, setIsBtnResolucionSocio] = useState(true);
+    const [isDisableBtnGuardarNuevoCupo, setIsDisableBtnGuardarNuevoCupo] = useState(true);
 
 
     //DATOS DEL USUARIO
@@ -110,8 +111,7 @@ const VerSolicitud = (props) => {
 
     const [toggleResetIndex, setToggleResetIndex] = useState(1);
 
-    //Filas del text Area comentarioAdicional
-    const [filasTextAreaComentarioSol, setFilasTextAreaComentarioSol] = useState(3);
+    const [controlMontoMinimoParametro, setControlMontoMinimoParametro] = useState(0);
 
     const seleccionAccionSolicitud = (value) => {
         const accionSelecciona = accionesSolicitud.find((element) => { return element.key === value });
@@ -120,9 +120,6 @@ const VerSolicitud = (props) => {
         setAccionSeleccionada(accionSelecciona.key);
     }
 
-    const headerTableComentarios = [
-        { nombre: 'Tipo', key: 1 }, { nombre: 'Comentario', key: 2 }
-    ];
 
     const headerTableResoluciones = [
         { nombre: 'Usuario', key: 0 }, { nombre: 'Fecha actualización', key: 1 }, { nombre: "Decisión", key: 2 }, { nombre: "Comentario", key: 3 }
@@ -196,6 +193,9 @@ const VerSolicitud = (props) => {
                     prm_valor_ini: estado.str_valor_ini,
                     prm_valor_fin: estado.str_valor_fin
                 })));
+
+            /*PARAMETRO PARA CONTROL DE CUPO MINIMO A SOLICITAR EN TARJETA DE CRÉDITO*/
+            setControlMontoMinimoParametro(Number(ParametrosTC.filter(param => param.str_nemonico === 'PRM_WS_TC_CUPO_MINIMO_SOL_TC')[0]?.str_valor_ini));
 
             /* ESTADOS PARA DECISION FINAL DEL COMITE */
             setEstadosDecBanjComiteAll(ParametrosTC
@@ -504,6 +504,17 @@ const VerSolicitud = (props) => {
         setNuevoMonto(value);
     }
 
+    /*CONTROLAR QUE PUEDA ACTUALIZA EL CUPO POR MENOS MONTO DEL SOLICITADO POR EL SOCIO*/ 
+    useEffect(() => {
+        if (Number(nuevoMonto) >= Number(controlMontoMinimoParametro) && Number(nuevoMonto) <= Number(solicitudTarjeta.str_cupo_solicitado)) {
+            setIsDisableBtnGuardarNuevoCupo(false);
+        } else {
+            setIsDisableBtnGuardarNuevoCupo(true);
+        }
+
+    }, [nuevoMonto])
+
+
     const cambioMotivoRetornoBandeja = (e) => {
         setSelectMotivoRetornoBanj(e.target.value);
     }
@@ -788,12 +799,13 @@ const VerSolicitud = (props) => {
         }
     }
 
+    /*
     //Control para el numero de filas del text area
     useEffect(() => {
         let filasActuales = comentarioSolicitud.split('\n');
         if (filasActuales.length >= 3) setFilasTextAreaComentarioSol(filasActuales.length + 1);
         else if (filasActuales.length < 3) setFilasTextAreaComentarioSol(3);
-    }, [comentarioSolicitud])
+    }, [comentarioSolicitud])*/
 
     return <div className="f-row w-100" >
         {/*<Sidebar enlace={props.location.pathname}></Sidebar>*/}
@@ -810,7 +822,7 @@ const VerSolicitud = (props) => {
                 <>
 
                     {
-                        solicitudTarjeta?.str_estado === "APROBADA"
+                        (solicitudTarjeta?.str_estado === "APROBADA" || solicitudTarjeta?.str_estado === "APROBADA SOCIO")
                             ?
                             <Card className={["w-100 justify-content-space-between align-content-center"]}>
                                 <div>
@@ -868,7 +880,7 @@ const VerSolicitud = (props) => {
                                                 </h5>
                                             </div>
                                             <div className="values  mb-3">
-                                                <h5>Cupo sugerido Aval:</h5>
+                                                <h5>Cupo sugerido Buró:</h5>
                                                 <h5 className="strong">
                                                     {/* {`$ ${Number(solicitudTarjeta?.str_cupo_sugerido_aval).toLocaleString("en-US") || Number('0.00').toLocaleString("en-US")}`}*/}
                                                     {numberFormatMoney(solicitudTarjeta?.str_cupo_sugerido_aval)}
@@ -957,7 +969,7 @@ const VerSolicitud = (props) => {
                                                 </h5>
                                             </div>
                                             <div className="values  mb-3">
-                                                <h5>Cupo sugerido Aval:</h5>
+                                                <h5>Cupo sugerido Buró:</h5>
                                                 <h5 className="strong">
                                                     {/*{`$ ${Number(solicitudTarjeta?.str_cupo_sugerido_aval).toLocaleString("en-US") || Number('0.00').toLocaleString("en-US")}`}*/}
                                                     {numberFormatMoney(solicitudTarjeta?.str_cupo_sugerido_aval)}
@@ -991,7 +1003,7 @@ const VerSolicitud = (props) => {
                                             }
 
                                             {permisoImprimirMedio.includes(solicitudTarjeta?.str_estado) &&
-                                                <Button className="btn_mg__primary ml-2" onClick={() => descargarMedio(props.solicitud.solicitud)}>Imprimir medio aprobación</Button>
+                                                <Button className="btn_mg__primary ml-2" onClick={() => descargarMedio(props.solicitud.solicitud)}>Medio de aprobación</Button>
                                             }
 
                                             {estadosPuedenRegresarBandeja.includes(solicitudTarjeta?.str_estado) &&
@@ -1081,13 +1093,13 @@ const VerSolicitud = (props) => {
                                         {isMontoAprobarse &&
                                             <>
                                                 <Card className={["mt-2"]}>
-                                                    <h3>Monto a aprobarse</h3>
+                                                    <h3>Valor a aprobarse</h3>
                                                     <Input type="number" placeholder="Ej. 1000" disabled={false} setValueHandler={(e) => setMontoAprobado(e)} value={montoAprobado}></Input>
                                                 </Card>
 
                                                 <Card className={["mt-2"]}>
                                                     <h3>Observación:</h3>
-                                                    <Textarea placeholder="Ingrese su comentario" onChange={setObservacionComiteHandler} esRequerido={true} value={observacionComite}></Textarea>
+                                                <Textarea placeholder="Ingrese su comentario" onChange={setObservacionComiteHandler} esRequerido={true} value={observacionComite} controlAnchoTexArea={false}></Textarea>
                                                 </Card>
                                             </>
                                         }
@@ -1118,7 +1130,7 @@ const VerSolicitud = (props) => {
 
                                                 <Card className={["mt-2"]}>
                                                     <h3>Observación:</h3>
-                                                    <Textarea placeholder="Ingrese su comentario" onChange={setObservacionComiteHandler} esRequerido={true} value={observacionComite}></Textarea>
+                                                <Textarea placeholder="Ingrese su comentario" onChange={setObservacionComiteHandler} esRequerido={true} value={observacionComite} controlAnchoTexArea={false}></Textarea>
                                                 </Card>
                                             </>
 
@@ -1131,7 +1143,8 @@ const VerSolicitud = (props) => {
                                     {(solicitudTarjeta?.str_estado !== 'POR APROBAR SOLICITUD' && solicitudTarjeta?.str_estado !== 'VERIFICAR CLIENTE') &&
                                         <div className="mt-4">
                                             <h3 className="mb-3 strong">Observaciones</h3>
-                                            <Textarea placeholder="Ingrese su comentario" onChange={setComentarioSolicitudHandler} esRequerido={true} value={comentarioSolicitud} rows={filasTextAreaComentarioSol}></Textarea>
+                                            <Textarea placeholder="Ingrese su comentario" onChange={setComentarioSolicitudHandler} esRequerido={true} value={comentarioSolicitud}
+                                                controlAnchoTexArea={ false}></Textarea>
                                         </div>
                                     }
                                 </div>
@@ -1185,30 +1198,79 @@ const VerSolicitud = (props) => {
             onNextClick={siguientePasoHandler}
             onCloseClick={closeModalHandler}
             isBtnDisabled={isBtnComentariosActivo}
-            type="lg"
-            mainText="Enviar y guardar"
+            type="lg2"
+            mainText="Guardar"
         >
             {modalVisible && <div>
-                <Table headers={headerTableComentarios}>
-                    {
-                        informe.map((comentario, index) => {
-                            return (
-                                <tr key={comentario.int_id_parametro}>
-                                    <td style={{ width: "40%", justifyContent: "left" }}>
-                                        <div className='f-row' style={{ paddingLeft: "1rem" }}>
-                                            <div className='tooltip'>
-                                                <img className='tooltip-icon' src='/Imagenes/info.svg' alt="Analista a cargo de solicitud"></img>
-                                                <span className='tooltip-info'>{comentario.str_descripcion}</span>
-                                            </div>
-                                            {comentario.str_tipo}
-                                        </div>
-                                    </td>
-                                    <td style={{ width: "40%" }}><Textarea placeholder="Ej. Texto de ejemplo" type="textarea" onChange={(event, key = comentario.int_id_parametro) => { comentarioAdicionalHanlder(event, key) }} esRequerido={false} value={comentario.str_detalle}></Textarea></td>
-                                </tr>
-                            );
-                        })
-                    }
-                </Table>
+                {/*<Table headers={headerTableComentarios}>*/}
+                {/*    {*/}
+                {/*        informe.map((comentario, index) => {*/}
+                {/*            return (*/}
+                {/*                <tr key={comentario.int_id_parametro}>*/}
+                {/*                    <td style={{ width: "40%", justifyContent: "left" }}>*/}
+                {/*                        <div className='f-row' style={{ paddingLeft: "1rem" }}>*/}
+                {/*                            <div className='tooltip'>*/}
+                {/*                                <img className='tooltip-icon' src='/Imagenes/info.svg' alt="Analista a cargo de solicitud"></img>*/}
+                {/*                                <span className='tooltip-info'>{comentario.str_descripcion}</span>*/}
+                {/*                            </div>*/}
+                {/*                            {comentario.str_tipo}*/}
+                {/*                        </div>*/}
+                {/*                    </td>*/}
+                {/*                    <td style={{ width: "40%" }}><Textarea placeholder="Ej. Texto de ejemplo" type="textarea" onChange={(event, key = comentario.int_id_parametro) => { comentarioAdicionalHanlder(event, key) }} esRequerido={false} value={comentario.str_detalle}></Textarea></td>*/}
+                {/*                </tr>*/}
+                {/*            );*/}
+                {/*        })*/}
+                {/*    }*/}
+                {/*</Table>*/}
+
+                <table>
+                    <thead>
+                        {/*<tr>*/}
+                        {/*    {*/}
+                        {/*        headerTableComentarios.map((comentario, index) => {*/}
+                        {/*            return (*/}
+                        {/*                <th key={comentario.key} >{comentario.nombre}</th>*/}
+                        {/*            );*/}
+                        {/*        })*/}
+                        {/*    }*/}
+                        {/*</tr>*/}
+                        <tr>
+                            {
+                                informe.map((comentario, index) => {
+                                    return (
+                                        <th key={comentario.int_id_parametro}>
+                                            <div className='f-row justify-content-center'>
+                                                    <div className='tooltip'>
+                                                        <img className='tooltip-icon' src='/Imagenes/info.svg' alt="Analista a cargo de solicitud"></img>
+                                                        <span className='tooltip-info'>{comentario.str_descripcion}</span>
+                                                    </div>
+                                                    {comentario.str_tipo}
+                                                </div>      
+                                        </th>
+                                    );
+                                })
+                            }  
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            {
+                                informe.map((comentario, index) => {
+                                    return (
+                                        <td key={comentario.int_id_parametro}>
+                                            <Textarea placeholder="Ej. Texto de ejemplo" type="textarea" onChange={(event, key = comentario.int_id_parametro) => { comentarioAdicionalHanlder(event, key) }} esRequerido={false} value={comentario.str_detalle} controlAnchoTexArea={true }></Textarea>
+                                        </td>
+
+                                    );
+                                })
+                            }
+                        </tr>                       
+                    </tbody>                    
+                </table>
+
+
+
+
             </div>}
         </Modal>
         <Modal
@@ -1228,16 +1290,20 @@ const VerSolicitud = (props) => {
         </Modal>
         <Modal
             modalIsVisible={modalMonto}
-            titulo={`Actualizar monto solicitado`}
+            titulo={`Actualizar valor solicitado`}
             onNextClick={actualizarMonto}
             onCloseClick={closeModalMonto}
-            isBtnDisabled={false}
+            isBtnDisabled={isDisableBtnGuardarNuevoCupo}
             type="sm"
             mainText="Guardar"
         >
-            {modalMonto && <div>
-                <h3 className="mt-4 mb-3">Ingrese el nuevo monto:</h3>
-                <Input className="mb-4 w-100" type="number" value={solicitudTarjeta?.str_cupo_solicitado} placeholder="Ingrese el nuevo monto" setValueHandler={nuevoMontoHandler}></Input>
+            {modalMonto &&
+                <div className="f-row w-100">
+                    <div className="f-col w-100 ml-2 mt-4">
+                        <h3 className="mb-3">Ingrese el nuevo valor:</h3>
+                        <Input className={`"f-row w-100 mb-4"  ${(nuevoMonto === "" || nuevoMonto === 0 || Number(nuevoMonto) < Number(controlMontoMinimoParametro)) || Number(nuevoMonto) > Number(solicitudTarjeta.str_cupo_solicitado) ? 'no_valido' : ''}`} type="number" value={solicitudTarjeta?.str_cupo_solicitado} placeholder="1000.00" setValueHandler={nuevoMontoHandler} maxlength={8} max={solicitudTarjeta.str_cupo_solicitado }></Input>
+                        <h5 className="strong ml-1 mt-1 mb-4">*El valor mínimo a actualizar debe ser mayor a los {`${numberFormatMoney(controlMontoMinimoParametro)}`} y menor al valor solicitado {`${numberFormatMoney(solicitudTarjeta.str_cupo_solicitado)}`}.</h5>
+                    </div>
                 <br/>
             </div>}
         </Modal>

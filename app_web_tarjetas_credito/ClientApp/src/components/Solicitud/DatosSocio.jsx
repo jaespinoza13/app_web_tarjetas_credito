@@ -10,6 +10,7 @@ import Textarea from "../Common/UI/Textarea";
 import Button from "../Common/UI/Button";
 import { IsNullOrWhiteSpace, base64ToBlob, descargarArchivo, generarFechaHoy, numberFormatMoney, verificarPdf } from "../../js/utiles";
 import { useEffect } from "react";
+import DatosFinanDatosSocio from "./DatosFinanDatosSocio";
 
 const mapStateToProps = (state) => {
     var bd = state.GetWebService.data;
@@ -49,11 +50,11 @@ const DatosSocio = (props) => {
     const [deseaTarjeta, setDeseaTarjeta] = useState(false);
     const [comentariosPositivos, setComentariosPositivos] = useState([]);
     const [comentariosNegativos, setComentariosNegativos] = useState([]);
-    const [comentariosPositivosPrueba, setComentariosPositivosPrueba] = useState([{ image: "", textPrincipal: "Solicitará en otra IFI", textSecundario: "", key: 1 },
+    /*const [comentariosPositivosPrueba, setComentariosPositivosPrueba] = useState([{ image: "", textPrincipal: "Solicitará en otra IFI", textSecundario: "", key: 1 },
     { image: "", textPrincipal: "Monto muy bajo", textSecundario: "", key: 2 },
     { image: "", textPrincipal: "No desea por el momento", textSecundario: "", key: 3 },
     { image: "", textPrincipal: "Regresará con la documentación", textSecundario: "", key: 4 }]);
-    /*const [comentariosPositivos, setComentariosPositivos] = useState([{ image: "", textPrincipal: "Solicitará en otra IFI", textSecundario: "", key: 1 },
+    const [comentariosPositivos, setComentariosPositivos] = useState([{ image: "", textPrincipal: "Solicitará en otra IFI", textSecundario: "", key: 1 },
     { image: "", textPrincipal: "Monto muy bajo", textSecundario: "", key: 2 },
     { image: "", textPrincipal: "No desea por el momento", textSecundario: "", key: 3 },
     { image: "", textPrincipal: "Regresará con la documentación", textSecundario: "", key: 4 }]);
@@ -69,13 +70,23 @@ const DatosSocio = (props) => {
     const [totalIngresos, setTotalIngresos] = useState([]);
     const [egresos, setEgresos] = useState([]);
     const [totalEgresos, setTotalEgresos] = useState([]);
+    const [cupoCoopmegoSimulacion, setCupoCoopmegoSimulacion] = useState("");
 
     //InfoFinanciera
     const [dpf, setDpf] = useState([]);
     const [creditosHis, setCreditosHis] = useState([]);
 
     //Filas del text Area comentarioAdicional
-    const [filasTextAreaComentarioAd, setFilasTextAreaComentarioAd] = useState(4);
+    //const [filasTextAreaComentarioAd, setFilasTextAreaComentarioAd] = useState(4);
+
+    //DatosFinancierosProspecto
+    const [isCkeckRestaGtoFinananciero, setIsCkeckRestaGtoFinananciero] = useState(false);
+
+
+
+    const checkGastosFinancieroHandler = (e) => {
+        setIsCkeckRestaGtoFinananciero(e);
+    }
 
     const toggleAccordionScore = () => {
         setEstadoAccordionScore(!estadoAccordionScore);
@@ -85,12 +96,14 @@ const DatosSocio = (props) => {
         setComentarioAdicional(e);
         props.onComentarioAdic(e);
     }
+
+    /*
     //Control para el numero de filas del text area
     useEffect(() => {
         let filasActuales = comentarioAdicional.split('\n');
         if (filasActuales.length >= 4) setFilasTextAreaComentarioAd(filasActuales.length + 1);
         else if (filasActuales.length < 4) setFilasTextAreaComentarioAd(4);
-    }, [comentarioAdicional])
+    }, [comentarioAdicional])*/
 
 
     const getInfoAccordion = () => {
@@ -196,9 +209,9 @@ const DatosSocio = (props) => {
                 key: index+1,
             })
         )
-        console.log(comentariosPositivosPrueba)
-        console.log(resultPositivos)
-        console.log(resultNegativos)
+        //console.log(comentariosPositivosPrueba)
+        //console.log(resultPositivos)
+        //console.log(resultNegativos)
 
         setComentariosPositivos(resultPositivos);
         setComentariosNegativos(resultNegativos);
@@ -208,6 +221,11 @@ const DatosSocio = (props) => {
             getInfoSocio();
         }
         setComentarioAdicional(props.comentarioAdicionalValor);
+
+
+        //Se guarda cupo Coopmego
+        setCupoCoopmegoSimulacion(props.score.str_cupo_sugerido);
+
     }, [])
 
     const descargarReporte = async () => {
@@ -224,14 +242,18 @@ const DatosSocio = (props) => {
 
     }
 
+    const nuevoCupoSimuladoHandler = (e) => {
+        setCupoCoopmegoSimulacion(e)
+    }
+    
     /* Number(props.score.response.result.capacidadPago[0].cupoSugerido).toLocaleString('en-US') : Number('0.00').toLocaleString('en-US')}`}*/
     return (
         <div className="f-col w-100">
             <div id="montoSugerido" className="f-row w-100 ">
                 <div className="f-row justify-content-center align-content-center">
-                    <img src="Imagenes/Cupo sugerido.svg" width="10%" alt="Cupo sugerido Aval"></img>
+                    <img src="Imagenes/Cupo sugerido.svg" width="10%" alt="Cupo sugerido Buró"></img>
                     <div className="ml-3 datosMonto">
-                        <h3 className="blue">Cupo Sugerido Aval:</h3>
+                        <h3 className="blue">Cupo Sugerido Buró:</h3>
                         <h2 className="strong blue">{`  
                         ${props.score?.response?.result?.capacidadPago[0]?.cupoSugerido ?                            
                                 numberFormatMoney(props.score.response.result.capacidadPago[0].cupoSugerido) : "$ 0,00"}`}
@@ -243,7 +265,8 @@ const DatosSocio = (props) => {
                     <div className="ml-3 datosMonto">
                         <h3 className="blue">Cupo Sugerido CoopMego: </h3>
                         <h2 className="strong blue">{
-                            `${props.score.str_cupo_sugerido ? numberFormatMoney(props.score.str_cupo_sugerido) : "$ 0,00"}`}
+                            /*`${props.score.str_cupo_sugerido ? numberFormatMoney(props.score.str_cupo_sugerido) : "$ 0,00"}`}*/
+                            `${cupoCoopmegoSimulacion ? numberFormatMoney(cupoCoopmegoSimulacion) : "$ 0,00"}`}
                         </h2>
                     </div>
                 </div>
@@ -261,80 +284,85 @@ const DatosSocio = (props) => {
             <div id="infoSocio" className="w-100">
                 <Accordion contentReady={contentReadyScore} title="Score" rotate={estadoAccordionScore} loading={estadoLoadingScore} toggleAccordion={toggleAccordionScore}>
                     <div className="m-4 f-row">
-                        <Item xs={6} sm={6} md={6} lg={6} xl={6}>
-                            <h4 className="strong mb-3">Resultado de la calificación</h4>
-                            <div className="values  mb-3">
-                                <h5>Ingresos</h5>
-                                <h5 className="strong">
-                                {/*    {`$ ${Number(props.informacionSocio.datosFinancieros.montoIngresos)?.toLocaleString("en-US")}`}*/}
-                                    {numberFormatMoney(props.informacionSocio.datosFinancieros.montoIngresos)}
 
-                                </h5>
+                        <Item xs={5} sm={5} md={5} lg={5} xl={5}>
+                            <h3 className="strong mb-3">Resultado de la calificación</h3>
+                            <div className="values  mb-3">
+                                <h4>Ingresos</h4>
+                                <h4 className="strong">
+                                    {numberFormatMoney(props.informacionSocio.datosFinancieros.montoIngresos)}
+                                </h4>
                             </div>
                             <div className="values  mb-3">
-                                <h5>Egresos</h5>
-                                <h5 className="strong">
+                                <h4>Egresos</h4>
+                                <h4 className="strong">
                                     {numberFormatMoney(props.informacionSocio.datosFinancieros.montoEgresos)}
-                                  {/*  {`$ ${Number(props.informacionSocio.datosFinancieros.montoEgresos)?.toLocaleString("en-US") }`}*/}
-                                </h5>
+                                </h4>
                             </div>
                             <div className="values  mb-3">
-                                <h5>Resta Gasto Financiero</h5>
-                                <h5 className="strong">                                 
-                                    {/*{`$ ${Number(props.informacionSocio.datosFinancieros.montoRestaGstFinanciero)?.toLocaleString("en-US")}`}*/}
+                                <h4>Resta Gasto Financiero</h4>
+                                <h4 className="strong">                                 
                                     {numberFormatMoney(props.informacionSocio.datosFinancieros.montoRestaGstFinanciero)}
-                                </h5>
+                                </h4>
                             </div>
                             <div className="values  mb-3">
-                                <h5>Cupo solicitado</h5>
-                                <h5 className="strong">
+                                <h4>Cupo solicitado</h4>
+                                <h4 className="strong">
                                     {numberFormatMoney(props.informacionSocio.datosFinancieros.montoSolicitado)}
-                            {/*        {`$ ${(props.informacionSocio.datosFinancieros.montoSolicitado)?.toLocaleString("en-US") }`}*/}
-                                </h5>
+                                </h4>
                             </div>
+                            {/*<div className="values  mb-3">*/}
+                            {/*    <h4>Cupo Sugerido Buró</h4>*/}
+                            {/*    <h4 className="strong">*/}
+                            {/*        {numberFormatMoney(props.score.response.result.capacidadPago[0].cupoSugerido)}*/}
+                            {/*    </h4>*/}
+                            {/*</div>*/}
                             <div className="values  mb-3">
-                                <h5>Cupo Sugerido Aval</h5>
-                                <h5 className="strong">
-                                    {/* {`$ ${Number(props.score.response.result.capacidadPago[0].cupoSugerido)?.toLocaleString("en-US") }`}*/}
-                                    {numberFormatMoney(props.score.response.result.capacidadPago[0].cupoSugerido)}
-                                </h5>
-                            </div>
-                            <div className="values  mb-3">
-                                <h5>Score</h5>
-                                <h5 className="strong">
+                                <h4>Score</h4>
+                                <h4 className="strong">
                                     {props.score.response.result && props.score.response.result.scoreFinanciero && props.score.response.result.scoreFinanciero[0] && props.score.response.result.scoreFinanciero[0].score ? props.score.response.result.scoreFinanciero[0].score : 0}
-                                </h5>
+                                </h4>
+                            </div>
+                            <div className="values  mb-3">
+                                <h4>Calificación</h4>
+                                <h4 className="strong">
+                                    {props.score.response.result && props.score.response.result.modeloCoopmego && props.score.response.result.modeloCoopmego[0] && props.score.response.result.modeloCoopmego[0].decisionModelo ? props.score.response.result.modeloCoopmego[0].decisionModelo : 'Sin datos'}
+                                </h4>
+                            </div>
+                            <div className="values  mb-3">
+                                <h4>Decisión</h4>
+                                <h4 className="strong">
+                                    {props.score.response.result && props.score.response.result.modeloCoopmego && props.score.response.result.modeloCoopmego[0] && props.score.response.result.modeloCoopmego[0].tipoDecision ? props.score.response.result.modeloCoopmego[0].tipoDecision : 'Sin datos'}
+                                </h4>
                             </div>
                             <Button className={["btn_mg btn_mg__primary mt-2 mr-2"]} disabled={false} onClick={descargarReporte}>Descargar reporte</Button>
                         </Item>
-                        <Item xs={6} sm={6} md={6} lg={6} xl={6}>
-                            <h4 className="strong mb-3" >Detalle de deudas:</h4>
+                        <Item xs={1} sm={1} md={1} lg={1} xl={1}></Item>
+                            <Item xs={6} sm={6} md={6} lg={6} xl={6}>
+                            <h3 className="strong mb-3" >Detalle de deudas:</h3>
                             {props.score.response.result.deudaVigenteTotal.map((deuda,index) => {
                                 return (
                                     <div key={index }>
-                                    <h3 className="strong">{deuda.sistemaCrediticio}</h3>
+                                        <h3 className="strong mb-1">{deuda.sistemaCrediticio}</h3>
                                     <div>
                                         <div className="values">
-                                            <h5>Total deuda:</h5>
-                                                <h5 className="strong">
-                                                    {/*{Number(deuda.totalDeuda).toLocaleString("en-US")}*/}
+                                                <h4 className="mb-2">Total deuda:</h4>
+                                                <h4 className="strong mb-2">
                                                     {numberFormatMoney(deuda.totalDeuda)}
-                                                </h5>
+                                                </h4>
                                         </div>
-                                        <div className="values">
-                                            <h5>Valor demanda judicial:</h5>
-                                                <h5 className="strong">
-                                                   {/* $ {Number(deuda.valorDemandaJudicial).toLocaleString("en-US")}*/}
+                                            <div className="values">
+                                                <h4 className="mb-2">Valor demanda judicial:</h4>
+                                                <h4 className="strong mb-2">
                                                     {numberFormatMoney(deuda.valorDemandaJudicial)} 
 
-                                                </h5>
+                                                </h4>
                                         </div>
-                                        <div className="values">
-                                            <h5>Valor por vencer:</h5>
-                                                <h5 className="strong">
-                                                   {/* $ {Number(deuda.valorPorVencer).toLocaleString("en-US")}*/}
+                                        <div className="values mb-1">
+                                                <h4 className="mb-2">Valor por vencer:</h4>
+                                                <h4 className="strong mb-2">
                                                     {numberFormatMoney(deuda.valorPorVencer)} 
-                                                </h5>
+                                                </h4>
                                         </div>
                                     </div>
                                 </div>);
@@ -344,101 +372,109 @@ const DatosSocio = (props) => {
                         </Item>
                     </div>
                 </Accordion>
+                <DatosFinanDatosSocio
+                    dataFinanciers={props.informacionSocio.datosFinancieros}
+                    nuevoCupoSimulado={nuevoCupoSimuladoHandler}
+                    gestion={props.gestion}
+                    isCheckHabilitaRestaMonto={props.isCheckMontoRestaFinanciera}
+                    setDatosFinancierosHij={props.setDatosFinancierosFunc}
+                    isCkeckRestaGtosFinanHjo={props.isCkeckGtosFinancierosHandler}
+                />
                 {props.gestion === 'solicitud' &&
                     <Fragment>
                         <Accordion className="mt-3" title="Datos generales" rotate={estadoAccordionInfoSocio} loading={estadoLoadingInfoSocio} toggleAccordion={() => { getInfoAccordion(); }} contentReady={contentReadyInfoSocio}>
                             <div style={{ display: "flex", flexDirection: "column" }}>
                                 <div style={{ display: "flex", flexDirection: "row", width: "100%" }}>
-                                    <div className="m-2" style={{ display: "flex", flexDirection: "column", width: "50%", marginRight: "20px" }}>
+                                    <div className="m-2" style={{ display: "flex", flexDirection: "column", width: "50%", paddingRight: "76px" }}>
                                         <div className="values  mb-3">
-                                            <h5>Fecha de nacimiento</h5>
-                                            <h5 className="strong">
+                                            <h4>Fecha de nacimiento</h4>
+                                            <h4 className="strong">
                                                 {`${infoSocio[0]?.str_fecha_nacimiento}`}
-                                            </h5>
+                                            </h4>
                                         </div>
                                         <div className="values mb-3">
-                                            <h5>Años reside en el pais</h5>
-                                            <h5 className="strong">
+                                            <h4>Años reside en el pais</h4>
+                                            <h4 className="strong">
                                                 {`N/D`}
-                                            </h5>
+                                            </h4>
                                         </div>
                                         <div className="values mb-3">
-                                            <h5>Nivel de educación</h5>
-                                            <h5 className="strong">
+                                            <h4>Nivel de educación</h4>
+                                            <h4 className="strong">
                                                 {`${infoSocio[0]?.str_nivel_educacion}`}
-                                            </h5>
+                                            </h4>
                                         </div>
 
                                         <div className="values mb-3">
-                                            <h5>Código de profesión</h5>
-                                            <h5 className="strong">
+                                            <h4>Código de profesión</h4>
+                                            <h4 className="strong">
                                                 {`${infoSocio[0]?.str_codigo_profesion}`}
-                                            </h5>
+                                            </h4>
                                         </div>
 
                                         <div className="values mb-3">
-                                            <h5>Actividad</h5>
-                                            <h5 className="strong">
+                                            <h4>Actividad</h4>
+                                            <h4 className="strong">
                                                 {`${infoSocio[0]?.str_actividad_economica}`}
-                                            </h5>
+                                            </h4>
                                         </div>
                                         <div className="values mb-3">
-                                            <h5>Ocupación</h5>
-                                            <h5 className="strong">
+                                            <h4>Ocupación</h4>
+                                            <h4 className="strong">
                                                 {`${infoSocio[0]?.str_ocupacion}`}
-                                            </h5>
+                                            </h4>
                                         </div>
                                         <div className="values mb-3">
-                                            <h5>Estado civil</h5>
-                                            <h5 className="strong">
+                                            <h4>Estado civil</h4>
+                                            <h4 className="strong">
                                                 {`${infoSocio[0]?.str_estado_civil}`}
-                                            </h5>
+                                            </h4>
                                         </div>
                                     </div>
                                     <div className="m-2" style={{ display: "flex", flexDirection: "column", width: "50%" }}>
                                         <div className="values  mb-3">
-                                            <h5>Nacionalidad</h5>
-                                            <h5 className="strong">
+                                            <h4>Nacionalidad</h4>
+                                            <h4 className="strong">
                                                 {`${infoSocio[0]?.str_nacionalidad}`}
-                                            </h5>
+                                            </h4>
                                         </div>
                                         <div className="values mb-3">
-                                            <h5>Sexo</h5>
-                                            <h5 className="strong">
+                                            <h4>Sexo</h4>
+                                            <h4 className="strong">
                                                 {`${infoSocio[0]?.str_sexo}`}
-                                            </h5>
+                                            </h4>
                                         </div>
                                         <div className="values mb-3">
-                                            <h5>Sector</h5>
-                                            <h5 className="strong">
+                                            <h4>Sector</h4>
+                                            <h4 className="strong">
                                                 {`${dirDocimicilioSocio[0]?.str_dir_sector}`}
-                                            </h5>
+                                            </h4>
                                         </div>
 
                                         <div className="values mb-3">
-                                            <h5>Subsector</h5>
-                                            <h5 className="strong">
+                                            <h4>Subsector</h4>
+                                            <h4 className="strong">
                                                 {`${dirDocimicilioSocio[0]?.str_dir_barrio}`}
-                                            </h5>
+                                            </h4>
                                         </div>
 
                                         <div className="values mb-3">
-                                            <h5>Tipo de persona</h5>
-                                            <h5 className="strong">
+                                            <h4>Tipo de persona</h4>
+                                            <h4 className="strong">
                                                 {`${infoSocio[0]?.str_tipo_persona}`}
-                                            </h5>
+                                            </h4>
                                         </div>
                                         <div className="values mb-3">
-                                            <h5>Medio de información</h5>
-                                            <h5 className="strong">
+                                            <h4>Medio de información</h4>
+                                            <h4 className="strong">
                                                 {`${infoSocio[0]?.str_medio_informacion}`}
-                                            </h5>
+                                            </h4>
                                         </div>
                                         <div className="values mb-3">
-                                            <h5>Calificación de riesgo</h5>
-                                            <h5 className="strong">
+                                            <h4>Calificación de riesgo</h4>
+                                            <h4 className="strong">
                                                 {`${props.calificacionRiesgo}`}
-                                            </h5>
+                                            </h4>
                                         </div>
                                     </div>
                                 </div>
@@ -449,16 +485,16 @@ const DatosSocio = (props) => {
                         <Accordion className="mt-3" title="Medios de notificación" rotate={estadoMediosNotif} loading={estadoLoadingInfoSocio} toggleAccordion={() => { getInfoMediosNotif(); }} contentReady={contentReadyInfoSocio}>
                             <div className="m-2 w-50">
                                 <div className="values mb-3">
-                                    <h5>Celular</h5>
-                                    <h5 className="strong">
+                                    <h4>Celular</h4>
+                                    <h4 className="strong">
                                         {`${props.informacionSocio.str_celular || ''}`}
-                                    </h5>
+                                    </h4>
                                 </div>
                                 <div className="values mb-3">
-                                    <h5>Correo</h5>
-                                    <h5 className="strong">
+                                    <h4>Correo</h4>
+                                    <h4 className="strong">
                                         {`${props.informacionSocio.str_email || ''}`}
-                                    </h5>
+                                    </h4>
                                 </div>
                             </div>
                         </Accordion>
@@ -476,10 +512,6 @@ const DatosSocio = (props) => {
                                         <tbody>
                                             {
                                                 ingresos.map((ingreso) => {
-                                                    //let valorIngreso = (ingreso.dcm_valor).toLocaleString('en-US',{
-                                                    //    style: 'currency',
-                                                    //    currency: 'USD',
-                                                    //});
                                                     return (<tr key={ingreso.int_codigo}>
                                                         <td>{ingreso.str_descripcion}</td>
                                                         <td>
@@ -492,11 +524,7 @@ const DatosSocio = (props) => {
                                                 <tr key={998}>
                                                     <td>TOTAL</td>
                                                     <td>
-                                                        {numberFormatMoney(totalIngresos)}
-                                                        {/*{Number(totalIngresos).toLocaleString('en-US', {*/}
-                                                        {/*    style: 'currency',*/}
-                                                        {/*    currency: 'USD',*/}
-                                                        {/*})}*/}
+                                                        <h4 className="strong">{numberFormatMoney(totalIngresos)}</h4>
                                                     </td>
                                                 </tr>
                                             }
@@ -515,10 +543,6 @@ const DatosSocio = (props) => {
                                         <tbody>
                                             {
                                                 egresos.map((egreso) => {
-                                                    //let valorEgreso = Number.parseFloat(egreso.dcm_valor).toLocaleString('en-US', {
-                                                    //    style: 'currency',
-                                                    //    currency: 'USD',
-                                                    //});
                                                     return (<tr key={egreso.int_codigo}>
                                                         <td>{egreso.str_descripcion}</td>
                                                         <td>  {numberFormatMoney(egreso.dcm_valor)}</td>
@@ -529,11 +553,7 @@ const DatosSocio = (props) => {
                                                 <tr key={999}>
                                                     <td>TOTAL</td>
                                                     <td>
-                                                        {numberFormatMoney(totalEgresos)}
-                                                        {/*{Number(totalEgresos).toLocaleString('en-US', {*/}
-                                                        {/*    style: 'currency',*/}
-                                                        {/*    currency: 'USD',*/}
-                                                        {/*})}*/}
+                                                        <h4 className="strong">{numberFormatMoney(totalEgresos)}</h4>
                                                     </td>
                                                 </tr>
                                             }
@@ -551,7 +571,7 @@ const DatosSocio = (props) => {
                                             <th>Id.</th>
                                             <th>Tipo</th>
                                             <th>Operación</th>
-                                            <th>Monto Aprobado</th>
+                                            <th>Valor Aprobado</th>
                                             <th>Fecha vencimiento</th>
                                             <th>Fecha concesión</th>
                                             <th>Cuotas vencidas</th>
@@ -577,13 +597,13 @@ const DatosSocio = (props) => {
                                 </table>
                             </div>
                             <div className={"m-2"}>
-                                <h3>Depósitos a plazo fijo</h3>
+                                <h3>Captaciones</h3>
                                 <table>
                                     <thead>
                                         <tr>
                                             <th>Número cta</th>
                                             <th>Tipo cta</th>
-                                            <th>Monto disponible</th>
+                                            <th>Valor disponible</th>
                                             <th>Fecha</th>
                                             <th>Estado</th>
                                         </tr>
@@ -625,12 +645,14 @@ const DatosSocio = (props) => {
                     <h3 className="mb-2">Comentario de la gestión</h3>
                     {(deseaTarjeta === true && comentariosPositivos.length) > 0 &&
                         <Toggler
+                            className={"responsiveToogle"}
                             selectedToggle={seleccionComentarioAfirma}
                             toggles={comentariosPositivos}>
                         </Toggler>
                     }
                     {(deseaTarjeta === false && comentariosNegativos.length > 0) &&
                         <Toggler
+                            className={"responsiveToogle"}
                             selectedToggle={seleccionComentarioNega}
                             toggles={comentariosNegativos}>
                         </Toggler>
@@ -639,7 +661,8 @@ const DatosSocio = (props) => {
                 <div className="mt-4">
                     <h3 className="mb-2">Comentario Adicional</h3>
                     <Textarea placeholder="Ej. Ingrese algún detalle" onChange={comentarioAdicionalHanlder} esRequerido={false} value={comentarioAdicional}
-                        rows={filasTextAreaComentarioAd }></Textarea>
+                       
+                    controlAnchoTexArea={false}                    ></Textarea>
                 </div>
 
             </div>

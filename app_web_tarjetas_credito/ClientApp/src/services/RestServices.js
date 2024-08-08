@@ -1,4 +1,4 @@
-import { ServicioGetExecute, getMenuPrincipal, getPreguntaUsuario, ServicioPostExecute, getValidarPreguntaUsuario, setResetPassword, getLogin, getLoginPerfil, getPreguntas, setPreguntas, setPassword, setPasswordPrimeraVez, getListaBases, getListaConexiones, setConexion, addConexion, getListaSeguimiento, getListaDocumentos, getListaColecciones, getDescargarLogsTexto, getLogsTexto, getContenidoLogsTexto, getValidaciones, getScore, getInfoSocio, getInfoEco, addAutorizacion, getSolicitudes, addSolicitud, getContrato, getInfoFinan, addProspecto, getFlujoSolicitud, addComentarioAsesor, addComentarioSolicitud, updResolucion, addResolucion, getResolucion, addProcEspecifico, updSolicitud, getParametros, getReporteOrden, getOrdenes, getTarjetasCredito, getInforme, getMedioAprobacion, getSeparadores, addDocumentosAxentria, getDocumentosAxentria, crearSeparadores, getReporteAval, getAlertasCliente, getMotivos, getOficinas, getInfoProspecto } from './Services';
+import { ServicioGetExecute, getMenuPrincipal, getPreguntaUsuario, ServicioPostExecute, getValidarPreguntaUsuario, setResetPassword, getLogin, getLoginPerfil, getPreguntas, setPreguntas, setPassword, setPasswordPrimeraVez, getListaBases, getListaConexiones, setConexion, addConexion, getListaSeguimiento, getListaDocumentos, getListaColecciones, getDescargarLogsTexto, getLogsTexto, getContenidoLogsTexto, getValidaciones, getScore, getInfoSocio, getInfoEco, addAutorizacion, getSolicitudes, addSolicitud, getContrato, getInfoFinan, addProspecto, getFlujoSolicitud, addComentarioAsesor, addComentarioSolicitud, updResolucion, addResolucion, getResolucion, addProcEspecifico, updSolicitud, getParametros, getReporteOrden, getOrdenes, getTarjetasCredito, getInforme, getMedioAprobacion, getSeparadores, addDocumentosAxentria, getDocumentosAxentria, crearSeparadores, getReporteAval, getAlertasCliente, getMotivos, getOficinas, getInfoProspecto, getPermisosPerfil } from './Services';
 import { setAlertText, setErrorRedirigir } from "../redux/Alert/actions";
 import hex_md5 from '../js/md5';
 import { desencriptar, generate, get, set } from '../js/crypt';
@@ -776,7 +776,7 @@ export function fetchContenidoArchivoLogs(ws, archivo, desde, hasta, token, onSu
  * @param {(contenido:string, nroTotalRegistros: number) => void} onSuccess
  * @param {Function} dispatch
  */
-export function fetchValidacionSocio(strCedula, strTipoValidacion, token, onSucces, dispatch) {
+export async function fetchValidacionSocio(strCedula, strTipoValidacion, token, onSucces, errorCallback, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
@@ -784,7 +784,7 @@ export function fetchValidacionSocio(strCedula, strTipoValidacion, token, onSucc
         str_nemonico_alerta: strTipoValidacion
     };
     //console.log("BODY SERVICE,", body)
-    ServicioPostExecute(getValidaciones, body, token, { dispatch: dispatch }).then((data) => {
+    await ServicioPostExecute(getValidaciones, body, token, { dispatch: dispatch }).then((data) => {
         //console.log("VALIDACION SERVICE," ,data)
         if (data) {
             if (data.error) {
@@ -796,6 +796,7 @@ export function fetchValidacionSocio(strCedula, strTipoValidacion, token, onSucc
                 else {
                     let codigo = data.codigo || data.str_res_codigo;
                     let mensaje = data.mensaje || data.str_res_info_adicional;
+                    errorCallback({error:true })
                     if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
                 }
             }
@@ -884,7 +885,7 @@ export function fetchNuevaSimulacionScore(strTipoDocumento, strCedula, strNombre
         str_lugar: strLugar,
         str_oficial: strOficial
     };
-    //console.log("SCORE BODY, ",body)
+    console.log("SCORE BODY, ",body)
 
     ServicioPostExecute(getScore, body, token, { dispatch: dispatch }).then((data) => {
         if (data) {
@@ -1485,13 +1486,14 @@ export function fetchAddProcEspecifico(idSolicitud, cupo, estado, comentario, to
 * @param {(contenido:string, nroTotalRegistros: number) => void} onSuccess
 * @param {Function} dispatch
 */
-export function fetchGetParametrosSistema(token, onSucces, dispatch) {
+export async function fetchGetParametrosSistema(nombreParametro, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
-       
+        str_nombre: nombreParametro,
+        int_id_sis: 0 //Parametro se sobrescribe en el controller
     }
-    ServicioPostExecute(getParametros, body, token, { dispatch: dispatch }).then((data) => {
+    await ServicioPostExecute(getParametros, body, token, { dispatch: dispatch }).then((data) => {
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
@@ -1926,6 +1928,32 @@ export function fetchGetInfoProspecto(cedula, prospectoId, token, onSucces, disp
         int_id_prospecto: Number(prospectoId)
     }
     ServicioPostExecute(getInfoProspecto, body, token, { dispatch: dispatch }).then((data) => {
+        console.log("data ", data)
+        if (data) {
+            if (data.error) {
+                if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
+            } else {
+                if (data.str_res_estado_transaccion === "OK") {
+                    onSucces(data);
+                } else {
+                    let codigo = data.codigo || data.str_res_codigo;
+                    let mensaje = data.mensaje || data.str_res_info_adicional;
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
+                }
+            }
+        } else {
+            if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
+        }
+    });
+}
+
+export function fetchGetPermisosPerfil(idPerfil, token, onSucces, dispatch) {
+    if (dispatch) dispatch(setErrorRedirigir(""));
+    let body = {
+        //str_num_documento: idPerfil,
+        
+    }
+    ServicioPostExecute(getPermisosPerfil, body, token, { dispatch: dispatch }).then((data) => {
         console.log("data ", data)
         if (data) {
             if (data.error) {

@@ -98,7 +98,7 @@ const DatosFinancieros = (props) => {
     const updGastosFinancieros = () => {
         props.requiereActualizar(true)
     }
-
+    
     useEffect(() => {
         window.scrollTo(0, 0);
         setMontoIngresos(props.dataConsultFinan.montoIngresos);
@@ -108,19 +108,39 @@ const DatosFinancieros = (props) => {
         setMontoSolicitado(props.dataConsultFinan.montoSolicitado);
         setIsCkeckRestaGtoFinancero(props.isCheckMontoRestaFinanciera);
 
+        return () => {
+            setMontoIngresos(0);
+            setMontoEgresos(0);
+            setRestaMontoGastosFinancieros(0);
+            setMontoGastoFinanCodeudor(0);
+            setMontoSolicitado(0);
+            setIsCkeckRestaGtoFinancero(false);
+            setIsCamposDesactivados(true);
+        }
+
     }, [])
+    /*
+    useEffect(() => {
+        window.scrollTo(0, 0);
+        setMontoIngresos(props.dataConsultFinan.montoIngresos);
+        setMontoEgresos(props.dataConsultFinan.montoEgresos);
+        setRestaMontoGastosFinancieros(props.dataConsultFinan.montoRestaGstFinanciero);
+        setMontoGastoFinanCodeudor(props.dataConsultFinan.montoGastoFinaCodeudor);
+        setMontoSolicitado(props.dataConsultFinan.montoSolicitado);
+        setIsCkeckRestaGtoFinancero(props.isCheckMontoRestaFinanciera);
+
+    }, [props.dataConsultFinan, props.isCheckMontoRestaFinanciera])
+    */
 
     return (
         <>
 
             <Item xs={3} sm={3} md={3} lg={3} xl={3} className=""></Item>
             <Item xs={6} sm={6} md={6} lg={6} xl={6} className="justify-content-center">
-                <div className={"f-row"}>
+                <div className={"f-row w-100 justify-content-space-between mb-1"}>
                     <h2>Datos de Financieros</h2>
-
-
                     <Button className="btn_mg__auto" onClick={updGastosFinancieros}>
-                        <img src="/Imagenes/refresh.svg" style={{ transform: "scaleX(-1)" }} alt="Volver a consultar."></img>
+                        <img src="/Imagenes/refresh.svg" style={{ transform: "scaleX(-1)", width: "2.2rem" }} alt="Volver a consultar."></img>
                     </Button>
 
                 </div>
@@ -131,14 +151,14 @@ const DatosFinancieros = (props) => {
                             <div className='mb-2'>
                                 <label>Ingresos</label>
                                 <div className="f-row">
-                                    <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"1.0000"} readOnly={false} setValueHandler={setMontoIngresosHandler} value={montoIngresos} disabled={isCamposDesactivados} min={0} max={99999} ></Input>
+                                    <h2 className='mr-2'>$</h2><Input className={`w-90  ${(montoIngresos !== "" && montoIngresos !== 0)  ? '' : 'no_valido'}`} type={"number"} placeholder={"1.0000"} readOnly={false} setValueHandler={setMontoIngresosHandler} value={montoIngresos} disabled={isCamposDesactivados} min={0} max={99999} ></Input>
                                 </div>
                             </div>
 
                             <div className='mb-2'>
                                 <label>Egresos</label>
                                 <div className="f-row">
-                                    <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"500"} readOnly={false} setValueHandler={setMontoEgresosHandler} value={montoEgresos} disabled={isCamposDesactivados} min={0} max={99999} ></Input>
+                                    <h2 className='mr-2'>$</h2><Input className={`w-90  ${(montoEgresos !== "" && montoEgresos !== 0) ? '' : 'no_valido'}`} type={"number"} placeholder={"500"} readOnly={false} setValueHandler={setMontoEgresosHandler} value={montoEgresos} disabled={isCamposDesactivados} min={0} max={99999} ></Input>
                                 </div>
                             </div>
 
@@ -165,11 +185,11 @@ const DatosFinancieros = (props) => {
                             <div className='mb-2'>
                                 <label>Cupo solicitado</label>
                                 <div className="f-row">
-                                    <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} placeholder={"1.000"} readOnly={false} setValueHandler={setMontoSolicitadoHandler} value={montoSolicitado} min={0} max={99999}></Input>
+                                    <h2 className='mr-2'>$</h2><Input className={`w-90  ${(montoSolicitado !== "" && montoSolicitado !== 0 && Number(montoSolicitado) < Number(props.montoMinimoCupoSolicitado)) ? '' : 'no_valido'}`} type={"number"} placeholder={"1.000"} readOnly={false} setValueHandler={setMontoSolicitadoHandler} value={montoSolicitado} min={0} max={99999}></Input>
                                 </div>
                                 <div className="f-row">
                                     {montoSolicitado < props.montoMinimoCupoSolicitado &&
-                                        <h5 className="ml-4">*El monto mínimo a solicitar debe superar los {`$ ${Number(props.montoMinimoCupoSolicitado)?.toLocaleString("en-US")}`}</h5>
+                                        <h5 className="ml-4">*El valor mínimo a solicitar debe superar los {`$ ${Number(props.montoMinimoCupoSolicitado)?.toLocaleString("en-US")}`}</h5>
                                     }
                                 </div>
                                 

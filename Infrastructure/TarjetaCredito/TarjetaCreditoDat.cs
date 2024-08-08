@@ -25,6 +25,7 @@ using Domain.Models.TarjetaCredito.GetMotivos;
 using Domain.Models.TarjetaCredito.GetOficinas;
 using Domain.Models.TarjetaCredito.GetOrdenes;
 using Domain.Models.TarjetaCredito.GetParamatrosSistema;
+using Domain.Models.TarjetaCredito.GetPermisosPerfil;
 using Domain.Models.TarjetaCredito.GetReporteAval;
 using Domain.Models.TarjetaCredito.GetResoluciones;
 using Domain.Models.TarjetaCredito.GetScore;
@@ -1213,6 +1214,41 @@ namespace Infrastructure.TarjetaCredito
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
                     res = JsonSerializer.Deserialize<ResGetInfoProspectos>(response.Content!)!;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            return res;
+        }
+
+        public ResGetPermisosPerfil getPermisosPerfil(ReqGetPermisosPerfil req)
+        {
+            ResGetPermisosPerfil res = new ResGetPermisosPerfil();
+            try
+            {
+                req.llenarDatosConfig(_settings);
+                req.str_id_servicio = "REQ_" + _settings.service_get_permisos_perfil;
+                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_permisos_perfil)
+                {
+                    ThrowOnAnyError = true,
+                    MaxTimeout = _settings.time_out
+                };
+
+                var client = new RestClient(options);
+                var request = new RestRequest();
+                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                request.AddHeader("Content-Type", "application/json");
+                request.AddParameter("application/json", req, ParameterType.RequestBody);
+                request.Method = Method.Post;
+
+                var response = new RestResponse();
+                response = client.Post(request);
+
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    res = JsonSerializer.Deserialize<ResGetPermisosPerfil>(response.Content!)!;
                 }
             }
             catch (Exception ex)

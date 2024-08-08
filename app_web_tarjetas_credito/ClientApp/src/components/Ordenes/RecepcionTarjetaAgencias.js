@@ -213,6 +213,7 @@ function RecepcionTarjetaAgencias(props) {
                                         type="textarea"
                                         esRequerido={false}
                                         onChange={(e) => setObservacion(e)}
+                                        controlAnchoTexArea={false}
                                     ></Textarea>
 
                                     

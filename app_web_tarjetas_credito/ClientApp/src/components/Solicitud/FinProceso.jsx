@@ -1,4 +1,5 @@
-﻿import Card from "../Common/Card";
+﻿import { numberFormatMoney } from "../../js/utiles";
+import Card from "../Common/Card";
 
 const FinProceso = (props) => {
     return (
@@ -12,23 +13,28 @@ const FinProceso = (props) => {
                     }
                 </div>
                 <div className="">
-                    <p className="mb-4">Detalles: </p>
+                    <h2 className="mb-4">Detalles: </h2>
                     <Card>
-                        <h2>{props.nombres}</h2>
+                        <h2 className="strong">{props.nombres}</h2>
                         <hr className="dashed"></hr>
                         <div>
-                            <p>Número de cédula</p>
-                            <h3>{props.cedula}</h3>
+                            <h3>Número de cédula</h3>
+                            <h3 className="strong">{props.cedula}</h3>
                         </div>
                         <hr className="dashed"></hr>
                         <div>
-                            <p>Número de teléfono</p>
-                            <h3>{props.telefono}</h3>
+                            <h3>Número de teléfono</h3>
+                            <h3 className="strong">{props.telefono}</h3>
                         </div>
                         <hr className="dashed"></hr>
                         <div>
-                            <p>Email</p>
-                            <h3>{props.email}</h3>
+                            <h3>Email</h3>
+                            <h3 className="strong">{props.email}</h3>
+                        </div>
+                        <hr className="dashed"></hr>
+                        <div>
+                            <h3>Cupo solicitado</h3>
+                            <h3 className="strong">{numberFormatMoney(props.cupoSolicitado)}</h3>
                         </div>
                         <hr className="dashed"></hr>
                     </Card>
