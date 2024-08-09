@@ -84,7 +84,8 @@ const NuevaSolicitud = (props) => {
     const [estadoCivil, setEstadoCivil] = useState('');
     const [fechaNacimiento, setFechaNacimiento] = useState('');
     const [isCkeckRestaGtoFinananciero, setIsCkeckRestaGtoFinananciero] = useState(false);
-
+    const [controlValorMaxInputs, setControlValorMaxInputs] = useState(100000);
+    const [isActivarSeccionRestaGastoFinan, setIsActivarSeccionRestaGastoFinan] = useState(false);
 
     //Boton siguiente
     const [estadoBotonSiguiente, setEstadoBotonSiguiente] = useState(true);
@@ -211,15 +212,15 @@ const NuevaSolicitud = (props) => {
         let validaRestoMontoGstFinanciero = false;
 
         //console.log(`montoSolicitado ${datosFinancierosObj.montoSolicitado}, montoEgresos ${datosFinancierosObj.montoIngresos},  montoEgresos ${datosFinancierosObj.montoEgresos} `)
-        if ((datosFinancierosObj.montoSolicitado > 0 && datosFinancierosObj.montoSolicitado <= 99999 && datosFinancierosObj.montoSolicitado >= controlMontoMinimoParametro) &&
-            (datosFinancierosObj.montoIngresos > 0 && datosFinancierosObj.montoIngresos <= 99999) &&
-            (datosFinancierosObj.montoEgresos > 0 && datosFinancierosObj.montoEgresos <= 99999)
+        if ((datosFinancierosObj.montoSolicitado > 0 && datosFinancierosObj.montoSolicitado <= controlValorMaxInputs && datosFinancierosObj.montoSolicitado >= controlMontoMinimoParametro) &&
+            (datosFinancierosObj.montoIngresos > 0 && datosFinancierosObj.montoIngresos <= controlValorMaxInputs) &&
+            (datosFinancierosObj.montoEgresos > 0 && datosFinancierosObj.montoEgresos <= controlValorMaxInputs)
         ) {
             validadorOtrosMontos = true;
         }
 
         if (isCkeckRestaGtoFinananciero === true) {
-            if ((Number(datosFinancierosObj.montoRestaGstFinanciero) > 0 && Number(datosFinancierosObj.montoRestaGstFinanciero) <= 99999)) {
+            if ((Number(datosFinancierosObj.montoRestaGstFinanciero) > 0 && Number(datosFinancierosObj.montoRestaGstFinanciero) <= controlValorMaxInputs)) {
                 validaRestoMontoGstFinanciero = true;
             }
             else {
@@ -453,6 +454,7 @@ const NuevaSolicitud = (props) => {
         }
         if (step === 3) {
             setNombrePersonalTarjeta("");
+            setIsActivarSeccionRestaGastoFinan(true); //Para activar el btn de resta gastos financieros
         }
 
         setIsVisibleBloque(true);
@@ -501,6 +503,7 @@ const NuevaSolicitud = (props) => {
             handleLists(objValidaciones);
 
             if (seguirAlSigPaso) {
+                generarKey();
                 //setStep(1);
                 //setVisitadosSteps([...visitadosSteps, actualStepper + 1])
                 //setActualStepper(1);
@@ -527,9 +530,9 @@ const NuevaSolicitud = (props) => {
                 }, dispatch);
                 return;
             } else {
+                generarKey();
                 //Se actuliza la informacion, de manera que se guarde la mas actualizada, en caso no se de click al actualizar
                 refrescarInformacionHandler(true);
-
                 setActualStepper(1);
                 setVisitadosSteps([...visitadosSteps, actualStepper + 1])
                 setStep(2);
@@ -557,22 +560,21 @@ const NuevaSolicitud = (props) => {
             if (!realizaNuevaSimulacion.current) {
                 //TODO cambiar cedula a a -> cedulaSocio
                 await fetchScore("C", "1150214375", nombreSocioTC, datosUsuario[0].strUserOficial, datosUsuario[0].strOficial, datosUsuario[0].strCargo, props.token, (data) => {
-                    setScore(data);
+                   
                     setIdClienteScore(data.int_cliente);
                     setPuntajeScore(data?.response?.result?.scoreFinanciero[0]?.score)
-
-                    //TODO VALIDAR  CAMPO capacidadPago
                     setCupoSugeridoAval(data.response.result?.capacidadPago[0].cupoSugerido.toString());
-
                     realizaNuevaSimulacion.current = true
                     datosFinancierosObj.montoGastoFinaCodeudor = Number(data.str_gastos_codeudor);
-                    setDatosFinancierosObj(datosFinancierosObj)
-
-
+                    let restaGastoFinancieroBuro = Number.parseFloat(data.response?.result?.parametrosCapacidadPago[0]?.restaGastoFinanciero);
+                    datosFinancierosObj.montoRestaGstFinanciero = restaGastoFinancieroBuro;
+                    setDatosFinancierosObj(datosFinancierosObj);
                     //Se captura la calificacion que retorna de la consulta al buro
                     setCalificacionRiesgo(data.response.result.modeloCoopmego[0].decisionModelo)
+                    dataSocio.datosFinancieros = datosFinancierosObj;
+                    setInfoSocio(dataSocio);
                     setEstadoBotonSiguiente(true);
-
+                    setScore(data);
                 }, dispatch);
 
             } else if (realizaNuevaSimulacion.current) {
@@ -587,9 +589,8 @@ const NuevaSolicitud = (props) => {
                     props.token, (data) => {
                         setIdClienteScore(data.int_cliente);
                         setCupoSugeridoCoopM(data.str_cupo_sugerido);
-                        setScore(data);
                         setEstadoBotonSiguiente(true);
-
+                        setScore(data);
                     }, dispatch);
             }
 
@@ -866,6 +867,7 @@ const NuevaSolicitud = (props) => {
                     {(step === 2) &&
                         <div className="f-row w-100">
                             <DatosFinancieros
+                                key={keyComponente}
                                 dataConsultFinan={datosFinancierosObj}
                                 setDatosFinancierosFunc={datosFinancierosHandler}
                                 isCkeckGtosFinancierosHandler={checkGastosFinancieroHandler}
@@ -873,6 +875,7 @@ const NuevaSolicitud = (props) => {
                                 requiereActualizar={refrescarDatosInformativos}
                                 isCheckMontoRestaFinanciera={isCkeckRestaGtoFinananciero}
                                 montoMinimoCupoSolicitado={controlMontoMinimoParametro}
+                                isActivarSeccionRestaGasto={isActivarSeccionRestaGastoFinan}
                             >
                             </DatosFinancieros>
                         </div>

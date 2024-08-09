@@ -185,7 +185,7 @@ const RegistroCliente = (props) => {
                     <Item xs={3} sm={3} md={3} lg={3} xl={3} className=""></Item>
                     <Item xs={6} sm={6} md={6} lg={6} xl={6} className="justify-content-center">
                         <div className="f-col w-100">
-                            <label>Número de cédula</label>
+                            <h3>Número de cédula</h3>
                             <Input id="cedulaPaso1" type="number" className={`mt-3 ${isCedulaValida ? '' : 'no_valido'}`} placeholder="Ej. 1105970717" readOnly={false} value={documento} setValueHandler={setCedulaHandler} keyDown={(e) => isCedulaValida ? atajosHandler(e) : ''} tabIndex={0} maxlength={maxLengthCedula}></Input>
                             {!isCedulaValida &&
                                 <h4 className="ml-1 mt-1 strong">*Ingrese una cédula válida</h4>
@@ -210,14 +210,14 @@ const RegistroCliente = (props) => {
                             <Card>
                                 <section>
                                     <div className='mb-2'>
-                                        <label>Cédula:</label>
+                                    <h3>Cédula:</h3>
                                         <div className="f-row">
                                         <Input id="cedula" className={`w-100`} type="number" placeholder="1150216791" setValueHandler={documentoHandler} value={documento} disabled={true}></Input>
                                         </div>
                                     </div>
 
                                     <div className='mb-2'>
-                                        <label>Nombres:</label>
+                                    <h3>Nombres:</h3>
                                         <div className="f-row">
                                         <Input id="nombres" className={`w-100 ${nombresCliente !== "" ? '' : 'no_valido'}`} type="text" placeholder="Ej. Luis Miguel" setValueHandler={nombresClienteHandler} value={nombresCliente} controlMayusText={true}></Input>
                                         </div>
@@ -225,14 +225,14 @@ const RegistroCliente = (props) => {
                                     </div>
 
                                     <div className='mb-2'>
-                                        <label>Primer Apellido:</label>
+                                    <h3>Primer Apellido:</h3>
                                         <div className="f-row">
                                         <Input id="apellido_paterno" className={`w-100 ${apellidoPaterno !== "" ? '' : 'no_valido'}`} type="text" placeholder="Ej. Salazar" setValueHandler={apellidoPaternoHandler} value={apellidoPaterno} controlMayusText={true}></Input>
                                         </div>
                                     </div>
 
                                     <div className='mb-2'>
-                                        <label>Segundo Apellido:</label>
+                                    <h3>Segundo Apellido:</h3>
                                         <div className="f-row">
                                         <Input className={`w-100`} type="text" placeholder="Ej. Benitez" setValueHandler={apellidoMaternoHandler} value={apellidoMaterno} controlMayusText={true}></Input>
                                         </div>
@@ -240,21 +240,21 @@ const RegistroCliente = (props) => {
                                     </div>
 
                                     <div className='mb-2'>
-                                        <label>Correo:</label>
+                                    <h3>Correo:</h3>
                                         <div className="f-row">
                                         <Input className={`w-100 ${isCorreoValido === true ? '' : 'no_valido'}`} type="text" placeholder="Ej. test@test.com" setValueHandler={correoClienteHandler} value={correoCliente}></Input>
                                         </div>
                                     </div>
 
                                     <div className='mb-2'>
-                                        <label>Celular:</label>
+                                    <h3>Celular:</h3>
                                         <div className="f-row">
                                             <Input className={`w-100 ${isCelularValido === true ? '' : 'no_valido'}`} type="number" placeholder="Ej. 0999999999" setValueHandler={celularClienteHandler} value={celularCliente} maxlength={10}></Input>
                                         </div>
                                     </div>
 
                                     <div className='mb-2'>
-                                        <label>Fecha Nacimiento:</label>
+                                    <h3>Fecha Nacimiento:</h3>
                                         <div className="f-row">
                                             <Input className={`w-100 ${(fechaNacimiento !== "" && isFechaNacValido === true) ? '' : 'no_valido'}`} type="date" setValueHandler={fechaNacimientoHandler} value={fechaNacimiento} ></Input>
                                         </div>

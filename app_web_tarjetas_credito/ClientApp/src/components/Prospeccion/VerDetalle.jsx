@@ -1,4 +1,5 @@
 ﻿import "../../css/Components/DatosSocio.css";
+import { useHistory } from 'react-router-dom';
 import Accordion from "../Common/UI/Accordion";
 import { Fragment, useState } from "react";
 import { useDispatch, connect } from 'react-redux';
@@ -11,6 +12,7 @@ import { useEffect } from "react";
 import { get } from "../../js/crypt";
 import Card from "../Common/Card";
 import ValidacionesGenerales from "../Solicitud/ValidacionesGenerales";
+import KeyboardArrowLeftRoundedIcon from '@mui/icons-material/KeyboardArrowLeftRounded';
 
 //TODO PENDIENTE TRAER INFORMACION DE DATOS FINANCIEROS Y OROS
 
@@ -30,6 +32,7 @@ const mapStateToProps = (state) => {
 
 const VerDetalle = (props) => {
     const dispatch = useDispatch();
+    const navigate = useHistory();
 
     const [informacionSocio, setInformacionSocio] = useState([]);
     const [score, setScore] = useState("");
@@ -186,6 +189,21 @@ const VerDetalle = (props) => {
 
     return (
         <div className="f-row w-100" >
+
+            <div style={{ marginLeft: "9rem", marginTop: "2.5rem", position: "absolute" }} >
+                <div className="f-row w-100 icon-retorno" onClick={() => { navigate.push("/solicitud") }}>
+                    <KeyboardArrowLeftRoundedIcon
+                        sx={{
+                            fontSize: 35,
+                            marginTop: 0.5,
+                            padding: 0,
+                        }}
+                    ></KeyboardArrowLeftRoundedIcon>
+                    <h2 className="blue ml-2 mt-1">Solicitudes</h2>
+
+                </div>
+            </div>
+
             <Card className={["marginTopLeftProsp w-40 justify-content-space-between align-content-center"]}>
                 <ValidacionesGenerales token={props.token}
                     lst_validaciones={lstValidaciones}
