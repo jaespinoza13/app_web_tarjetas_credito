@@ -9,8 +9,11 @@ namespace Domain.Models.TarjetaCredito.GetInfoFinanciera
 {
     public class ResGetInfoFinan : ResComun
     {
-        public List<LstDepPlazoFijo>? lst_dep_plazo_fijo { get; set; }
+        public List<Captaciones>? lst_captaciones { get; set; }
         public List<LstCreditosHistorico>? lst_creditos_historicos { get; set; }
+
+
+        
     }
     public class LstCreditosHistorico
     {
@@ -25,7 +28,7 @@ namespace Domain.Models.TarjetaCredito.GetInfoFinanciera
         public int int_orden { get; set; }
     }
 
-    public class LstDepPlazoFijo
+    public class Captaciones
     {
         public int int_id_cuenta { get; set; }
         public string str_num_cuenta { get; set; } = String.Empty;

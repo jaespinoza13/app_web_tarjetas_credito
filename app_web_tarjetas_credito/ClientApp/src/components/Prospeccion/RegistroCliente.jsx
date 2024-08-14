@@ -107,9 +107,7 @@ const RegistroCliente = (props) => {
         let correoTotal = valor;
         if (checkMostrarCorreoDominio === false && valorSelectDomCorreo !== '-1') {
             correoTotal += '@' + valorSelectDomCorreo;
-            //console.log("CORREO ACTUL ", correoTotal)
-        }
-        //let correoValidacion = correoHandlerValidador();
+        }       
 
         setIsCorreoValido(validarCorreo(correoTotal))
         setCorreoCliente(correoTotal);
@@ -142,7 +140,6 @@ const RegistroCliente = (props) => {
         let correo = correoCliente;
         if (checkMostrarCorreoDominio === false && valorSelectDomCorreo !== '-1') {
             return correo += '@' + valorSelectDomCorreo;
-            //console.log("CORREO ACTUL ", correoTotal)
         } else {
             return correo;
         }
@@ -205,7 +202,7 @@ const RegistroCliente = (props) => {
 
 
             //console.log("correoCompletoRespaldo ", correoCompletoRespaldo)
-            console.log("correoInfo ", correoEvaluar)
+            //console.log("correoInfo ", correoEvaluar)
             //console.log("dominioCorreo ", dominioCorreo)
             //console.log("validarExistenciaDominio ", validarExistenciaDominio)
 
@@ -213,13 +210,13 @@ const RegistroCliente = (props) => {
                 setCorreoCliente(userCorreo);
                 setValorSelectDomCorreo(dominioCorreo);
             } else {
-                console.log("setValorSelectDomCorreo -1 ")
+                //console.log("setValorSelectDomCorreo -1 ")
                 setCorreoCliente(userCorreo);
                 setValorSelectDomCorreo("-1");
             }
 
         } else {//Cuando es vacio
-            console.log("VACIO")
+            //console.log("VACIO")
             setCorreoCliente(correoEvaluar)
         }
 
