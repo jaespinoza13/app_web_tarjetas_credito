@@ -9,5 +9,6 @@ namespace Domain.Models.TarjetaCredito.AddSolicitud
 {
     public class ResAddSolicitud : ResComun
     {
+        public int int_id_solicitud { get; set; }
     }
 }

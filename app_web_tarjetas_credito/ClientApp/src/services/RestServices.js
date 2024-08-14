@@ -1,4 +1,4 @@
-import { ServicioGetExecute, getMenuPrincipal, getPreguntaUsuario, ServicioPostExecute, getValidarPreguntaUsuario, setResetPassword, getLogin, getLoginPerfil, getPreguntas, setPreguntas, setPassword, setPasswordPrimeraVez, getListaBases, getListaConexiones, setConexion, addConexion, getListaSeguimiento, getListaDocumentos, getListaColecciones, getDescargarLogsTexto, getLogsTexto, getContenidoLogsTexto, getValidaciones, getScore, getInfoSocio, getInfoEco, addAutorizacion, getSolicitudes, addSolicitud, getContrato, getInfoFinan, addProspecto, getFlujoSolicitud, addComentarioAsesor, addComentarioSolicitud, updResolucion, addResolucion, getResolucion, addProcEspecifico, updSolicitud, getParametros, getReporteOrden, getOrdenes, getTarjetasCredito, getInforme, getMedioAprobacion, getSeparadores, addDocumentosAxentria, getDocumentosAxentria, crearSeparadores, getReporteAval, getAlertasCliente, getMotivos, getOficinas, getInfoProspecto, getPermisosPerfil } from './Services';
+import { ServicioGetExecute, getMenuPrincipal, getPreguntaUsuario, ServicioPostExecute, getValidarPreguntaUsuario, setResetPassword, getLogin, getLoginPerfil, getPreguntas, setPreguntas, setPassword, setPasswordPrimeraVez, getListaBases, getListaConexiones, setConexion, addConexion, getListaSeguimiento, getListaDocumentos, getListaColecciones, getDescargarLogsTexto, getLogsTexto, getContenidoLogsTexto, getValidaciones, getScore, getInfoSocio, getInfoEco, addAutorizacion, getSolicitudes, addSolicitud, getContrato, getInfoFinan, addProspecto, getFlujoSolicitud, addComentarioAsesor, addComentarioSolicitud, updResolucion, addResolucion, getResolucion, addProcEspecifico, updSolicitud, getParametros, getReporteOrden, getOrdenes, getTarjetasCredito, getInforme, getMedioAprobacion, getSeparadores, addDocumentosAxentria, getDocumentosAxentria, crearSeparadores, getReporteAval, getAlertasCliente, getMotivos, getOficinas, getInfoProspecto, getPermisosPerfil, getFuncionalidadesTC } from './Services';
 import { setAlertText, setErrorRedirigir } from "../redux/Alert/actions";
 import hex_md5 from '../js/md5';
 import { desencriptar, generate, get, set } from '../js/crypt';
@@ -1081,8 +1081,9 @@ export function fetchGetSolicitudes(token, onSucces, dispatch) {
 
 export function fetchAddSolicitud(body,token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
+    console.log("body SOL", body);
     ServicioPostExecute(addSolicitud, body, token, { dispatch: dispatch }).then((data) => {
-        //console.log("RES ADD SOL", data);
+        console.log("RES ADD SOL", data);
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
@@ -1168,7 +1169,7 @@ export function fetchAddProspecto(str_num_documento, ente, nombres, apellidos, c
 
     console.log("body", body)
     ServicioPostExecute(addProspecto, body, token, { dispatch: dispatch }).then((data) => {
-        console.log("DATA",  data)
+        //console.log("DATA",  data)
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
@@ -1194,7 +1195,7 @@ export function fetchAddProspecto(str_num_documento, ente, nombres, apellidos, c
 * @param {(contenido:string, nroTotalRegistros: number) => void} onSuccess
 * @param {Function} dispatch
 */
-export function fetchGetInforme(idSolicitud, idEstado, token, onSucces, dispatch) {
+export async function fetchGetInforme(idSolicitud, idEstado, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
@@ -1202,7 +1203,7 @@ export function fetchGetInforme(idSolicitud, idEstado, token, onSucces, dispatch
         int_id_est_sol: Number(idEstado)
     }
     //console.log(body)
-    ServicioPostExecute(getInforme, body, token, { dispatch: dispatch }).then((data) => {
+    await ServicioPostExecute(getInforme, body, token, { dispatch: dispatch }).then((data) => {
         //console.log("FLUJO,", data);
         if (data) {
             if (data.error) {
@@ -1301,14 +1302,15 @@ export function fetchAddComentarioAsesor(idSolicitud, comentarios, estadoSolicit
 * @param {(contenido:string, nroTotalRegistros: number) => void} onSuccess
 * @param {Function} dispatch
 */
-export function fetchAddComentarioSolicitud(idSolicitud, comentario, estadoSolicitud, regresaSolicitud, token, onSucces, dispatch) {
+export function fetchAddComentarioSolicitud(idSolicitud, comentario, estadoSolicitud, regresaSolicitud, esMicrocredito ,token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
         int_id_solicitud: idSolicitud,
         bl_regresa_estado: regresaSolicitud,
         str_comentario: comentario,
-        int_estado: estadoSolicitud
+        int_estado: estadoSolicitud,
+        bl_microcredito: esMicrocredito
     }
     console.log(body);
     ServicioPostExecute(addComentarioSolicitud, body, token, { dispatch: dispatch }).then((data) => {
@@ -1954,6 +1956,31 @@ export function fetchGetPermisosPerfil(idPerfil, token, onSucces, dispatch) {
         
     }
     ServicioPostExecute(getPermisosPerfil, body, token, { dispatch: dispatch }).then((data) => {
+        console.log("data ", data)
+        if (data) {
+            if (data.error) {
+                if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
+            } else {
+                if (data.str_res_estado_transaccion === "OK") {
+                    onSucces(data);
+                } else {
+                    let codigo = data.codigo || data.str_res_codigo;
+                    let mensaje = data.mensaje || data.str_res_info_adicional;
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
+                }
+            }
+        } else {
+            if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
+        }
+    });
+}
+
+export function fetchGetFuncionalidadesTC(token, onSucces, dispatch) {
+    if (dispatch) dispatch(setErrorRedirigir(""));
+    let body = {
+
+    }
+    ServicioPostExecute(getFuncionalidadesTC, body, token, { dispatch: dispatch }).then((data) => {
         console.log("data ", data)
         if (data) {
             if (data.error) {

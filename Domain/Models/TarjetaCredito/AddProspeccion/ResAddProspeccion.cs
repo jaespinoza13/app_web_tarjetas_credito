@@ -9,5 +9,6 @@ namespace Domain.Models.TarjetaCredito.AddProspeccion
 {
     public class ResAddProspeccion : ResComun
     {
+        public int int_id_prospecto { get; set; } 
     }
 }

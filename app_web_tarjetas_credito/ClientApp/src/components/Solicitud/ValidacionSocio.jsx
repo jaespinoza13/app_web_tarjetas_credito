@@ -51,7 +51,7 @@ const ValidacionSocio = (props) => {
                     <Item xs={3} sm={3} md={3} lg={3} xl={3} className=""></Item>
                     <Item xs={6} sm={6} md={6} lg={6} xl={6} className="justify-content-center">
                         <div className="f-col w-100">
-                            <label>Número de cédula</label>
+                            <h3>Número de cédula</h3>
                             <Input id="cedulaInput" type="number" className={`mt-3 ${isCedulaValida ? '' : 'no_valido'}`} placeholder="Ej. 1105970717" readOnly={false} value={cedulaSocio} setValueHandler={setCedulaHandler} keyDown={(e) => isCedulaValida ? atajosHandler(e) : ''} tabIndex={0} maxlength={maxLengthCedula}></Input>
                             {!isCedulaValida &&
                                 <h4 className="ml-1 mt-1 strong">*Ingrese una cédula válida</h4>    
@@ -78,43 +78,43 @@ const ValidacionSocio = (props) => {
                         <Card >
                             <section>
                                 <div>
-                                    <label>Nombres:</label>
+                                    <h3>Nombres:</h3>
                                     <h4 className="strong">{`${props.infoSocio.str_nombres} ${props.infoSocio.str_apellido_paterno} ${props.infoSocio.str_apellido_materno}`}</h4>
                                     <hr className="dashed"></hr>
                                 </div>
 
                                 <div>
-                                    <label>Ente:</label>
+                                    <h3>Ente:</h3>
                                     <h4 className="strong">{props.infoSocio.str_ente}</h4>
                                     <hr className="dashed"></hr>
                                 </div>
 
                                 <div>
-                                    <label>Correo:</label>
+                                    <h3>Correo:</h3>
                                     <h4 className="strong">{props.infoSocio.str_email}</h4>
                                     <hr className="dashed"></hr>
                                 </div>
 
                                 <div>
-                                    <label>Celular:</label>
+                                    <h3>Celular:</h3>
                                     <h4 className="strong">{props.infoSocio.str_celular}</h4>
                                     <hr className="dashed"></hr>
                                 </div>
 
                                 <div>
-                                    <label>Fecha Nacimiento:</label>
+                                    <h3>Fecha Nacimiento:</h3>
                                     <h4 className="strong">{props.infoSocio.str_fecha_nacimiento}</h4>
                                     <hr className="dashed"></hr>
                                 </div>
 
                                 <div>
-                                    <label>Sexo:</label>
+                                    <h3>Sexo:</h3>
                                     <h4 className="strong">{props.infoSocio.str_sexo}</h4>
                                     <hr className="dashed"></hr>
                                 </div>
 
                                 <div>
-                                    <label>Estado civil:</label>
+                                    <h3>Estado civil:</h3>
                                     <h4 className="strong">{props.infoSocio.str_estado_civil}</h4>
                                     <hr className="dashed"></hr>
                                 </div>

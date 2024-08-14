@@ -30,7 +30,7 @@ const DatosFinanDatosSocio = (props) => {
     const [isCkeckRestaGtoFinanceroSimul, setIsCkeckRestaGtoFinanceroSimul] = useState(false);
     const [isCamposDesactivadosSimul, setIsCamposDesactivadosSimul] = useState(false);
     const [isHabilitaBtnCalcular, setIsHabilitaBtnCalcular] = useState(true);
-
+    const [controlValorMaxInputs, setControlValorMaxInputs] = useState(100000);
 
 
     const setMontoIngresosHandler = (value) => {
@@ -54,13 +54,14 @@ const DatosFinanDatosSocio = (props) => {
 
     }
 
+    /*
     useEffect(() => {
         //Habilita campo de gastos financieros
         if (isCkeckRestaGtoFinanceroSimul === false) {
             setRestaGastosFinancierosHandler(" ");
         }
     }, [isCkeckRestaGtoFinanceroSimul])
-
+    */
  
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -77,6 +78,15 @@ const DatosFinanDatosSocio = (props) => {
         }
 
     }, [])
+
+    
+    //PARA ACTUALIZAR CAMPO EN CASO SE ACTUALICE 
+    useEffect(() => {
+        setMontoGastoFinaCodeudorSimul(props.dataFinanciers.montoGastoFinaCodeudor);
+        setRestaMontoGastosFinancierosSimul(props.dataFinanciers.montoRestaGstFinanciero);
+    }, [props.dataFinanciers])
+    
+
 
     useEffect(() => {
         props.nuevoCupoSimulado(cupoSugeNuevSimulacion)
@@ -154,14 +164,14 @@ const DatosFinanDatosSocio = (props) => {
                         <div className='mb-2'>
                             <label>Ingresos</label>
                             <div className="f-row">
-                                <h2 className='mr-2'>$</h2><Input className={`w-80  ${(montoIngresosSimul !== "" && montoIngresosSimul !== 0) ? '' : 'no_valido'}`} type={"number"} readOnly={false} setValueHandler={setMontoIngresosHandler} value={montoIngresosSimul} disabled={isCamposDesactivadosSimul} min={0} max={99999} ></Input>
+                                <h2 className='mr-2'>$</h2><Input className={`w-80  ${(montoIngresosSimul !== "" && montoIngresosSimul !== 0) ? '' : 'no_valido'}`} type={"number"} readOnly={false} setValueHandler={setMontoIngresosHandler} value={montoIngresosSimul} disabled={isCamposDesactivadosSimul} min={0} max={controlValorMaxInputs} ></Input>
                             </div>
                         </div>
 
                         <div className='mb-2'>
                             <label>Egresos</label>
                             <div className="f-row">
-                                <h2 className='mr-2'>$</h2><Input className={`w-80  ${(montoEgresosSimul !== "" && montoEgresosSimul !== 0) ? '' : 'no_valido'}`} type={"number"} readOnly={false} setValueHandler={setMontoEgresosHandler} value={montoEgresosSimul} disabled={isCamposDesactivadosSimul} min={0} max={99999} ></Input>
+                                <h2 className='mr-2'>$</h2><Input className={`w-80  ${(montoEgresosSimul !== "" && montoEgresosSimul !== 0) ? '' : 'no_valido'}`} type={"number"} readOnly={false} setValueHandler={setMontoEgresosHandler} value={montoEgresosSimul} disabled={isCamposDesactivadosSimul} min={0} max={controlValorMaxInputs} ></Input>
                             </div>
                         </div>
                     </Item>
@@ -176,7 +186,7 @@ const DatosFinanDatosSocio = (props) => {
                             </div>
 
                             <div className="f-row">
-                                <h2 className='mr-2'>$</h2><Input className={'w-80'} type={"number"} readOnly={false} setValueHandler={setRestaGastosFinancierosHandler} value={restaMontoGastosFinancierosSimul} disabled={!isCkeckRestaGtoFinanceroSimul} min={0} max={99999} maxlength={6} ></Input>
+                                <h2 className='mr-2'>$</h2><Input className={'w-80'} type={"number"} readOnly={false} setValueHandler={setRestaGastosFinancierosHandler} value={restaMontoGastosFinancierosSimul} disabled={!isCkeckRestaGtoFinanceroSimul} min={0} max={controlValorMaxInputs} maxlength={6} ></Input>
                             </div>
                         </div>
 
@@ -185,7 +195,7 @@ const DatosFinanDatosSocio = (props) => {
                                 Gasto Financiero CoDeudor
                             </label>
                             <div className="f-row">
-                                <h2 className='mr-2'>$</h2><Input className={'w-80'} type={"number"} readOnly={false} setValueHandler={setMontoGastoFinanCodeudorHandler} value={montoGastoFinaCodeudorSimul} min={0} max={99999} maxlength={6} disabled={true} ></Input>
+                                <h2 className='mr-2'>$</h2><Input className={'w-80'} type={"number"} readOnly={false} setValueHandler={setMontoGastoFinanCodeudorHandler} value={montoGastoFinaCodeudorSimul} min={0} max={controlValorMaxInputs} maxlength={6} disabled={true} ></Input>
                             </div>
                         </div>
 

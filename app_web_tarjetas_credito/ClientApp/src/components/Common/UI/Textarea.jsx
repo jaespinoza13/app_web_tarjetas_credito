@@ -41,13 +41,20 @@ const Textarea = (props) => {
 
 
     const textareaHandler = (e) => {
+        const newValue = e.target.value;
         /*
         if (anchoCampo !== null && anchoCampo !== 0) {
             setAnchoCampo(e.target.offsetWidth);
             console.log("ANCHJO ", e.target.offsetWidth)
-        } */     
+        } */
 
-        props.onChange(e.target.value);
+        if (props.maxlength !== undefined && newValue.length <= props.maxlength && props.max === undefined) {
+            props.onChange(e.target.value);
+        } else if (props.maxlength === undefined && props.max === undefined) {
+            props.onChange(e.target.value);
+        }
+
+
     }
 
     return <textarea

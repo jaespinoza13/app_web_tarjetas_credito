@@ -2,8 +2,8 @@
 import { useHistory } from 'react-router-dom';
 import '../../scss/main.css';
 import '../../scss/components/solicitud.css';
-import { useState, useEffect} from "react";
-import { fetchAddProcEspecifico, fetchGetSolicitudes} from "../../services/RestServices";
+import { useState, useEffect } from "react";
+import { fetchAddProcEspecifico, fetchGetSolicitudes } from "../../services/RestServices";
 import { IsNullOrWhiteSpace, numberFormatMoney } from '../../js/utiles';
 import Modal from '../Common/Modal/Modal';
 import Card from '../Common/Card';
@@ -63,33 +63,33 @@ function Solicitud(props) {
     const [solicitudCupoAnulacion, setSolicitudCupoAnulacion] = useState(false);
 
 
-  
+
     //Headers tablas Solicitudes y Prospectos
     const headerTableSolicitantes = [
-        { nombre: 'Nro. Solicitud', key: 0, shortableColumn: true, keyName: "int_id" },
+        { nombre: 'Número', key: 0, shortableColumn: true, keyName: "int_id" },
         { nombre: 'Fecha', key: 1, shortableColumn: true, keyName: "dtt_fecha_solicitud" },
         { nombre: 'Cédula', key: 2, shortableColumn: true, keyName: "str_identificacion" },
-        { nombre: 'Nombre solicitante', key: 3, shortableColumn: true, keyName: "str_nombres" },
-        { nombre: 'Cupo Solicitado', key: 5, shortableColumn: true, keyName: "dec_cupo_solicitado" },
-        { nombre: 'Calificación', key: 6, shortableColumn: true, keyName: "str_calificacion" },
-        { nombre: 'Estado', key: 7, keyName: "int_estado" },
-        { nombre: 'Oficina', key: 8, shortableColumn: true, keyName: "int_oficina_crea" },
-        { nombre: 'Canal', key: 9, shortableColumn: true, keyName: "str_canal_crea" },
-        { nombre: 'Usuario', key: 10, shortableColumn: true, keyName: "str_analista" }, //{ nombre: 'Acciones', key: 9 },
-        { nombre: 'Acción', key: 11, shortableColumn: true, keyName: "" },
+        { nombre: 'Nombre', key: 3, shortableColumn: true, keyName: "str_nombres" },
+        { nombre: 'Cupo Solicitado', key: 4, shortableColumn: true, keyName: "dec_cupo_solicitado" },
+        { nombre: 'Oficina', key: 5, shortableColumn: true, keyName: "int_oficina_crea" },
+        { nombre: 'Canal', key: 6, shortableColumn: true, keyName: "str_canal_crea" },
+        { nombre: 'Usuario', key: 7, shortableColumn: true, keyName: "str_usuario_crea" },
+        //{ nombre: 'Calificación', key: 6, shortableColumn: true, keyName: "str_calificacion" },
+        { nombre: 'Estado', key: 8, keyName: "int_estado" },
+        { nombre: 'Acción', key: 9, shortableColumn: true, keyName: "" },
     ];
 
     const headerTableProspectos = [
-        { nombre: 'Nro. Prospecto', key: 0, shortableColumn: true, keyName: "pro_id" },
+        { nombre: 'Número', key: 0, shortableColumn: true, keyName: "pro_id" },
         { nombre: 'Fecha', key: 1, shortableColumn: true, keyName: "pro_fecha_solicitud" },
         { nombre: 'Cédula', key: 2, shortableColumn: true, keyName: "pro_num_documento" },
         { nombre: 'Nombre', key: 3, shortableColumn: true, keyName: "pro_nombres" },
-        { nombre: 'Celular', key: 4, shortableColumn: true, keyName: "pro_celular" },
-        { nombre: 'Correo', key: 5, shortableColumn: true, keyName: "pro_email" },
-        { nombre: 'Cupo solicitado', key: 6, shortableColumn: true, keyName: "pro_cupo_solicitado" },
-        { nombre: 'Oficina', key: 7, shortableColumn: true, keyName: "pro_oficina_crea" },
-        { nombre: 'Canal', key: 8, shortableColumn: true, keyName: "pro_canal_crea" },
-        { nombre: 'Usuario', key: 9, shortableColumn: true, keyName: "pro_usuario_crea" },
+        //{ nombre: 'Celular', key: 4, shortableColumn: true, keyName: "pro_celular" },
+        { nombre: 'Cupo solicitado', key: 4, shortableColumn: true, keyName: "pro_cupo_solicitado" },
+        //{ nombre: 'Correo', key: 5, shortableColumn: true, keyName: "pro_email" },
+        { nombre: 'Oficina', key: 5, shortableColumn: true, keyName: "pro_oficina_crea" },
+        { nombre: 'Canal', key: 6, shortableColumn: true, keyName: "pro_canal_crea" },
+        { nombre: 'Usuario', key: 7, shortableColumn: true, keyName: "pro_usuario_crea" },
     ];
 
 
@@ -108,11 +108,11 @@ function Solicitud(props) {
             fetchGetSolicitudes(props.token, (data) => {
                 stLstProspectos(data.prospectos);
                 stLstSolicitudes(data.solicitudes);
-               
+
                 //Aplicacion Paginacion para Solicitudes (predeterminado)
                 setRegistrosPagActual(data.solicitudes.slice(indexOfFirstRecord, indexOfLastRecord));
                 setNumPaginas(Math.ceil(data.solicitudes.length / paginasEnVista))
-                
+
             }, dispatch)
 
             const strRol = get(localStorage.getItem("role"));
@@ -125,7 +125,7 @@ function Solicitud(props) {
     useEffect(() => {
         if (props.token && props.parametrosTC.lst_parametros?.length > 0) {
             let ParametrosTC = props.parametrosTC.lst_parametros;
-            /* PERFILES AUTORIZADOS EN VER LA SOLICITUD */            
+            /* PERFILES AUTORIZADOS EN VER LA SOLICITUD */
             let perfilesAutorizados = (ParametrosTC
                 .filter(param => param.str_nombre === 'PERFILES_AUTORIZADOS_VER_SOLICITUD')
                 .map(estado => ({
@@ -151,11 +151,11 @@ function Solicitud(props) {
 
     //ACTUALIZA LA PAGINA DONDE SE QUIERE IR
     useEffect(() => {
-       if (isLstSolicitudes) {
+        if (isLstSolicitudes) {
             setRegistrosPagActual(lstSolicitudes.slice(indexOfFirstRecord, indexOfLastRecord));
-       } else if (isLstProspecciones) {
+        } else if (isLstProspecciones) {
             setRegistrosPagActual(lstProstectos.slice(indexOfFirstRecord, indexOfLastRecord));
-       }
+        }
     }, [paginaActual])
 
 
@@ -193,7 +193,7 @@ function Solicitud(props) {
             //Aplicacion Paginacion para Solicitudes (predeterminado)
             setRegistrosPagActual(lstProstectos.slice(indexOfFirstRecord, indexOfLastRecord));
             setNumPaginas(Math.ceil(lstProstectos.length / paginasEnVista))
-            
+
             setIsLstSolicitudes(false);
             setIsLstProspecciones(true);
         }
@@ -227,24 +227,23 @@ function Solicitud(props) {
         } else {
 
 
-        
 
-        /* PARA QUE PUEDAN HACER EL PASO DE BANDEJA CADA PERFIL */ 
-        //else if (habilitarPerfilesVerSolicitud.includes(rol)) {
+
+            /* PARA QUE PUEDAN HACER EL PASO DE BANDEJA CADA PERFIL */
+            //else if (habilitarPerfilesVerSolicitud.includes(rol)) {
             dispatch(setSolicitudStateAction({
                 solicitud: solicitudSeleccionada.int_id, cedulaPersona: solicitudSeleccionada.str_identificacion, idSolicitud: solicitudSeleccionada.int_estado, rol: rol, estado: solicitudSeleccionada.str_estado, oficinaSolicitud: nombreOficinaDeSolicitud, calificacionRiesgo: solicitudSeleccionada.str_calificacion
-                }))
+            }))
             navigate.push('/solicitud/ver');
-        //}
-        /*else {
-            setModalVisible(true);
-        }*/
+            //}
+            /*else {
+                setModalVisible(true);
+            }*/
         }
     }
 
-    const moveToProspecto= (prospectoId) => {
+    const moveToProspecto = (prospectoId) => {
         const prospectoSeleccionado = registrosPagActual.find((prospect) => { return prospect.pro_id === prospectoId });
-        console.log(prospectoSeleccionado)
         dispatch(setProspectoStateAction({
             prospecto_id: prospectoSeleccionado.pro_id,
             prospecto_cedula: prospectoSeleccionado.pro_num_documento,
@@ -253,7 +252,7 @@ function Solicitud(props) {
 
         }))
         navigate.push('/prospeccion/ver');
-       
+
     }
 
 
@@ -267,18 +266,18 @@ function Solicitud(props) {
 
 
     const descargarEstadoCuenta = () => {
-       
+
         const pdfUrl = "Imagenes/Estado de cuenta-Final.pdf";
-            const link = document.createElement("a");
-            link.href = pdfUrl;
-            link.download = "EstadoCuenta.pdf"; // specify the filename
-            link.target = "_blank"; 
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);       
+        const link = document.createElement("a");
+        link.href = pdfUrl;
+        link.download = "EstadoCuenta.pdf"; // specify the filename
+        link.target = "_blank";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 
-    const validarNombreOficina = (idOficina) => {        
+    const validarNombreOficina = (idOficina) => {
         let nombreOficina = oficinasParametros.find(ofic => Number(ofic.prm_valor_fin) === Number(idOficina));
         return nombreOficina?.prm_descripcion ? nombreOficina.prm_descripcion : '';
     }
@@ -309,18 +308,18 @@ function Solicitud(props) {
 
     return (
         <div className="f-row w-100" >
-        {/*<Sidebar enlace={props.location.pathname}></Sidebar>*/}
-        
-        <div className="container_mg mb-4">
-           {/* {permisoNuevaSol && 
+            {/*<Sidebar enlace={props.location.pathname}></Sidebar>*/}
+
+            <div className="container_mg mb-4">
+                {/* {permisoNuevaSol && 
                 <>*/}
                 <div className="content-cards mt-2">
 
                     <Card>
                         <img style={{ width: "25px" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg" alt="Prospección"></img>
-                            <h4 className="mt-2">Prospección</h4>
-                            <h5 className="mt-2">Genera una nueva prospección de tarjeta de crédito</h5>
-                            <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={irNuevaProspección}>Siguiente</Button>
+                        <h4 className="mt-2">Prospección</h4>
+                        <h5 className="mt-2">Genera una nueva prospección de tarjeta de crédito</h5>
+                        <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={irNuevaProspección}>Siguiente</Button>
                     </Card>
 
 
@@ -339,79 +338,79 @@ function Solicitud(props) {
                         <h5 className="mt-4 mb-2">Generar estado de cuenta </h5>
                         <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={descargarEstadoCuenta}>Descargar</Button>
                     </Card>
-                   
+
                 </div>
 
                 {/* </>
 
             }*/}
-            
-            <Toggler className="mt-2" toggles={accionesSolicitud}
-                selectedToggle={handleSelectedToggle}>
-            </Toggler>
-            {isLstSolicitudes &&
-                <div id="listado_solicitudes" className="mt-2">
+
+                <Toggler className="mt-2" toggles={accionesSolicitud}
+                    selectedToggle={handleSelectedToggle}>
+                </Toggler>
+                {isLstSolicitudes &&
+                    <div id="listado_solicitudes" className=" mt-2">
                         <SortableTable
                             headers={headerTableSolicitantes}
                             paginaActual={paginaActual}
                             informacion={registrosPagActual}
                             dataFiltrada={dataFiltradaHandler}
-                            sortConfig={{ key: 'int_id', direction: 'descending' } }
+                            sortConfig={{ key: 'int_id', direction: 'descending' }}
                         >
-                            {/*BODY*/}
-                            {registrosPagActual.length>0 && isPuedeListarFiltrado && registrosPagActual.map((solicitud) => {
-                            return (
-                                <tr key={solicitud.int_id}>
-                                    <td style={{ width: "10%" }} onClick={() => { moveToSolicitud(solicitud.int_id) }}>
-                                        {solicitud.int_id}
-                                    </td>
-                                    <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{solicitud.dtt_fecha_solicitud}</td>
-                                    <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{solicitud.str_identificacion}</td>
-                                    <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{solicitud.str_nombres}</td>
-                                    <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{numberFormatMoney(solicitud.dec_cupo_solicitado)}</td>
-                                    <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{solicitud.str_calificacion}</td>
-                                    <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>
-                                        {solicitud.str_analista ? <div>
-                                            {solicitud.str_estado}
-                                            <div className='tooltip ml-1'>
-                                                <img className='tooltip-icon' src='/Imagenes/info.svg' alt="Analista encargado seguimiento"></img>
-                                                <span className='tooltip-info'>Analista: {solicitud.str_analista}</span>
+                            {registrosPagActual.length > 0 && isPuedeListarFiltrado && registrosPagActual.map((solicitud) => {
+                                return (
+                                    <tr key={solicitud.int_id}>
+                                        <td style={{ width: "10%" }} onClick={() => { moveToSolicitud(solicitud.int_id) }}>
+                                            {solicitud.int_id}
+                                        </td>
+                                        <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{solicitud.dtt_fecha_solicitud}</td>
+                                        <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{solicitud.str_identificacion}</td>
+                                        <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{`${solicitud.str_nombres} ${solicitud.str_apellidos}`}</td>
+                                        <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{numberFormatMoney(solicitud.dec_cupo_solicitado)}</td>
+                                        {/*<td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{solicitud.str_calificacion}</td>*/}
+                                        <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{validarNombreOficina(solicitud.int_oficina_crea)}</td>
+                                        <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{solicitud.str_canal_crea}</td>
+                                        <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{solicitud.str_usuario_crea}</td>
+                                        <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>
+                                            <div>   
+                                                {solicitud.str_estado}
+                                                {solicitud.str_analista ?
+                                                <div className='tooltip ml-1'>
+                                                    <img className='tooltip-icon' src='/Imagenes/info.svg' alt="Analista encargado seguimiento"></img>
+                                                    <span className='tooltip-info'>Analista: {solicitud.str_analista}</span>
+                                                    </div> : ''}
                                             </div>
-                                        </div> : '' }                                        
-                                    </td>
-                                    <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{validarNombreOficina(solicitud.int_oficina_crea)}</td>
-                                    <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{solicitud.str_canal_crea}</td>
-                                    <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{solicitud.str_usuario_crea}</td>
-                                    <td>          
-                                        <div className="f-col justify-content-center icon-botton" 
-                                            onClick={() => {
-                                                setSolicitudCupoAnulacion(solicitud.dec_cupo_solicitado);
-                                                setSolicitudAnularId(solicitud.int_id);
-                                                setModalAnularVisible(true)
-                                            }}>
-                                            <DeleteForeverRoundedIcon
-                                                sx={{
-                                                    fontSize: 33,
-                                                    margin: 0,
-                                                    padding: 0
-                                                }}
-                                            ></DeleteForeverRoundedIcon>
-                                        </div>
+                                        </td>
+                                        <td>
+                                            <div className="f-col justify-content-center icon-botton"
+                                                onClick={() => {
+                                                    setSolicitudCupoAnulacion(solicitud.dec_cupo_solicitado);
+                                                    setSolicitudAnularId(solicitud.int_id);
+                                                    setModalAnularVisible(true)
+                                                }}>
+                                                <DeleteForeverRoundedIcon
+                                                    sx={{
+                                                        fontSize: 33,
+                                                        margin: 0,
+                                                        padding: 0
+                                                    }}
+                                                ></DeleteForeverRoundedIcon>
+                                            </div>
 
 
-                                        
-                                    </td>
 
-                                </tr>
-                            );
-                        })}
-                        
-                    </SortableTable>
-                   
-                </div>
+                                        </td>
+
+                                    </tr>
+                                );
+                            })}
+
+                        </SortableTable>
+
+                    </div>
                 }
-            {isLstProspecciones &&
-                <div id="listado_prospectos" className="mt-2">
+                {isLstProspecciones &&
+                    <div id="listado_prospectos" className="mt-2">
                         <SortableTable
                             headers={headerTableProspectos}
                             paginaActual={paginaActual}
@@ -419,48 +418,46 @@ function Solicitud(props) {
                             dataFiltrada={dataFiltradaHandler}
                             sortConfig={{ key: 'pro_id', direction: 'descending' }}
                         >
-                        {/*BODY*/}
-                        {registrosPagActual && registrosPagActual.map((prospecto) => {
-                            return (
-                                <tr key={prospecto.pro_id} onClick={() => { moveToProspecto(prospecto.pro_id) }}>
-                                    <td style={{ width: "10%" }}>{prospecto.pro_id}</td>
-                                    <td>{prospecto.pro_fecha_solicitud}</td>
-                                    <td>{prospecto.pro_num_documento}</td>
-                                    <td>{`${prospecto.pro_nombres} ${prospecto.pro_apellidos}`}</td>
-                                    <td>{prospecto.pro_celular}</td>
-                                    <td>{prospecto.pro_email}</td>
-                                    <td>{numberFormatMoney(prospecto.pro_cupo_solicitado) }</td>
-                                    <td>{validarNombreOficina(prospecto.pro_oficina_crea)}</td>
-                                    <td>{prospecto.pro_canal_crea}</td>
-                                    <td>{prospecto.pro_usuario_crea}</td>
-                                </tr>);
-                        })}
+                            {registrosPagActual && registrosPagActual.map((prospecto) => {
+                                return (
+                                    <tr key={prospecto.pro_id} onClick={() => { moveToProspecto(prospecto.pro_id) }}>
+                                        <td style={{ maxWidth: "10px" }}>{prospecto.pro_id}</td>
+                                        <td style={{ maxWidth: "10px" }}>{prospecto.pro_fecha_solicitud}</td>
+                                        <td style={{ maxWidth: "20px" }}>{prospecto.pro_num_documento}</td>
+                                        <td style={{ maxWidth: "80px" }}>{`${prospecto.pro_nombres} ${prospecto.pro_apellidos}`}</td>
+                                        {/*<td>{prospecto.pro_email}</td>*/}
+                                        <td style={{ maxWidth: "10px" }}>{numberFormatMoney(prospecto.pro_cupo_solicitado)}</td>
+                                        <td style={{ maxWidth: "10px" }}>{validarNombreOficina(prospecto.pro_oficina_crea)}</td>
+                                        <td style={{ maxWidth: "10px" }}>{prospecto.pro_canal_crea}</td>
+                                        <td style={{ maxWidth: "10px" }}>{prospecto.pro_usuario_crea}</td>
+                                    </tr>);
+                            })}
 
-                    </SortableTable>
-                </div>
-            }
-            {(isLstSolicitudes || isLstProspecciones) && numPaginas > 1 &&
-                <div>
-                    <Paginacion numPaginas={numPaginas}
-                        paginaActual={paginaActual}
-                        setPaginaActual={setPaginaActual} />
-                </div>               
-            }
-            
-        </div>
+                        </SortableTable>
+                    </div>
+                }
+                {(isLstSolicitudes || isLstProspecciones) && numPaginas > 1 &&
+                    <div>
+                        <Paginacion numPaginas={numPaginas}
+                            paginaActual={paginaActual}
+                            setPaginaActual={setPaginaActual} />
+                    </div>
+                }
 
-        <Modal
-            modalIsVisible={modalVisible}
-            titulo={`Aviso`}
-            onNextClick={siguientePasoHandler}
-            onCloseClick={closeModalHandlerMsg}
-            isBtnDisabled={false}
-            type="sm"
-        >
-            {modalVisible && <div>
-                <p className="mt-2 mb-2">No tiene permiso para acceder a esta solicitud</p>
-            </div>}
-        </Modal>
+            </div>
+
+            <Modal
+                modalIsVisible={modalVisible}
+                titulo={`Aviso`}
+                onNextClick={siguientePasoHandler}
+                onCloseClick={closeModalHandlerMsg}
+                isBtnDisabled={false}
+                type="sm"
+            >
+                {modalVisible && <div>
+                    <p className="mt-2 mb-2">No tiene permiso para acceder a esta solicitud</p>
+                </div>}
+            </Modal>
 
             <Modal
                 modalIsVisible={modalAnularVisible}
@@ -476,7 +473,7 @@ function Solicitud(props) {
                 </div>
             </Modal>
 
-    </div>);
+        </div>);
 
 }
 

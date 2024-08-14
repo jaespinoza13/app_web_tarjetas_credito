@@ -60,6 +60,7 @@ const context = [
     '/tarjetacredito/getOficinas',
     '/tarjetacredito/getInfoProspecto',
     '/tarjetacredito/getPermisosPerfil',
+    '/tarjetacredito/getFuncionalidadesTC',
 
 ];
 

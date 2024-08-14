@@ -5,18 +5,24 @@ import { validaCedula, validarCorreo } from '../../js/utiles';
 import Item from "../Common/UI/Item";
 import { useEffect } from "react";
 import Button from "../Common/UI/Button";
-
+import AlternateEmailRoundedIcon from '@mui/icons-material/AlternateEmailRounded';
+import { fetchGetParametrosSistema } from "../../services/RestServices";
+import { useDispatch } from "react-redux";
+import { Fragment } from "react";
 
 const RegistroCliente = (props) => {
-    //Datos del cliente
 
+    const dispatch = useDispatch();
+    //Datos del cliente
     const [nombresCliente, setNombresCliente] = useState("");
     const [apellidoPaterno, setApellidoPaterno] = useState("");
     const [apellidoMaterno, setApellidoMaterno] = useState("");
     const [celularCliente, setCelularCliente] = useState("");
     const [correoCliente, setCorreoCliente] = useState("");
+    const [correoCompletoRespaldo, setCorreoCompletoRespaldo] = useState("");
     const [documento, setDocumento] = useState("");
     const [fechaNacimiento, setFechaNacimiento] = useState(null);
+    const [checkMostrarCorreoDominio, setCheckMostrarCorreoDominio] = useState(true);
 
     //Estado validacion
     const [isCedulaValida, setIsCedulaValida] = useState(false);
@@ -24,6 +30,12 @@ const RegistroCliente = (props) => {
     const [isCelularValido, setIsCelularValido] = useState(false);
     const [isFechaNacValido, setFechaNacValido] = useState(false);
     const [maxLengthCedula, setMaxLengthCedula] = useState(10);
+
+    //Dominios de correo
+    const [lstDominiosCorreo, setLstDominiosCorreo] = useState([]);
+    const [valorSelectDomCorreo, setValorSelectDomCorreo] = useState("-1");
+
+
 
     const setCedulaHandler = (value) => {
         let validezCedula = validaCedula(value);
@@ -88,14 +100,19 @@ const RegistroCliente = (props) => {
         })
     }
     const correoClienteHandler = (valor) => {
-        setIsCorreoValido(validarCorreo(valor))
-        setCorreoCliente(valor);
+        let correoTotal = valor;
+        if (checkMostrarCorreoDominio === false && valorSelectDomCorreo !=='-1') {
+            correoTotal += '' + valorSelectDomCorreo;
+        }
+
+        setIsCorreoValido(validarCorreo(correoTotal))
+        setCorreoCliente(correoTotal);
         props.datosIngresados({
             nombres: nombresCliente,
             apellidoPaterno: apellidoPaterno,
             apellidoMaterno: apellidoMaterno,
             celular: celularCliente,
-            correo: valor,
+            correo: correoTotal,
             documento: documento,
             fechaNacimiento: fechaNacimiento
         })
@@ -128,7 +145,63 @@ const RegistroCliente = (props) => {
             fechaNacimiento: (valor)
         })
     }
-    
+
+    useEffect(() => {
+        if (lstDominiosCorreo.length > 0 && correoCompletoRespaldo !== "") {
+            validacionDominioCorreo(correoCompletoRespaldo);
+        }
+    }, [checkMostrarCorreoDominio, lstDominiosCorreo, correoCompletoRespaldo])
+
+    const validacionDominioCorreo = (correoEvaluar) => {
+        /*if (correoEvaluar.trim() !== "" && checkMostrarCorreoDominio === false) {
+            let dominioCorreo = correoEvaluar.split('@')[1];
+            let validarExistenciaDominio = lstDominiosCorreo.some(item => item.valor.includes(dominioCorreo?.trim()));
+            console.log("correoInfo ", correoEvaluar)
+            console.log("dominioCorreo ", dominioCorreo)
+            //console.log("validarExistenciaDominio ", validarExistenciaDominio)
+            //if (correoEvaluar !== undefined && correoEvaluar.trim() !== "" &&
+            if (correoEvaluar.includes('@') && validarExistenciaDominio === true) {
+                let userCorreo = correoEvaluar.split('@')[0];
+                setCorreoCliente(userCorreo);
+                setValorSelectDomCorreo(dominioCorreo);
+            } else {
+                console.log("correoCompletoRespaldo ", correoCompletoRespaldo)
+                setCorreoCliente(correoCompletoRespaldo);
+                setCheckMostrarCorreoDominio(true);
+            }
+        } else {
+            setCorreoCliente(correoEvaluar);
+        } */
+
+        setCorreoCliente(correoEvaluar)
+        /*
+        if (correoEvaluar.trim() !== "") {
+
+            let userCorreo = correoEvaluar.split('@')[0];
+            let dominioCorreo = correoEvaluar.split('@')[1];
+            let validarExistenciaDominio = lstDominiosCorreo.some(item => item.valor.includes(dominioCorreo?.trim()));
+
+
+            console.log("correoCompletoRespaldo ", correoCompletoRespaldo)
+            console.log("correoInfo ", correoEvaluar)
+            console.log("dominioCorreo ", dominioCorreo)
+            //console.log("validarExistenciaDominio ", validarExistenciaDominio)
+
+            if (validarExistenciaDominio) {
+                setCorreoCliente(userCorreo);
+                setValorSelectDomCorreo(dominioCorreo);
+            } else {
+                console.log("setValorSelectDomCorreo -1 ")
+                setCorreoCliente(userCorreo);
+                setValorSelectDomCorreo("-1");
+            }
+
+        } else {//Cuando es vacio
+            console.log("VACIO")
+            setCorreoCliente(correoEvaluar)
+        }*/
+
+    }
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -137,7 +210,7 @@ const RegistroCliente = (props) => {
             setIsCedulaValida(validezCedula);
         }
 
-        if (props.infoSocio && props.paso === 1) {
+        if (props.infoSocio && props.paso === 1 && lstDominiosCorreo.length>0) {
             setNombresCliente(props.infoSocio.nombres);
             //console.log("INFO SOC/CL ", props.infoSocio)
 
@@ -146,10 +219,30 @@ const RegistroCliente = (props) => {
             setApellidoPaterno(props.infoSocio.apellidoPaterno);
             setApellidoMaterno(props.infoSocio.apellidoMaterno);
             setCelularCliente(props.infoSocio.celularCliente);
-            setCorreoCliente(props.infoSocio.correoCliente);
+            setCorreoCompletoRespaldo(props?.infoSocio?.correoCliente ? props.infoSocio.correoCliente: '')
+            //Validacion dominio correo
+            if (!checkMostrarCorreoDominio) { //Sino corresponde dominio correo a los parametros se debe activar el checkMostrarCorreoDominio
+                validacionDominioCorreo(props.infoSocio.correoCliente);
+                /*let correoInfo = props.infoSocio.correoCliente;
+                let dominioCorreo = props.infoSocio.correoCliente.split('@')[1];
+                let validarExistenciaDominio = lstDominiosCorreo.some(item => item.valor.includes(dominioCorreo.trim()));
+                //console.log("correoInfo ", correoInfo)
+                //console.log("dominioCorreo ", dominioCorreo)
+                //console.log("validarExistenciaDominio ", validarExistenciaDominio)
 
-            let partesFecha = props.infoSocio.fechaNacimiento.split('-');
-            if (props.infoSocio.fechaNacimiento === null || props.infoSocio.fechaNacimiento === "" || props.infoSocio.fechaNacimiento === " ") {
+                if (correoInfo !== undefined && correoInfo.trim() !== "" && correoInfo.includes('@') && validarExistenciaDominio === true) {
+                    let userCorreo = props.infoSocio.correoCliente.split('@')[0];
+                    setCorreoCliente(userCorreo);
+                    setValorSelectDomCorreo(dominioCorreo);
+                } else {
+                    setCorreoCliente(props.infoSocio.correoCliente);
+                    setCheckMostrarCorreoDominio(true);
+                }*/
+            }
+            
+
+            let partesFecha = props.infoSocio.fechaNacimiento?.split('-');
+            if (props.infoSocio.fechaNacimiento === null || props.infoSocio.fechaNacimiento.trim() === "") {
                 setFechaNacimiento(null);
                 setFechaNacValido(false);
             }
@@ -164,8 +257,33 @@ const RegistroCliente = (props) => {
             setIsCelularValido(props.infoSocio.celularCliente.length === 10)            
     
         }
-    }, [props.infoSocio, props.paso])
+    }, [props.infoSocio, props.paso, lstDominiosCorreo])
 
+
+    useEffect(() => {
+        consultarParametrosDominioCorreo();
+
+        /*return () => {
+            setCheckMostrarCorreoDominio(false);
+            setIsCorreoValido(false);
+            setIsCelularValido(false);
+            setFechaNacValido(false);
+        };*/ 
+    }, [])
+
+
+    const consultarParametrosDominioCorreo = async () => {
+        await fetchGetParametrosSistema("DOMINIOS_CORREOS", props.token, (data) => {
+            if (data.lst_parametros.length > 0) {
+                let ParametrosEntregaTC = data.lst_parametros.map(dominio => ({
+                    key: dominio.str_valor_ini,
+                    valor: dominio.str_valor_ini,
+                }));
+                // console.log("DOMINIOS_CORREOS ", ParametrosEntregaTC)
+                setLstDominiosCorreo(ParametrosEntregaTC)
+            }
+        }, dispatch)
+    }
 
 
     const atajosHandler = (event) => {
@@ -178,6 +296,10 @@ const RegistroCliente = (props) => {
         props.requiereActualizar(true)
     }
 
+    const cambioDominioCorreoHandler = (valor) => {
+        setValorSelectDomCorreo(valor)
+    }
+
     return (
         <>
             {props.paso === 0 &&
@@ -185,7 +307,7 @@ const RegistroCliente = (props) => {
                     <Item xs={3} sm={3} md={3} lg={3} xl={3} className=""></Item>
                     <Item xs={6} sm={6} md={6} lg={6} xl={6} className="justify-content-center">
                         <div className="f-col w-100">
-                            <label>Número de cédula</label>
+                            <h3>Número de cédula</h3>
                             <Input id="cedulaPaso1" type="number" className={`mt-3 ${isCedulaValida ? '' : 'no_valido'}`} placeholder="Ej. 1105970717" readOnly={false} value={documento} setValueHandler={setCedulaHandler} keyDown={(e) => isCedulaValida ? atajosHandler(e) : ''} tabIndex={0} maxlength={maxLengthCedula}></Input>
                             {!isCedulaValida &&
                                 <h4 className="ml-1 mt-1 strong">*Ingrese una cédula válida</h4>
@@ -210,14 +332,14 @@ const RegistroCliente = (props) => {
                             <Card>
                                 <section>
                                     <div className='mb-2'>
-                                        <label>Cédula:</label>
+                                    <h3>Cédula:</h3>
                                         <div className="f-row">
                                         <Input id="cedula" className={`w-100`} type="number" placeholder="1150216791" setValueHandler={documentoHandler} value={documento} disabled={true}></Input>
                                         </div>
                                     </div>
 
                                     <div className='mb-2'>
-                                        <label>Nombres:</label>
+                                    <h3>Nombres:</h3>
                                         <div className="f-row">
                                         <Input id="nombres" className={`w-100 ${nombresCliente !== "" ? '' : 'no_valido'}`} type="text" placeholder="Ej. Luis Miguel" setValueHandler={nombresClienteHandler} value={nombresCliente} controlMayusText={true}></Input>
                                         </div>
@@ -225,36 +347,100 @@ const RegistroCliente = (props) => {
                                     </div>
 
                                     <div className='mb-2'>
-                                        <label>Primer Apellido:</label>
+                                    <h3>Primer Apellido:</h3>
                                         <div className="f-row">
                                         <Input id="apellido_paterno" className={`w-100 ${apellidoPaterno !== "" ? '' : 'no_valido'}`} type="text" placeholder="Ej. Salazar" setValueHandler={apellidoPaternoHandler} value={apellidoPaterno} controlMayusText={true}></Input>
                                         </div>
                                     </div>
 
                                     <div className='mb-2'>
-                                        <label>Segundo Apellido:</label>
+                                    <h3>Segundo Apellido:</h3>
                                         <div className="f-row">
                                         <Input className={`w-100`} type="text" placeholder="Ej. Benitez" setValueHandler={apellidoMaternoHandler} value={apellidoMaterno} controlMayusText={true}></Input>
                                         </div>
 
                                     </div>
 
-                                    <div className='mb-2'>
-                                        <label>Correo:</label>
-                                        <div className="f-row">
-                                        <Input className={`w-100 ${isCorreoValido === true ? '' : 'no_valido'}`} type="text" placeholder="Ej. test@test.com" setValueHandler={correoClienteHandler} value={correoCliente}></Input>
+                                <div className='mb-2'>
+                                    <div className="f-row w-100 justify-content-space-between">
+                                        <div className="">
+                                            <h3>Correo:</h3>
                                         </div>
+                                        <div className="f-row">
+                                            <Input disabled={false} type="checkbox" checked={checkMostrarCorreoDominio} setValueHandler={() => setCheckMostrarCorreoDominio(!checkMostrarCorreoDominio)}></Input>
+                                            <h4 className="ml-1">Ingresar con otro correo</h4>
+                                        </div>
+                                    </div>
+                                    
+                                    {checkMostrarCorreoDominio === false && 
+                                        <div className="f-row w-100 ">
+                                        
+                                            <div className="f-col w-50" style={{ position: "relative" }}>
+                                                <input className={`${correoCliente.trim() !== ''  ? '' : 'no_valido'}`} type="text" style={{ paddingRight: "2.5rem" }} value={correoCliente} onChange={(e) => correoClienteHandler(e.target.value)} />
+
+
+                                                <span style={{ position: "absolute", display: "block", top: "0.2px", right: "0.02rem", userSelect: "none", backgroundColor: "#E9ECEF", borderRadius: "20px", padding: "0", margin: "0" }}>
+                                                    <div style={{ paddingTop: "2.5px", paddingRight: "2px", paddingLeft: "2px" }}>
+                                                    <AlternateEmailRoundedIcon
+                                                        sx={{
+                                                            fontSize: 20,
+                                                            marginTop: 0,
+                                                            padding: 0
+                                                        }}
+                                                        ></AlternateEmailRoundedIcon>
+                                                    </div>
+                                                </span>
+                                            </div>
+                                        
+                                            <div className="f-col w-50">
+ 
+                                                {lstDominiosCorreo.length > 0 &&
+                                                    <select className={`${valorSelectDomCorreo.trim() !== '-1' ? '' : 'no_valido'}`} style={{ height: "100%" }} disabled={false} onChange={(e) => cambioDominioCorreoHandler(e.target.value)} value={valorSelectDomCorreo}>
+                                                        {lstDominiosCorreo.length > 0
+                                                            && lstDominiosCorreo?.map((correo, index) => {
+                                                                if (index === 0) {
+                                                                    return (
+                                                                        <Fragment key={index} >
+                                                                            <option disabled={true} value={"-1"}>Seleccione</option>
+                                                                            <option value={correo.key}> {correo.valor}</option>
+                                                                        </Fragment>
+                                                                    )
+                                                                }
+                                                                else {
+                                                                    return(<Fragment key={index} >
+                                                                            <option value={correo.key}> {correo.valor}</option>
+                                                                    </Fragment>
+                                                                    )
+                                                                }
+                                                            })}
+                                                    </select>                                                
+                                                }
+                                                
+
+                                            </div>
+
+                                        </div> 
+                                    }
+
+                                    {checkMostrarCorreoDominio === true &&
+                                        <div className="f-row">
+                                            <Input className={`w-100 ${isCorreoValido === true ? '' : 'no_valido'}`} type="text" placeholder="Ej. test@test.com" setValueHandler={correoClienteHandler} value={correoCliente}></Input>
+                                        </div>
+                                    }
+
+
+                                    
                                     </div>
 
                                     <div className='mb-2'>
-                                        <label>Celular:</label>
+                                    <h3>Celular:</h3>
                                         <div className="f-row">
                                             <Input className={`w-100 ${isCelularValido === true ? '' : 'no_valido'}`} type="number" placeholder="Ej. 0999999999" setValueHandler={celularClienteHandler} value={celularCliente} maxlength={10}></Input>
                                         </div>
                                     </div>
 
                                     <div className='mb-2'>
-                                        <label>Fecha Nacimiento:</label>
+                                    <h3>Fecha Nacimiento:</h3>
                                         <div className="f-row">
                                             <Input className={`w-100 ${(fechaNacimiento !== "" && isFechaNacValido === true) ? '' : 'no_valido'}`} type="date" setValueHandler={fechaNacimientoHandler} value={fechaNacimiento} ></Input>
                                         </div>

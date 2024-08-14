@@ -116,5 +116,14 @@
         public string service_get_info_prospecto { get; set; } = String.Empty;
         public string service_get_permisos_perfil { get; set; } = String.Empty;
         #endregion
+
+        #region BotonesAccionSolicitud
+        public string BTN_MEDIO_APROBACION_TC { get; set; } = String.Empty;
+        public string BTN_VER_SEGUIMIENTO_TC { get; set; } = String.Empty;
+
+        #endregion
+
     }
+
+
 }
