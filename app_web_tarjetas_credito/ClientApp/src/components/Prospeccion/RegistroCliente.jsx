@@ -22,7 +22,7 @@ const RegistroCliente = (props) => {
     const [correoCompletoRespaldo, setCorreoCompletoRespaldo] = useState("");
     const [documento, setDocumento] = useState("");
     const [fechaNacimiento, setFechaNacimiento] = useState(null);
-    const [checkMostrarCorreoDominio, setCheckMostrarCorreoDominio] = useState(true);
+    const [checkMostrarCorreoDominio, setCheckMostrarCorreoDominio] = useState(false);
 
     //Estado validacion
     const [isCedulaValida, setIsCedulaValida] = useState(false);
@@ -49,44 +49,48 @@ const RegistroCliente = (props) => {
 
 
     const nombresClienteHandler = (valor) => {
+        let correoValidacion = correoHandlerValidador();
         setNombresCliente(valor);
         props.datosIngresados({
             nombres: valor,
             apellidoPaterno: apellidoPaterno,
             apellidoMaterno: apellidoMaterno,
             celular: celularCliente,
-            correo: correoCliente,
+            correo: correoValidacion,
             documento: documento,
             fechaNacimiento: (fechaNacimiento !== "undefined--undefined" && fechaNacimiento !== "") ? fechaNacimiento : ''
         })
     }
     const apellidoPaternoHandler = (valor) => {
+        let correoValidacion = correoHandlerValidador();
         setApellidoPaterno(valor);
         props.datosIngresados({
             nombres: nombresCliente,
             apellidoPaterno: valor,
             apellidoMaterno: apellidoMaterno,
             celular: celularCliente,
-            correo: correoCliente,
+            correo: correoValidacion,
             documento: documento,
             fechaNacimiento: fechaNacimiento
         })
     }
 
     const apellidoMaternoHandler = (valor) => {
+        let correoValidacion = correoHandlerValidador();
         setApellidoMaterno(valor);
         props.datosIngresados({
             nombres: nombresCliente,
             apellidoPaterno: apellidoPaterno,
             apellidoMaterno: valor,
             celular: celularCliente,
-            correo: correoCliente,
+            correo: correoValidacion,
             documento: documento,
             fechaNacimiento: fechaNacimiento
         })
     }
 
     const celularClienteHandler = (valor) => {
+        let correoValidacion = correoHandlerValidador();
         setIsCelularValido(valor.length === 10)
         setCelularCliente(valor);
         props.datosIngresados({
@@ -94,16 +98,18 @@ const RegistroCliente = (props) => {
             apellidoPaterno: apellidoPaterno,
             apellidoMaterno: apellidoMaterno,
             celular: valor,
-            correo: correoCliente,
+            correo: correoValidacion,
             documento: documento,
             fechaNacimiento: fechaNacimiento
         })
     }
     const correoClienteHandler = (valor) => {
         let correoTotal = valor;
-        if (checkMostrarCorreoDominio === false && valorSelectDomCorreo !=='-1') {
-            correoTotal += '' + valorSelectDomCorreo;
+        if (checkMostrarCorreoDominio === false && valorSelectDomCorreo !== '-1') {
+            correoTotal += '@' + valorSelectDomCorreo;
+            //console.log("CORREO ACTUL ", correoTotal)
         }
+        //let correoValidacion = correoHandlerValidador();
 
         setIsCorreoValido(validarCorreo(correoTotal))
         setCorreoCliente(correoTotal);
@@ -119,20 +125,32 @@ const RegistroCliente = (props) => {
     }
 
     const documentoHandler = (valor) => {
+        let correoValidacion = correoHandlerValidador();
         setDocumento(valor);
         props.datosIngresados({
             nombres: nombresCliente,
             apellidoPaterno: apellidoPaterno,
             apellidoMaterno: apellidoMaterno,
             celular: celularCliente,
-            correo: correoCliente,
+            correo: correoValidacion,
             documento: valor,
             fechaNacimiento: fechaNacimiento
         })
     }
 
+    const correoHandlerValidador = () => {
+        let correo = correoCliente;
+        if (checkMostrarCorreoDominio === false && valorSelectDomCorreo !== '-1') {
+            return correo += '@' + valorSelectDomCorreo;
+            //console.log("CORREO ACTUL ", correoTotal)
+        } else {
+            return correo;
+        }
+    }
 
-    const fechaNacimientoHandler = (valor) => {        
+
+    const fechaNacimientoHandler = (valor) => {    
+        let correoValidacion = correoHandlerValidador();
         setFechaNacValido((valor.includes("undefined") || valor === null || valor === "" || valor === " ") ? true : false)
         setFechaNacimiento((!valor.includes("undefined") && valor !== null && valor !== "" && valor !== " ") ? valor : null)
         props.datosIngresados({
@@ -140,7 +158,7 @@ const RegistroCliente = (props) => {
             apellidoPaterno: apellidoPaterno,
             apellidoMaterno: apellidoMaterno,
             celular: celularCliente,
-            correo: correoCliente,
+            correo: correoValidacion,
             documento: documento,
             fechaNacimiento: (valor)
         })
@@ -173,8 +191,12 @@ const RegistroCliente = (props) => {
             setCorreoCliente(correoEvaluar);
         } */
 
-        setCorreoCliente(correoEvaluar)
-        /*
+        if (checkMostrarCorreoDominio === true) {
+            setCorreoCliente(correoEvaluar);
+            setValorSelectDomCorreo("-1");
+            return;
+        }
+
         if (correoEvaluar.trim() !== "") {
 
             let userCorreo = correoEvaluar.split('@')[0];
@@ -182,9 +204,9 @@ const RegistroCliente = (props) => {
             let validarExistenciaDominio = lstDominiosCorreo.some(item => item.valor.includes(dominioCorreo?.trim()));
 
 
-            console.log("correoCompletoRespaldo ", correoCompletoRespaldo)
+            //console.log("correoCompletoRespaldo ", correoCompletoRespaldo)
             console.log("correoInfo ", correoEvaluar)
-            console.log("dominioCorreo ", dominioCorreo)
+            //console.log("dominioCorreo ", dominioCorreo)
             //console.log("validarExistenciaDominio ", validarExistenciaDominio)
 
             if (validarExistenciaDominio) {
@@ -199,7 +221,7 @@ const RegistroCliente = (props) => {
         } else {//Cuando es vacio
             console.log("VACIO")
             setCorreoCliente(correoEvaluar)
-        }*/
+        }
 
     }
 
