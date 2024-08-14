@@ -1,20 +1,14 @@
 ﻿import "../../css/Components/DatosSocio.css";
 import { useHistory } from 'react-router-dom';
-import Accordion from "../Common/UI/Accordion";
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import { useDispatch, connect } from 'react-redux';
-import Item from "../Common/UI/Item";
-import { fetchGetAlertasCliente, fetchValidacionSocio, fetchGetInfoFinan, fetchReporteAval, fetchScore, fetchGetInfoProspecto } from "../../services/RestServices";
-import Toggler from "../Common/UI/Toggler";
-import Button from "../Common/UI/Button";
+import { fetchGetAlertasCliente, fetchValidacionSocio,  fetchReporteAval, fetchGetInfoProspecto } from "../../services/RestServices";
 import { IsNullOrWhiteSpace, base64ToBlob, descargarArchivo, generarFechaHoy, numberFormatMoney, verificarPdf } from "../../js/utiles";
 import { useEffect } from "react";
-import { get } from "../../js/crypt";
 import Card from "../Common/Card";
 import ValidacionesGenerales from "../Solicitud/ValidacionesGenerales";
 import KeyboardArrowLeftRoundedIcon from '@mui/icons-material/KeyboardArrowLeftRounded';
 
-//TODO PENDIENTE TRAER INFORMACION DE DATOS FINANCIEROS Y OROS
 
 const mapStateToProps = (state) => {
     var bd = state.GetWebService.data;
@@ -34,58 +28,13 @@ const VerDetalle = (props) => {
     const dispatch = useDispatch();
     const navigate = useHistory();
 
-    const [informacionSocio, setInformacionSocio] = useState([]);
-    const [score, setScore] = useState("");
-    const [datosUsuario, setDatosUsuario] = useState([]);
     const [dataProspecto, setDataProspecto] = useState([]);
     const [lstValidaciones, setLstValidaciones] = useState([]);
 
 
 
-
-    //Acordeon Score
-    const [estadoAccordionScore, setEstadoAccordionScore] = useState(true);
-    const [estadoLoadingScore, setEstadoLoadingScore] = useState(false);
-    const [contentReadyScore, setContentReadyScore] = useState(true);
-    //Acordeon InfoSocio
-    const [estadoAccordionInfoSocio, setEstadoAccordionInfoSocio] = useState(false);
-    const [estadoAccordionInfoFinan, setEstadoAccordionInfoFinan] = useState(false);
-    const [estadoAccordionInfoEco, setEstadoAccordionInfoEco] = useState(false);
-    const [estadoLoadingInfoSocio, setEstadoLoadingInfoSocio] = useState(false);
-    const [estadoLoadingInfoFinan, setEstadoLoadingInfoFinan] = useState(false);
-    const [estadoLoadingInfoEco, setEstadoLoadingInfoEco] = useState(false);
-    const [estadoMediosNotif, setEstadoMediosNotif] = useState(false);
-    const [contentReadyInfoSocio, setContentReadyInfoSocio] = useState(false);
-    const [contentReadyInfoFinan, setContentReadyInfoFinan] = useState(false);
-    const [contentReadyInfoEco, setContentReadyInfoEco] = useState(false);
-
-
-    //ComentarioGestion
-    const [deseaTarjeta, setDeseaTarjeta] = useState(false);
-    const [comentariosPositivos, setComentariosPositivos] = useState([{ image: "", textPrincipal: "Solicitará en otra IFI", textSecundario: "", key: 1 },
-    { image: "", textPrincipal: "Monto muy bajo", textSecundario: "", key: 2 },
-    { image: "", textPrincipal: "No desea por el momento", textSecundario: "", key: 3 },
-    { image: "", textPrincipal: "Regresará con la documentación", textSecundario: "", key: 4 }]);
-    const [comentariosNegativos, setComentariosNegativos] = useState([{ image: "", textPrincipal: "En trámite de ser socio", textSecundario: "", key: 1 },
-    { image: "", textPrincipal: "Lorem Ipsum", textSecundario: "", key: 2 },
-    { image: "", textPrincipal: "Lorem Ipsum", textSecundario: "", key: 3 },
-    { image: "", textPrincipal: "Regresará con la documentación", textSecundario: "", key: 4 }]);
-    const [comentarioAdicional, setComentarioAdicional] = useState("");
-
-
-
-
-
-
-   
-
-
-    const getInfoMediosNotif = () => {
-        setEstadoMediosNotif(!estadoMediosNotif);
-    }
-
-    const consultaAlertas =  () => {
-        fetchValidacionSocio(props.prospecto.prospecto_cedula, '', props.token, (data) => {
+    const consultaAlertas = async () => {
+        await fetchValidacionSocio(props.prospecto.prospecto_cedula, '', props.token, (data) => {
 
             fetchGetAlertasCliente(props.prospecto.prospecto_cedula, '', data.str_fecha_nacimiento, props.prospecto.prospecto_nombres, props.prospecto.prospecto_apellidos, props.token, (data) => {
 
@@ -138,7 +87,6 @@ const VerDetalle = (props) => {
     }
 
     const consultaInfoProspeccion = () => {
-
         fetchGetInfoProspecto(props.prospecto.prospecto_cedula, props.prospecto.prospecto_id, props.token, (data) => {
             setDataProspecto(data.info_prospecto?.[0]);
         }, dispatch);
@@ -146,32 +94,14 @@ const VerDetalle = (props) => {
     }
 
 
-
     useEffect(() => {
-        const strOficial = get(localStorage.getItem("sender_name"));
-        const strRol = get(localStorage.getItem("role"));
-
-        const userOficial = get(localStorage.getItem('sender'));
-        const userOficina = get(localStorage.getItem('office'));
-        setDatosUsuario([{ strCargo: strRol, strOficial: strOficial, strUserOficial: userOficial, strUserOficina: userOficina }]);
-
-        setComentarioAdicional(props.comentarioAdicionalValor);
-        //consultarInformacionGeneral();
-
-
         //Obtener alertas
         consultaAlertas();
 
         //Consulta info Prospecto
         consultaInfoProspeccion();
-
-
-
     }, [])
 
-    const toggleAccordionScore = () => {
-        setEstadoAccordionScore(!estadoAccordionScore);
-    }
 
     const descargarReporte = async () => {
 
@@ -304,17 +234,10 @@ const VerDetalle = (props) => {
                     </Card>
 
                 </div>
-            </Card>
-
-
-            
+            </Card>          
 
         </div>
-
-       
     );
-
-
 }
 
 export default connect(mapStateToProps, {})(VerDetalle);

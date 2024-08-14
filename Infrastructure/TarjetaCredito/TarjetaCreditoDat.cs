@@ -11,6 +11,7 @@ using Domain.Models.TarjetaCredito.Axentria.AddDocumentos;
 using Domain.Models.TarjetaCredito.Axentria.CrearSeparadores;
 using Domain.Models.TarjetaCredito.Axentria.GetSeparadores;
 using Domain.Models.TarjetaCredito.Axentria.ObtenerDocumentos;
+using Domain.Models.TarjetaCredito.FuncionalidadesTC;
 using Domain.Models.TarjetaCredito.GetAlertasCliente;
 using Domain.Models.TarjetaCredito.GetComentarios;
 using Domain.Models.TarjetaCredito.GetContrato;
@@ -1250,6 +1251,49 @@ namespace Infrastructure.TarjetaCredito
                 {
                     res = JsonSerializer.Deserialize<ResGetPermisosPerfil>(response.Content!)!;
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            return res;
+        }
+
+        
+        public ResFuncionalidadesTC getFuncionalidadesTC(ReqFuncionalidadesTC req)
+        {
+            ResFuncionalidadesTC res = new ResFuncionalidadesTC();
+            try
+            {
+                Dictionary<string, string> funcionalidadesTC = new Dictionary<string, string>();
+
+                //var botonesAccion = _settings.MEDIO_APROBACION_TC;
+
+                funcionalidadesTC.Add("BTN_MEDIO_APROBACION_TC", _settings.BTN_MEDIO_APROBACION_TC);
+                funcionalidadesTC.Add("BTN_VER_SEGUIMIENTO_TC", _settings.BTN_VER_SEGUIMIENTO_TC);
+
+                res.str_id_servicio = "RES_GET_FUNCIONALIDADES_TC";
+                res.str_res_estado_transaccion = "OK";
+                res.str_res_codigo = "000";
+                res.lst_funcionalidades = funcionalidadesTC;
+                //res = JsonSerializer.Deserialize<ResFuncionalidadesTC>(_settings.botones_accion_ver_solicitud.FirstOrDefault());
+                //res.botones_accion_ver_solicitud = ;
+
+
+
+                /*if (botonesAccion != null)
+                {
+                    
+
+                  
+                    foreach (var item in botonesAccion)
+                    {
+
+                    }
+                }*/
+
+
+
             }
             catch (Exception ex)
             {

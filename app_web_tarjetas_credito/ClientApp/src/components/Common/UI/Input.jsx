@@ -19,7 +19,6 @@ const Input = (props) => {
         }
         //Control para valor maximo
         else if (props.max !== undefined && Number(newValue) <= Number(props.max) && props.maxlength === undefined) {
-            console.log("ENTRA")
             setInputValue(newValue);
             props.setValueHandler(newValue);
         }

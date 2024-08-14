@@ -41,6 +41,7 @@ using Domain.Models.TarjetaCredito.GetMotivos;
 using Domain.Models.TarjetaCredito.GetOficinas;
 using Domain.Models.TarjetaCredito.GetInformacionProspecto;
 using Domain.Models.TarjetaCredito.GetPermisosPerfil;
+using Domain.Models.TarjetaCredito.FuncionalidadesTC;
 
 namespace plantilla_app_web.Controllers
 {
@@ -398,6 +399,14 @@ namespace plantilla_app_web.Controllers
             return Utiles.crypt(res, Request.Headers);
         }
 
+
+        [Route("getFuncionalidadesTC")]
+        [HttpPost]
+        public ResFuncionalidadesTC Post(ReqFuncionalidadesTC req)
+        {
+            ResFuncionalidadesTC res = tarjetaCreditoDat.getFuncionalidadesTC(req);
+            return res;
+        }
 
     }
 }

@@ -20,6 +20,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { setDataSimulacionStateAction } from '../../redux/DataSimulacion/actions';
 import KeyboardArrowLeftRoundedIcon from '@mui/icons-material/KeyboardArrowLeftRounded';
 import { Fragment } from 'react';
+import { setSolicitudStateAction } from '../../redux/Solicitud/actions';
 
 
 const mapStateToProps = (state) => {
@@ -43,6 +44,7 @@ const NuevaSolicitud = (props) => {
         setKeyComponente(myUUID);
     }
     const [keyComponente, setKeyComponente] = useState();
+    const [oficinasParametros, setOficinasParametros] = useState([]);
 
     const dispatch = useDispatch();
     const navigate = useHistory();
@@ -86,6 +88,7 @@ const NuevaSolicitud = (props) => {
     const [isCkeckRestaGtoFinananciero, setIsCkeckRestaGtoFinananciero] = useState(false);
     const [controlValorMaxInputs, setControlValorMaxInputs] = useState(100000);
     const [isActivarSeccionRestaGastoFinan, setIsActivarSeccionRestaGastoFinan] = useState(false);
+    const [solicitudIdCreado, setSolicitudIdCreado] = useState(false);
 
     //Boton siguiente
     const [estadoBotonSiguiente, setEstadoBotonSiguiente] = useState(true);
@@ -169,7 +172,22 @@ const NuevaSolicitud = (props) => {
 
             /*PARAMETRO PARA CONTROL DE CUPO MINIMO A SOLICITAR EN TARJETA DE CRÉDITO*/
             setControlMontoMinimoParametro(Number(ParametrosTC.filter(param => param.str_nemonico === 'PRM_WS_TC_CUPO_MINIMO_SOL_TC')[0]?.str_valor_ini));
+
+            //Obtener oficinas parametrizadas
+            let oficinasParametrosTC = ParametrosTC
+                .filter(param => param.str_nombre === 'OFICINAS_TC')
+                .map(estado => ({
+                    prm_id: estado.int_id_parametro,
+                    prm_nombre: estado.str_nombre,
+                    prm_nemonico: estado.str_nemonico,
+                    prm_valor_ini: estado.str_valor_ini,
+                    prm_valor_fin: estado.str_valor_fin,
+                    prm_descripcion: estado.str_descripcion
+                }));
+            setOficinasParametros(oficinasParametrosTC)
         }
+
+        
 
         //TODO REVISAR
         fetchGetParametrosSistema("TIPO_ENTREGA_WS_TC", props.token, (data) => {
@@ -348,11 +366,11 @@ const NuevaSolicitud = (props) => {
     const refrescarDatosInformativos = async () => {
         await fetchValidacionSocio(cedulaSocio, '', props.token, (data) => {
             let datosFinan = {
-                montoSolicitado: datosFinancierosObj.montoSolicitado,
-                montoIngresos: data.dcm_total_ingresos,
-                montoEgresos: data.dcm_total_egresos,
-                montoGastoFinaCodeudor: datosFinancierosObj.montoGastoFinaCodeudor,
-                montoRestaGstFinanciero: datosFinancierosObj.montoRestaGstFinanciero,
+                montoSolicitado: Number(datosFinancierosObj.montoSolicitado),
+                montoIngresos: Number(data.dcm_total_ingresos),
+                montoEgresos: Number(data.dcm_total_egresos),
+                montoGastoFinaCodeudor: Number(datosFinancierosObj.montoGastoFinaCodeudor),
+                montoRestaGstFinanciero: Number(datosFinancierosObj.montoRestaGstFinanciero),
             }
             setDatosFinancierosObj(datosFinan);
         },
@@ -553,13 +571,16 @@ const NuevaSolicitud = (props) => {
             nombreSocioTC = (apellidoMaterno !== null && apellidoMaterno !== '' && apellidoMaterno !== ' ') ? nombreSocioTC + " " + apellidoMaterno : nombreSocioTC;
 
             //Redux guardar informaciion necesaria para nueva simulacion en DatosSocio
+            //TODO CAMBIAR DE CEDULA
             dispatch(setDataSimulacionStateAction({
                 cedula: "1150214375", nombresApellidos: nombreSocioTC
             }))
 
             if (!realizaNuevaSimulacion.current) {
+                //Se refresca informacion
+                await refrescarDatosInformativos();
                 //TODO cambiar cedula a a -> cedulaSocio
-                await fetchScore("C", "1150214375", nombreSocioTC, datosUsuario[0].strUserOficial, datosUsuario[0].strOficial, datosUsuario[0].strCargo, props.token, (data) => {
+                await fetchScore("C", "1150214375", nombreSocioTC, datosUsuario[0].strUserOficina, datosUsuario[0].strOficial, datosUsuario[0].strCargo, props.token, (data) => {
                    
                     setIdClienteScore(data.int_cliente);
                     setPuntajeScore(data?.response?.result?.scoreFinanciero[0]?.score)
@@ -578,6 +599,9 @@ const NuevaSolicitud = (props) => {
                 }, dispatch);
 
             } else if (realizaNuevaSimulacion.current) {
+                //Se refresca informacion
+                await refrescarDatosInformativos();
+
                 let datosFinan = datosFinancierosObj;
                 if (!datosFinan.montoIngresos) datosFinan.montoIngresos = 0;
                 if (!datosFinan.montoEgresos) datosFinan.montoEgresos = 0;
@@ -585,7 +609,7 @@ const NuevaSolicitud = (props) => {
                 if (!datosFinan.montoGastoFinaCodeudor || datosFinan.montoGastoFinaCodeudor === "" || datosFinan.montoGastoFinaCodeudor === " " || IsNullOrEmpty(datosFinan.montoGastoFinaCodeudor)) datosFinan.montoGastoFinaCodeudor = 0;
 
                 //TODO CAMBIAR LA CEDULA ->cedulaSocio
-                await fetchNuevaSimulacionScore("C", "1150214375", nombreSocioTC, datosUsuario[0].strUserOficial, datosUsuario[0].strOficial, datosUsuario[0].strCargo, datosFinan.montoIngresos, datosFinan.montoEgresos, datosFinan.montoRestaGstFinanciero, datosFinan.montoGastoFinaCodeudor,
+                await fetchNuevaSimulacionScore("C", "1150214375", nombreSocioTC, datosUsuario[0].strUserOficina, datosUsuario[0].strOficial, datosUsuario[0].strCargo, datosFinan.montoIngresos, datosFinan.montoEgresos, datosFinan.montoRestaGstFinanciero, datosFinan.montoGastoFinaCodeudor,
                     props.token, (data) => {
                         setIdClienteScore(data.int_cliente);
                         setCupoSugeridoCoopM(data.str_cupo_sugerido);
@@ -642,6 +666,8 @@ const NuevaSolicitud = (props) => {
 
             }
 
+            let nombreSocioTC = nombreSocio + " " + apellidoPaterno;
+            nombreSocioTC = (apellidoMaterno !== null && apellidoMaterno !== '' && apellidoMaterno !== ' ') ? nombreSocioTC + " " + apellidoMaterno : nombreSocioTC;
 
             let body = {
 
@@ -665,8 +691,7 @@ const NuevaSolicitud = (props) => {
                 str_estado_civil: estadoCivil,
                 mny_total_ingresos: datosFinancierosObj.montoIngresos.toString(),
                 mny_total_egresos: datosFinancierosObj.montoEgresos.toString(),
-                str_denominacion_socio: nombrePersonalTarjeta,
-
+                str_denominacion_socio: nombreSocioTC,
                 str_direccion: direccion,
                 str_localidad: localidad,
                 str_barrio: barrio,
@@ -702,6 +727,8 @@ const NuevaSolicitud = (props) => {
                 setActualStepper(4);
                 setStep(-1);
 
+                setSolicitudIdCreado(data.int_id_solicitud);
+
             }, dispatch);
         }
         if (step === -1) {
@@ -733,12 +760,12 @@ const NuevaSolicitud = (props) => {
 
     const tipoEntregaHandler = (data) => {
         setTipoEntrega(data);
-        console.log("TIPO ENREGA ", data)
+        //console.log("TIPO ENREGA ", data)
     }
 
     const direccionEntregaHandler = (data) => {
         setDireccionEntrega(data);
-        console.log("DIRECCION ENREGA ", data)
+        //console.log("DIRECCION ENREGA ", data)
     }
 
     const handleComentario = (comentarioToggle) => {
@@ -775,6 +802,26 @@ const NuevaSolicitud = (props) => {
         if (accion === "Enter" && cedulaValida && step === 0) {
             nextHandler(step);
         }
+    }
+    const validarNombreOficina = (idOficina) => {
+        let nombreOficina = oficinasParametros.find(ofic => Number(ofic.prm_valor_fin) === Number(idOficina));
+        return nombreOficina?.prm_descripcion ? nombreOficina.prm_descripcion : '';
+    }
+
+
+    const visualizarSolicitudHandler = () => {
+        let nombreOficinaDeSolicitud = validarNombreOficina(datosUsuario[0].strUserOficina);
+
+        dispatch(setSolicitudStateAction({
+            solicitud: solicitudIdCreado,
+            cedulaPersona: cedulaSocio,
+            idSolicitud: parametrosTC.filter(estado => estado.prm_nemonico === "EST_CREADA")[0]?.prm_id,
+            rol: datosUsuario[0].strCargo,
+            estado: parametrosTC.filter(estado => estado.prm_nemonico === "EST_CREADA")[0]?.prm_valor_ini,
+            oficinaSolicitud: nombreOficinaDeSolicitud,
+            calificacionRiesgo: calificacionRiesgo
+        }))
+        navigate.push('/solicitud/ver');
     }
 
     return (
@@ -937,7 +984,7 @@ const NuevaSolicitud = (props) => {
                             <Item xs={6} sm={6} md={6} lg={6} xl={6} className="f-row justify-content-space-evenly  align-content-center">
                                 <Button className={["btn_mg__secondary mt-2"]} disabled={estadoBotonSiguiente} onClick={() => nextHandler(step)}>{textoSiguiente}</Button>
                                 {/*TODO mover la solicitud al detalle*/}
-                                <Button className="btn_mg btn_mg__primary mt-2">Ver Solicitud</Button>
+                                <Button className="btn_mg btn_mg__primary mt-2" onClick={visualizarSolicitudHandler} >Ver Solicitud</Button>
                             </Item>
                             <Item xs={3} sm={3} md={3} lg={3} xl={3} ></Item>
                     </Fragment>                        

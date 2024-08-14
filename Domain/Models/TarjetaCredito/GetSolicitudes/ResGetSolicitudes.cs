@@ -19,6 +19,7 @@ namespace Domain.Models.TarjetaCredito.GetSolicitudes
         public int int_ente { get; set; }
         public string str_identificacion { get; set; } = String.Empty;
         public string str_nombres { get; set; } = String.Empty;
+        public string str_apellidos { get; set; } = String.Empty;
         public string str_tipo_tarjeta { get; set; } = String.Empty;
         public string str_calificacion { get; set; } = String.Empty;
         public string dec_cupo_solicitado { get; set; } = String.Empty;
