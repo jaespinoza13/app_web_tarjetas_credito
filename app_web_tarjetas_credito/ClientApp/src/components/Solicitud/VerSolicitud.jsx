@@ -103,6 +103,8 @@ const VerSolicitud = (props) => {
     const [estadosDecBanjComiteAll, setEstadosDecBanjComiteAll] = useState([]);
     const [estadosRetornaBandejaComite, setEstadosRetornaBandejaComite] = useState([]);
     const [estadosRetornaComiteAll, setEstadosRetornaComiteAll] = useState([]);
+    const [estadosRetornaBandejaJefUac, setEstadosRetornaBandejaJefUac] = useState([]);
+    const [estadosRetornaJefeUacAll, setEstadosRetornaJefeUacAll] = useState([]);
     const [estadosSigConfirmPorMontoMenor, setEstadosSigConfirmPorMontoMenor] = useState([]);
     const [estadosSigConfirmPorMontoMenorAll, setEstadosSigConfirmPorMontoMenorAll] = useState([]);
 
@@ -222,8 +224,17 @@ const VerSolicitud = (props) => {
                 })));
 
             /* ESTADOS PARA RETORNAR BANDEJA PARA EL COMITE */
-            setEstadosRetornaComiteAll(ParametrosTC
-                .filter(param => param.str_nombre === 'RETORNO_ESTADO_BANDEJA_TC')
+            setEstadosRetornaComiteAll(ParametrosTC //RETORNO_ESTADO_BANDEJA_TC
+                .filter(param => param.str_nemonico === 'RET_EST_BAN_COM') //RET_EST_BAN_COM  RET_EST_BAN_TC_JEF_UAC  RET_EST_BAN_TC_RIE
+                .map(estado => ({
+                    prm_id: estado.int_id_parametro,
+                    prm_valor_ini: estado.str_valor_ini,
+                    estados: estado.str_valor_fin
+                })));
+
+            /* ESTADOS PARA RETORNAR BANDEJA PARA EL JEFE UAC */
+            setEstadosRetornaJefeUacAll(ParametrosTC 
+                .filter(param => param.str_nemonico === 'RET_EST_BAN_TC_JEF_UAC') 
                 .map(estado => ({
                     prm_id: estado.int_id_parametro,
                     prm_valor_ini: estado.str_valor_ini,
@@ -894,7 +905,7 @@ const VerSolicitud = (props) => {
                                                 </h4>
                                             </div>
                                             <div className="values  mb-3">
-                                                <h4>Tipo Documento:</h4>
+                                                <h4>Cédula:</h4>
                                                 <h4 className="strong">
                                                     {`Cédula`}
                                                 </h4>
@@ -1017,7 +1028,7 @@ const VerSolicitud = (props) => {
                                                 </h4>
                                             </div>
                                             <div className="values  mb-3">
-                                                <h4>Tipo Documento:</h4>
+                                                <h4>Cédula:</h4>
                                                 <h4 className="strong">
                                                     {`Cédula`}
                                                 </h4>
@@ -1178,43 +1189,54 @@ const VerSolicitud = (props) => {
 
                                         {/*SECCION APROBAR O NEGAR POR POR APROBAR SOLICITUD*/}
                                         {solicitudTarjeta?.str_estado_actual === "POR APROBAR SOLICITUD" &&
-                                            <Card>
-                                                <h3>Decisión</h3>
-                                                <select disabled={isDecisionHabilitada} onChange={getDecision} value={valorDecisionSelect}>
-                                                    {estadosDecisionComite.length > 0
-                                                        && estadosDecisionComite?.map((estado, index) => {
-                                                            let estadoOriginal = ""
-                                                            if (estado === "APROBAR") estadoOriginal = "APROBADA";
-                                                            if (estado === "NEGAR") estadoOriginal = "RECHAZADA";
-                                                            const resultado = validaNombreParam(estadoOriginal);
+                                            <div className={`f-row w-100 `}>
+                                                <Card className={`f-row ${isMontoAprobarse ? 'w-50 ' : 'w-100'}`}>
+                                                    <h3>Decisión</h3>
+                                                    <select disabled={isDecisionHabilitada} onChange={getDecision} value={valorDecisionSelect}>
+                                                        {estadosDecisionComite.length > 0
+                                                            && estadosDecisionComite?.map((estado, index) => {
+                                                                let estadoOriginal = ""
+                                                                if (estado === "APROBAR") estadoOriginal = "APROBADA";
+                                                                if (estado === "NEGAR") estadoOriginal = "RECHAZADA";
+                                                                const resultado = validaNombreParam(estadoOriginal);
 
-                                                            if (index === 0) {
-                                                                return (
-                                                                    <Fragment key={index} >
-                                                                        <option disabled={true} value={"-1"}>Seleccione una opción</option>
-                                                                        <option value={resultado.prm_nemonico}> {estado}</option>
-                                                                    </Fragment>
-                                                                )
-                                                            }
-                                                            else {
-                                                                return (
-                                                                    <Fragment key={index} >
-                                                                        <option value={resultado.prm_nemonico}> {estado}</option>
-                                                                    </Fragment>
-                                                                )
-                                                            }
-                                                        })}
-                                                </select>
-                                                <br />
-                                            </Card>
-                                        }
-                                        {isMontoAprobarse &&
-                                            <>
-                                                <Card className={["mt-2"]}>
-                                                    <h3>Valor a aprobarse</h3>
-                                                <Input type="number" placeholder="Ej. 1000" disabled={false} setValueHandler={(e) => setMontoAprobado(e)} value={montoAprobado} max={solicitudTarjeta?.str_cupo_solicitado}></Input>
+                                                                if (index === 0) {
+                                                                    return (
+                                                                        <Fragment key={index} >
+                                                                            <option disabled={true} value={"-1"}>Seleccione una opción</option>
+                                                                            <option value={resultado.prm_nemonico}> {estado}</option>
+                                                                        </Fragment>
+                                                                    )
+                                                                }
+                                                                else {
+                                                                    return (
+                                                                        <Fragment key={index} >
+                                                                            <option value={resultado.prm_nemonico}> {estado}</option>
+                                                                        </Fragment>
+                                                                    )
+                                                                }
+                                                            })}
+                                                    </select>
+                                                    <br />
                                                 </Card>
 
+                                                {isMontoAprobarse &&
+                                                    <Card className={`f-row w-50`}>
+                                                        <h3>Valor a aprobarse</h3>
+                                                        <Input type="number" placeholder="Ej. 1000" disabled={false} setValueHandler={(e) => setMontoAprobado(e)} value={montoAprobado} max={solicitudTarjeta?.str_cupo_solicitado}></Input>
+                                                    </Card>
+                                                }
+
+
+                                            </div>                                            
+                                        }
+                                        {isMontoAprobarse &&
+                                            //<Card className={["mt-2"]}>
+                                            //        <h3>Valor a aprobarse</h3>
+                                            //    <Input type="number" placeholder="Ej. 1000" disabled={false} setValueHandler={(e) => setMontoAprobado(e)} value={montoAprobado} max={solicitudTarjeta?.str_cupo_solicitado}></Input>
+                                            //    </Card>
+
+                                            <>
                                                 <Card className={["mt-2"]}>
                                                     <h3>Observación:</h3>
                                                 <Textarea placeholder="Ingrese su comentario" onChange={setObservacionComiteHandler} esRequerido={true} value={observacionComite} controlAnchoTexArea={false} maxlength={255}></Textarea>
@@ -1514,6 +1536,7 @@ const VerSolicitud = (props) => {
                             <tr>
                                 <th>ID</th>
                                 <th>Estado</th>
+                                <th>Fecha</th>
                                 <th>Usuario</th>
                                 <th>Cupo Solicitado</th>
                                 <th>Cupo Aprobado</th>
@@ -1527,6 +1550,7 @@ const VerSolicitud = (props) => {
                                     return (<tr key={seguimient.int_flujo_id}>
                                         <td>{seguimient.int_flujo_id}</td>
                                         <td>{seguimient.str_estado_flujo}</td>
+                                        <td>{seguimient.dtt_fecha_actualizacion}</td>
                                         <td>{seguimient.str_usuario_proc}</td>
                                         <td>{numberFormatMoney(seguimient.str_cupo_solicitado)}</td>
                                         <td>{numberFormatMoney(seguimient.str_cupo_aprobado)}</td>

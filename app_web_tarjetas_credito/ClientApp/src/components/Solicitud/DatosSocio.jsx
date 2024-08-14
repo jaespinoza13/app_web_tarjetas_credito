@@ -132,7 +132,7 @@ const DatosSocio = (props) => {
           setEstadoLoadingInfoFinan(true);
         if (!contentReadyInfoFinan && dpf.length === 0) {
             fetchGetInfoFinan(props.informacionSocio.str_ente, props.token, (data) => {
-                setDpf(...[data.lst_dep_plazo_fijo]);
+                setDpf(...[data.lst_captaciones]);
                 setCreditosHis(...[data.lst_creditos_historicos]);
                 setEstadoAccordionInfoFinan(!estadoAccordionInfoFinan);
                 setContentReadyInfoFinan(!setContentReadyInfoFinan);
