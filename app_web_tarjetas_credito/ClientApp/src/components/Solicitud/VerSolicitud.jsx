@@ -225,7 +225,7 @@ const VerSolicitud = (props) => {
 
             /* ESTADOS PARA RETORNAR BANDEJA PARA EL COMITE */
             setEstadosRetornaComiteAll(ParametrosTC //RETORNO_ESTADO_BANDEJA_TC
-                .filter(param => param.str_nemonico === 'RET_EST_BAN_COM') //RET_EST_BAN_COM  RET_EST_BAN_TC_JEF_UAC  RET_EST_BAN_TC_RIE
+                .filter(param => param.str_nemonico === 'RET_EST_BAN_TC_COM') //RET_EST_BAN_TC_COM  RET_EST_BAN_TC_JEF_UAC  RET_EST_BAN_TC_RIE
                 .map(estado => ({
                     prm_id: estado.int_id_parametro,
                     prm_valor_ini: estado.str_valor_ini,
@@ -249,7 +249,7 @@ const VerSolicitud = (props) => {
                     prm_valor_ini: estado.str_valor_ini
                 })));
 
-            /* ESTADOS SIGUIENTES CUANDO SOLICITUD ESTA EN VERIFICAR CLIENTE SOCIO POR MONTO MENOR APROBADO */
+            /* ESTADOS SIGUIENTES CUANDO SOLICITUD ESTA EN VERIFICAR SOCIO POR MONTO MENOR APROBADO */
             setEstadosSigConfirmPorMontoMenorAll(ParametrosTC
                 .filter(param => param.str_nombre === 'APROBACION_SOLICITUD_MONTO_MENOR')
                 .map(estado => ({
@@ -347,6 +347,19 @@ const VerSolicitud = (props) => {
         }
     }, [estadosRetornaComiteAll])
 
+
+    useEffect(() => {
+        if (estadosRetornaJefeUacAll.length > 0) {
+            let arrEstados = estadosRetornaJefeUacAll.find((parametr) => (parametr.prm_valor_ini) === props.solicitud.estado)
+            if (arrEstados) {
+                const estadosSiguientes = arrEstados.estados.split('|');
+                setEstadosRetornaBandejaJefUac(estadosSiguientes);
+                //  console.log("RESP ", estadosSiguientes)
+            } else {
+                setEstadosRetornaBandejaJefUac([]);
+            }
+        }
+    }, [estadosRetornaJefeUacAll])
 
 
     useEffect(() => {
@@ -529,7 +542,7 @@ const VerSolicitud = (props) => {
     const getDecision = (event) => {
         setObservacionComite("");
         setValorDecisionSelect(event.target.value);
-        if (event.target.value === "EST_APROBADA") {// || Number(event.target.value) === 11278) { //APROBADO o VERIFICAR CLIENTE
+        if (event.target.value === "EST_APROBADA") {// || Number(event.target.value) === 11278) { //APROBADO o VERIFICAR SOCIO
             setIsMontoAprobarse(true);
             setIsRechazaComite(false);
         }
@@ -600,7 +613,8 @@ const VerSolicitud = (props) => {
             descripcionMotivoRetorno = descripcionMotivoRetorno.str_descripcion
 
             //Comite retorna a un estado de bandeja especifica para POR APROBAR SOLICITUD
-            if (solicitudTarjeta?.str_estado_actual === "POR APROBAR SOLICITUD") {
+            if (solicitudTarjeta?.str_estado_actual === "POR APROBAR SOLICITUD" || solicitudTarjeta?.str_estado_actual === "POR REVISAR JEFE UAC") {
+                console.log("PRUEBA POR REVISAR JEFE UA")
                 fetchAddProcEspecifico(props.solicitud.solicitud, 0, selectCambioEstadoSol, descripcionMotivoRetorno, props.token, (data) => {
                     if (data.str_res_codigo === "000") {
                         setModalCambioBandeja(false);
@@ -675,9 +689,9 @@ const VerSolicitud = (props) => {
     useEffect(() => {
 
         if (selectMotivoRetornoBanj !== "" && selectMotivoRetornoBanj !== "-1" && comentarioCambioEstado !== "") {
-            if (solicitudTarjeta?.str_estado_actual === "POR APROBAR SOLICITUD" && selectCambioEstadoSol !== "" && selectCambioEstadoSol !== "-1") {
+            if ((solicitudTarjeta?.str_estado_actual === "POR APROBAR SOLICITUD" || solicitudTarjeta?.str_estado_actual === "POR REVISAR JEFE UAC" )&& selectCambioEstadoSol !== "" && selectCambioEstadoSol !== "-1") {
                 setIsBtnDisableCambioBandeja(false);
-            } else if (solicitudTarjeta?.str_estado_actual !== "POR APROBAR SOLICITUD") {
+            } else if (solicitudTarjeta?.str_estado_actual !== "POR APROBAR SOLICITUD" && solicitudTarjeta?.str_estado_actual !== "POR REVISAR JEFE UAC") {
                 setIsBtnDisableCambioBandeja(false);
             } else {
                 setIsBtnDisableCambioBandeja(true);
@@ -700,10 +714,10 @@ const VerSolicitud = (props) => {
 
 
     const rechazarSolicitudHandler = () => {
-        let descripcionMotivoRechazoComite = motivosNegacionComite.find(motivo => motivo.str_nemonico === selectMotivoNiegaSolComite);
-        if (descripcionMotivoRechazoComite !== undefined) {
-            descripcionMotivoRechazoComite = descripcionMotivoRechazoComite.str_descripcion
-            fetchAddProcEspecifico(props.solicitud.solicitud, 0, "EST_RECHAZADA", descripcionMotivoRechazoComite, props.token, (data) => { //EST_RECHAZADA 11277
+        //let descripcionMotivoRechazoComite = motivosNegacionComite.find(motivo => motivo.str_nemonico === selectMotivoNiegaSolComite);
+        //if (descripcionMotivoRechazoComite !== undefined) {
+        //    descripcionMotivoRechazoComite = descripcionMotivoRechazoComite.str_descripcion
+        fetchAddProcEspecifico(props.solicitud.solicitud, 0, "EST_RECHAZADA", observacionComite, props.token, (data) => { //EST_RECHAZADA 11277
                 if (data.str_res_codigo === "000") {
                     setModalRechazo(false);
 
@@ -716,7 +730,7 @@ const VerSolicitud = (props) => {
                     }, dispatch)
                 }
             }, dispatch)
-        }
+        ///}
 
     }
     const guardarDecisionComiteHandler = () => {
@@ -745,8 +759,8 @@ const VerSolicitud = (props) => {
             }, dispatch)
         }
         //Si cupo que se va aprobar es menor al que solicita el socio
-        else if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_VERIFICAR_CLIENTE") { //VERIFICAR CLIENTE
-            fetchAddProcEspecifico(props.solicitud.solicitud, Number.parseFloat(montoAprobado).toFixed(2), "EST_VERIFICAR_CLIENTE", observacionComite, props.token, (data) => { //VERIFICAR CLIENTE 11278
+        else if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_VERIFICAR_CLIENTE") { //VERIFICAR SOCIO
+            fetchAddProcEspecifico(props.solicitud.solicitud, Number.parseFloat(montoAprobado).toFixed(2), "EST_VERIFICAR_CLIENTE", observacionComite, props.token, (data) => { //VERIFICAR SOCIO 11278
                 if (data.str_res_codigo === "000") {
                     let decision = parametrosTC.find(param => param.prm_nemonico === valorDecisionSelect)
                     let parametroDecNec = parametrosTC.find(param => param.prm_valor_ini === props.solicitud.estado)
@@ -783,7 +797,16 @@ const VerSolicitud = (props) => {
 
 
     useEffect(() => {
-        /* VALIDACION  PARA NEGAR SOLICITU COMITE*/
+        /* VALIDACION  OBSERVACION*/
+        if (observacionComite?.trim() !== "" && valorDecisionSelect === "EST_RECHAZADA") {
+            setIsActivoBtnDecision(false);
+        } else if (valorDecisionSelect === "EST_APROBADA" && montoAprobado !== null && Number(montoAprobado) > 0) {
+            setIsActivoBtnDecision(false);
+        } else {
+            setIsActivoBtnDecision(true);
+            return;
+        }
+        /* VALIDACION  PARA NEGAR SOLICITU COMITE
         if (valorDecisionSelect === "EST_RECHAZADA") { //EST_RECHAZADA
             if (selectMotivoNiegaSolComite !== "-1" && selectMotivoNiegaSolComite !== "" && observacionComite !== "") {
                 setIsActivoBtnDecision(false);
@@ -792,7 +815,7 @@ const VerSolicitud = (props) => {
                 setIsActivoBtnDecision(true);
             }
             return
-        }
+        }*/
 
         /* VALIDACION  PARA APROBACION COMITE*/
         let validaCupo = controlMontoAprobado();
@@ -802,16 +825,12 @@ const VerSolicitud = (props) => {
             return
         }
 
-        else if (valorDecisionSelect !== "-1" && montoAprobado > 0 && observacionComite !== "" && validaCupo.validador) {
+        else if (valorDecisionSelect !== "-1" && montoAprobado > 0 && validaCupo.validador) {//observacionComite !== "" && 
             if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_APROBADA") {// EST_APROBADA 11276
                 setIsActivoBtnDecision(false);
             } else if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_VERIFICAR_CLIENTE") { //EST_VERIFICAR_CLIENTE 11278 por cupo inferior 
                 setIsActivoBtnDecision(false);
-            } else {
-                setIsActivoBtnDecision(true);
-            }
-        } else {
-            setIsActivoBtnDecision(true);
+            } 
         }
     }, [valorDecisionSelect, montoAprobado, observacionComite, controlMontoAprobado])
 
@@ -825,7 +844,7 @@ const VerSolicitud = (props) => {
 
     const selectResolucionSociolHandler = (e) => {
         setSelectResolucionSocio(e.target.value);
-    }
+    } 
 
     const guardarResolucionSocio = () => {
         if (selectResolucionSocio === "EST_APROBADA_CLIENTE") {
@@ -907,7 +926,7 @@ const VerSolicitud = (props) => {
                                             <div className="values  mb-3">
                                                 <h4>Cédula:</h4>
                                                 <h4 className="strong">
-                                                    {`Cédula`}
+                                                    {props.solicitud.cedulaPersona}
                                                 </h4>
                                             </div>
                                             <div className="values  mb-3">
@@ -1030,7 +1049,7 @@ const VerSolicitud = (props) => {
                                             <div className="values  mb-3">
                                                 <h4>Cédula:</h4>
                                                 <h4 className="strong">
-                                                    {`Cédula`}
+                                                    {props.solicitud.cedulaPersona}
                                                 </h4>
                                             </div>
                                             <div className="values  mb-3">
@@ -1115,7 +1134,7 @@ const VerSolicitud = (props) => {
                                             }
 
                                             {estadosPuedenRegresarBandeja.includes(solicitudTarjeta?.str_estado_actual) &&
-                                                <Button className="btn_mg__primary ml-2" onClick={openModalCambiarBandeja}>Retornar Solicitud</Button>
+                                                <Button className="btn_mg__primary ml-2" onClick={openModalCambiarBandeja}>Devolver</Button>
                                             }
 
                                             {/*<>*/}
@@ -1125,7 +1144,7 @@ const VerSolicitud = (props) => {
                                             {/*</>*/}
 
 
-                                            {/*VERIFICAR CLIENTE*/}
+                                            {/*VERIFICAR SOCIO*/}
                                             {solicitudTarjeta?.str_estado_actual === estadosSigConfirmPorMontoMenorAll[0]?.prm_valor_ini &&                                               
                                                 <Button className={["btn_mg btn_mg__primary ml-2"]} onClick={openModalResolucionSocio}>Resolución socio </Button> 
                                             }
@@ -1190,7 +1209,7 @@ const VerSolicitud = (props) => {
                                         {/*SECCION APROBAR O NEGAR POR POR APROBAR SOLICITUD*/}
                                         {solicitudTarjeta?.str_estado_actual === "POR APROBAR SOLICITUD" &&
                                             <div className={`f-row w-100 `}>
-                                                <Card className={`f-row ${isMontoAprobarse ? 'w-50 ' : 'w-100'}`}>
+                                                <Card className={[`f-col ${isMontoAprobarse ? 'w-50 ' : 'w-100'}`]}>
                                                     <h3>Decisión</h3>
                                                     <select disabled={isDecisionHabilitada} onChange={getDecision} value={valorDecisionSelect}>
                                                         {estadosDecisionComite.length > 0
@@ -1221,8 +1240,8 @@ const VerSolicitud = (props) => {
                                                 </Card>
 
                                                 {isMontoAprobarse &&
-                                                    <Card className={`f-row w-50`}>
-                                                        <h3>Valor a aprobarse</h3>
+                                                    <Card className={[`f-col w-50`]}>
+                                                        <h3>Valor a aprobar</h3>
                                                         <Input type="number" placeholder="Ej. 1000" disabled={false} setValueHandler={(e) => setMontoAprobado(e)} value={montoAprobado} max={solicitudTarjeta?.str_cupo_solicitado}></Input>
                                                     </Card>
                                                 }
@@ -1230,7 +1249,7 @@ const VerSolicitud = (props) => {
 
                                             </div>                                            
                                         }
-                                        {isMontoAprobarse &&
+                                        {(isMontoAprobarse || isRechazaComite) &&
                                             //<Card className={["mt-2"]}>
                                             //        <h3>Valor a aprobarse</h3>
                                             //    <Input type="number" placeholder="Ej. 1000" disabled={false} setValueHandler={(e) => setMontoAprobado(e)} value={montoAprobado} max={solicitudTarjeta?.str_cupo_solicitado}></Input>
@@ -1239,48 +1258,53 @@ const VerSolicitud = (props) => {
                                             <>
                                                 <Card className={["mt-2"]}>
                                                     <h3>Observación:</h3>
-                                                <Textarea placeholder="Ingrese su comentario" onChange={setObservacionComiteHandler} esRequerido={true} value={observacionComite} controlAnchoTexArea={false} maxlength={255}></Textarea>
+                                                <Textarea placeholder="Ingrese su comentario" onChange={setObservacionComiteHandler} esRequerido={valorDecisionSelect === "EST_APROBADA" ? false: true} value={observacionComite} controlAnchoTexArea={false} maxlength={255}></Textarea>
                                                 </Card>
                                             </>
                                         }
 
-                                        {isRechazaComite &&
-                                            <>
-                                                <Card className={["mt-2"]}>
-                                                    <h3>Seleccione el motivo:</h3>
-                                                    <select disabled={false} onChange={cambioMotivoNiegaComite} value={selectMotivoNiegaSolComite}>
-                                                        {motivosNegacionComite.length > 0
-                                                            && motivosNegacionComite?.map((motivo, index) => {
-                                                                if (index === 0) {
-                                                                    return (
-                                                                        <Fragment key={index}>
-                                                                            <option disabled={true} value={"-1"}>Seleccione una opción</option>
-                                                                            <option value={motivo.str_nemonico}> {motivo.str_descripcion}</option>
-                                                                        </Fragment>
-                                                                    )
-                                                                }
-                                                                else {
-                                                                    return (
-                                                                        <option value={motivo.str_nemonico}> {motivo.str_descripcion}</option>
-                                                                    )
-                                                                }
-                                                            })}
-                                                    </select>
-                                                </Card>
+                                        {/*{isRechazaComite &&*/}
+                                        {/*    <>*/}
+                                        {/*        <Card className={["mt-2"]}>*/}
+                                        {/*            <h3>Seleccione el motivo:</h3>*/}
+                                        {/*            <select disabled={false} onChange={cambioMotivoNiegaComite} value={selectMotivoNiegaSolComite}>*/}
+                                        {/*                {motivosNegacionComite.length > 0*/}
+                                        {/*                    && motivosNegacionComite?.map((motivo, index) => {*/}
+                                        {/*                        if (index === 0) {*/}
+                                        {/*                            return (*/}
+                                        {/*                                <Fragment key={index}>*/}
+                                        {/*                                    <option disabled={true} value={"-1"}>Seleccione una opción</option>*/}
+                                        {/*                                    <option value={motivo.str_nemonico}> {motivo.str_descripcion}</option>*/}
+                                        {/*                                </Fragment>*/}
+                                        {/*                            )*/}
+                                        {/*                        }*/}
+                                        {/*                        else {*/}
+                                        {/*                            return (*/}
+                                        {/*                                <Fragment key={index}>*/}
+                                        {/*                                    <option value={motivo.str_nemonico}> {motivo.str_descripcion}</option>*/}
+                                        {/*                                </Fragment>                                                                        */}
+                                        {/*                            )*/}
+                                        {/*                        }*/}
+                                        {/*                    })}*/}
+                                        {/*            </select>*/}
+                                        {/*        </Card>*/}
 
-                                                <Card className={["mt-2"]}>
-                                                    <h3>Observación:</h3>
-                                                <Textarea placeholder="Ingrese su comentario" onChange={setObservacionComiteHandler} esRequerido={true} value={observacionComite} controlAnchoTexArea={false} maxlength={255}></Textarea>
-                                                </Card>
-                                            </>
+                                        {/*        <Card className={["mt-2"]}>*/}
+                                        {/*            <h3>Observación:</h3>*/}
+                                        {/*        <Textarea placeholder="Ingrese su comentario" onChange={setObservacionComiteHandler} esRequerido={true} value={observacionComite} controlAnchoTexArea={false} maxlength={255}></Textarea>*/}
+                                        {/*        </Card>*/}
+                                        {/*    </>*/}
 
-                                        }
+                                        {/*}*/}
+
+
+
                                         {/* FIN SECCION APROBAR O NEGAR POR COMITE*/}
 
                                     </Card>
 
                                     {/*CAMPO GENERICO PARA DEJAR COMENTARIO Y PASAR A LA SIGUIENTE BANDEJA*/}
-                                    {(solicitudTarjeta?.str_estado_actual !== 'POR APROBAR SOLICITUD' && solicitudTarjeta?.str_estado_actual !== 'VERIFICAR CLIENTE' && solicitudTarjeta?.str_estado_actual !== 'POR REVISAR JEFE UAC') &&
+                                    {(solicitudTarjeta?.str_estado_actual !== 'POR APROBAR SOLICITUD' && solicitudTarjeta?.str_estado_actual !== 'VERIFICAR SOCIO' && solicitudTarjeta?.str_estado_actual !== 'POR REVISAR JEFE UAC') &&
                                         <div className="mt-4">
                                             <h3 className="mb-3 strong">Observación</h3>
                                             <Textarea placeholder="Ingrese su comentario" onChange={setComentarioSolicitudHandler} esRequerido={true} value={comentarioSolicitud}
@@ -1292,11 +1316,11 @@ const VerSolicitud = (props) => {
                                 <div className="mt-2 f-row justify-content-center">
                                     {/*APROBADA O NEGADA POR COMITE ( 11275 EST_POR_APROBAR) */}
                                     {(solicitudTarjeta?.str_estado_actual === "POR APROBAR SOLICITUD") &&
-                                        <Button className="btn_mg__primary" disabled={isActivoBtnDecision} onClick={guardarDecisionComiteHandler}>Enviar</Button>
+                                        <Button className="btn_mg__primary" disabled={isActivoBtnDecision} onClick={guardarDecisionComiteHandler}>Guardar</Button>
                                     }
 
-                                    {(solicitudTarjeta?.str_estado_actual !== 'POR APROBAR SOLICITUD' && solicitudTarjeta?.str_estado_actual !== 'VERIFICAR CLIENTE') &&
-                                        <Button className="btn_mg__primary" disabled={solicitudTarjeta?.str_estado_actual === "POR REVISAR JEFE UAC" ? false : faltaComentariosAsesor} onClick={guardarComentarioSiguiente}>Enviar</Button>
+                                    {(solicitudTarjeta?.str_estado_actual !== 'POR APROBAR SOLICITUD' && solicitudTarjeta?.str_estado_actual !== 'VERIFICAR SOCIO') &&
+                                        <Button className="btn_mg__primary" disabled={solicitudTarjeta?.str_estado_actual === "POR REVISAR JEFE UAC" ? false : faltaComentariosAsesor} onClick={guardarComentarioSiguiente}>Guardar</Button>
                                     }
                                 </div>
                             </Card>
@@ -1546,11 +1570,19 @@ const VerSolicitud = (props) => {
                         </thead>
                         <tbody>
                             {
-                                lstSeguimientoTC.map((seguimient) => {
+                            lstSeguimientoTC.map((seguimient) => {
+                                const fecha = new Date(seguimient?.dtt_fecha_actualizacion);
+                                const opciones = {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    second: "2-digit"
+                                };
+
+
                                     return (<tr key={seguimient.int_flujo_id}>
                                         <td>{seguimient.int_flujo_id}</td>
                                         <td>{seguimient.str_estado_flujo}</td>
-                                        <td>{seguimient.dtt_fecha_actualizacion}</td>
+                                        <td>{(fecha.toLocaleDateString('en-US', opciones))}</td>
                                         <td>{seguimient.str_usuario_proc}</td>
                                         <td>{numberFormatMoney(seguimient.str_cupo_solicitado)}</td>
                                         <td>{numberFormatMoney(seguimient.str_cupo_aprobado)}</td>
@@ -1580,10 +1612,10 @@ const VerSolicitud = (props) => {
             onCloseClick={closeModalambioBandeja}
             isBtnDisabled={isBtnDisableCambioBandeja}
             type="md"
-            mainText="Guardar"
+            mainText="Devolver"
         >
             {modalCambioBandeja && <div>
-
+                {/*ESTADOS DISPONIBLES PARA RETORNO DE BANDEJA DESDE COMITE*/}
                 {solicitudTarjeta?.str_estado_actual === "POR APROBAR SOLICITUD" &&
                     <>
                         <h3 className="mt-4 mb-1">Seleccione a qué estado desea regresar la solicitud:</h3>
@@ -1611,6 +1643,36 @@ const VerSolicitud = (props) => {
                         </select>
                     </>
                 }
+                {/*ESTADOS DISPONIBLES PARA RETORNO DE BANDEJA DESDE COMITE*/}
+                {solicitudTarjeta?.str_estado_actual === "POR REVISAR JEFE UAC" &&
+                    <>
+                        <h3 className="mt-4 mb-1">Seleccione a qué estado desea regresar la solicitud:</h3>
+
+                    <select className='w-100' onChange={cambiarEstadoSolHandler} value={selectCambioEstadoSol}>
+                        {estadosRetornaBandejaJefUac.length > 0
+                            && estadosRetornaBandejaJefUac?.map((estado, index) => {
+                                    const resultado = validaNombreParam(estado);
+                                    if (index === 0) {
+                                        return (
+                                            <Fragment key={index}>
+                                                <option disabled={true} value={"-1"}>Seleccione una opción</option>
+                                                <option value={resultado.prm_nemonico}> {resultado.prm_valor_ini}</option>
+                                            </Fragment>
+                                        )
+                                    }
+                                    else {
+                                        return (
+                                            <Fragment key={index}>
+                                                <option value={resultado.prm_nemonico}> {resultado.prm_valor_ini}</option>
+                                            </Fragment>
+                                        )
+                                    }
+                                })}
+                        </select>
+                    </>
+                }
+
+
                 <br />
                 <div>
                     <h3 className={`${solicitudTarjeta?.str_estado_actual === "POR APROBAR SOLICITUD" ? 'mt-4 mb-1' : 'mt-1 mb-1'}`}>Seleccione el motivo:</h3>
