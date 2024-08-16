@@ -3,6 +3,7 @@ import Card from "../Common/Card";
 import { Fragment, useEffect, useRef, useState } from "react";
 import Item from "../Common/UI/Item";
 import Button from "../Common/UI/Button";
+import { numberFormatMoney } from "../../js/utiles";
 
 
 const DatosFinancieros = (props) => {
@@ -219,7 +220,7 @@ const DatosFinancieros = (props) => {
                                 </div>
                                 <div className="f-row">
                                     {montoSolicitado < props.montoMinimoCupoSolicitado &&
-                                        <h5 className="ml-4">*El valor mínimo a solicitar debe superar los {`$ ${Number(props.montoMinimoCupoSolicitado)?.toLocaleString("en-US")}`}</h5>
+                                        <h5 className="ml-4">*El valor mínimo a solicitar debe superar los {`${numberFormatMoney(props.montoMinimoCupoSolicitado)}`}</h5>
                                     }
                                 </div>
                                 

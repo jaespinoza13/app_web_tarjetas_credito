@@ -72,10 +72,11 @@ function Solicitud(props) {
         { nombre: 'Nombre', key: 3, shortableColumn: true, keyName: "str_nombres" },
         { nombre: 'Cupo Solicitado', key: 4, shortableColumn: true, keyName: "dec_cupo_solicitado" },
         { nombre: 'Oficina', key: 5, shortableColumn: true, keyName: "int_oficina_crea" },
-        { nombre: 'Canal', key: 6, shortableColumn: true, keyName: "str_canal_crea" },
-        { nombre: 'Usuario', key: 7, shortableColumn: true, keyName: "str_usuario_crea" },
+        { nombre: 'Estado', key: 7, keyName: "int_estado" },
+        { nombre: 'Canal', key: 6, shortableColumn: true, keyName: "str_canal_crea" },        
+        { nombre: 'Usuario', key: 8, shortableColumn: true, keyName: "str_usuario_crea" },
         //{ nombre: 'Calificación', key: 6, shortableColumn: true, keyName: "str_calificacion" },
-        { nombre: 'Estado', key: 8, keyName: "int_estado" },
+
         { nombre: 'Acción', key: 9, shortableColumn: true, keyName: "" },
     ];
 
@@ -214,7 +215,7 @@ function Solicitud(props) {
         /* PARA VER SOLICITUD POR PARTE DEL ASESOR DE NEGOCIOS*/
 
 
-        console.log("solId ", solId)
+        //console.log("solId ", solId)
         //console.log("solicitudSeleccionada ", solicitudSeleccionada)
         //console.log("nombreOficinaDeSolicitud ", nombreOficinaDeSolicitud)
 
@@ -341,15 +342,13 @@ function Solicitud(props) {
 
                 </div>
 
-                {/* </>
-
-            }*/}
 
                 <Toggler className="mt-2" toggles={accionesSolicitud}
                     selectedToggle={handleSelectedToggle}>
                 </Toggler>
+                <div id="listados" className="f-col mt-2" style={{ maxWidth: `${isLstSolicitudes ? "calc(100vw - 1rem)" : "calc(100vw - 2rem)"}` }}>
                 {isLstSolicitudes &&
-                    <div id="listado_solicitudes" className=" mt-2">
+                    
                         <SortableTable
                             headers={headerTableSolicitantes}
                             paginaActual={paginaActual}
@@ -369,18 +368,19 @@ function Solicitud(props) {
                                         <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{numberFormatMoney(solicitud.dec_cupo_solicitado)}</td>
                                         {/*<td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{solicitud.str_calificacion}</td>*/}
                                         <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{validarNombreOficina(solicitud.int_oficina_crea)}</td>
-                                        <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{solicitud.str_canal_crea}</td>
-                                        <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{solicitud.str_usuario_crea}</td>
                                         <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>
-                                            <div>   
+                                            <div>
                                                 {solicitud.str_estado}
                                                 {solicitud.str_analista ?
-                                                <div className='tooltip ml-1'>
-                                                    <img className='tooltip-icon' src='/Imagenes/info.svg' alt="Analista encargado seguimiento"></img>
-                                                    <span className='tooltip-info'>Analista: {solicitud.str_analista}</span>
+                                                    <div className='tooltip ml-1'>
+                                                        <img className='tooltip-icon' src='/Imagenes/info.svg' alt="Analista encargado seguimiento"></img>
+                                                        <span className='tooltip-info'>Analista: {solicitud.str_analista}</span>
                                                     </div> : ''}
                                             </div>
                                         </td>
+                                        <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{solicitud.str_canal_crea}</td>
+                                        
+                                        <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{solicitud.str_usuario_crea}</td>
                                         <td>
                                             <div className="f-col justify-content-center icon-botton"
                                                 onClick={() => {
@@ -407,10 +407,10 @@ function Solicitud(props) {
 
                         </SortableTable>
 
-                    </div>
+                    
                 }
                 {isLstProspecciones &&
-                    <div id="listado_prospectos" className="mt-2">
+                   
                         <SortableTable
                             headers={headerTableProspectos}
                             paginaActual={paginaActual}
@@ -421,28 +421,32 @@ function Solicitud(props) {
                             {registrosPagActual && registrosPagActual.map((prospecto) => {
                                 return (
                                     <tr key={prospecto.pro_id} onClick={() => { moveToProspecto(prospecto.pro_id) }}>
-                                        <td style={{ maxWidth: "10px" }}>{prospecto.pro_id}</td>
-                                        <td style={{ maxWidth: "10px" }}>{prospecto.pro_fecha_solicitud}</td>
-                                        <td style={{ maxWidth: "20px" }}>{prospecto.pro_num_documento}</td>
-                                        <td style={{ maxWidth: "80px" }}>{`${prospecto.pro_nombres} ${prospecto.pro_apellidos}`}</td>
-                                        {/*<td>{prospecto.pro_email}</td>*/}
-                                        <td style={{ maxWidth: "10px" }}>{numberFormatMoney(prospecto.pro_cupo_solicitado)}</td>
-                                        <td style={{ maxWidth: "10px" }}>{validarNombreOficina(prospecto.pro_oficina_crea)}</td>
-                                        <td style={{ maxWidth: "10px" }}>{prospecto.pro_canal_crea}</td>
-                                        <td style={{ maxWidth: "10px" }}>{prospecto.pro_usuario_crea}</td>
+                                        <td style={{ maxWidth: "5%" }}>{prospecto.pro_id}</td>
+                                        <td>{prospecto.pro_fecha_solicitud}</td>
+                                        <td>{prospecto.pro_num_documento}</td>
+                                        <td>{`${prospecto.pro_nombres} ${prospecto.pro_apellidos}`}</td>
+                                        <td>{numberFormatMoney(prospecto.pro_cupo_solicitado)}</td>
+                                        <td>{validarNombreOficina(prospecto.pro_oficina_crea)}</td>
+                                        <td>{prospecto.pro_canal_crea}</td>
+                                        <td>{prospecto.pro_usuario_crea}</td>
                                     </tr>);
                             })}
 
                         </SortableTable>
-                    </div>
-                }
+                   
+                    }
+
                 {(isLstSolicitudes || isLstProspecciones) && numPaginas > 1 &&
-                    <div>
-                        <Paginacion numPaginas={numPaginas}
-                            paginaActual={paginaActual}
-                            setPaginaActual={setPaginaActual} />
-                    </div>
-                }
+
+                        <div>
+                            <Paginacion numPaginas={numPaginas}
+                                paginaActual={paginaActual}
+                                setPaginaActual={setPaginaActual} />
+                        </div>
+                   
+                        
+                    }
+                </div>
 
             </div>
 

@@ -11,7 +11,7 @@ const Paginacion = ({ numPaginas, paginaActual, setPaginaActual }) => {
 
 
     return (
-        <nav className='estilo_paginacion'>
+        <nav className='paginacion estilo_paginacion'>
             <ul className='pagination justify-content-center efecto-lista'>
                 <li className="page-item">
                     {/*<a className="page-link indicador"*/}

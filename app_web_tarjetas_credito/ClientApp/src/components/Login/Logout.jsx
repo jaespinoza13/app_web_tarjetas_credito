@@ -15,6 +15,7 @@ function Logout(props) {
     const dispatch = useDispatch();
 
     useEffect(() => {
+        console.log("SALIENDO ")
         const salir = async () => {
             var datosUsuario = await getUsuario();
             ServicioGetExecute(getLogout, props.token, { params: { id_usuario: datosUsuario.id_usuario, dispatch: dispatch } }).then((data) => {

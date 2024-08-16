@@ -298,7 +298,7 @@ const RegistroCliente = (props) => {
                     key: dominio.str_valor_ini,
                     valor: dominio.str_valor_ini,
                 }));
-                // console.log("DOMINIOS_CORREOS ", ParametrosEntregaTC)
+                //console.log("DOMINIOS_CORREOS ", ParametrosEntregaTC)
                 setLstDominiosCorreo(ParametrosEntregaTC)
             }
         }, dispatch)

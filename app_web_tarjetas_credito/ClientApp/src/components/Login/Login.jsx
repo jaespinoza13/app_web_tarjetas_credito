@@ -199,6 +199,7 @@ function Login(props) {
                                 icon={'success'}
                                 openModal={isLogin === 2}
                                 btnAceptar={"Aceptar"}
+                                canClose={false}
                                 handlerBtnAceptar={() => {
                                     handleSubmitPerfil(props.token, () => {
                                         var str = "";
