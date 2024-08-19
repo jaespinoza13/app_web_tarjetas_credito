@@ -1,5 +1,5 @@
 ﻿/* eslint-disable react-hooks/exhaustive-deps */
-import { IsNullOrEmpty, IsNullOrWhiteSpace, base64ToBlob, descargarArchivo, generarFechaHoy, numberFormatMoney, verificarPdf } from "../../js/utiles";
+import { IsNullOrEmpty, IsNullOrWhiteSpace, base64ToBlob, conversionTipoTC, descargarArchivo, generarFechaHoy, numberFormatMoney, verificarPdf } from "../../js/utiles";
 import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { useEffect, useState } from "react";
@@ -607,15 +607,16 @@ const VerSolicitud = (props) => {
 
     const cambioEstadoBandeja = () => {
 
-        let descripcionMotivoRetorno = motivosRegresaAntBandeja.find(motivo => motivo.str_nemonico === selectMotivoRetornoBanj);
+        //let descripcionMotivoRetorno = motivosRegresaAntBandeja.find(motivo => motivo.str_nemonico === selectMotivoRetornoBanj);
         let nemonico = parametrosTC.find(param => param.prm_valor_ini === props.solicitud.estado)
         if (selectMotivoRetornoBanj !== undefined && nemonico !== undefined) {
-            descripcionMotivoRetorno = descripcionMotivoRetorno.str_descripcion
+          //  descripcionMotivoRetorno = descripcionMotivoRetorno.str_descripcion
 
             //Comite retorna a un estado de bandeja especifica para POR APROBAR SOLICITUD
             if (solicitudTarjeta?.str_estado_actual === "POR APROBAR SOLICITUD" || solicitudTarjeta?.str_estado_actual === "POR REVISAR JEFE UAC") {
                 console.log("PRUEBA POR REVISAR JEFE UA")
-                fetchAddProcEspecifico(props.solicitud.solicitud, 0, selectCambioEstadoSol, descripcionMotivoRetorno, props.token, (data) => {
+                //let comentario = solicitudTarjeta?.str_estado_actual === "POR REVISAR JEFE UAC" ? observacionComite : '';
+                fetchAddProcEspecifico(props.solicitud.solicitud, 0, selectCambioEstadoSol, comentarioCambioEstado, props.token, (data) => {
                     if (data.str_res_codigo === "000") {
                         setModalCambioBandeja(false);
                         setModalVisibleOk(true);
@@ -626,7 +627,7 @@ const VerSolicitud = (props) => {
 
             } else { //Otros perfiles solo retornan a bandeja anterior
                 //Variable true para retornar bandeja anterior
-                fetchAddComentarioSolicitud(props.solicitud.solicitud, descripcionMotivoRetorno, props.solicitud.idSolicitud, true, swithcEsMicrocredito, props.token, (data) => {
+                fetchAddComentarioSolicitud(props.solicitud.solicitud, comentarioCambioEstado, props.solicitud.idSolicitud, true, swithcEsMicrocredito, props.token, (data) => {
                     //navigate.push('/solicitud');
                     setModalCambioBandeja(false);
                     setModalVisibleOk(true);
@@ -759,8 +760,8 @@ const VerSolicitud = (props) => {
             }, dispatch)
         }
         //Si cupo que se va aprobar es menor al que solicita el socio
-        else if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_VERIFICAR_CLIENTE") { //VERIFICAR SOCIO
-            fetchAddProcEspecifico(props.solicitud.solicitud, Number.parseFloat(montoAprobado).toFixed(2), "EST_VERIFICAR_CLIENTE", observacionComite, props.token, (data) => { //VERIFICAR SOCIO 11278
+        else if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_VERIFICAR_SOCIO") { //VERIFICAR SOCIO
+            fetchAddProcEspecifico(props.solicitud.solicitud, Number.parseFloat(montoAprobado).toFixed(2), "EST_VERIFICAR_SOCIO", observacionComite, props.token, (data) => { //VERIFICAR SOCIO 11278
                 if (data.str_res_codigo === "000") {
                     let decision = parametrosTC.find(param => param.prm_nemonico === valorDecisionSelect)
                     let parametroDecNec = parametrosTC.find(param => param.prm_valor_ini === props.solicitud.estado)
@@ -787,7 +788,7 @@ const VerSolicitud = (props) => {
             controlBool.estadoSig = "EST_APROBADA" // EST_APROBADA (COMITE)
         } else if (Number.parseFloat(montoAprobado) > 0 && (Number.parseFloat(montoAprobado) < Number.parseFloat(solicitudTarjeta?.str_cupo_solicitado)) && valorDecisionSelect === "EST_APROBADA") {
             controlBool.validador = true;
-            controlBool.estadoSig = "EST_VERIFICAR_CLIENTE" // EST_VERIFICAR_CLIENTE (SE VA HACIA ASESOR CREDITO NUEVAMENTE)
+            controlBool.estadoSig = "EST_VERIFICAR_SOCIO" // EST_VERIFICAR_SOCIO (SE VA HACIA ASESOR CREDITO NUEVAMENTE)
         } else if (Number.parseFloat(montoAprobado) > Number.parseFloat(solicitudTarjeta?.str_cupo_solicitado)) {
             controlBool.validador = false;
             controlBool.estadoSig = "0" // NO ES POSIBLE PASAR BANDEJA
@@ -800,7 +801,7 @@ const VerSolicitud = (props) => {
         /* VALIDACION  OBSERVACION*/
         if (observacionComite?.trim() !== "" && valorDecisionSelect === "EST_RECHAZADA") {
             setIsActivoBtnDecision(false);
-        } else if (valorDecisionSelect === "EST_APROBADA" && montoAprobado !== null && Number(montoAprobado) > 0) {
+        } else if (valorDecisionSelect === "EST_APROBADA" && montoAprobado !== null && Number(montoAprobado) >= Number(controlMontoMinimoParametro)) {
             setIsActivoBtnDecision(false);
         } else {
             setIsActivoBtnDecision(true);
@@ -828,7 +829,7 @@ const VerSolicitud = (props) => {
         else if (valorDecisionSelect !== "-1" && montoAprobado > 0 && validaCupo.validador) {//observacionComite !== "" && 
             if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_APROBADA") {// EST_APROBADA 11276
                 setIsActivoBtnDecision(false);
-            } else if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_VERIFICAR_CLIENTE") { //EST_VERIFICAR_CLIENTE 11278 por cupo inferior 
+            } else if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_VERIFICAR_SOCIO") { //EST_VERIFICAR_SOCIO 11278 por cupo inferior 
                 setIsActivoBtnDecision(false);
             } 
         }
@@ -853,7 +854,7 @@ const VerSolicitud = (props) => {
 
                     let decision = parametrosTC.find(param => param.prm_nemonico === selectResolucionSocio)
                     let parametroDecNec = parametrosTC.find(param => param.prm_valor_ini === props.solicitud.estado)
-                    fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, datosUsuario[0].strOficial, decision.prm_valor_ini, comentarioResolucionSocio, parametroDecNec.prm_nemonico, props.token, (data) => {
+                    fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_aprobado, datosUsuario[0].strOficial, decision.prm_valor_ini, comentarioResolucionSocio, parametroDecNec.prm_nemonico, props.token, (data) => {
                         setModalResolucionSocio(false);
                         setModalVisibleOk(true);
                         setTextoModal("Su comentario se guardo con éxito.");
@@ -871,7 +872,7 @@ const VerSolicitud = (props) => {
                     if (data.str_res_codigo === "000") {
                         let decision = parametrosTC.find(param => param.prm_nemonico === selectResolucionSocio)
                         let parametroDecNec = parametrosTC.find(param => param.prm_valor_ini === props.solicitud.estado)
-                        fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, datosUsuario[0].strOficial, decision.prm_valor_ini, comentarioResolucionSocio, parametroDecNec.prm_nemonico, props.token, (data) => {
+                        fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_aprobado, datosUsuario[0].strOficial, decision.prm_valor_ini, comentarioResolucionSocio, parametroDecNec.prm_nemonico, props.token, (data) => {
                             setModalResolucionSocio(false);
                             setModalVisibleOk(true);
                             setTextoModal("Su comentario se guardo con éxito.");
@@ -1005,7 +1006,7 @@ const VerSolicitud = (props) => {
                                                                     <td>{resolucion.str_usuario_proc}</td>
                                                                     <td> {(fecha.toLocaleDateString('en-US', opciones))}</td>
                                                                     <td> {resolucion.str_decision_solicitud}</td>
-                                                                    <td style={{ width: "60%", justifyContent: "left" }} id={index}>
+                                                                    <td style={{ width: "50%", justifyContent: "left" }} id={index}>
                                                                         <div style={{ display: "ruby" }}>
                                                                             {trimed[index] ?
                                                                                 <div>
@@ -1123,6 +1124,15 @@ const VerSolicitud = (props) => {
 
                                     {/*SECCION DE BOTONES DE ACCIONES POR PERFIL*/}
                                     <Card className={["f-col"]}>
+                                        {solicitudTarjeta?.str_estado_actual === "CREADA" &&
+                                            <div className="mb-1 f-row justify-content-start align-content-center" style={{ minWidth: "300px" }}>
+                                                <h3 className="strong mr-1">¿Es MICROCRÉDITO?</h3>
+                                                <div className="f-col justify-content-center">
+                                                    <Switch onChange={(valor) => setSwithcEsMicrocredito(valor)} value={swithcEsMicrocredito}></Switch>
+                                                </div>
+                                    
+                                            </div>
+                                        }
                                         <div className="f-row">
 
                                             {permisoAccionAnalisis3Cs.includes(solicitudTarjeta?.str_estado_actual) &&
@@ -1152,16 +1162,6 @@ const VerSolicitud = (props) => {
                                      
 
                                         </div>
-                                        {solicitudTarjeta?.str_estado_actual === "CREADA" && 
-                                            <div className="mt-1 f-row">
-                                                <div style={{ width:"200px" }}>
-                                                    <h3 className="strong mr-1">¿Es MICROCRÉDITO?</h3>
-                                                </div>                                                
-                                                <div className="f-col w-100 justify-content-center">
-                                                    <Switch onChange={(valor) => setSwithcEsMicrocredito(valor)} value={swithcEsMicrocredito}></Switch>
-                                                </div>                                                
-                                            </div>
-                                        }
                                         
                                         <Table headers={headerTableResoluciones}>
                                             {
@@ -1242,7 +1242,16 @@ const VerSolicitud = (props) => {
                                                 {isMontoAprobarse &&
                                                     <Card className={[`f-col w-50`]}>
                                                         <h3>Valor a aprobar</h3>
-                                                        <Input type="number" placeholder="Ej. 1000" disabled={false} setValueHandler={(e) => setMontoAprobado(e)} value={montoAprobado} max={solicitudTarjeta?.str_cupo_solicitado}></Input>
+                                                        <Input
+                                                            className={`${(montoAprobado === "" || montoAprobado === 0 || Number(montoAprobado) < Number(controlMontoMinimoParametro)) || Number(montoAprobado) > Number(solicitudTarjeta.str_cupo_solicitado) ? 'no_valido' : ''}`}
+                                                            type="number" placeholder="Ej. 1000" disabled={false} setValueHandler={(e) => setMontoAprobado(e)} value={montoAprobado} max={solicitudTarjeta?.str_cupo_solicitado}></Input>
+                                                        <div className="f-row">
+                                                            {montoAprobado < controlMontoMinimoParametro &&
+                                                                <h4 className="strong ml-1 mt-1">*El valor mínimo a solicitar debe superar los {`${numberFormatMoney(controlMontoMinimoParametro)?.toLocaleString("en-US")}`}</h4>
+                                                            }
+                                                        </div>
+
+
                                                     </Card>
                                                 }
 
@@ -1366,7 +1375,7 @@ const VerSolicitud = (props) => {
             type="lg2"
             mainText="Guardar"
         >
-            {modalVisible && <div>
+            {modalVisible && <div className="mb-3">
 
                 <table>
                     <thead>
@@ -1400,7 +1409,8 @@ const VerSolicitud = (props) => {
                                 informe.map((comentario, index) => {
                                     return (
                                         <td key={comentario.int_id_parametro}>
-                                            <Textarea placeholder="Ej. Texto de ejemplo" type="textarea" onChange={(event, key = comentario.int_id_parametro) => { comentarioAdicionalHanlder(event, key) }} esRequerido={false} value={comentario.str_detalle} controlAnchoTexArea={true } ></Textarea>
+                                            <Textarea placeholder="Ej. Texto de ejemplo" type="textarea" onChange={(event, key = comentario.int_id_parametro) => { comentarioAdicionalHanlder(event, key) }} esRequerido={false} value={comentario.str_detalle} controlAnchoTexArea={true} rows={28} rowsMax={28}
+                                                maxlength={1000}></Textarea>
                                         </td>
 
                                     );
@@ -1440,7 +1450,7 @@ const VerSolicitud = (props) => {
                     <div className="f-col w-100 ml-2 mt-4">
                         <h3 className="mb-3">Ingrese el nuevo valor:</h3>
                         <Input className={`"f-row w-100 mb-4"  ${(nuevoMonto === "" || nuevoMonto === 0 || Number(nuevoMonto) < Number(controlMontoMinimoParametro)) || Number(nuevoMonto) > Number(solicitudTarjeta.str_cupo_solicitado) ? 'no_valido' : ''}`} type="number" value={solicitudTarjeta?.str_cupo_solicitado} placeholder="1000.00" setValueHandler={nuevoMontoHandler} maxlength={8} max={solicitudTarjeta.str_cupo_solicitado }></Input>
-                        <h4 className="strong ml-1 mt-1 mb-4">*El valor mínimo a actualizar debe ser mayor a los {`${numberFormatMoney(controlMontoMinimoParametro)}`} y menor al valor solicitado {`${numberFormatMoney(solicitudTarjeta.str_cupo_solicitado)}`}.</h4>
+                        <h4 className="strong mt-1 mb-4">*El valor mínimo debe ser mayor a {`${numberFormatMoney(controlMontoMinimoParametro)}`} y menor al valor solicitado {`${numberFormatMoney(solicitudTarjeta.str_cupo_solicitado)}`}.</h4>
                     </div>
                 <br/>
             </div>}
@@ -1562,9 +1572,6 @@ const VerSolicitud = (props) => {
                                 <th>Estado</th>
                                 <th>Fecha</th>
                                 <th>Usuario</th>
-                                <th>Cupo Solicitado</th>
-                                <th>Cupo Aprobado</th>
-                                <th>Decisión</th>
                                 <th>Observación</th>
                             </tr>
                         </thead>
@@ -1584,9 +1591,6 @@ const VerSolicitud = (props) => {
                                         <td>{seguimient.str_estado_flujo}</td>
                                         <td>{(fecha.toLocaleDateString('en-US', opciones))}</td>
                                         <td>{seguimient.str_usuario_proc}</td>
-                                        <td>{numberFormatMoney(seguimient.str_cupo_solicitado)}</td>
-                                        <td>{numberFormatMoney(seguimient.str_cupo_aprobado)}</td>
-                                        <td>{seguimient.str_decision_solicitud}</td>
                                         <td>{seguimient.str_comentario_proceso}</td>
                                     </tr>);
                                 })

@@ -11,6 +11,7 @@ import NavMenu from './Common/Navs/NavMenu';
 import Sidebar from './Common/Navs/Sidebar';
 import { getUser } from 'react-session-persist';
 import { get } from '../js/crypt';
+import { removeSession } from 'react-session-persist';
 
 const mapStateToProps = (state) => {
     return {
@@ -31,7 +32,7 @@ function Layout(props) {
     const location = useLocation();
     const history = useHistory();
     const [pathname, setPathname] = useState("");
-    const [mostrarMenu, setMostrarMenu] = useState(false);
+    const [mostrarComponentes, setMostrarComponentes] = useState(false);
 
     const [tstampActual, setTstampActual] = useState(new Date().getTime());
     const [token, setToken] = useState(props.token);
@@ -41,7 +42,17 @@ function Layout(props) {
     }, [props.token]);
 
     useEffect(() => {
+        /*console.log("token ", token)
+        console.log("location.pathname ", location.pathname)
+        console.log("validateToken(token) ", validateToken(token))*/
         if (location.pathname !== "/" && !IsNullOrWhiteSpace(token) && !validateToken(token)) {
+            //TODO: se agregaron la limpieza del localStorage, posible corrección para no se vuelva a repetir el cierre de sesion bucle
+            localStorage.removeItem('sender');
+            localStorage.removeItem('remitente');
+            localStorage.removeItem('aceptar');
+            removeSession();
+            //history.push("/logout");
+
             alert("Sesi\u00F3n caducada");
             window.location.href = "/";
         }
@@ -67,8 +78,17 @@ function Layout(props) {
         const sender = get(localStorage.getItem('sender'));
         const remitente = get(localStorage.getItem('remitente'));
         const ts = Number(localStorage.getItem('aceptar'));
-        if (getUser() && remitente && sender) {
-            setMostrarMenu(true);
+        const strRol = get(localStorage.getItem("role"));
+        //console.log("strRol ", strRol)
+        const userOficial = get(localStorage.getItem('sender'));
+        //console.log("userOficial ", userOficial)
+
+
+
+        if (getUser() && remitente && sender && !IsNullOrWhiteSpace(strRol.trim()) && !strRol.includes("sin datos")) {
+            setMostrarComponentes(true);
+        } else if (userOficial.trim() !== "sin datos" && strRol.includes("sin datos")) {
+            history.push('/logout');
         }
     },[])
 
@@ -104,9 +124,12 @@ function Layout(props) {
                     }}
                     btnAceptar={"Aceptar"} />
                 : ''}
-            <NavMenu id={"header_main"} tstampActual={tstampActual} listaMenus={props.listaMenus} listaUrls={props.listaUrls} />
+            {token !== "" && mostrarComponentes === true &&
+                <NavMenu id={"header_main"} tstampActual={tstampActual} listaMenus={props.listaMenus} listaUrls={props.listaUrls} />
+            }
+            
             <div className="f-row w-100">
-                {token !== "" && mostrarMenu === true &&
+                {token !== "" && mostrarComponentes === true &&
                     <Sidebar enlace={pathname}></Sidebar>
                 }
                 {props.children}

@@ -829,7 +829,7 @@ namespace Infrastructure.TarjetaCredito
             }
             return res;
         }
-
+        //TODO: ELIMINAR
         public ResGetReporteOrden getReporteOrden(ReqGetReporteOrden req)
         {
             ResGetReporteOrden res = new ResGetReporteOrden();
@@ -899,7 +899,7 @@ namespace Infrastructure.TarjetaCredito
             }
             return res;
         }
-
+        //TODO: ELIMINAR
         public ResGetOrdenes getOrdenes(ReqGetOrdenes req)
         {
             ResGetOrdenes res = new ResGetOrdenes();
@@ -1153,7 +1153,7 @@ namespace Infrastructure.TarjetaCredito
             }
             return res;
         }
-
+        //TODO: ELIMINAR
         public ResGetOficinas getOficinas(ReqGetOficinas req)
         {
             ResGetOficinas res = new ResGetOficinas();

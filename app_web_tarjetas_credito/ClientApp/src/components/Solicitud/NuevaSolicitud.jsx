@@ -57,7 +57,7 @@ const NuevaSolicitud = (props) => {
     const [puntajeScore, setPuntajeScore] = useState("");
 
     //Global
-    const [textoSiguiente, setTextoSiguiente] = useState("Continuar");
+    const [textoSiguiente, setTextoSiguiente] = useState("Buscar");
 
     const [controlMontoMinimoParametro, setControlMontoMinimoParametro] = useState(0);
 
@@ -328,6 +328,7 @@ const NuevaSolicitud = (props) => {
         }
         if (step === 1) {
             setEstadoBotonSiguiente(false);
+            setTextoSiguiente("Continuar")
         }
         if (step === -1) {
             setTextoSiguiente("Volver al inicio")

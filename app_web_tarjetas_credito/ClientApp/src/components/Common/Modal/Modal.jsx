@@ -23,7 +23,7 @@ const Modal = (props) => {
     
     return (
         <div className={`modal ${modalVisible ? 'modal-show' : ''}`}>
-            <div className={`modal-content modal-content-${props.type || defaultType} ${animation}`}>
+            <div className={`modal-content modal-content-${props.type || defaultType} ${animation} mb-2`}>
                 <div className="modal-header">
                     <h2>{props.titulo}</h2>
                 </div>

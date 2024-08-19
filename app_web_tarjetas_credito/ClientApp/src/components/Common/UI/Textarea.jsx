@@ -1,10 +1,12 @@
-﻿import { useState } from "react";
+﻿import { useRef, useState } from "react";
 import { useEffect } from "react";
 
 const Textarea = (props) => {
+    const textareaRef = useRef(null);
     //Filas del text Area comentarioAdicional
-    const [filasTextAreaComentarioSol, setFilasTextAreaComentarioSol] = useState(3); //TODO: Mejorar para pasar por parametro
-    const [anchoCampo, setAnchoCampo] = useState(75); //TODO: Mejorar para establecer el ancho de caracteres segun tamaño de los input 
+    const [filasTextAreaComentarioSol, setFilasTextAreaComentarioSol] = useState(props.rows ? props.rows: 3); 
+    const [filasTextMax, setFilasTextMax] = useState(props.rowsMax ? props.rowsMax : 7);
+    const [anchoCampo, setAnchoCampo] = useState(75); 
     const [numFilasXAnchoCampo, setNumFilasXAnchoCampo] = useState(0);
     const [controlAnchoCampo, setControlAnchoCampo] = useState(false);
 
@@ -15,29 +17,48 @@ const Textarea = (props) => {
         else if (filasActuales.length < 3) setFilasTextAreaComentarioSol(3);
     }, [props.value])*/
 
-
+    
+    
     useEffect(() => {
         let filasActuales = props.value.split('\n');
         if (filasActuales.length >= 3 && props.controlAnchoTexArea === false) setFilasTextAreaComentarioSol(filasActuales.length + 1);
-        if (anchoCampo !== null && props.value.length > anchoCampo && props.controlAnchoTexArea === true) {
+        if (filasTextMax && props.rows) {
+            setFilasTextAreaComentarioSol(props.rows);
+        }
+        else if (anchoCampo !== null && props.value.length > anchoCampo && props.controlAnchoTexArea === true) {
             let filasXancho = Math.floor(props.value.length / anchoCampo);
-            if (numFilasXAnchoCampo !== filasXancho ){
+            if (numFilasXAnchoCampo !== filasXancho) {
                 setNumFilasXAnchoCampo(filasXancho);
                 setControlAnchoCampo(true);
-            }          
+            }
         }
         else if (filasActuales.length < 3 && props.controlAnchoTexArea === false) setFilasTextAreaComentarioSol(3);
     }, [props.value, anchoCampo, controlAnchoCampo])
-
-
+    
+    /*
     useEffect(() => {
-        if (controlAnchoCampo) {
+        let filasActuales = props.value.split('\n');
+        if (filasActuales.length >= 3 && (props.controlAnchoTexArea === false || IsNullOrEmpty(props.controlAnchoTexArea))) setFilasTextAreaComentarioSol(filasActuales.length + 1);
+        if (anchoCampo !== null && props.controlAnchoTexArea === true && textareaRef.current.rows <= filasTextMax) {
+            let filasXancho = Math.floor(props.value.length / anchoCampo);
+            if (numFilasXAnchoCampo !== filasXancho) {
+                setNumFilasXAnchoCampo(filasXancho);
+                setControlAnchoCampo(true);
+            }          
+
+        }
+        else if (filasActuales.length < 3 && (props.controlAnchoTexArea === false || IsNullOrEmpty(props.controlAnchoTexArea))) setFilasTextAreaComentarioSol(3);
+    }, [props.value, anchoCampo, controlAnchoCampo])
+    */
+    
+    useEffect(() => {
+        if (controlAnchoCampo && props.rowsMax === null) {
             setFilasTextAreaComentarioSol(prevFilasActuales => prevFilasActuales + numFilasXAnchoCampo);
             setControlAnchoCampo(false);
         }
     }, [controlAnchoCampo, numFilasXAnchoCampo]);
-
-
+    
+    
 
 
     const textareaHandler = (e) => {
@@ -58,9 +79,12 @@ const Textarea = (props) => {
     }
 
     return <textarea
+        ref={textareaRef} 
         className={props.value === '' ? 'no_valido' : ''} id={props.id} name={props.name}
         placeholder={props.placeholder} rows={filasTextAreaComentarioSol} value={props.value} onChange={textareaHandler}
-        required={props.esRequerido === null ? false : props.esRequerido} readOnly={props.readOnly}>{props.children}
+        required={props.esRequerido === null ? false : props.esRequerido} readOnly={props.readOnly}
+        style={{ overflow: "hidden" }}
+    >{props.children}
 
     </textarea>
 }

@@ -8,6 +8,7 @@ import { get } from '../js/crypt';
 
 import Sidebar from "./Common/Navs/Sidebar";
 import { useHistory } from 'react-router-dom';
+import { IsNullOrEmpty } from '../js/utiles';
 
 
 const mapStateToProps = (state) => {
@@ -49,6 +50,10 @@ function Home(props) {
 
     
     useEffect(() => {
+        if (datosUsuario.length > 0 && IsNullOrEmpty(datosUsuario[0].strCargo.trim())) {
+            navigate.push("/logout");
+            return;
+        }
 
         if (datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES") {
             navigate.push("/reprocesar")
@@ -60,11 +65,7 @@ function Home(props) {
             navigate.push("/solicitud")
         }
     }, [datosUsuario])
-    
-    /*
-    useEffect(() => {
-        navigate.push("/solicitud")
-    },[])*/
+
 
     //Se envia vacio para evitar renderizar el contenido y aparezca error por desmontaje de componente
     return (

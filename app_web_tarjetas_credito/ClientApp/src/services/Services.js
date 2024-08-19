@@ -386,6 +386,7 @@ export async function ServicioGetExecute(request, token, { encrypt = true, param
                         localStorage.removeItem('aceptar');
                         saveSession(false);
                         removeSession();
+                        console.log("RESPONSE 401 ,", response)
                         return { error: "Tu sesión ha caducado, por favor ingresa nuevamente al sistema", reload: true };
                     } else {
                         return { error: IsNullOrWhiteSpace(response.status) ? "Error en al obtener los datos" : response.status + " - " + response.statusText, reload: false };

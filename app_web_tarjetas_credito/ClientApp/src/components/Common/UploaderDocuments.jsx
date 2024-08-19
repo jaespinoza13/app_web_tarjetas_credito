@@ -5,7 +5,7 @@ import Modal from './Modal/Modal';
 import { fetchCrearSeparadoresAxentria, fetchAddDocumentosAxentria, fetchGetDocumentosAxentria, fetchDescargarDocumentoAxentria } from "../../services/RestServices";
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { base64ToBlob, verificarPdf, descargarArchivo, conversionBase64 } from '../../js/utiles';
+import { base64ToBlob, verificarPdf, descargarArchivo, conversionBase64, numberFormatMoney } from '../../js/utiles';
 
 const UploadDocumentos = (props) => {
 
@@ -545,7 +545,7 @@ const UploadDocumentos = (props) => {
 
                         <div style={{ display: "flex" }}>
                             <p className='normal'>VALOR SOLICITADO: </p>
-                            <p className="negrita">{`$ ${Number(props.cupoSolicitado).toLocaleString("en-US") || Number('0.00').toLocaleString("en-US")}`} </p>
+                            <p className="negrita">{`${numberFormatMoney(props.cupoSolicitado)}`} </p>
                         </div>
 
                     </section>
