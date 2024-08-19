@@ -220,7 +220,7 @@ const DatosFinancieros = (props) => {
                                 </div>
                                 <div className="f-row">
                                     {montoSolicitado < props.montoMinimoCupoSolicitado &&
-                                        <h5 className="ml-4">*El valor mínimo a solicitar debe superar los {`${numberFormatMoney(props.montoMinimoCupoSolicitado)}`}</h5>
+                                        <h4 className="ml-4">*El valor mínimo a solicitar debe superar los {`${numberFormatMoney(props.montoMinimoCupoSolicitado)}`}</h4>
                                     }
                                 </div>
                                 

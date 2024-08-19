@@ -11,6 +11,7 @@ import NavMenu from './Common/Navs/NavMenu';
 import Sidebar from './Common/Navs/Sidebar';
 import { getUser } from 'react-session-persist';
 import { get } from '../js/crypt';
+import { removeSession } from 'react-session-persist';
 
 const mapStateToProps = (state) => {
     return {
@@ -41,7 +42,17 @@ function Layout(props) {
     }, [props.token]);
 
     useEffect(() => {
+        /*console.log("token ", token)
+        console.log("location.pathname ", location.pathname)
+        console.log("validateToken(token) ", validateToken(token))*/
         if (location.pathname !== "/" && !IsNullOrWhiteSpace(token) && !validateToken(token)) {
+            //TODO: se agregaron la limpieza del localStorage, posible corrección para no se vuelva a repetir el cierre de sesion bucle
+            localStorage.removeItem('sender');
+            localStorage.removeItem('remitente');
+            localStorage.removeItem('aceptar');
+            removeSession();
+            //history.push("/logout");
+
             alert("Sesi\u00F3n caducada");
             window.location.href = "/";
         }

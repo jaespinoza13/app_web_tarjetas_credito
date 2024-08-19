@@ -9,6 +9,7 @@ import AlternateEmailRoundedIcon from '@mui/icons-material/AlternateEmailRounded
 import { fetchGetParametrosSistema } from "../../services/RestServices";
 import { useDispatch } from "react-redux";
 import { Fragment } from "react";
+import SearchIcon from "@mui/icons-material/Search";
 
 const RegistroCliente = (props) => {
 
@@ -323,17 +324,22 @@ const RegistroCliente = (props) => {
         <>
             {props.paso === 0 &&
                 <div className={`f-row w-100 sliding-div ${props.isVisibleBloque ? 'visibleY' : 'hiddenY'}`}>
-                    <Item xs={3} sm={3} md={3} lg={3} xl={3} className=""></Item>
-                    <Item xs={6} sm={6} md={6} lg={6} xl={6} className="justify-content-center">
-                        <div className="f-col w-100">
-                            <h3>Número de cédula</h3>
-                            <Input id="cedulaPaso1" type="number" className={`mt-3 ${isCedulaValida ? '' : 'no_valido'}`} placeholder="Ej. 1105970717" readOnly={false} value={documento} setValueHandler={setCedulaHandler} keyDown={(e) => isCedulaValida ? atajosHandler(e) : ''} tabIndex={0} maxlength={maxLengthCedula}></Input>
-                            {!isCedulaValida &&
-                                <h4 className="ml-1 mt-1 strong">*Ingrese una cédula válida</h4>
-                            }
+                    <Item xs={3} sm={3} md={3} lg={3} xl={3}></Item>
+                    <Item xs={6} sm={6} md={6} lg={6} xl={6}>
+                        <div className="f-row w-100 justify-content-center mt-5">
+                            <div className="f-col w-100 justify-content-center" style={{ maxWidth: "550px" }}>
+                                <div className="f-row justify-content-center">
+                                    <SearchIcon style={{ fontSize: 80, color: '#7ca4f4' }} />
+                                </div>
+                                <h3 className="f-row justify-content-center mb-3">Ingrese el número de identificación</h3>
+                                <Input id="cedulaPaso1" type="number" className={`mt-3 ${isCedulaValida ? '' : 'no_valido'}`} placeholder="Ej. 1105970717" readOnly={false} value={documento} setValueHandler={setCedulaHandler} keyDown={(e) => isCedulaValida ? atajosHandler(e) : ''} tabIndex={0} maxlength={maxLengthCedula}></Input>
+                                {!isCedulaValida &&
+                                    <h4 className="ml-1 mt-1 strong">*Ingrese una cédula válida</h4>
+                                }
+                            </div>
                         </div>
                     </Item>
-                    <Item xs={3} sm={3} md={3} lg={3} xl={3} className=""></Item>
+                    <Item xs={3} sm={3} md={3} lg={3} xl={3}></Item>
                 </div> 
             }
 

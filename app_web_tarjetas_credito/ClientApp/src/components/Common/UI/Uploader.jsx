@@ -29,9 +29,9 @@ const Uploader = (props) => {
                 <img className='mr-2' src="icons/menu.png" alt="" />
                 <input type="file" accept=".pdf" ref={inputCargaRef} style={{ display: 'none' }} onChange={handleFileChange} />
                 <div className='upload-info'>
-                    <h5 className='blue strong'>
+                    <h4 className='blue strong'>
                         {props.children}
-                    </h5>
+                    </h4>
                     <h6 className='blue filename'>{filename.substring(0, 22)}</h6>
                 </div>
             </div>

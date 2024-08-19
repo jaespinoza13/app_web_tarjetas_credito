@@ -284,7 +284,7 @@ function Solicitud(props) {
     }
 
     const deleteSolicitudHandler = () => {
-        fetchAddProcEspecifico(solicitudAnularId, solicitudCupoAnulacion, "EST_ANULADA", "", props.token, (data) => {
+        fetchAddProcEspecifico(solicitudAnularId, 0, "EST_ANULADA", "", props.token, (data) => {
             if (data.str_res_codigo === "000") {
                 setModalAnularVisible(false);
                 navigate.push('/')
@@ -318,16 +318,17 @@ function Solicitud(props) {
 
                     <Card>
                         <img style={{ width: "25px" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg" alt="Prospección"></img>
-                        <h4 className="mt-2">Prospección</h4>
-                        <h5 className="mt-2">Genera una nueva prospección de tarjeta de crédito</h5>
+                        <h3 className="mt-2">Prospección</h3>
+                        <h4 className="mt-2">Genera una nueva prospección de tarjeta de crédito</h4>
+
                         <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={irNuevaProspección}>Siguiente</Button>
                     </Card>
 
 
                     <Card>
                         <img style={{ width: "25px" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg" alt="Solicitud"></img>
-                        <h4 className="mt-2">Solicitud</h4>
-                        <h5 className="mt-5">Genera una nueva solicitud de tarjeta de crédito</h5>
+                        <h3 className="mt-2">Solicitud</h3>
+                        <h4 className="mt-2">Genera una nueva solicitud de tarjeta de crédito</h4>
                         <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={irNuevaSolicitud}>Siguiente</Button>
                     </Card>
 
@@ -335,8 +336,8 @@ function Solicitud(props) {
 
                     <Card>
                         <img style={{ width: "25px" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg" alt="Estado de cuenta"></img>
-                        <h4 className="mt-4">Estado de cuenta</h4>
-                        <h5 className="mt-4 mb-2">Generar estado de cuenta </h5>
+                        <h3 className="mt-4">Estado de cuenta</h3>
+                        <h4 className="mt-4 mb-3">Generar estado de cuenta </h4>
                         <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={descargarEstadoCuenta}>Descargar</Button>
                     </Card>
 
@@ -364,11 +365,11 @@ function Solicitud(props) {
                                         </td>
                                         <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{solicitud.dtt_fecha_solicitud}</td>
                                         <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{solicitud.str_identificacion}</td>
-                                        <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{`${solicitud.str_nombres} ${solicitud.str_apellidos}`}</td>
+                                        <td style={{ textWrap: "balance" }} onClick={() => { moveToSolicitud(solicitud.int_id) }}>{`${solicitud.str_nombres} ${solicitud.str_apellidos}`}</td>
                                         <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{numberFormatMoney(solicitud.dec_cupo_solicitado)}</td>
                                         {/*<td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{solicitud.str_calificacion}</td>*/}
-                                        <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{validarNombreOficina(solicitud.int_oficina_crea)}</td>
-                                        <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>
+                                        <td style={{ textWrap: "balance" }} onClick={() => { moveToSolicitud(solicitud.int_id) }}>{validarNombreOficina(solicitud.int_oficina_crea)}</td>
+                                        <td style={{ textWrap: "nowrap" }} onClick={() => { moveToSolicitud(solicitud.int_id) }}>
                                             <div>
                                                 {solicitud.str_estado}
                                                 {solicitud.str_analista ?
@@ -381,7 +382,7 @@ function Solicitud(props) {
                                         <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{solicitud.str_canal_crea}</td>
                                         
                                         <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{solicitud.str_usuario_crea}</td>
-                                        <td>
+                                        <td style={{ padding:"3px 0px 0px 0px"  }}>
                                             <div className="f-col justify-content-center icon-botton"
                                                 onClick={() => {
                                                     setSolicitudCupoAnulacion(solicitud.dec_cupo_solicitado);
@@ -424,9 +425,9 @@ function Solicitud(props) {
                                         <td style={{ maxWidth: "5%" }}>{prospecto.pro_id}</td>
                                         <td>{prospecto.pro_fecha_solicitud}</td>
                                         <td>{prospecto.pro_num_documento}</td>
-                                        <td>{`${prospecto.pro_nombres} ${prospecto.pro_apellidos}`}</td>
+                                        <td style={{ textWrap: "balance" }}>{`${prospecto.pro_nombres} ${prospecto.pro_apellidos}`}</td>
                                         <td>{numberFormatMoney(prospecto.pro_cupo_solicitado)}</td>
-                                        <td>{validarNombreOficina(prospecto.pro_oficina_crea)}</td>
+                                        <td style={{ textWrap: "balance" }}>{validarNombreOficina(prospecto.pro_oficina_crea)}</td>
                                         <td>{prospecto.pro_canal_crea}</td>
                                         <td>{prospecto.pro_usuario_crea}</td>
                                     </tr>);

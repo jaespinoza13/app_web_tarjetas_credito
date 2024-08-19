@@ -1551,7 +1551,6 @@ export function fetchGetMotivos(token, onSucces, dispatch) {
 */
 export function fetchUpdateCupoSolicitud(idSolicitud, idFlujoSol, estadoSol, decMonto, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
-    //TODO: revisar que valores actulizar por restrucuracion de la base
     let body = {
         int_id_solicitud: idSolicitud,
         int_id_flujo_sol: idFlujoSol,

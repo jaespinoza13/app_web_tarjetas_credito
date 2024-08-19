@@ -760,8 +760,8 @@ const VerSolicitud = (props) => {
             }, dispatch)
         }
         //Si cupo que se va aprobar es menor al que solicita el socio
-        else if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_VERIFICAR_CLIENTE") { //VERIFICAR SOCIO
-            fetchAddProcEspecifico(props.solicitud.solicitud, Number.parseFloat(montoAprobado).toFixed(2), "EST_VERIFICAR_CLIENTE", observacionComite, props.token, (data) => { //VERIFICAR SOCIO 11278
+        else if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_VERIFICAR_SOCIO") { //VERIFICAR SOCIO
+            fetchAddProcEspecifico(props.solicitud.solicitud, Number.parseFloat(montoAprobado).toFixed(2), "EST_VERIFICAR_SOCIO", observacionComite, props.token, (data) => { //VERIFICAR SOCIO 11278
                 if (data.str_res_codigo === "000") {
                     let decision = parametrosTC.find(param => param.prm_nemonico === valorDecisionSelect)
                     let parametroDecNec = parametrosTC.find(param => param.prm_valor_ini === props.solicitud.estado)
@@ -788,7 +788,7 @@ const VerSolicitud = (props) => {
             controlBool.estadoSig = "EST_APROBADA" // EST_APROBADA (COMITE)
         } else if (Number.parseFloat(montoAprobado) > 0 && (Number.parseFloat(montoAprobado) < Number.parseFloat(solicitudTarjeta?.str_cupo_solicitado)) && valorDecisionSelect === "EST_APROBADA") {
             controlBool.validador = true;
-            controlBool.estadoSig = "EST_VERIFICAR_CLIENTE" // EST_VERIFICAR_CLIENTE (SE VA HACIA ASESOR CREDITO NUEVAMENTE)
+            controlBool.estadoSig = "EST_VERIFICAR_SOCIO" // EST_VERIFICAR_SOCIO (SE VA HACIA ASESOR CREDITO NUEVAMENTE)
         } else if (Number.parseFloat(montoAprobado) > Number.parseFloat(solicitudTarjeta?.str_cupo_solicitado)) {
             controlBool.validador = false;
             controlBool.estadoSig = "0" // NO ES POSIBLE PASAR BANDEJA
@@ -829,7 +829,7 @@ const VerSolicitud = (props) => {
         else if (valorDecisionSelect !== "-1" && montoAprobado > 0 && validaCupo.validador) {//observacionComite !== "" && 
             if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_APROBADA") {// EST_APROBADA 11276
                 setIsActivoBtnDecision(false);
-            } else if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_VERIFICAR_CLIENTE") { //EST_VERIFICAR_CLIENTE 11278 por cupo inferior 
+            } else if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_VERIFICAR_SOCIO") { //EST_VERIFICAR_SOCIO 11278 por cupo inferior 
                 setIsActivoBtnDecision(false);
             } 
         }
@@ -1247,7 +1247,7 @@ const VerSolicitud = (props) => {
                                                             type="number" placeholder="Ej. 1000" disabled={false} setValueHandler={(e) => setMontoAprobado(e)} value={montoAprobado} max={solicitudTarjeta?.str_cupo_solicitado}></Input>
                                                         <div className="f-row">
                                                             {montoAprobado < controlMontoMinimoParametro &&
-                                                                <h5 className="strong ml-1 mt-1">*El valor mínimo a solicitar debe superar los {`${numberFormatMoney(controlMontoMinimoParametro)?.toLocaleString("en-US")}`}</h5>
+                                                                <h4 className="strong ml-1 mt-1">*El valor mínimo a solicitar debe superar los {`${numberFormatMoney(controlMontoMinimoParametro)?.toLocaleString("en-US")}`}</h4>
                                                             }
                                                         </div>
 

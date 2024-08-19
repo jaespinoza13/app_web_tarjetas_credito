@@ -28,8 +28,7 @@ body {
 
 nav {
     height: 4rem;
-    /*min-width: calc(100vw - 4rem);*/
-    min-width: 100vw;
+    min-width: calc(100vw - 2rem);
     background: transparent linear-gradient(89deg, #005CB9 0%, #00FFFF 150%) 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1607843137);
     opacity: 1;
@@ -150,6 +149,7 @@ textarea {
     padding: 0.4rem 1rem;
     resize: none;
     outline: none;
+    font-size: 12pt;
 }
 
     textarea:focus {
@@ -300,14 +300,12 @@ span.tooltip-info {
 
 .sidebar {
     min-width: 20rem;
-    /*min-height: calc(100vh - 4rem);*/
-    min-height: 100vh;
+    min-height: calc(100vh - 4rem);
     display: flex;
     flex-direction: column;
     align-items: center;
     border: 1px solid #D4E7FF;
     box-shadow: 0px 0px 6px rgba(7, 255, 214, 0.168627451);
-    /*position: sticky;*/
     position: static;
     top: 4rem;
     left: 0;
@@ -319,8 +317,7 @@ span.tooltip-info {
 
     .sidebar.sidebar_min {
         min-width: 5.5rem;
-        /*min-height: calc(100vh - 4rem);*/
-        min-height: 100vh;
+        min-height: calc(100vh - 4rem);
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -635,9 +632,10 @@ input, select {
     border-radius: 25px;
     outline: none;
     border: 1px solid rgba(9, 57, 208, 0.2);
-    padding: 0.3em 1em;
+    padding: 0.35em 1.1em;
     font-family: "Karbon", sans-serif;
     color: #3D3D3D;
+    font-size: 12pt;
 }
 
     input.squared {
@@ -695,12 +693,9 @@ textarea.no_valido {
 
 .content-cards {
     min-width: 100%;
-    /*max-width: 1550px;*/
     display: grid;
-    /*grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));*/
     grid-template-columns: repeat(auto-fill, 240px);
-    grid-gap: 10px;
-    /*gap: 10px;*/
+    grid-gap: 25px;
 }
 
 .card {
@@ -708,10 +703,10 @@ textarea.no_valido {
     border: 1px solid rgba(9, 57, 208, 0.2);
     display: flex;
     flex-direction: column;
-    padding: 1.8em 3em;
+    padding: 1.5em 2.7em;
     box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.0588235294);
     background-color: #fff;
-    min-width: 15rem;
+    min-width: 15.9rem;
 }
 
 .card_md {
