@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import '../../scss/main.css';
 import '../../scss/components/solicitud.css';
 import { useState, useEffect } from "react";
-import { fetchAddProcEspecifico, fetchGetSolicitudes } from "../../services/RestServices";
+import { fetchAddProcEspecifico, fetchGetFuncionalidadesTC, fetchGetSolicitudes } from "../../services/RestServices";
 import { IsNullOrWhiteSpace, numberFormatMoney } from '../../js/utiles';
 import Modal from '../Common/Modal/Modal';
 import Card from '../Common/Card';
@@ -106,6 +106,10 @@ function Solicitud(props) {
     //Carga de solicitudes (SE MODIFICA PARA QUE APAREZCA PRIMERA PANTALLA COMO PREDETERMINADA AL LOGUEARSE)
     useEffect(() => {
         if (props.token && !controlConsultaCargaComp) {
+            fetchGetFuncionalidadesTC(props.token, (data) => {
+                console.log("lst_funcSettings ", data.lst_funcSettings)
+            }, dispatch)
+
             fetchGetSolicitudes(props.token, (data) => {
                 stLstProspectos(data.prospectos);
                 stLstSolicitudes(data.solicitudes);

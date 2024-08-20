@@ -371,12 +371,12 @@ namespace plantilla_app_web.Controllers
             return Utiles.crypt(res, Request.Headers);
         }
 
-        [Route("getOficinas")]
+        [Route("getOficina")]
         [ServiceFilter(typeof(CryptoFilter))]
         [HttpPost]
-        public ResCrypt Post(ReqGetOficinas req)
+        public ResCrypt Post(ReqGetOficina req)
         {
-            ResGetOficinas res = tarjetaCreditoDat.getOficinas(req);
+            ResGetOficina res = tarjetaCreditoDat.getOficina(req);
             return Utiles.crypt(res, Request.Headers);
         }
 
@@ -401,11 +401,12 @@ namespace plantilla_app_web.Controllers
 
 
         [Route("getFuncionalidadesTC")]
+        [ServiceFilter(typeof(CryptoFilter))]
         [HttpPost]
-        public ResFuncionalidadesTC Post(ReqFuncionalidadesTC req)
+        public ResCrypt Post(ReqFuncionalidadesTC req)
         {
             ResFuncionalidadesTC res = tarjetaCreditoDat.getFuncionalidadesTC(req);
-            return res;
+            return Utiles.crypt(res, Request.Headers);
         }
 
     }

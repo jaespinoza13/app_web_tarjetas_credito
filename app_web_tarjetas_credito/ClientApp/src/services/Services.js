@@ -125,7 +125,7 @@ export const crearSeparadores = "CREAR_SEPARADORES"
 export const getReporteAval = "GET_REPORTE_AVAL"
 export const getAlertasCliente = "GET_ALERTAS_CLIENTE"
 export const getMotivos = "GET_MOTIVOS"
-export const getOficinas = "GET_OFICNAS"
+export const getOficina = "GET_OFICINA"
 export const getInfoProspecto = "GET_INFO_PROSPECTOS"
 export const getPermisosPerfil = "GET_PERMISOS_PERFIL"
 export const getFuncionalidadesTC = "GET_FUNCIONALIDADES_TC"
@@ -303,8 +303,8 @@ export function ServiceUrl(request, params = []) {
         case getMotivos:
             pathOut = "tc/getMotivos"
             break;         
-        case getOficinas:
-            pathOut = "tc/getOficinas"
+        case getOficina:
+            pathOut = "tc/getOficina"
             break;           
         case getInfoProspecto:
             pathOut = "tc/getInfoProspecto"
@@ -576,7 +576,7 @@ function pathRewrite(path) {
         "tc/getReporteAval": '/tarjetacredito/getReporteAval',
         "tc/getAlertasCliente": '/tarjetacredito/getAlertasCliente',
         "tc/getMotivos": '/tarjetacredito/getMotivos',
-        "tc/getOficinas": '/tarjetacredito/getOficinas',
+        "tc/getOficina": '/tarjetacredito/getOficina',
         "tc/getInfoProspecto": '/tarjetacredito/getInfoProspecto',
         "tc/getPermisosPerfil": '/tarjetacredito/getPermisosPerfil',
         "tc/getFuncionalidadesTC": '/tarjetacredito/getFuncionalidadesTC',

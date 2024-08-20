@@ -3,22 +3,19 @@ import Button from "./Button";
 
 const Toggler = (props) => {
     const [activeIndex, setActiveIndex] = useState(0);
+    const [lstToggles, setLstToggles] = useState(props.toggles);
     const togglerHandler = (index) => {
-        //console.log("ELEM CAMBIA TOG ", index)
         setActiveIndex(index)
         props.selectedToggle(index);
     }
 
 
     useEffect(() => {
-        /*if (props.toggles) {
-            console.log(props.toggles)
-            setActiveIndex(props.toggles[0].key);
-        }*/
-        //console.log(props.toggles)
-        setActiveIndex(props.toggles[0].key);
-        togglerHandler(props.toggles[0].key); //Se agrega para primera iteracion, retorne valor por defecto
-    }, []);
+        if (lstToggles.length > 0) {
+            setActiveIndex(lstToggles[0].key);
+            togglerHandler(lstToggles[0].key); //Se agrega para primera iteracion, retorne valor por defecto
+        }
+    }, [lstToggles]);
 
     useEffect(() => {
         if (props.toggleReset) {
@@ -30,7 +27,7 @@ const Toggler = (props) => {
     return (
         <div className={`toggler ${props.className}`} value={activeIndex}>
 
-            {props.toggles.map((element, ind) => (
+            {lstToggles.length > 0 && lstToggles.map((element, ind) => (
                 <Fragment key={ind}>
                 <Button
                     key={element.key}

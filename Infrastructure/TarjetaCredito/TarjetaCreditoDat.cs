@@ -1153,15 +1153,14 @@ namespace Infrastructure.TarjetaCredito
             }
             return res;
         }
-        //TODO: ELIMINAR
-        public ResGetOficinas getOficinas(ReqGetOficinas req)
+        public ResGetOficina getOficina(ReqGetOficina req)
         {
-            ResGetOficinas res = new ResGetOficinas();
+            ResGetOficina res = new ResGetOficina();
             try
             {
                 req.llenarDatosConfig(_settings);
-                req.str_id_servicio = "REQ_" + _settings.service_get_oficinas;
-                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_oficinas)
+                req.str_id_servicio = "REQ_" + _settings.service_get_oficina;
+                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_oficina)
                 {
                     ThrowOnAnyError = true,
                     MaxTimeout = _settings.time_out
@@ -1179,7 +1178,7 @@ namespace Infrastructure.TarjetaCredito
 
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    res = JsonSerializer.Deserialize<ResGetOficinas>(response.Content!)!;
+                    res = JsonSerializer.Deserialize<ResGetOficina>(response.Content!)!;
                 }
             }
             catch (Exception ex)
@@ -1265,35 +1264,11 @@ namespace Infrastructure.TarjetaCredito
             ResFuncionalidadesTC res = new ResFuncionalidadesTC();
             try
             {
-                Dictionary<string, string> funcionalidadesTC = new Dictionary<string, string>();
-
-                //var botonesAccion = _settings.MEDIO_APROBACION_TC;
-
-                funcionalidadesTC.Add("BTN_MEDIO_APROBACION_TC", _settings.BTN_MEDIO_APROBACION_TC);
-                funcionalidadesTC.Add("BTN_VER_SEGUIMIENTO_TC", _settings.BTN_VER_SEGUIMIENTO_TC);
-
                 res.str_id_servicio = "RES_GET_FUNCIONALIDADES_TC";
                 res.str_res_estado_transaccion = "OK";
                 res.str_res_codigo = "000";
-                res.lst_funcionalidades = funcionalidadesTC;
-                //res = JsonSerializer.Deserialize<ResFuncionalidadesTC>(_settings.botones_accion_ver_solicitud.FirstOrDefault());
-                //res.botones_accion_ver_solicitud = ;
-
-
-
-                /*if (botonesAccion != null)
-                {
-                    
-
-                  
-                    foreach (var item in botonesAccion)
-                    {
-
-                    }
-                }*/
-
-
-
+                res.lst_funcSettings = _settings.permisosAccion;
+                
             }
             catch (Exception ex)
             {

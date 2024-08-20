@@ -57,7 +57,7 @@ const context = [
     '/tarjetacredito/getReporteAval',
     '/tarjetacredito/getAlertasCliente',
     '/tarjetacredito/getMotivos',
-    '/tarjetacredito/getOficinas',
+    '/tarjetacredito/getOficina',
     '/tarjetacredito/getInfoProspecto',
     '/tarjetacredito/getPermisosPerfil',
     '/tarjetacredito/getFuncionalidadesTC',

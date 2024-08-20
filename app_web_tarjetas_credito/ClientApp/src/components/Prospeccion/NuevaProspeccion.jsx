@@ -448,9 +448,10 @@ const NuevaProspeccion = (props) => {
             refrescarInformacionHandler(false);
         }
         if (step === 1) {
-            //Se actuliza la informacion, de manera que se guarde la mas actualizada, en caso no se de click al actualizar
-            refrescarInformacionHandler(true);
-            await consultaAlertas(true);    
+            //Se actualiza la informacion, de manera que se guarde la mas actualizada, en caso no se de click al actualizar(Se comenta dado que aqui se registra la informacion que digita en los campos )
+            //refrescarInformacionHandler(true);
+            await consultaAlertas(true);
+            //console.log("INFO SOCI ", infoSocio)
         }
         if (step === 2) {
             //console.log("STEP 1, SHOW ", showAutorizacion)
@@ -467,8 +468,8 @@ const NuevaProspeccion = (props) => {
                 return;
             } else {
                 generarKey();
-                //Se actuliza la informacion, de manera que se guarde la mas actualizada, en caso no se de click al actualizar
-                refrescarInformacionHandler(true);                
+                //Se actualiza la informacion, de manera que se guarde la mas actualizada, en caso no se de click al actualizar(Se comenta dado que aqui se registra la informacion que digita en los campos )
+                //refrescarInformacionHandler(true);                
                 setActualStepper(2);
                 setVisitadosSteps([...visitadosSteps, actualStepper + 1])
                 setStep(3);                
@@ -558,7 +559,7 @@ const NuevaProspeccion = (props) => {
     }
 
     const handleLists = (e) => {
-        console.log("ALERTAS ",e)
+        //console.log("ALERTAS ",e)
         setLstValidaciones(e);
     }
 
@@ -607,7 +608,7 @@ const NuevaProspeccion = (props) => {
         datosInfo.str_nombres= e.nombres;
         datosInfo.str_apellido_paterno = e.apellidoPaterno;
         datosInfo.str_apellido_materno= e.apellidoMaterno;
-        setInfoSocio(datosInfo)
+        setInfoSocio(prevInfoSocio => ({ ...prevInfoSocio, ...datosInfo }));
     }
 
 

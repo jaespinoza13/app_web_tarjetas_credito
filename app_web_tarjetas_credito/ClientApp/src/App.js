@@ -13,7 +13,7 @@ import SeguimientoTransaccion from './components/Logs/SeguimientoTran';
 import { IsNullOrWhiteSpace, validateToken } from './js/utiles';
 import './scss/main.css'
 import { desencriptar, generate, get, set } from './js/crypt';
-import { fetchMenuPrincipal, fetchGetParametrosSistema, fetchGetFuncionalidadesTC } from './services/RestServices';
+import { fetchMenuPrincipal, fetchGetParametrosSistema, fetchGetFuncionalidadesTC, fetchGetPermisosPerfil } from './services/RestServices';
 import { connect, useDispatch } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import Solicitud from './components/Solicitud/Solicitud';
@@ -28,7 +28,8 @@ import RecepcionTarjetaAgencias from './components/Ordenes/RecepcionTarjetaAgenc
 import OrdenRecibirProveedor from './components/Ordenes/OrdenRecibirProveedor';
 import OrdenPedidoNueva from './components/Ordenes/OrdenPedidoNueva';
 import NuevaProspeccion from './components/Prospeccion/NuevaProspeccion';
-import { getParametrosTCStateAction } from './redux/ParametrosTC/actions';
+import { setParametrosTCStateAction } from './redux/ParametrosTC/actions';
+import { setFuncionalidadesSistemaAction } from './redux/FuncionalidadesSistema/actions';
 import Seguimiento from './components/Ordenes/Seguimiento';
 import RecibirOrdenesPersonalizadas from './components/Ordenes/RecibirOrdenesPersonalizadas';
 import Distribucion from './components/Ordenes/Distribucion';
@@ -99,11 +100,12 @@ function Menus({ listaMenus, id_perfil, token, setListas, setListaFunc, listaFun
             //Obtener parametros y se almacena por medio de redux
             fetchGetParametrosSistema("", tokeni, (data) => {
                 setExisteParametrosSistema(true);
-                dispatch(getParametrosTCStateAction({ lst_parametros: data.lst_parametros }));
+                dispatch(setParametrosTCStateAction({ lst_parametros: data.lst_parametros }));
             }, dispatch)
-            /*fetchGetFuncionalidadesTC(tokeni, (data) => {
-                console.log("DATA ", data)
-            }, dispatch)*/
+            fetchGetPermisosPerfil(tokeni, (data) => {
+                dispatch(setFuncionalidadesSistemaAction({ lst_funcionalidades: data.lst_funcionalidades }));
+                console.log("lst_funcionalidades ", data.lst_funcionalidades)
+            }, dispatch)
         }
     }, [idPerfil, tokeni, existeParametrosSistema.length, dispatch, sendedParams, existeParametrosSistema]);
        
