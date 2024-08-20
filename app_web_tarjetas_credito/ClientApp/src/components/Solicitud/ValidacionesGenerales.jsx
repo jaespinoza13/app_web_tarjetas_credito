@@ -2,7 +2,7 @@
 import '../../scss/components/ValidacionesGenerales.css';
 import { useState, Fragment, useEffect } from "react";
 import Button from "../Common/UI/Button";
-import { fetchScore } from "../../services/RestServices";
+import { fetchGetOficina, fetchGetParametrosSistema, fetchScore } from "../../services/RestServices";
 import { useDispatch, connect } from 'react-redux';
 import Uploader from "../Common/UI/Uploader";
 import { base64ToBlob, descargarArchivo, generarFechaHoy, verificarPdf, conversionBase64, IsNullOrWhiteSpace } from "../../js/utiles";
@@ -27,6 +27,7 @@ const ValidacionesGenerales = (props) => {
     const [archivoAutorizacion, setArchivoAutorizacion] = useState('');
     const [isDocCargado, setIsDocCargado] = useState(false);
     const [oficinas, setOficinas] = useState([]);
+    const [ciudadDeOficina, setCiudadDeOficina] = useState("");
 
 
     useEffect(() => {
@@ -44,6 +45,15 @@ const ValidacionesGenerales = (props) => {
 
 
     }, []);
+
+    useEffect(() => {
+        if (props.datosUsuario?.length > 0) {
+            fetchGetOficina(props.token, (data) => {
+                setCiudadDeOficina(data.lst_oficinas[0].ciudad);
+            }, dispatch)
+        }
+    }, [props.datosUsuario]);
+
 
     useEffect(() => {
         if (!props.onShowAutorizacion) {
@@ -73,9 +83,9 @@ const ValidacionesGenerales = (props) => {
     const getContrato = async () => {
         const nombresApellidos = props.infoSocio.str_nombres + " " + props.infoSocio.str_apellido_paterno + " " + props.infoSocio.str_apellido_materno;
 
-        const oficinaFormato = oficinas.find(ofic => Number(ofic.prm_valor_fin) === Number(props.datosUsuario[0].strUserOficina))
+        //const oficinaFormato = oficinas.find(ofic => Number(ofic.prm_valor_fin) === Number(props.datosUsuario[0].strUserOficina))
 
-        await fetchScore("C", props.infoSocio.cedula, nombresApellidos.toUpperCase(), oficinaFormato.prm_descripcion, props.datosUsuario[0].strOficial, props.datosUsuario[0].strCargo, props.token, (data) =>
+        await fetchScore("C", props.infoSocio.cedula, nombresApellidos.toUpperCase(), ciudadDeOficina, props.datosUsuario[0].strOficial, props.datosUsuario[0].strCargo, props.token, (data) =>
         {
             descargarArchivoConsulta(data);
         }, dispatch);

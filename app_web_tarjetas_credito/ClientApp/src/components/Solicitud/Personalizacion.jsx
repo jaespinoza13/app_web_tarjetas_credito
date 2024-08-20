@@ -26,14 +26,15 @@ const Personalizacion = (props) => {
     const [direccionEntrega, setDireccionEntrega] = useState("-1");
     const [tiposDireccion, setTiposDireccion] = useState([]);
     const [oficinas, setOficinas] = useState([]);
+    const [tiposEntrega, setTiposEntrega] = useState([]);
 
 
     //TODO consumir lo parametrizado
-    const tiposEntrega = [
+    /*const tiposEntrega = [
         { image: "", textPrincipal: "Retiro en agencia", textSecundario: "", key: "Retiro en agencia" },
         //Dehabilitado para se realizo este tipo de entrega
         { image: "", textPrincipal: "Entrega en domicilio", textSecundario: "", key: "Entrega en domicilio" }
-    ];
+    ];*/
 
     useEffect(() => {
         if (props.lstDomicilio && props.lstDomicilio.length > 0 && props.lstDomicilio[0].str_dir_ciudad) {
@@ -62,9 +63,16 @@ const Personalizacion = (props) => {
             { image: "", textPrincipal: `${props.nombres.split(" ")[0]} ${props.str_apellido_paterno}`, textSecundario: "", key: `${props.nombres.split(" ")[0]} ${props.str_apellido_paterno}` },
             { image: "", textPrincipal: `${props.nombres.split(" ")[1]} ${props.str_apellido_paterno}`, textSecundario: "", key: `${props.nombres.split(" ")[1]} ${props.str_apellido_paterno}` }
         ]);
-
     }, [props]);
 
+    useEffect(() => {
+        setTiposEntrega(props.lstTiposEntregaTC)
+
+        if (props.lstTiposEntregaTC.length > 0) {
+            const defaultEntrega = props.lstTiposEntregaTC[0];
+            setTipoEntrega(defaultEntrega.textPrincipal);
+        }
+    }, [props.lstTiposEntregaTC])
 
 
     useEffect(() => {
@@ -83,8 +91,6 @@ const Personalizacion = (props) => {
             }));
         setOficinas(oficinasParametrosTC)
 
-        const defaultEntrega = tiposEntrega.shift(0);
-        setTipoEntrega(defaultEntrega.textPrincipal);
 
         const defaultNombre = `${props.nombres.split(" ")[0]} ${props.str_apellido_paterno}`;
         props.onNombreTarjeta(defaultNombre);
@@ -111,7 +117,7 @@ const Personalizacion = (props) => {
     }
 
     const direccionEntregaHandler = (event) => {
-        if (tipoEntrega === "Retiro en agencia") {
+        if (tipoEntrega === "OFICINA") {
             setDireccionEntrega(event.target.value);
         } else {
             setDireccionEntrega(tiposDireccion.find(direccion => direccion.key === event));
@@ -123,7 +129,7 @@ const Personalizacion = (props) => {
         <Card className='mt-2'>
             <div>
                 <h3 className="mb-3">Personalización</h3>
-                <h5 className={"mb-2"}>Selecciona el nombre a imprimir en la tarjeta</h5>
+                <h4 className={"mb-2"}>Selecciona el nombre a imprimir en la tarjeta</h4>
                 {nombresTarjeta.length > 0 &&
                     <Toggler className={"mb-3"} selectedToggle={nombreSeleccionHandler} toggles={nombresTarjeta}>
                     </Toggler>
@@ -131,11 +137,17 @@ const Personalizacion = (props) => {
             </div>
             <div>
                 <h3 className="mb-3">Entrega de la tarjeta</h3>
-                <h5 className={"mb-2"}>Forma de entrega</h5>
-                <Toggler className={"mb-3"} selectedToggle={tipoEntregaHandler} toggles={tiposEntrega}>
-                </Toggler>
+                <h4 className={"mb-2"}>Forma de entrega</h4>
+
+                {tiposEntrega.length > 0 &&
+
+                    <Toggler className={"mb-3"} selectedToggle={tipoEntregaHandler} toggles={tiposEntrega}>
+                    </Toggler>
+                }
+
+
                 {tipoEntrega !== "" && <h3 className={"mb-2"}>Selecciona una opción para la entrega</h3>}
-                {tipoEntrega === "Retiro en agencia" && <div>
+                {tipoEntrega === "OFICINA" && <div>
 
                     <select disabled={false} onChange={direccionEntregaHandler} value={direccionEntrega}>
                         {oficinas.length > 0
@@ -145,14 +157,12 @@ const Personalizacion = (props) => {
                                         <Fragment key={index} >
                                             <option disabled={true} value={"-1"}>Seleccione una opción</option>
                                             <option value={oficina.prm_valor_fin}> {oficina.prm_descripcion}</option>
-                                            {/* <option value={oficina.id_oficina}> {oficina.agencia}</option>*/}
                                         </Fragment>
                                     )
                                 }
                                 else {
                                     return (
                                         <Fragment key={index} >
-                                            {/*<option value={oficina.id_oficina}> {oficina.agencia}</option>*/}
                                             <option value={oficina.prm_valor_fin}> {oficina.prm_descripcion}</option>
                                         </Fragment>
                                     )
@@ -160,7 +170,7 @@ const Personalizacion = (props) => {
                             })}
                     </select>
                 </div>}
-                {tipoEntrega === "Entrega en domicilio" &&
+                {tipoEntrega === "COURRIER" &&
                     <div>
                         <Toggler className={"f-col"} selectedToggle={direccionEntregaHandler} toggles={tiposDireccion}></Toggler>
                     </div>

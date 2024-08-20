@@ -2,7 +2,7 @@
 
 namespace Domain.Models.TarjetaCredito.GetOficinas
 {
-    public class ReqGetOficinas: Header
+    public class ReqGetOficina: Header
     {
     }
 }

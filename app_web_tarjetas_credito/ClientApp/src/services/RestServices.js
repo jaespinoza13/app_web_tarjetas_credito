@@ -1,9 +1,9 @@
-import { ServicioGetExecute, getMenuPrincipal, getPreguntaUsuario, ServicioPostExecute, getValidarPreguntaUsuario, setResetPassword, getLogin, getLoginPerfil, getPreguntas, setPreguntas, setPassword, setPasswordPrimeraVez, getListaBases, getListaConexiones, setConexion, addConexion, getListaSeguimiento, getListaDocumentos, getListaColecciones, getDescargarLogsTexto, getLogsTexto, getContenidoLogsTexto, getValidaciones, getScore, getInfoSocio, getInfoEco, addAutorizacion, getSolicitudes, addSolicitud, getContrato, getInfoFinan, addProspecto, getFlujoSolicitud, addComentarioAsesor, addComentarioSolicitud, updResolucion, addResolucion, getResolucion, addProcEspecifico, updSolicitud, getParametros, getReporteOrden, getOrdenes, getTarjetasCredito, getInforme, getMedioAprobacion, getSeparadores, addDocumentosAxentria, getDocumentosAxentria, crearSeparadores, getReporteAval, getAlertasCliente, getMotivos, getOficinas, getInfoProspecto, getPermisosPerfil, getFuncionalidadesTC } from './Services';
+import { ServicioGetExecute, getMenuPrincipal, getPreguntaUsuario, ServicioPostExecute, getValidarPreguntaUsuario, setResetPassword, getLogin, getLoginPerfil, getPreguntas, setPreguntas, setPassword, setPasswordPrimeraVez, getListaBases, getListaConexiones, setConexion, addConexion, getListaSeguimiento, getListaDocumentos, getListaColecciones, getDescargarLogsTexto, getLogsTexto, getContenidoLogsTexto, getValidaciones, getScore, getInfoSocio, getInfoEco, addAutorizacion, getSolicitudes, addSolicitud, getContrato, getInfoFinan, addProspecto, getFlujoSolicitud, addComentarioAsesor, addComentarioSolicitud, updResolucion, addResolucion, getResolucion, addProcEspecifico, updSolicitud, getParametros, getReporteOrden, getOrdenes, getTarjetasCredito, getInforme, getMedioAprobacion, getSeparadores, addDocumentosAxentria, getDocumentosAxentria, crearSeparadores, getReporteAval, getAlertasCliente, getMotivos, getOficina, getInfoProspecto, getPermisosPerfil, getFuncionalidadesTC } from './Services';
 import { setAlertText, setErrorRedirigir } from "../redux/Alert/actions";
 import hex_md5 from '../js/md5';
 import { desencriptar, generate, get, set } from '../js/crypt';
 import { getUser, removeSession, saveSession } from 'react-session-persist/lib';
-import { cifrarConexionesLocales, descargarArchivo, IsNullOrWhiteSpace, obtenerConexionesLocales } from '../js/utiles';
+import { cifrarConexionesLocales, IsNullOrWhiteSpace, obtenerConexionesLocales } from '../js/utiles';
 import { setListaBases } from '../redux/Logs/ListaBases/actions';
 
 /**
@@ -1897,12 +1897,12 @@ export async function fetchGetAlertasCliente(strCedula, strTipoValidacion, strFe
     });
 }
 
-export function fetchGetOficinas(token, onSucces, dispatch) {
+export function fetchGetOficina(token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
     let body = {
 
     }
-    ServicioPostExecute(getOficinas, body, token, { dispatch: dispatch }).then((data) => {
+    ServicioPostExecute(getOficina, body, token, { dispatch: dispatch }).then((data) => {
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
@@ -1929,7 +1929,6 @@ export function fetchGetInfoProspecto(cedula, prospectoId, token, onSucces, disp
         int_id_prospecto: Number(prospectoId)
     }
     ServicioPostExecute(getInfoProspecto, body, token, { dispatch: dispatch }).then((data) => {
-        console.log("data ", data)
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
@@ -1948,14 +1947,13 @@ export function fetchGetInfoProspecto(cedula, prospectoId, token, onSucces, disp
     });
 }
 
-export function fetchGetPermisosPerfil(idPerfil, token, onSucces, dispatch) {
+export function fetchGetPermisosPerfil(token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
     let body = {
-        //str_num_documento: idPerfil,
         
     }
     ServicioPostExecute(getPermisosPerfil, body, token, { dispatch: dispatch }).then((data) => {
-        console.log("data ", data)
+        //console.log("data ", data)
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
@@ -1980,7 +1978,7 @@ export function fetchGetFuncionalidadesTC(token, onSucces, dispatch) {
 
     }
     ServicioPostExecute(getFuncionalidadesTC, body, token, { dispatch: dispatch }).then((data) => {
-        console.log("data ", data)
+        //console.log("data ", data)
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));

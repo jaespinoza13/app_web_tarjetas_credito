@@ -3,7 +3,7 @@ import { IsNullOrEmpty, IsNullOrWhiteSpace, base64ToBlob, conversionTipoTC, desc
 import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { useEffect, useState } from "react";
-import { fetchGetInforme, fetchGetFlujoSolicitud, fetchAddComentarioAsesor, fetchAddComentarioSolicitud, fetchGetResolucion, fetchAddProcEspecifico, fetchUpdateCupoSolicitud, fetchGetMedioAprobacion, fetchGetSeparadores, fetchInfoSocio, fetchGetMotivos, fetchAddResolucion } from "../../services/RestServices";
+import { fetchGetInforme, fetchGetFlujoSolicitud, fetchAddComentarioAsesor, fetchAddComentarioSolicitud, fetchGetResolucion, fetchAddProcEspecifico, fetchUpdateCupoSolicitud, fetchGetMedioAprobacion, fetchGetSeparadores, fetchInfoSocio, fetchGetMotivos, fetchAddResolucion, fetchGetFuncionalidadesTC } from "../../services/RestServices";
 import Card from "../Common/Card";
 import Table from "../Common/Table";
 import Textarea from "../Common/UI/Textarea";
@@ -281,6 +281,11 @@ const VerSolicitud = (props) => {
 
             }, dispatch);
         }
+
+        fetchGetFuncionalidadesTC(props.token, (data) => {
+            console.log("lst_funcSettings ", data.lst_funcSettings)
+        }, dispatch)
+
     }, []);
 
 

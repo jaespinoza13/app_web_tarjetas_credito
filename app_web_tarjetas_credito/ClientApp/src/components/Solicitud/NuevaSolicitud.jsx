@@ -187,33 +187,17 @@ const NuevaSolicitud = (props) => {
             setOficinasParametros(oficinasParametrosTC)
         }
 
-        
-
-        //TODO REVISAR
+        //Parametros para tipo de entrega de la tarjeta de crédito
         fetchGetParametrosSistema("TIPO_ENTREGA_WS_TC", props.token, (data) => {
-            console.log("data.lst_parametros ", data.lst_parametros)
             if (data.lst_parametros.length > 0) {
-                /*let informacion = [];
-                data.lst_parametros.forEach((param) => {
-                    let nuevoTipoEntrega = {
-                        textPrincipal: param.str_valor_ini,
-                        key: param.str_valor_ini,
-                        vigencia: param.bl_vigencia,
-                        idETC: Number(param.int_id_parametro),
-                        image: "",
-                        textSecundario: "",
-                    }
-                    informacion.push(nuevoTipoEntrega)
-                    nuevoTipoEntrega = null;
-                });
-                setLstTiposEntrega(informacion);*/
-                let ParametrosEntregaTC = data.lst_parametros.map(estadoEnt => ({
+                let ParametrosEntregaTC = data.lst_parametros.filter(objet => objet.bl_vigencia === true).map((estadoEnt,index) => ({
                     key: estadoEnt.str_valor_ini,
                     textPrincipal: estadoEnt.str_valor_ini,
                     vigencia: estadoEnt.bl_vigencia,
                     image: "",
                     textSecundario: "",
-                }));
+                    int_id_param: estadoEnt.int_id_parametro
+                })).sort((a, b) => a.int_id_param - b.int_id_param);
                 setLstTiposEntrega(ParametrosEntregaTC);
 
             }

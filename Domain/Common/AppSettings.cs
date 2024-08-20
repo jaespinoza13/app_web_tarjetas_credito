@@ -112,14 +112,15 @@
         public string service_crear_separadores { get; set; } = String.Empty;
         public string service_get_alertas_cliente { get; set; } = String.Empty;
         public string service_get_motivos { get; set; } = String.Empty;
-        public string service_get_oficinas { get; set; } = String.Empty;
+        public string service_get_oficina { get; set; } = String.Empty;
         public string service_get_info_prospecto { get; set; } = String.Empty;
         public string service_get_permisos_perfil { get; set; } = String.Empty;
         #endregion
 
         #region BotonesAccionSolicitud
-        public string BTN_MEDIO_APROBACION_TC { get; set; } = String.Empty;
-        public string BTN_VER_SEGUIMIENTO_TC { get; set; } = String.Empty;
+        //public string BTN_MEDIO_APROBACION_TC { get; set; } = String.Empty;
+        //public string BTN_VER_SEGUIMIENTO_TC { get; set; } = String.Empty;
+        public List<string> permisosAccion { get; set; } = new();
 
         #endregion
 
