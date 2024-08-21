@@ -44,7 +44,6 @@ const context = [
     '/tarjetacredito/addResolucion',
     '/tarjetacredito/updResolucion',
     "/tarjetacredito/getReporteOrden",
-    "/tarjetacredito/getOrdenes",
     "/tarjetacredito/getTarjetasCredito",
     "/tarjetacredito/getMedioAprobacion",
     '/tarjetacredito/addProcEspecifico',
@@ -61,7 +60,7 @@ const context = [
     '/tarjetacredito/getInfoProspecto',
     '/tarjetacredito/getPermisosPerfil',
     '/tarjetacredito/getFuncionalidadesTC',
-
+    '/ordenestc/getOrdenes'
 ];
 
 module.exports = function(app) {

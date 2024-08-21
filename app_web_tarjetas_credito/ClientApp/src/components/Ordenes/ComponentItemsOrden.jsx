@@ -2,12 +2,24 @@
 import Input from "../Common/UI/Input";
 import AccordionV2 from '../Common/UI/AccordionV2';
 import Chip from "../Common/UI/Chip";
+import { IsNullOrWhiteSpace } from "../../js/utiles";
+import { connect, useDispatch } from "react-redux";
+import { setSeguimientOrdenAction } from "../../redux/SeguimientoOrden/actions";
+
+
+const mapStateToProps = (state) => {
+    return {
+        seguimientoOrden:state.GetSeguimientoOrden.data,
+    };
+};
+
 
 const ComponentItemsOrden = (props) => {
 
     const [checkSeleccionPadre, setCheckSeleccionPadre] = useState(false);
     const [checkSeleccionHijo, setCheckSeleccionHijo] = useState(false);
     const [totalItemOrdenCheck, setTotalItemOrdenCheck] = useState([]);
+    const [infoSeguimiento, setInfoSeguimiento] = useState();
 
     const setStatusCheckHandler = (valor) => {
         setCheckSeleccionHijo(valor);
@@ -26,6 +38,14 @@ const ComponentItemsOrden = (props) => {
     }, [totalItemOrdenCheck])
 
 
+    useEffect(() => {  
+        console.log("PROPS seguimientoOrden ", props.seguimientoOrden)
+        if (props.seguimientoOrden) {
+            setInfoSeguimiento(props.seguimientoOrden)
+        }
+    }, [props.seguimientoOrden])
+
+
     return (
         <Fragment key={props.index}>
             <ComponentHeaderAccordion
@@ -40,7 +60,8 @@ const ComponentItemsOrden = (props) => {
                     ordenItem={props.orden}
                     checkStatusSeleccion={checkSeleccionHijo}
                     returnItemOrden={(tarj) => itemsOrdenCkeckTotal(tarj, props.orden.oficina)}
-                    opcionItemDisable={props.opcionItemDisable }
+                    opcionItemDisable={props.opcionItemDisable}
+                    seguimientoRedux={infoSeguimiento }
                 ></ComponentOrdenItems>
             </ComponentHeaderAccordion>
 
@@ -166,9 +187,13 @@ const ComponentHeaderAccordion = (props) => {
 }
 
 
-const ComponentOrdenItems = ({ ordenItem, checkStatusSeleccion, returnItemOrden, opcionItemDisable }) => {
+const ComponentOrdenItems = ({ ordenItem, checkStatusSeleccion, returnItemOrden, opcionItemDisable, seguimientoRedux }) => {
+
+    const dispatch = useDispatch();
 
     const [tarjetasCheckBox, setTarjetaCheckBox] = useState([]);
+    const [isActivarOpciones, setIsActivarOpciones] = useState();
+    const [controlActualizoRedux, setControlActualizoRedux] = useState(false);
 
     useEffect(() => {
         seleccionMultiple();
@@ -204,8 +229,27 @@ const ComponentOrdenItems = ({ ordenItem, checkStatusSeleccion, returnItemOrden,
         }
     }
 
-    return (
+    const clickHandler = (cedula) => {
+        //console.log("PROPS seguimientoOrden ", seguimientoRedux)
+        if (seguimientoRedux.seguimientoAccionClick) {
+            dispatch(setSeguimientOrdenAction({
+                seguimientoAccionClick: seguimientoRedux.seguimientoAccionClick,
+                seguimientoCedula: cedula
+            }))
+        }
+    }
+
+    useEffect(() => {
+        //console.log("PROPS seguimientoOrden ", seguimientoRedux)
+        if (seguimientoRedux !== undefined && Object.entries(seguimientoRedux).length !== 0) {
+            setIsActivarOpciones(seguimientoRedux.seguimientoAccionClick)
+            setControlActualizoRedux(true)
+        }
+    }, [seguimientoRedux])
+
+    return (        
         <Fragment key={ordenItem.cedula}>
+            {controlActualizoRedux &&
             <table className='table-accordion2' style={{ overflowY: "hidden" }}>
                 <thead className='thead-accordion2'>
                     <tr>
@@ -221,7 +265,14 @@ const ComponentOrdenItems = ({ ordenItem, checkStatusSeleccion, returnItemOrden,
                     {ordenItem.lst_socios.map(cliente => {
                         return (
                             <tr key={cliente.cedula}>
-                                <td className='paddingSpacing'>{cliente.cedula}</td>
+                                <td className='paddingSpacing' onClick={() => clickHandler(cliente.cedula)}>
+                                    {isActivarOpciones &&
+                                        <div style={{ fontSize: "1.07rem", color: "#004CAC", fontFamily: "Karbon-Bold", textDecoration: "underline", cursor: "pointer" }}>
+                                            {cliente.cedula}
+                                        </div>
+                                    }
+                                    {!isActivarOpciones && cliente.cedula}
+                                </td>
                                 <td className='paddingSpacing'>{cliente.nombres}</td>
                                 <td className='paddingSpacing'>{cliente.fecha_proceso}</td>
                                 <td className='paddingSpacing'>{cliente.tipo_tarjeta}</td>
@@ -238,10 +289,11 @@ const ComponentOrdenItems = ({ ordenItem, checkStatusSeleccion, returnItemOrden,
                         )
                     })}
                 </tbody>
-            </table>
+                </table>
+            }
         </Fragment>
+        
     )
 }
 
-
-export default ComponentItemsOrden;
+export default connect(mapStateToProps, {})(ComponentItemsOrden);

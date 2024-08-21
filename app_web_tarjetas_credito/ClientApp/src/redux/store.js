@@ -18,6 +18,7 @@ import { GetParametrosTC } from "./ParametrosTC/reducers"
 import { prospecto } from "./Prospecto/reducers"
 import { dataSimulacionCupo } from "./DataSimulacion/reducers"
 import { GetFuncionalidadesSistema } from "./FuncionalidadesSistema/reducers"
+import { GetSeguimientoOrden } from "./SeguimientoOrden/reducers"
 
 const Reducers = combineReducers({
     GetParametros,
@@ -35,7 +36,8 @@ const Reducers = combineReducers({
     GetParametrosTC,
     prospecto,
     dataSimulacionCupo,
-    GetFuncionalidadesSistema
+    GetFuncionalidadesSistema,
+    GetSeguimientoOrden
 
 });
 

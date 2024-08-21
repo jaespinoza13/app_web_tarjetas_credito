@@ -112,7 +112,6 @@ export const getResolucion = "GET_RESOLUCION"
 export const addResolucion = "ADD_RESOLUCION"
 export const updResolucion = "UPD_RESOLUCION"
 export const getReporteOrden = "GET_REPORTE_ORDEN"
-export const getOrdenes = "GET_ORDENES_TC"
 export const getTarjetasCredito = "GET_TARJETAS_CREDITO"
 export const getMedioAprobacion = "GET_MEDIO_APROBACION"
 export const addProcEspecifico = "ADD_PROCESO_ESPECIFICO"
@@ -129,6 +128,9 @@ export const getOficina = "GET_OFICINA"
 export const getInfoProspecto = "GET_INFO_PROSPECTOS"
 export const getPermisosPerfil = "GET_PERMISOS_PERFIL"
 export const getFuncionalidadesTC = "GET_FUNCIONALIDADES_TC"
+
+/** Ordenes */
+export const getOrdenes = "GET_ORDENES_TC"
 
 /**
  * Obtener la Url de un servicio de acuerdo a su nombre de Proceso Unico
@@ -264,9 +266,6 @@ export function ServiceUrl(request, params = []) {
         case getReporteOrden:
             pathOut = "tc/getReporteOrden"
             break;
-        case getOrdenes:
-            pathOut = "tc/getOrdenes"
-            break;
         case getTarjetasCredito:
             pathOut = "tc/getTarjetasCredito"
             break;
@@ -314,7 +313,10 @@ export function ServiceUrl(request, params = []) {
             break;            
         case getFuncionalidadesTC:
             pathOut = "tc/getFuncionalidadesTC"
-            break;        
+            break;
+        case getOrdenes:
+            pathOut = "ord/getOrdenes"
+            break;      
         default:
             return null;
     }
@@ -563,7 +565,6 @@ function pathRewrite(path) {
         "tc/addResolucion": '/tarjetacredito/addResolucion',
         "tc/updResolucion": '/tarjetacredito/updResolucion',
         "tc/getReporteOrden": '/tarjetacredito/getReporteOrden',
-        "tc/getOrdenes": '/tarjetacredito/getOrdenes',
         "tc/getTarjetasCredito": '/tarjetacredito/getTarjetasCredito',
         "tc/getMedioAprobacion": '/tarjetacredito/getMedioAprobacion',
         "tc/addProcEspec": '/tarjetacredito/addProcEspecifico',
@@ -580,6 +581,7 @@ function pathRewrite(path) {
         "tc/getInfoProspecto": '/tarjetacredito/getInfoProspecto',
         "tc/getPermisosPerfil": '/tarjetacredito/getPermisosPerfil',
         "tc/getFuncionalidadesTC": '/tarjetacredito/getFuncionalidadesTC',
+        "ord/getOrdenes": '/ordenestc/getOrdenes',
     };
     if (path) {
         var p = context[path];

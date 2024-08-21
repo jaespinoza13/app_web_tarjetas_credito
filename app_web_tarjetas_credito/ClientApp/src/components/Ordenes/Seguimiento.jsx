@@ -13,6 +13,8 @@ import { get } from '../../js/crypt';
 import Table from '../Common/Table';
 import Chip from '../Common/UI/Chip';
 import TogglerV2 from '../Common/UI/TogglerV2';
+import { fetchGetOrdenes } from '../../services/RestServices';
+import { setSeguimientOrdenAction } from '../../redux/SeguimientoOrden/actions';
 
 const mapStateToProps = (state) => {
     var bd = state.GetWebService.data;
@@ -23,7 +25,8 @@ const mapStateToProps = (state) => {
         ws: bd,
         listaFuncionalidades: state.GetListaFuncionalidades.data,
         token: state.tokenActive.data,
-        parametrosTC: state.GetParametrosTC.data
+        parametrosTC: state.GetParametrosTC.data,
+        //seguimientoOrden:state.GetSeguimientoOrden.data,
     };
 };
 
@@ -46,7 +49,7 @@ function Seguimiento(props) {
     const [lstItemsReceptarOficina, setLstItemsReceptarOficina] = useState([]);
     const [modalEnviarPersonalizacion, setModalEnviarPersonalizacion] = useState(false);
     const [selectFiltrarOrdenes, setSelectFiltrarOrdenes] = useState("PENDIENTE DE PERSONALIZAR");
-    const [selectAccionAsistAgencia, setSelectAccionAsistAgencia] = useState("-1");
+    //const [selectAccionAsistAgencia, setSelectAccionAsistAgencia] = useState("-1");
 
     const [comboOpcionesSeguimiento, setComboOpcionesSeguimiento] = useState(
         [
@@ -79,12 +82,15 @@ function Seguimiento(props) {
 
     useEffect(() => {
         if (selectFiltrarOrdenes === "PENDIENTE DE PERSONALIZAR") {
+            setSeguimientoOrdenRedux(true);
             setTextoBotonAccion("Enviar");
         }
         else if (selectFiltrarOrdenes === "PENDIENTE DE VERIFICAR") {
+            setSeguimientoOrdenRedux(false);
             setTextoBotonAccion("Recibir");
         }
         else if (selectFiltrarOrdenes === "PENDIENTE DE DISTRIBUIR") {
+            setSeguimientoOrdenRedux(false);
             setTextoBotonAccion("Distribuir");
         }
         //setTotalTarjetasAccionDiccionario([])
@@ -93,6 +99,8 @@ function Seguimiento(props) {
 
     useEffect(() => {
         setLstOrdenesFiltradas(ordenesV2.filter(tarjetas => tarjetas.estado === "PENDIENTE DE PERSONALIZAR"))
+        //setSeguimientoOrdenRedux(true);
+
         setLstItemsReceptarOficina([...ordenesAgencias]);
 
         const strOficial = get(localStorage.getItem("sender_name"));
@@ -122,7 +130,10 @@ function Seguimiento(props) {
             setSubMenuOpcionesPerfil(comboOpcionesSeguimiento)
         }
 
+        fetchGetOrdenes(12883, props.token, (data) => {
+            console.log("lst_ordenes_tc_ ", data.lst_ordenes_tc);
 
+        }, dispatch)
     }, [])
 
     /*
@@ -286,6 +297,17 @@ function Seguimiento(props) {
         let valor = comboOpcionesSeguimiento.find(opciones => opciones.key === valorSelect);
         console.log("VALOR ", valor)
 
+        /*
+        if (valor.nemonico === "PENDIENTE DE PERSONALIZAR") {
+            setSeguimientoOrdenRedux(true);
+        } else if (valor.nemonico === "PENDIENTE DE VERIFICAR") {
+            setSeguimientoOrdenRedux(false);
+        } else {
+            //setSeguimientoOrdenRedux(false);
+        }
+        */
+
+
         setSelectFiltrarOrdenes(valor.nemonico);
         setLstOrdenesFiltradas(ordenesV2.filter(tarjetas => tarjetas.estado === valor.nemonico));
         setTotalTarjetasAccionDiccionario([]);
@@ -302,11 +324,20 @@ function Seguimiento(props) {
             setBoolSeccionRecepcionTarjetas(true);
             setBoolSeccionActivacionTarjetas(false);
             setTextBtnAccionAsistenteAgencia("Recibir");
+
         }
         else if (valorParametro.textPrincipal === "ACTIVAR TARJETAS DE CRÉDITO") {
             setBoolSeccionActivacionTarjetas(true);
             setBoolSeccionRecepcionTarjetas(false);
         }
+
+    }
+
+    const setSeguimientoOrdenRedux = (activarAccionClick) => {
+
+        dispatch(setSeguimientOrdenAction({
+            seguimientoAccionClick: activarAccionClick,
+        }))
 
     }
 

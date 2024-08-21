@@ -85,6 +85,7 @@ namespace Domain.Common {
         public string service_get_reporte_aval { get; set; } = String.Empty;
         public string auth_ws_aval { get; set; } = String.Empty;
         public string ws_tarjeta_credito { get; set; } = String.Empty;
+        public string ws_ordenes_tc { get; set; } = String.Empty;
         public string auth_ws_tarjeta_credito { get; set; } = String.Empty;
         public string service_get_info_socio { get; set; } = String.Empty;
         public string service_get_info_economica { get; set; } = String.Empty;
@@ -102,7 +103,7 @@ namespace Domain.Common {
         public string service_add_resolucion { get; set; } = String.Empty;
         public string service_upd_resolucion { get; set; } = String.Empty;
         public string service_get_reporte_orden { get; set; } = String.Empty;
-        public string service_get_ordenes { get; set; } = String.Empty;
+        //public string service_get_ordenes { get; set; } = String.Empty;
         public string service_get_tarjetas_credito { get; set; } = String.Empty;
         public string service_get_medio_aprobacion { get; set; } = String.Empty;
         public string service_add_proc_espec { get; set; } = String.Empty;
@@ -122,9 +123,13 @@ namespace Domain.Common {
         #region BotonesAccionSolicitud
         public List<string> permisosAccion { get; set; } = new();
         //public Dictionary<string, FuncionalidadDTO> permisosAccion2 { get; set; }
-        public List<FuncionalidadDTO> permisosAccion2 { get; set; }
+        public List<FuncionalidadDTO> permisosAccion2 { get; set; } = new();
         #endregion
 
+
+        #region OrdenesTC
+        public string service_get_ordenes { get; set; } = String.Empty;
+        #endregion
     }
 
 

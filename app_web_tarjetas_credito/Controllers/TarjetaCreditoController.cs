@@ -22,7 +22,6 @@ using Domain.Models.TarjetaCredito.GetValidaciones;
 using Domain.Models.TarjetaCredito.UpdResoluciones;
 using Domain.Models.TarjetaCredito.ObtenerOrdenReporte;
 using Domain.Models.TarjetaCredito.UpdSolicitud;
-using Infrastructure.Login;
 using Infrastructure.TarjetaCredito;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;

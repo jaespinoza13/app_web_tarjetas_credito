@@ -84,7 +84,7 @@ function VerOrden(props) {
 
     //columns, data, accountNumber, name, typeMovement
     const onDescargarReporte = () => {
-        fetchGetReporteOrden(nrOrnden, props.token, (data) => {
+       fetchGetReporteOrden(nrOrnden, props.token, (data) => {
             setReporteBytes(data.byt_reporte);
         }, dispatch);
     };

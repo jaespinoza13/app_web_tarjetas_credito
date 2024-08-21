@@ -1,4 +1,4 @@
-import { ServicioGetExecute, getMenuPrincipal, getPreguntaUsuario, ServicioPostExecute, getValidarPreguntaUsuario, setResetPassword, getLogin, getLoginPerfil, getPreguntas, setPreguntas, setPassword, setPasswordPrimeraVez, getListaBases, getListaConexiones, setConexion, addConexion, getListaSeguimiento, getListaDocumentos, getListaColecciones, getDescargarLogsTexto, getLogsTexto, getContenidoLogsTexto, getValidaciones, getScore, getInfoSocio, getInfoEco, addAutorizacion, getSolicitudes, addSolicitud, getContrato, getInfoFinan, addProspecto, getFlujoSolicitud, addComentarioAsesor, addComentarioSolicitud, updResolucion, addResolucion, getResolucion, addProcEspecifico, updSolicitud, getParametros, getReporteOrden, getOrdenes, getTarjetasCredito, getInforme, getMedioAprobacion, getSeparadores, addDocumentosAxentria, getDocumentosAxentria, crearSeparadores, getReporteAval, getAlertasCliente, getMotivos, getOficina, getInfoProspecto, getPermisosPerfil, getFuncionalidadesTC } from './Services';
+import { ServicioGetExecute, getMenuPrincipal, getPreguntaUsuario, ServicioPostExecute, getValidarPreguntaUsuario, setResetPassword, getLogin, getLoginPerfil, getPreguntas, setPreguntas, setPassword, setPasswordPrimeraVez, getListaBases, getListaConexiones, setConexion, addConexion, getListaSeguimiento, getListaDocumentos, getListaColecciones, getDescargarLogsTexto, getLogsTexto, getContenidoLogsTexto, getValidaciones, getScore, getInfoSocio, getInfoEco, addAutorizacion, getSolicitudes, addSolicitud, getContrato, getInfoFinan, addProspecto, getFlujoSolicitud, addComentarioAsesor, addComentarioSolicitud, updResolucion, addResolucion, getResolucion, addProcEspecifico, updSolicitud, getParametros, getReporteOrden, getTarjetasCredito, getInforme, getMedioAprobacion, getSeparadores, addDocumentosAxentria, getDocumentosAxentria, crearSeparadores, getReporteAval, getAlertasCliente, getMotivos, getOficina, getInfoProspecto, getPermisosPerfil, getFuncionalidadesTC, getOrdenes } from './Services';
 import { setAlertText, setErrorRedirigir } from "../redux/Alert/actions";
 import hex_md5 from '../js/md5';
 import { desencriptar, generate, get, set } from '../js/crypt';
@@ -1610,33 +1610,6 @@ export function fetchGetReporteOrden(numOrden, token, onSucces, dispatch) {
 }
 
 
-
-export function fetchGetOrdenes(tipo_requerido, token, onSucces, dispatch) {
-    if (dispatch) dispatch(setErrorRedirigir(""));
-
-    let body = {
-        str_orden_tipo: tipo_requerido
-    }
-    //console.log(body)
-    ServicioPostExecute(getOrdenes, body, token, { dispatch: dispatch }).then((data) => {
-        if (data) {
-            if (data.error) {
-                if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
-            } else {
-                if (data.str_res_estado_transaccion === "OK") {
-                    onSucces(data);
-                } else {
-                    let codigo = data.codigo || data.str_res_codigo;
-                    let mensaje = data.mensaje || data.str_res_info_adicional;
-                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
-                }
-            }
-        } else {
-            if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
-        }
-    });
-}
-
 export function fetchGetTarjetasCredito(nemonico_producto, tipo_tarjeta, estado_tarjeta ,token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
@@ -1983,6 +1956,46 @@ export function fetchGetFuncionalidadesTC(token, onSucces, dispatch) {
     }
     ServicioPostExecute(getFuncionalidadesTC, body, token, { dispatch: dispatch }).then((data) => {
         //console.log("data ", data)
+        if (data) {
+            if (data.error) {
+                if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
+            } else {
+                if (data.str_res_estado_transaccion === "OK") {
+                    onSucces(data);
+                } else {
+                    let codigo = data.codigo || data.str_res_codigo;
+                    let mensaje = data.mensaje || data.str_res_info_adicional;
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
+                }
+            }
+        } else {
+            if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
+        }
+    });
+}
+
+
+
+/***********************************************************************************************/
+/*******************************************ORDENES*********************************************/
+/***********************************************************************************************/
+
+/**
+ * 
+ * @param {any} intEstadoOrden
+ * @param {any} token
+ * @param {any} onSucces
+ * @param {any} dispatch
+ */
+export function fetchGetOrdenes(intEstadoOrden, token, onSucces, dispatch) {
+    if (dispatch) dispatch(setErrorRedirigir(""));
+
+    let body = {
+        int_estado_orden: Number(intEstadoOrden)
+    }
+    console.log(body)
+    ServicioPostExecute(getOrdenes, body, token, { dispatch: dispatch }).then((data) => {
+        console.log("data ", data)
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
