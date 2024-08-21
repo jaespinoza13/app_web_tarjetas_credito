@@ -903,7 +903,6 @@ const VerSolicitud = (props) => {
     }, [comentarioSolicitud])*/
 
     return <div className="f-row w-100" >
-        {/*<Sidebar enlace={props.location.pathname}></Sidebar>*/}
         <Card className={["w-100"]}>
             <Toggler
                 selectedToggle={seleccionAccionSolicitud}
@@ -985,15 +984,17 @@ const VerSolicitud = (props) => {
                                                 </h4>
                                             </div>
 
-                                            <div className="values  mb-3">
-                                                <h4>Cupo aprobado:</h4>
-                                                <h4 className="strong">
-                                                    {numberFormatMoney(solicitudTarjeta?.str_cupo_aprobado)}
-                                                </h4>
-                                            </div>
+                                            {(solicitudTarjeta?.str_estado_actual === "VERIFICAR SOCIO" || solicitudTarjeta?.str_estado_actual === "APROBADA" || solicitudTarjeta?.str_estado_actual === "APROBADA SOCIO" || solicitudTarjeta?.str_estado_actual === "RECHAZADA") &&
+                                                <div className="values  mb-3">
+                                                    <h4>Cupo aprobado:</h4>
+                                                    <h4 className="strong">
+                                                        {numberFormatMoney(solicitudTarjeta?.str_cupo_aprobado)}
+                                                    </h4>
+                                                </div>                                                
+                                            }
                                         </Item>
                                     </Card>
-                                                                        <Card className={["f-col"]}>
+                                        <Card className={["f-col"]}>
                                         <div className={["f-row"]}>
                                             <Table headers={headerTableResoluciones}>
                                                 {
@@ -1118,12 +1119,15 @@ const VerSolicitud = (props) => {
                                                 </h4>
                                             </div>
 
-                                            <div className="values  mb-3">
-                                                <h4>Cupo aprobado:</h4>
-                                                <h4 className="strong">
-                                                    {numberFormatMoney(solicitudTarjeta?.str_cupo_aprobado)}
-                                                </h4>
-                                            </div>
+
+                                            {(solicitudTarjeta?.str_estado_actual === "VERIFICAR SOCIO" || solicitudTarjeta?.str_estado_actual === "APROBADA" || solicitudTarjeta?.str_estado_actual === "APROBADA SOCIO" || solicitudTarjeta?.str_estado_actual === "RECHAZADA") &&
+                                                <div className="values  mb-3">
+                                                    <h4>Cupo aprobado:</h4>
+                                                    <h4 className="strong">
+                                                        {numberFormatMoney(solicitudTarjeta?.str_cupo_aprobado)}
+                                                    </h4>
+                                                </div>
+                                            }
                                         </Item>
                                     </Card>
 

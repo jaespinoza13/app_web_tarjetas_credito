@@ -168,6 +168,28 @@ const VerDetalle = (props) => {
                                 <label>Teléfono:</label>
                                 <h4 className="strong">{dataProspecto.str_telefono}</h4>
                             </div>  
+                            <hr className="dashed"></hr>
+                        </section>
+                    </Card>
+
+                    <Card className={["mt-2 justify-content-space-between align-content-center"]}>
+                        <section className="f-col w-100">
+                            <h3 className="strong  mb-2">Resultado de la calificación</h3>
+                            <div className="f-row w-90 justify-content-space-between">
+                                <label>Score:</label>
+                                <h4 className="strong">{dataProspecto.str_score_buro}</h4>
+                            </div>
+                            <hr className="f-row dashed w-100"></hr>
+                            <div className="f-row w-90 justify-content-space-between">
+                                <label>Calificación:</label>
+                                {/*<h4 className="strong">{dataProspecto.str_comentario_adicional}</h4>*/}
+                            </div>
+                            <hr className="f-row dashed w-100"></hr>
+                            <div className="f-row w-90 justify-content-space-between">
+                                <label>Decisión:</label>
+                                {/*<h4 className="strong">{dataProspecto.str_comentario_adicional}</h4>*/}
+                            </div>
+                            <hr className="f-row dashed w-100"></hr>
                         </section>
                     </Card>
 
@@ -183,17 +205,20 @@ const VerDetalle = (props) => {
                                 <label>Egresos:</label>
                                 <h4 className="strong">{numberFormatMoney(dataProspecto.mny_egresos)}</h4>
                             </div>
+                            <hr className="f-row dashed"></hr>
+                            <div className="f-row w-90 justify-content-space-between">
+                                <label>Gasto Financiero:</label>
+                               {/* <h4 className="strong">{numberFormatMoney(dataProspecto.mny_egresos)}</h4>*/}
+                            </div>
+                            <hr className="dashed"></hr>
+                            <div className="f-row w-90 justify-content-space-between">
+                                <label>Gasto financiero del titular como codeudor:</label>
+                                <h4 className="strong">{numberFormatMoney(dataProspecto.mny_gastos_codeudor)}</h4>
+                            </div>
                             <hr className="dashed"></hr>
                             <div className="f-row w-90 justify-content-space-between">
                                 <label>Resta Gasto Financiero:</label>
                                 <h4 className="strong">{numberFormatMoney(dataProspecto.mny_gastos_financieros)}</h4>
-                            </div>
-                            <hr className="dashed"></hr>
-                            <div className="f-row w-90 justify-content-space-between">
-                                    <label>Gasto Financiero CoDeudor:</label>
-                                    <h4 className="strong">{numberFormatMoney(dataProspecto.mny_gastos_codeudor)}</h4>
-
-                                
                             </div>
                             <hr className="dashed"></hr>
                             <div className="f-row w-90 justify-content-space-between">
@@ -210,11 +235,7 @@ const VerDetalle = (props) => {
                                 <label>Cupo Sugerido Coopmego:</label>
                                 <h4 className="strong">{numberFormatMoney(dataProspecto.mny_cupo_sugerido_coopmego)}</h4>
                             </div>
-                            <hr className="dashed w-100"></hr>
-                            <div className="f-row w-90 justify-content-space-between">
-                                <label>Score:</label>
-                                <h4 className="strong">{dataProspecto.str_score_buro}</h4>
-                            </div>
+                            <hr className="f-row dashed"></hr>
                         </section>
                     </Card>
 
@@ -223,13 +244,14 @@ const VerDetalle = (props) => {
                             <h3 className="strong  mb-2">Información adicional</h3>
                             <div className="f-row w-90 justify-content-space-between">
                                 <label>Comentario de la gestión:</label>
-                                <h4 className="strong">{dataProspecto.str_comentario_proceso}</h4>
+                                <h4 className="strong text-align-right">{dataProspecto.str_comentario_proceso}</h4>
                             </div>
                             <hr className="f-row dashed w-100"></hr>
                             <div className="f-row w-90 justify-content-space-between">
                                 <label>Observación:</label>
                                 <h4 className="strong">{dataProspecto.str_comentario_adicional}</h4>
-                            </div>                            
+                            </div>       
+                            <hr className="f-row dashed"></hr>
                         </section>
                     </Card>
 

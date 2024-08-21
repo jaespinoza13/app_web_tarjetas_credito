@@ -1,4 +1,6 @@
-﻿namespace Domain.Common {
+﻿using static Domain.Models.TarjetaCredito.FuncionalidadesTC.ResFuncionalidadesTC;
+
+namespace Domain.Common {
     public class AppSettings {
         #region LoadParameters
         public List<int> lst_ids_sistemas { get; set; } = new();
@@ -118,10 +120,9 @@
         #endregion
 
         #region BotonesAccionSolicitud
-        //public string BTN_MEDIO_APROBACION_TC { get; set; } = String.Empty;
-        //public string BTN_VER_SEGUIMIENTO_TC { get; set; } = String.Empty;
         public List<string> permisosAccion { get; set; } = new();
-
+        //public Dictionary<string, FuncionalidadDTO> permisosAccion2 { get; set; }
+        public List<FuncionalidadDTO> permisosAccion2 { get; set; }
         #endregion
 
     }

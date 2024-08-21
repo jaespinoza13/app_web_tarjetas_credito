@@ -44,6 +44,7 @@ using System.Net;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using static Domain.Models.TarjetaCredito.FuncionalidadesTC.ResFuncionalidadesTC;
 
 namespace Infrastructure.TarjetaCredito
 {
@@ -1268,7 +1269,9 @@ namespace Infrastructure.TarjetaCredito
                 res.str_res_estado_transaccion = "OK";
                 res.str_res_codigo = "000";
                 res.lst_funcSettings = _settings.permisosAccion;
-                
+                res.lst_funcSettings2 = _settings.permisosAccion2;
+
+
             }
             catch (Exception ex)
             {

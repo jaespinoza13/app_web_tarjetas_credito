@@ -26,7 +26,8 @@ const mapStateToProps = (state) => {
         ws: bd,
         listaFuncionalidades: state.GetListaFuncionalidades.data,
         token: state.tokenActive.data,
-        parametrosTC: state.GetParametrosTC.data
+        parametrosTC: state.GetParametrosTC.data,
+        funcionalidadesStore: state.GetFuncionalidadesSistema.data
     };
 };
 
@@ -39,11 +40,11 @@ function Solicitud(props) {
 
     const [isLstSolicitudes, setIsLstSolicitudes] = useState(true);
     const [isLstProspecciones, setIsLstProspecciones] = useState(false);
-    const [accionesSolicitud, setAccionesSolicitud] = useState(
-        [
+    const [accionesSolicitud, setAccionesSolicitud] = useState([]);
+     /*   [
             { image: "", textPrincipal: `Solicitudes`, textSecundario: "", key: 1 },
             { image: "", textPrincipal: `Prospectos`, textSecundario: "", key: 2 }
-        ]);
+        ]);*/
     const [modalVisible, setModalVisible] = useState(false);
     const [permisoNuevaSol, setPermisoNuevaSol] = useState(false);
 
@@ -103,11 +104,19 @@ function Solicitud(props) {
     //OBTENER PARAMETROS
     const [habilitarPerfilesVerSolicitud, setHabilitarPerfilesVerSolicitud] = useState([]);
 
+    //FUNCIONALIDADES SETTINGS
+    const [funcionalidades, setFuncionalidades] = useState([]);
+
+
     //Carga de solicitudes (SE MODIFICA PARA QUE APAREZCA PRIMERA PANTALLA COMO PREDETERMINADA AL LOGUEARSE)
     useEffect(() => {
         if (props.token && !controlConsultaCargaComp) {
+            setControlConsultaCargaComp(true);
+
+            //TRAE FUNCIONALIDADES (SETTINGS)
             fetchGetFuncionalidadesTC(props.token, (data) => {
-                console.log("lst_funcSettings ", data.lst_funcSettings)
+                console.log(data.lst_funcSettings2)
+                setFuncionalidades(data.lst_funcSettings);
             }, dispatch)
 
             fetchGetSolicitudes(props.token, (data) => {
@@ -117,18 +126,17 @@ function Solicitud(props) {
                 //Aplicacion Paginacion para Solicitudes (predeterminado)
                 setRegistrosPagActual(data.solicitudes.slice(indexOfFirstRecord, indexOfLastRecord));
                 setNumPaginas(Math.ceil(data.solicitudes.length / paginasEnVista))
-
             }, dispatch)
 
             const strRol = get(localStorage.getItem("role"));
             setRol(strRol);
-            setControlConsultaCargaComp(true);
+            //setControlConsultaCargaComp(true);
         }
-    }, [props.token]);
+    }, [props.token, controlConsultaCargaComp]);
 
 
     useEffect(() => {
-        if (props.token && props.parametrosTC.lst_parametros?.length > 0) {
+        if (props.token && props.parametrosTC.lst_parametros?.length > 0 && oficinasParametros.length === 0) {
             let ParametrosTC = props.parametrosTC.lst_parametros;
             /* PERFILES AUTORIZADOS EN VER LA SOLICITUD */
             let perfilesAutorizados = (ParametrosTC
@@ -152,7 +160,40 @@ function Solicitud(props) {
                 }));
             setOficinasParametros(oficinasParametrosTC)
         }
+
+        if (props.token && props.funcionalidadesStore.permisos?.length > 0 && accionesSolicitud.length === 0) {
+            
+
+            setAccionesSolicitud([
+                { image: "", textPrincipal: `Solicitudes`, textSecundario: "", key: 1 },
+                { image: "", textPrincipal: `Prospectos`, textSecundario: "", key: 2 }
+            ])
+        }
+
     }, [props])
+
+    
+    useEffect(() => {
+
+        /* TODO VALIDAR
+        
+
+                {props?.funcionalidadesStore?.permisos?.length > 0 && funcionalidades?.length > 0 && props?.funcionalidadesStore?.permisos.some(permisosAccion => {
+                    funcionalidades.some(funcionalidad => funcionalidad.funcionalidad === permisosAccion.fun_nombre && funcionalidad.keyTexto === "CREAR_SOLICITUD_TC")
+                }) &&
+
+
+        */
+
+        //Para definir que acciones puede realizar por perfil
+        if (funcionalidades.length > 0 && props?.funcionalidadesStore?.permisos?.length > 0) {
+
+            console.log(props.funcionalidadesStore)
+            console.log(props?.funcionalidadesStore?.permisos)
+        }
+
+    }, [funcionalidades])
+
 
     //ACTUALIZA LA PAGINA DONDE SE QUIERE IR
     useEffect(() => {
@@ -318,39 +359,42 @@ function Solicitud(props) {
             <div className="container_mg mb-4">
                 {/* {permisoNuevaSol && 
                 <>*/}
-                <div className="content-cards mt-2">
 
-                    <Card>
-                        <img style={{ width: "25px" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg" alt="Prospección"></img>
-                        <h3 className="mt-2">Prospección</h3>
-                        <h4 className="mt-2">Genera una nueva prospección de tarjeta de crédito</h4>
+                    <div className="content-cards mt-2">
 
-                        <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={irNuevaProspección}>Siguiente</Button>
-                    </Card>
+                        <Card>
+                            <img style={{ width: "25px" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg" alt="Prospección"></img>
+                            <h3 className="mt-2">Prospección</h3>
+                            <h4 className="mt-2">Genera una nueva prospección de tarjeta de crédito</h4>
 
-
-                    <Card>
-                        <img style={{ width: "25px" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg" alt="Solicitud"></img>
-                        <h3 className="mt-2">Solicitud</h3>
-                        <h4 className="mt-2">Genera una nueva solicitud de tarjeta de crédito</h4>
-                        <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={irNuevaSolicitud}>Siguiente</Button>
-                    </Card>
+                            <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={irNuevaProspección}>Siguiente</Button>
+                        </Card>
 
 
-
-                    <Card>
-                        <img style={{ width: "25px" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg" alt="Estado de cuenta"></img>
-                        <h3 className="mt-4">Estado de cuenta</h3>
-                        <h4 className="mt-4 mb-3">Generar estado de cuenta </h4>
-                        <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={descargarEstadoCuenta}>Descargar</Button>
-                    </Card>
-
-                </div>
+                        <Card>
+                            <img style={{ width: "25px" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg" alt="Solicitud"></img>
+                            <h3 className="mt-2">Solicitud</h3>
+                            <h4 className="mt-2">Genera una nueva solicitud de tarjeta de crédito</h4>
+                            <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={irNuevaSolicitud}>Siguiente</Button>
+                        </Card>
 
 
+
+                        <Card>
+                            <img style={{ width: "25px" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg" alt="Estado de cuenta"></img>
+                            <h3 className="mt-4">Estado de cuenta</h3>
+                            <h4 className="mt-4 mb-3">Generar estado de cuenta </h4>
+                            <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={descargarEstadoCuenta}>Descargar</Button>
+                        </Card>
+
+                    </div>                   
+                
+
+                {accionesSolicitud.length > 0 &&
                 <Toggler className="mt-2" toggles={accionesSolicitud}
                     selectedToggle={handleSelectedToggle}>
                 </Toggler>
+                }
                 <div id="listados" className="f-col mt-2" style={{ maxWidth: `${isLstSolicitudes ? "calc(100vw - 1rem)" : "calc(100vw - 2rem)"}` }}>
                 {isLstSolicitudes &&
                     

@@ -1557,6 +1557,10 @@ input:checked + .slider::before {
     text-align: left;
 }
 
+.text-align-right {
+    text-align: right;
+}
+
 .sin-height {
     height: auto !important; /* Sobrescribe la altura definida anteriormente */
 }

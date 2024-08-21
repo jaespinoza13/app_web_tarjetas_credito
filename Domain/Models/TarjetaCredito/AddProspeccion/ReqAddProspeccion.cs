@@ -28,6 +28,8 @@ namespace Domain.Models.TarjetaCredito.AddProspeccion
         public string mny_cupo_sugerido_aval { get; set; } = string.Empty;
         public string mny_cupo_sug_coopmego { get; set; } = string.Empty;
         public string str_score { get; set; } = string.Empty;
-
+        public string str_calificacion_buro { get; set; } = string.Empty;
+        public string str_decision_buro { get; set; } = string.Empty;
+        public string mny_gastos_financiero_titular { get; set; } = string.Empty;
     }
 }
