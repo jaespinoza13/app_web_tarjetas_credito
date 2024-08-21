@@ -1145,29 +1145,23 @@ const VerSolicitud = (props) => {
                                         <div className="f-row">
 
                                             {permisoAccionAnalisis3Cs.includes(solicitudTarjeta?.str_estado_actual) &&
-                                                <Button className="btn_mg__primary" onClick={modalHandler}>Análisis C's</Button>
+                                                <Button className="btn_mg__primary mr-2" onClick={modalHandler}>Análisis C's</Button>
                                             }
 
                                             {permisoImprimirMedio.includes(solicitudTarjeta?.str_estado_actual) &&
-                                                <Button className="btn_mg__primary ml-2" onClick={() => descargarMedio(props.solicitud.solicitud)}>Medio de aprobación</Button>
+                                                <Button className="btn_mg__primary mr-2" onClick={() => descargarMedio(props.solicitud.solicitud)}>Medio de aprobación</Button>
                                             }
 
                                             {estadosPuedenRegresarBandeja.includes(solicitudTarjeta?.str_estado_actual) &&
-                                                <Button className="btn_mg__primary ml-2" onClick={openModalCambiarBandeja}>Devolver</Button>
+                                                <Button className="btn_mg__primary mr-2" onClick={openModalCambiarBandeja}>Devolver</Button>
                                             }
-
-                                            {/*<>*/}
-                                            {/*    <div className="values ml-1 mb-3">*/}
-                                            {/*        <Button className={["btn_mg btn_mg__primary"]} onClick={openModalResolucionSocio}>Resolución socio </Button>*/}
-                                            {/*    </div>*/}
-                                            {/*</>*/}
 
 
                                             {/*VERIFICAR SOCIO*/}
                                             {solicitudTarjeta?.str_estado_actual === estadosSigConfirmPorMontoMenorAll[0]?.prm_valor_ini &&                                               
-                                                <Button className={["btn_mg btn_mg__primary ml-2"]} onClick={openModalResolucionSocio}>Resolución socio </Button> 
+                                                <Button className={["btn_mg btn_mg__primary mr-2"]} onClick={openModalResolucionSocio}>Resolución socio </Button> 
                                             }
-                                            <Button className={["btn_mg btn_mg__primary ml-2"]} onClick={changeEstadoModalSeguimiento}>Seguimiento </Button>
+                                            <Button className={["btn_mg btn_mg__primary mr-2"]} onClick={changeEstadoModalSeguimiento}>Seguimiento </Button>
                                      
 
                                         </div>
