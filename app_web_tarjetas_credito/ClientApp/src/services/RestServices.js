@@ -1306,7 +1306,7 @@ export function fetchAddComentarioAsesor(idSolicitud, comentarios, estadoSolicit
 * @param {(contenido:string, nroTotalRegistros: number) => void} onSuccess
 * @param {Function} dispatch
 */
-export function fetchAddComentarioSolicitud(idSolicitud, comentario, estadoSolicitud, regresaSolicitud, esMicrocredito ,token, onSucces, dispatch) {
+export function fetchAddComentarioSolicitud(idSolicitud, comentario, estadoSolicitud, regresaSolicitud, esMicrocredito, cupoSolicitado,token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
@@ -1314,7 +1314,8 @@ export function fetchAddComentarioSolicitud(idSolicitud, comentario, estadoSolic
         bl_regresa_estado: regresaSolicitud,
         str_comentario: comentario,
         int_estado: estadoSolicitud,
-        bl_microcredito: esMicrocredito
+        bl_microcredito: esMicrocredito,
+        dcc_cupo_solicitado: parseFloat(cupoSolicitado),
     }
     console.log(body);
     ServicioPostExecute(addComentarioSolicitud, body, token, { dispatch: dispatch }).then((data) => {
@@ -1447,14 +1448,17 @@ export function fetchUpdResolucion(idSolicitud, token, onSucces, dispatch) {
 
 
 /**
-* Agregar p
-* @author retorres
-* @version 1.0
-* @param {string} strEnte
-* @param {(contenido:string, nroTotalRegistros: number) => void} onSuccess
-* @param {Function} dispatch
-*/
-export function fetchAddProcEspecifico(idSolicitud, cupo, estado, comentario, token, onSucces, dispatch) {
+ * 
+ * @param {any} idSolicitud
+ * @param {any} cupo
+ * @param {any} estado
+ * @param {any} comentario
+ * @param {any} cupoSolicitado
+ * @param {any} token
+ * @param {any} onSucces
+ * @param {any} dispatch
+ */
+export function fetchAddProcEspecifico(idSolicitud, cupo, estado, comentario, cupoSolicitado, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
@@ -1462,6 +1466,7 @@ export function fetchAddProcEspecifico(idSolicitud, cupo, estado, comentario, to
         str_comentario: comentario,
         str_estado: estado,
         dcc_cupo_aprobado: parseFloat(cupo),
+        dcc_cupo_solicitado: parseFloat(cupoSolicitado),
     };
     console.log("BODY,", body);
     ServicioPostExecute(addProcEspecifico, body, token, { dispatch: dispatch }).then((data) => {

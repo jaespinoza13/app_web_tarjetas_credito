@@ -524,7 +524,7 @@ const VerSolicitud = (props) => {
         let validacionInforme = await validarInforme();
 
         if (nemonico && validacionInforme === false) {
-            fetchAddComentarioSolicitud(props.solicitud.solicitud, comentarioSolicitud, props.solicitud.idSolicitud, false, swithcEsMicrocredito, props.token, (data) => {
+            fetchAddComentarioSolicitud(props.solicitud.solicitud, comentarioSolicitud, props.solicitud.idSolicitud, false, swithcEsMicrocredito, solicitudTarjeta?.str_cupo_solicitado, props.token, (data) => {
                 if (data.str_res_codigo === "000") {
                     fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, datosUsuario[0].strOficial, '', comentarioSolicitud, nemonico.prm_nemonico, props.token, (data) => {
                         setModalVisibleOk(true);
@@ -657,7 +657,7 @@ const VerSolicitud = (props) => {
             if (solicitudTarjeta?.str_estado_actual === "POR APROBAR SOLICITUD" || solicitudTarjeta?.str_estado_actual === "POR REVISAR JEFE UAC") {
                 console.log("PRUEBA POR REVISAR JEFE UA")
                 //let comentario = solicitudTarjeta?.str_estado_actual === "POR REVISAR JEFE UAC" ? observacionComite : '';
-                fetchAddProcEspecifico(props.solicitud.solicitud, 0, selectCambioEstadoSol, comentarioCambioEstado, props.token, (data) => {
+                fetchAddProcEspecifico(props.solicitud.solicitud, 0, selectCambioEstadoSol, comentarioCambioEstado, solicitudTarjeta?.str_cupo_solicitado, props.token, (data) => {
                     if (data.str_res_codigo === "000") {
                         setModalCambioBandeja(false);
                         setModalVisibleOk(true);
@@ -668,7 +668,7 @@ const VerSolicitud = (props) => {
 
             } else { //Otros perfiles solo retornan a bandeja anterior
                 //Variable true para retornar bandeja anterior
-                fetchAddComentarioSolicitud(props.solicitud.solicitud, comentarioCambioEstado, props.solicitud.idSolicitud, true, swithcEsMicrocredito, props.token, (data) => {
+                fetchAddComentarioSolicitud(props.solicitud.solicitud, comentarioCambioEstado, props.solicitud.idSolicitud, true, swithcEsMicrocredito, solicitudTarjeta?.str_cupo_solicitado, props.token, (data) => {
                     //navigate.push('/solicitud');
                     setModalCambioBandeja(false);
                     setModalVisibleOk(true);
@@ -759,7 +759,7 @@ const VerSolicitud = (props) => {
         //let descripcionMotivoRechazoComite = motivosNegacionComite.find(motivo => motivo.str_nemonico === selectMotivoNiegaSolComite);
         //if (descripcionMotivoRechazoComite !== undefined) {
         //    descripcionMotivoRechazoComite = descripcionMotivoRechazoComite.str_descripcion
-        fetchAddProcEspecifico(props.solicitud.solicitud, 0, "EST_RECHAZADA", observacionComite, props.token, (data) => { //EST_RECHAZADA 11277
+        fetchAddProcEspecifico(props.solicitud.solicitud, 0, "EST_RECHAZADA", observacionComite, solicitudTarjeta?.str_cupo_solicitado, props.token, (data) => { //EST_RECHAZADA 11277
                 if (data.str_res_codigo === "000") {
                     setModalRechazo(false);
 
@@ -787,7 +787,7 @@ const VerSolicitud = (props) => {
         //Si cupo que se va aprobar es el mismo que el socio solicito
         if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_APROBADA") { //APROBADO
 
-            fetchAddProcEspecifico(props.solicitud.solicitud, solicitudTarjeta.str_cupo_solicitado, "EST_APROBADA", observacionComite, props.token, (data) => { //APROBADO 11276
+            fetchAddProcEspecifico(props.solicitud.solicitud, solicitudTarjeta.str_cupo_solicitado, "EST_APROBADA", observacionComite, solicitudTarjeta?.str_cupo_solicitado, props.token, (data) => { //APROBADO 11276
                 if (data.str_res_codigo === "000") {
                     let decision = parametrosTC.find(param => param.prm_nemonico === valorDecisionSelect)
                     let parametroDecNec = parametrosTC.find(param => param.prm_valor_ini === props.solicitud.estado)
@@ -802,7 +802,7 @@ const VerSolicitud = (props) => {
         }
         //Si cupo que se va aprobar es menor al que solicita el socio
         else if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_VERIFICAR_SOCIO") { //VERIFICAR SOCIO
-            fetchAddProcEspecifico(props.solicitud.solicitud, Number.parseFloat(montoAprobado).toFixed(2), "EST_VERIFICAR_SOCIO", observacionComite, props.token, (data) => { //VERIFICAR SOCIO 11278
+            fetchAddProcEspecifico(props.solicitud.solicitud, Number.parseFloat(montoAprobado).toFixed(2), "EST_VERIFICAR_SOCIO", observacionComite, solicitudTarjeta?.str_cupo_solicitado, props.token, (data) => { //VERIFICAR SOCIO 11278
                 if (data.str_res_codigo === "000") {
                     let decision = parametrosTC.find(param => param.prm_nemonico === valorDecisionSelect)
                     let parametroDecNec = parametrosTC.find(param => param.prm_valor_ini === props.solicitud.estado)
@@ -890,7 +890,7 @@ const VerSolicitud = (props) => {
 
     const guardarResolucionSocio = () => {
         if (selectResolucionSocio === "EST_APROBADA_CLIENTE") {
-            fetchAddProcEspecifico(props.solicitud.solicitud, solicitudTarjeta.str_cupo_aprobado, "EST_APROBADA_CLIENTE", comentarioResolucionSocio, props.token, (data) => {
+            fetchAddProcEspecifico(props.solicitud.solicitud, solicitudTarjeta.str_cupo_aprobado, "EST_APROBADA_CLIENTE", comentarioResolucionSocio, solicitudTarjeta?.str_cupo_solicitado, props.token, (data) => {
                 if (data.str_res_codigo === "000") {
 
                     let decision = parametrosTC.find(param => param.prm_nemonico === selectResolucionSocio)
@@ -909,7 +909,7 @@ const VerSolicitud = (props) => {
             let descripcionMotivoRechazaSocio = motivosNegacionSocio.find(motivo => motivo.str_nemonico === selectMotivoNiegaSocio);
             if (selectMotivoNiegaSocio !== undefined) {
                 descripcionMotivoRechazaSocio = descripcionMotivoRechazaSocio.str_descripcion
-                fetchAddProcEspecifico(props.solicitud.solicitud, solicitudTarjeta.str_cupo_aprobado, "EST_RECHAZADA", descripcionMotivoRechazaSocio, props.token, (data) => { 
+                fetchAddProcEspecifico(props.solicitud.solicitud, solicitudTarjeta.str_cupo_aprobado, "EST_RECHAZADA", descripcionMotivoRechazaSocio, solicitudTarjeta?.str_cupo_solicitado, props.token, (data) => { 
                     if (data.str_res_codigo === "000") {
                         let decision = parametrosTC.find(param => param.prm_nemonico === selectResolucionSocio)
                         let parametroDecNec = parametrosTC.find(param => param.prm_valor_ini === props.solicitud.estado)

@@ -129,12 +129,12 @@ function Menus({ listaMenus, id_perfil, token, setListas, setListaFunc, listaFun
                     if (!match) {
                         history.push("/");
                     }
-                } else { //NO PUEDE ACCEDER SI NO TIENES FUNCIONALIDADES
-                    removeSession();
-                    history.push("/logout");
+                } else { //NO PUEDE ACCEDER SI NO TIENES FUNCIONALIDADES                    
                     localStorage.removeItem('sender');
                     localStorage.removeItem('remitente');
                     localStorage.removeItem('aceptar');
+                    removeSession();
+                    history.push("/logout");
                 }
             }
             clearTimeout(tOut);
