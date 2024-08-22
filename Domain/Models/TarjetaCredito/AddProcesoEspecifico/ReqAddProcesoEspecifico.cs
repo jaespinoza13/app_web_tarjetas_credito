@@ -13,5 +13,6 @@ namespace Domain.Models.TarjetaCredito.AddProcesoEspecifico
         public string str_comentario { get; set; } = string.Empty;
         public string str_estado { get; set; } = string.Empty;
         public decimal dcc_cupo_aprobado { get; set; }
+        public decimal dcc_cupo_solicitado { get; set; }
     }
 }

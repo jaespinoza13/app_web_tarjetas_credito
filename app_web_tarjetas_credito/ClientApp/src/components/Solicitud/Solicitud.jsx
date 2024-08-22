@@ -59,7 +59,7 @@ function Solicitud(props) {
 
     const [oficinasParametros, setOficinasParametros] = useState([]);
     const [modalAnularVisible, setModalAnularVisible] = useState(false);
-    const [solicitudAnularId, setSolicitudAnularId] = useState(false);
+    const [solicitudAnular, setSolicitudAnular] = useState({ idSolicitud: 0, cupoSolicitadoAnular: 0 });
     const [solicitudCupoAnulacion, setSolicitudCupoAnulacion] = useState(false);
 
 
@@ -288,7 +288,7 @@ function Solicitud(props) {
     }
 
     const deleteSolicitudHandler = () => {
-        fetchAddProcEspecifico(solicitudAnularId, 0, "EST_ANULADA", "", props.token, (data) => {
+        fetchAddProcEspecifico(solicitudAnular.idSolicitud, 0, "EST_ANULADA", "", solicitudAnular.cupoSolicitadoAnular, props.token, (data) => {
             if (data.str_res_codigo === "000") {
                 setModalAnularVisible(false);
                 navigate.push('/')
@@ -390,7 +390,10 @@ function Solicitud(props) {
                                             <div className="f-col justify-content-center icon-botton"
                                                 onClick={() => {
                                                     setSolicitudCupoAnulacion(solicitud.dec_cupo_solicitado);
-                                                    setSolicitudAnularId(solicitud.int_id);
+                                                    let solicitudAnular = {
+                                                        idSolicitud: solicitud.int_id, cupoSolicitadoAnular: solicitud.dec_cupo_solicitado
+                                                    } 
+                                                    setSolicitudAnular(solicitudAnular);
                                                     setModalAnularVisible(true)
                                                 }}>
                                                 <DeleteForeverRoundedIcon
