@@ -1732,9 +1732,12 @@ input[type=radio] {
     margin-bottom: 6.5rem;
 }
 
+.nowrap {
+    white-space: nowrap;
+}
 
-    @keyframes modal-up {
-        from {
+@keyframes modal-up {
+    from {
         bottom: -10rem;
     }
 
