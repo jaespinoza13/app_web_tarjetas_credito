@@ -119,9 +119,10 @@ const ValidacionesGenerales = (props) => {
                 </Fragment>
                 :
                 <div className="f-col">
+                    <h3 className={`strong ml-2 mb-1`}>VALIDACIONES</h3>
                     {props.lst_validaciones && props.lst_validaciones?.lst_validaciones_err?.length > 0 &&
                         <Fragment key="2">
-                            <h2 className={`mb-1`}>Validaciones pendientes</h2>
+                            {/*<h2 className={`mb-1`}>Validaciones pendientes</h2>*/}
                             <Card className={[`W-100`]}>
                                 {props.lst_validaciones.lst_validaciones_err.map((validacion) => {
                                     return (
@@ -143,7 +144,7 @@ const ValidacionesGenerales = (props) => {
                     }
                     {props.lst_validaciones && props.lst_validaciones?.lst_validaciones_ok?.length > 0 &&
                         <Fragment key= "1">
-                            <h2 className={`${props.lst_validaciones?.lst_validaciones_err?.length !== 0 ? 'mt-4' : ''} mb-1`}>Validaciones correctas</h2>
+                            {/*<h2 className={`${props.lst_validaciones?.lst_validaciones_err?.length !== 0 ? 'mt-4' : ''} mb-1`}>Validaciones correctas</h2>*/}
                             <Card className={["w-100"]}>
                                 {props.lst_validaciones.lst_validaciones_ok.map((validacion) => {
                                     return (

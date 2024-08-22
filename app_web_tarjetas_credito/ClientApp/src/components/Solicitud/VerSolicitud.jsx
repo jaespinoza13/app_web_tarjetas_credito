@@ -30,7 +30,9 @@ const mapStateToProps = (state) => {
         listaFuncionalidades: state.GetListaFuncionalidades.data,
         token: state.tokenActive.data,
         solicitud: state.solicitud.data,
-        parametrosTC: state.GetParametrosTC.data
+        parametrosTC: state.GetParametrosTC.data,
+        funcionalidadesStore: state.GetFuncionalidadesSistema.data
+
     };
 };
 
@@ -90,7 +92,8 @@ const VerSolicitud = (props) => {
     //Datos del socio
     const [datosSocio, setDatosSocio] = useState();
 
-
+    //FUNCIONALIDADES SETTINGS
+    const [funcionalidades, setFuncionalidades] = useState([]);
 
     //Axentria
     const [separadores, setSeparadores] = useState([]);
@@ -139,6 +142,11 @@ const VerSolicitud = (props) => {
 
     const estadoSolicitud = useRef('');
 
+
+    //Variables validan permiso
+    const [tienePermisosEditarAnalisisCs, setTienePermisosEditarAnalisisCs] = useState(false);
+    const [tienePermisosVerMedioAprobacion, setTienePermisosVerMedioAprobacion] = useState(false);
+    const [tienePermisosDevolverBandeja, setTienePermisosDevolverBandeja] = useState(false);
 
     useEffect(() => {
 
@@ -282,11 +290,39 @@ const VerSolicitud = (props) => {
             }, dispatch);
         }
 
+        //TRAE FUNCIONALIDADES (SETTINGS)
         fetchGetFuncionalidadesTC(props.token, (data) => {
-            console.log("lst_funcSettings ", data.lst_funcSettings)
+            //console.log(data.lst_funcSettings)
+            console.log(data.lst_funcSettings2)
+            setFuncionalidades(data.lst_funcSettings2);
         }, dispatch)
 
     }, []);
+
+
+    //Para definir que acciones puede realizar por perfil
+    useEffect(() => {
+        if (funcionalidades?.length > 0 && props?.funcionalidadesStore?.permisos?.length > 0) {
+            //console.log("props?.funcionalidadesStore?.permisos ", props?.funcionalidadesStore?.permisos)
+            //console.log("funcionalidades ", funcionalidades)
+
+            //Permiso para editar el analisis Cs
+            setTienePermisosEditarAnalisisCs(props?.funcionalidadesStore?.permisos.some(permisosAccion => {
+                return funcionalidades.some(funcionalidad => funcionalidad.funcionalidad === permisosAccion.fun_nombre && funcionalidad.keyTexto === "ANALISIS_Cs")
+            }))
+            //Permiso para ver el medio de aprobacion
+            setTienePermisosVerMedioAprobacion(props?.funcionalidadesStore?.permisos.some(permisosAccion => {
+                return funcionalidades.some(funcionalidad => funcionalidad.funcionalidad === permisosAccion.fun_nombre && funcionalidad.keyTexto === "MEDIO_APROBACION_TC")
+            }))
+            //Permiso para devolver bandeja
+            setTienePermisosDevolverBandeja(props?.funcionalidadesStore?.permisos.some(permisosAccion => {
+                return funcionalidades.some(funcionalidad => funcionalidad.funcionalidad === permisosAccion.fun_nombre && funcionalidad.keyTexto === "RETORNAR_BANDEJA_TC")
+            }))
+
+           
+
+        }
+    }, [funcionalidades, props?.funcionalidadesStore])
 
 
     const actualizaInformaFlujoSol = () => {
@@ -903,7 +939,6 @@ const VerSolicitud = (props) => {
     }, [comentarioSolicitud])*/
 
     return <div className="f-row w-100" >
-        {/*<Sidebar enlace={props.location.pathname}></Sidebar>*/}
         <Card className={["w-100"]}>
             <Toggler
                 selectedToggle={seleccionAccionSolicitud}
@@ -985,15 +1020,17 @@ const VerSolicitud = (props) => {
                                                 </h4>
                                             </div>
 
-                                            <div className="values  mb-3">
-                                                <h4>Cupo aprobado:</h4>
-                                                <h4 className="strong">
-                                                    {numberFormatMoney(solicitudTarjeta?.str_cupo_aprobado)}
-                                                </h4>
-                                            </div>
+                                            {(solicitudTarjeta?.str_estado_actual === "VERIFICAR SOCIO" || solicitudTarjeta?.str_estado_actual === "APROBADA" || solicitudTarjeta?.str_estado_actual === "APROBADA SOCIO" || solicitudTarjeta?.str_estado_actual === "RECHAZADA") &&
+                                                <div className="values  mb-3">
+                                                    <h4>Cupo aprobado:</h4>
+                                                    <h4 className="strong">
+                                                        {numberFormatMoney(solicitudTarjeta?.str_cupo_aprobado)}
+                                                    </h4>
+                                                </div>                                                
+                                            }
                                         </Item>
                                     </Card>
-                                                                        <Card className={["f-col"]}>
+                                        <Card className={["f-col"]}>
                                         <div className={["f-row"]}>
                                             <Table headers={headerTableResoluciones}>
                                                 {
@@ -1118,12 +1155,15 @@ const VerSolicitud = (props) => {
                                                 </h4>
                                             </div>
 
-                                            <div className="values  mb-3">
-                                                <h4>Cupo aprobado:</h4>
-                                                <h4 className="strong">
-                                                    {numberFormatMoney(solicitudTarjeta?.str_cupo_aprobado)}
-                                                </h4>
-                                            </div>
+
+                                            {(solicitudTarjeta?.str_estado_actual === "VERIFICAR SOCIO" || solicitudTarjeta?.str_estado_actual === "APROBADA" || solicitudTarjeta?.str_estado_actual === "APROBADA SOCIO" || solicitudTarjeta?.str_estado_actual === "RECHAZADA") &&
+                                                <div className="values  mb-3">
+                                                    <h4>Cupo aprobado:</h4>
+                                                    <h4 className="strong">
+                                                        {numberFormatMoney(solicitudTarjeta?.str_cupo_aprobado)}
+                                                    </h4>
+                                                </div>
+                                            }
                                         </Item>
                                     </Card>
 
@@ -1131,7 +1171,7 @@ const VerSolicitud = (props) => {
                                     <Card className={["f-col"]}>
                                         {solicitudTarjeta?.str_estado_actual === "CREADA" &&
                                             <div className="mb-1 f-row justify-content-start align-content-center" style={{ minWidth: "300px" }}>
-                                                <h3 className="strong mr-1">¿Es MICROCRÉDITO?</h3>
+                                                <h3 className="strong mr-1">¿ES MICROCRÉDITO?</h3>
                                                 <div className="f-col justify-content-center">
                                                     <Switch onChange={(valor) => setSwithcEsMicrocredito(valor)} value={swithcEsMicrocredito}></Switch>
                                                 </div>
@@ -1140,30 +1180,27 @@ const VerSolicitud = (props) => {
                                         }
                                         <div className="f-row">
 
-                                            {permisoAccionAnalisis3Cs.includes(solicitudTarjeta?.str_estado_actual) &&
-                                                <Button className="btn_mg__primary" onClick={modalHandler}>Análisis C's</Button>
+                                            {/*{permisoAccionAnalisis3Cs.includes(solicitudTarjeta?.str_estado_actual) &&*/}
+                                            {tienePermisosEditarAnalisisCs &&
+                                                <Button className="btn_mg__primary mr-2 nowrap" onClick={modalHandler}>Análisis C's</Button>
                                             }
 
-                                            {permisoImprimirMedio.includes(solicitudTarjeta?.str_estado_actual) &&
-                                                <Button className="btn_mg__primary ml-2" onClick={() => descargarMedio(props.solicitud.solicitud)}>Medio de aprobación</Button>
+                                            {/* {permisoImprimirMedio.includes(solicitudTarjeta?.str_estado_actual) &&*/}
+                                            {tienePermisosVerMedioAprobacion &&
+                                                <Button className="btn_mg__primary mr-2 nowrap" onClick={() => descargarMedio(props.solicitud.solicitud)}>Medio de aprobación</Button>
                                             }
 
-                                            {estadosPuedenRegresarBandeja.includes(solicitudTarjeta?.str_estado_actual) &&
-                                                <Button className="btn_mg__primary ml-2" onClick={openModalCambiarBandeja}>Devolver</Button>
+                                            {/*{estadosPuedenRegresarBandeja.includes(solicitudTarjeta?.str_estado_actual) &&*/}
+                                            {tienePermisosDevolverBandeja &&
+                                                <Button className="btn_mg__primary mr-2 nowrap" onClick={openModalCambiarBandeja}>Devolver</Button>
                                             }
-
-                                            {/*<>*/}
-                                            {/*    <div className="values ml-1 mb-3">*/}
-                                            {/*        <Button className={["btn_mg btn_mg__primary"]} onClick={openModalResolucionSocio}>Resolución socio </Button>*/}
-                                            {/*    </div>*/}
-                                            {/*</>*/}
 
 
                                             {/*VERIFICAR SOCIO*/}
                                             {solicitudTarjeta?.str_estado_actual === estadosSigConfirmPorMontoMenorAll[0]?.prm_valor_ini &&                                               
-                                                <Button className={["btn_mg btn_mg__primary ml-2"]} onClick={openModalResolucionSocio}>Resolución socio </Button> 
+                                                <Button className={["btn_mg btn_mg__primary mr-2 nowrap"]} onClick={openModalResolucionSocio}>Resolución socio </Button> 
                                             }
-                                            <Button className={["btn_mg btn_mg__primary ml-2"]} onClick={changeEstadoModalSeguimiento}>Seguimiento </Button>
+                                            <Button className={["btn_mg btn_mg__primary mr-2"]} onClick={changeEstadoModalSeguimiento}>Seguimiento</Button>
                                      
 
                                         </div>

@@ -67,6 +67,7 @@ const NuevaSolicitud = (props) => {
         montoEgresos: 0,
         montoGastoFinaCodeudor: 0,
         montoRestaGstFinanciero: 0,
+        montoGastoFinaTitular: 0,
 
     })
 
@@ -102,6 +103,8 @@ const NuevaSolicitud = (props) => {
 
     // Para registro Solicitud
     const [calificacionRiesgo, setCalificacionRiesgo] = useState("");
+    const [decisionBuro, setDecisionBuro] = useState("");
+    const [gastoFinancieroTitular, setGastoFinancieroTitular] = useState("0");
     const [cupoSugeridoAval, setCupoSugeridoAval] = useState(0);
     const [cupoSugeridoCoopM, setCupoSugeridoCoopM] = useState(0);
 
@@ -348,6 +351,11 @@ const NuevaSolicitud = (props) => {
         setIsCkeckRestaGtoFinananciero(e);
     }
 
+    const updateCupoSugMegoDesdeCompHijoHandler = (e) => {
+        setCupoSugeridoCoopM(e);
+    }
+
+
     const refrescarDatosInformativos = async () => {
         await fetchValidacionSocio(cedulaSocio, '', props.token, (data) => {
             let datosFinan = {
@@ -356,6 +364,7 @@ const NuevaSolicitud = (props) => {
                 montoEgresos: Number(data.dcm_total_egresos),
                 montoGastoFinaCodeudor: Number(datosFinancierosObj.montoGastoFinaCodeudor),
                 montoRestaGstFinanciero: Number(datosFinancierosObj.montoRestaGstFinanciero),
+                montoGastoFinaTitular: Number(datosFinancierosObj.montoGastoFinaTitular),
             }
             setDatosFinancierosObj(datosFinan);
         },
@@ -574,10 +583,16 @@ const NuevaSolicitud = (props) => {
                     datosFinancierosObj.montoGastoFinaCodeudor = Number(data.str_gastos_codeudor);
                     let restaGastoFinancieroBuro = Number.parseFloat(data.response?.result?.parametrosCapacidadPago[0]?.restaGastoFinanciero);
                     datosFinancierosObj.montoRestaGstFinanciero = restaGastoFinancieroBuro;
+                    let gastoFinancieroTitularBuro = Number.parseFloat(data?.response?.result?.gastoFinanciero[0]?.cuotaEstimadaTitular);
+                    datosFinancierosObj.montoGastoFinaTitular = gastoFinancieroTitularBuro;
+
                     setDatosFinancierosObj(datosFinancierosObj);
                     //Se captura la calificacion que retorna de la consulta al buro
                     setCalificacionRiesgo(data.response.result.modeloCoopmego[0].decisionModelo)
+                    setDecisionBuro(data.response.result.modeloCoopmego[0].tipoDecision)
+                    setGastoFinancieroTitular(data?.response?.result?.gastoFinanciero[0]?.cuotaEstimadaTitular);
                     dataSocio.datosFinancieros = datosFinancierosObj;
+                    dataSocio.gastoFinanciero = datosFinancierosObj;
                     setInfoSocio(dataSocio);
                     setEstadoBotonSiguiente(true);
                     setScore(data);
@@ -702,6 +717,8 @@ const NuevaSolicitud = (props) => {
                 mny_cuota_estimada: "0",
                 str_segmento: "",
                 str_calificacion_buro: calificacionRiesgo,
+                str_decision_buro: decisionBuro,
+                mny_gastos_financiero_titular: gastoFinancieroTitular,
                 str_score_buro: puntajeScore.toString(),
 
             }
@@ -777,7 +794,8 @@ const NuevaSolicitud = (props) => {
             montoIngresos: dato.montoIngresos,
             montoEgresos: dato.montoEgresos,
             montoGastoFinaCodeudor: dato.montoGastoFinaCodeudor,
-            montoRestaGstFinanciero: dato.restaGastoFinanciero
+            montoRestaGstFinanciero: dato.restaGastoFinanciero,
+            montoGastoFinaTitular: dato.montoGastoFinaTitular
         }
         setDatosFinancierosObj(datosFinanciero)
 
@@ -928,6 +946,7 @@ const NuevaSolicitud = (props) => {
                             isCheckMontoRestaFinanciera={isCkeckRestaGtoFinananciero}
                             setDatosFinancierosFunc={datosFinancierosHandler}
                             isCkeckGtosFinancierosHandler={checkGastosFinancieroHandler}
+                            updateCupoSugeridoMego={updateCupoSugMegoDesdeCompHijoHandler}
 
                         ></DatosSocio>
                     }
@@ -955,6 +974,7 @@ const NuevaSolicitud = (props) => {
                             telefono={celularSocio}
                             email={correoSocio}
                             cupoSolicitado={datosFinancierosObj.montoSolicitado}
+                            cupoSugeridoCoopmego={cupoSugeridoCoopM}
                         ></FinProceso>}
                 </div>
                 <div id="botones" className="f-row ">

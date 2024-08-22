@@ -84,10 +84,11 @@ function Menus({ listaMenus, id_perfil, token, setListas, setListaFunc, listaFun
         let ti = setTimeout(() => {
             if (idPerfil > 0 && !IsNullOrWhiteSpace(tokeni) && validateToken(tokeni) && listaMenus.length === 0 && listaMenusi.length === 0 && !sended) {
                 setSended(true);
-                fetchMenuPrincipal(idPerfil, tokeni, (listaMenusg, listaUrlsg) => {
+                //TODO: VALIDAR SI FUNCIONA
+                /*fetchMenuPrincipal(idPerfil, tokeni, (listaMenusg, listaUrlsg) => {
                     setListaUrls(listaUrlsg);
                     setListaMenus(listaMenusg);
-                }, dispatch);
+                }, dispatch);*/
             }
             clearTimeout(ti);
         }, 400);
@@ -103,7 +104,7 @@ function Menus({ listaMenus, id_perfil, token, setListas, setListaFunc, listaFun
                 dispatch(setParametrosTCStateAction({ lst_parametros: data.lst_parametros }));
             }, dispatch)
             fetchGetPermisosPerfil(tokeni, (data) => {
-                dispatch(setFuncionalidadesSistemaAction({ lst_funcionalidades: data.lst_funcionalidades }));
+                dispatch(setFuncionalidadesSistemaAction({ permisos: data.lst_funcionalidades }));
                 console.log("lst_funcionalidades ", data.lst_funcionalidades)
             }, dispatch)
         }

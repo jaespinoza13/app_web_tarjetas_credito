@@ -18,6 +18,7 @@ import { setListaBases } from '../redux/Logs/ListaBases/actions';
 export function fetchMenuPrincipal(idPerfil, token, onSuccess, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
     ServicioGetExecute(getMenuPrincipal, token, { params: { perfil: idPerfil }, dispatch: dispatch }).then(async (data) => {
+        console.log(data)
         if (data) {
             if (data.error) {
                 if (dispatch && data.reload) dispatch(setErrorRedirigir("/reload"));
@@ -1143,7 +1144,7 @@ export function fetchGetInfoFinan(ente, token, onSucces, dispatch) {
 * @param {(contenido:string, nroTotalRegistros: number) => void} onSuccess
 * @param {Function} dispatch
 */
-export function fetchAddProspecto(str_num_documento, ente, nombres, apellidos, celular, correo, cupoSoli, comentario, comentarioAdic, ingresos, egresos, gastoFinanciero, gastoCodeudor, cupoAval,cupoCoopmego, score, token, onSucces, dispatch) {
+export function fetchAddProspecto(str_num_documento, ente, nombres, apellidos, celular, correo, cupoSoli, comentario, comentarioAdic, ingresos, egresos, gastoFinanciero, gastoCodeudor, cupoAval, cupoCoopmego, score, calificacionRiesgo, decisionBuro, gastoFinancieroTitular,token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
@@ -1164,7 +1165,10 @@ export function fetchAddProspecto(str_num_documento, ente, nombres, apellidos, c
         mny_gastos_codeudor: gastoCodeudor,
         mny_cupo_sugerido_aval: cupoAval,
         mny_cupo_sug_coopmego: cupoCoopmego,
-        str_score: score
+        str_score: score,
+        str_calificacion_buro: calificacionRiesgo,
+        str_decision_buro: decisionBuro,
+        mny_gastos_financiero_titular: gastoFinancieroTitular
     }
 
     console.log("body", body)
@@ -1976,7 +1980,7 @@ export function fetchGetPermisosPerfil(token, onSucces, dispatch) {
         }
     });
 }
-
+//METODO PROPIO DEL CONTROLADOR, SE LLAMA AL APPSETTINGS
 export function fetchGetFuncionalidadesTC(token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
     let body = {

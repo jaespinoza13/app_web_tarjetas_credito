@@ -17,19 +17,20 @@ const DatosFinancieros = (props) => {
     const [isCkeckRestaGtoFinancero, setIsCkeckRestaGtoFinancero] = useState(false);
     const [isCamposDesactivados, setIsCamposDesactivados] = useState(true);*/
 
-    
+
 
     const [montoSolicitado, setMontoSolicitado] = useState(props.dataConsultFinan.montoSolicitado);
     const [montoIngresos, setMontoIngresos] = useState(props.dataConsultFinan.montoIngresos);
     const [montoEgresos, setMontoEgresos] = useState(props.dataConsultFinan.montoEgresos);
     const [montoGastoFinaCodeudor, setMontoGastoFinanCodeudor] = useState(props.dataConsultFinan.montoGastoFinaCodeudor);
+    const [montoGastoFinaTitular, setMontoGastoFinanTitular] = useState(props.dataConsultFinan.montoGastoFinaTitular);
     const [restaMontoGastosFinancieros, setRestaMontoGastosFinancieros] = useState(props.dataConsultFinan.montoRestaGstFinanciero);
     const [isCkeckRestaGtoFinancero, setIsCkeckRestaGtoFinancero] = useState(props.isCheckMontoRestaFinanciera);
     const [isCamposDesactivados, setIsCamposDesactivados] = useState(false);
-    
 
 
-    const [isActivarBtnRestaGasto, setIsActivarBtnRestaGasto] = useState(false); 
+
+    const [isActivarBtnRestaGasto, setIsActivarBtnRestaGasto] = useState(false);
 
     const setMontoSolicitadoHandler = (value) => {
         setMontoSolicitado(Number(value));
@@ -38,6 +39,7 @@ const DatosFinancieros = (props) => {
             montoIngresos: montoIngresos,
             montoEgresos: montoEgresos,
             montoGastoFinaCodeudor: montoGastoFinaCodeudor,
+            montoGastoFinaTitular: montoGastoFinaTitular,
             restaGastoFinanciero: restaMontoGastosFinancieros
         })
     }
@@ -49,6 +51,7 @@ const DatosFinancieros = (props) => {
             montoIngresos: Number(value),
             montoEgresos: montoEgresos,
             montoGastoFinaCodeudor: montoGastoFinaCodeudor,
+            montoGastoFinaTitular: montoGastoFinaTitular,
             restaGastoFinanciero: restaMontoGastosFinancieros
         })
     }
@@ -60,6 +63,7 @@ const DatosFinancieros = (props) => {
             montoIngresos: montoIngresos,
             montoEgresos: Number(value),
             montoGastoFinaCodeudor: montoGastoFinaCodeudor,
+            montoGastoFinaTitular: montoGastoFinaTitular,
             restaGastoFinanciero: restaMontoGastosFinancieros
         })
     }
@@ -71,6 +75,19 @@ const DatosFinancieros = (props) => {
             montoIngresos: montoIngresos,
             montoEgresos: montoEgresos,
             montoGastoFinaCodeudor: Number(value),
+            montoGastoFinaTitular: montoGastoFinaTitular,
+            restaGastoFinanciero: restaMontoGastosFinancieros
+        })
+    }
+
+    const setMontoGastoFinanTitularHandler = (value) => {
+        setMontoGastoFinanTitular(Number(value));
+        props.setDatosFinancierosFunc({
+            montoSolicitado: montoSolicitado,
+            montoIngresos: montoIngresos,
+            montoEgresos: montoEgresos,
+            montoGastoFinaCodeudor: montoGastoFinaCodeudor,
+            montoGastoFinaTitular: Number(value),
             restaGastoFinanciero: restaMontoGastosFinancieros
         })
     }
@@ -82,6 +99,7 @@ const DatosFinancieros = (props) => {
             montoIngresos: montoIngresos,
             montoEgresos: montoEgresos,
             montoGastoFinaCodeudor: montoGastoFinaCodeudor,
+            montoGastoFinaTitular: montoGastoFinaTitular,
             restaGastoFinanciero: Number(value)
         })
     }
@@ -115,23 +133,17 @@ const DatosFinancieros = (props) => {
     const updGastosFinancieros = () => {
         props.requiereActualizar(true)
     }
-    
+
     useEffect(() => {
-        console.log(props.dataConsultFinan)
+        //console.log(props.dataConsultFinan)
 
         window.scrollTo(0, 0);
-       /* setMontoIngresos(props.dataConsultFinan.montoIngresos);
-        setMontoEgresos(props.dataConsultFinan.montoEgresos);
-        setRestaMontoGastosFinancieros(props.dataConsultFinan.montoRestaGstFinanciero);
-        setMontoGastoFinanCodeudor(props.dataConsultFinan.montoGastoFinaCodeudor);
-        setMontoSolicitado(props.dataConsultFinan.montoSolicitado);
-        setIsCkeckRestaGtoFinancero(props.isCheckMontoRestaFinanciera);
-        */
         return () => {
             setMontoIngresos(0);
             setMontoEgresos(0);
             setRestaMontoGastosFinancieros(0);
             setMontoGastoFinanCodeudor(0);
+            setMontoGastoFinanTitular(0);
             setMontoSolicitado(0);
             setIsCkeckRestaGtoFinancero(false);
             setIsCamposDesactivados(true);
@@ -141,20 +153,21 @@ const DatosFinancieros = (props) => {
 
     useEffect(() => {
         setIsActivarBtnRestaGasto(props.isActivarSeccionRestaGasto);
-    },[props.isActivarSeccionRestaGasto])
+    }, [props.isActivarSeccionRestaGasto])
 
-    
+
     useEffect(() => {
         window.scrollTo(0, 0);
         setMontoIngresos(props.dataConsultFinan.montoIngresos);
         setMontoEgresos(props.dataConsultFinan.montoEgresos);
         setRestaMontoGastosFinancieros(props.dataConsultFinan.montoRestaGstFinanciero);
         setMontoGastoFinanCodeudor(props.dataConsultFinan.montoGastoFinaCodeudor);
+        setMontoGastoFinanTitular(props.dataConsultFinan.montoGastoFinaTitular);
         setMontoSolicitado(props.dataConsultFinan.montoSolicitado);
         setIsCkeckRestaGtoFinancero(props.isCheckMontoRestaFinanciera);
 
     }, [props])
-    
+
 
     return (
         <>
@@ -189,26 +202,35 @@ const DatosFinancieros = (props) => {
                             {isActivarBtnRestaGasto &&
 
                                 <Fragment>
-                            <div className='mb-2'>
-                                <div className="f-row">
-                                    <Input type="checkbox" setValueHandler={CkeckGtosFinancierosHandler} checked={isCkeckRestaGtoFinancero} ></Input>
-                                    <h3 className="ml-2">Resta Gasto Financiero</h3>
-                                </div>
+                                    <div className='mb-2'>
+                                        <div className="f-row">
+                                            <Input type="checkbox" setValueHandler={CkeckGtosFinancierosHandler} checked={isCkeckRestaGtoFinancero} ></Input>
+                                            <h3 className="ml-2">Resta Gasto Financiero</h3>
+                                        </div>
 
-                                <div className="f-row">
-                                    <h2 className='mr-2'>$</h2>
-                                    <Input className={'w-90'} type={"number"} readOnly={false} setValueHandler={setRestaGastosFinancierosHandler} value={restaMontoGastosFinancieros} disabled={!isCkeckRestaGtoFinancero} min={0} max={controlValorMaxInputs} maxlength={6} ></Input>
-                                </div>
-                            </div>
-
-                            
-                                <div className='mb-2'>
-                                    <h3>
-                                        Gasto Financiero CoDeudor
-                                    </h3>
-                                    <div className="f-row">
-                                        <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} readOnly={false} setValueHandler={setMontoGastoFinanCodeudorHandler} value={montoGastoFinaCodeudor} min={0} max={controlValorMaxInputs} maxlength={6} disabled={true} ></Input>
+                                        <div className="f-row">
+                                            <h2 className='mr-2'>$</h2>
+                                            <Input className={'w-90'} type={"number"} readOnly={false} setValueHandler={setRestaGastosFinancierosHandler} value={restaMontoGastosFinancieros} disabled={!isCkeckRestaGtoFinancero} min={0} max={controlValorMaxInputs} maxlength={6} ></Input>
+                                        </div>
                                     </div>
+
+                                    <div className='mb-2'>
+                                        <h3>
+                                            Gasto financiero
+                                        </h3>
+                                        <div className="f-row">
+                                            <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} readOnly={false} setValueHandler={setMontoGastoFinanTitularHandler} value={montoGastoFinaTitular} min={0} max={controlValorMaxInputs} maxlength={6} disabled={true} ></Input>
+                                        </div>
+                                    </div>
+
+
+                                    <div className='mb-2'>
+                                        <h3>
+                                            Gasto financiero del titular como codeudor
+                                        </h3>
+                                        <div className="f-row">
+                                            <h2 className='mr-2'>$</h2><Input className={'w-90'} type={"number"} readOnly={false} setValueHandler={setMontoGastoFinanCodeudorHandler} value={Number(montoGastoFinaCodeudor) !== 0 ? montoGastoFinaCodeudor : "0" } min={0} max={controlValorMaxInputs} maxlength={6} disabled={true} ></Input>
+                                        </div>
                                     </div>
                                 </Fragment>
                             }
@@ -223,7 +245,7 @@ const DatosFinancieros = (props) => {
                                         <h4 className="ml-4">*El valor mínimo a solicitar debe superar los {`${numberFormatMoney(props.montoMinimoCupoSolicitado)}`}</h4>
                                     }
                                 </div>
-                                
+
                             </div>
 
                         </form>

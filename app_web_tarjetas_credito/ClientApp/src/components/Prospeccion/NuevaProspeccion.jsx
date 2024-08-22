@@ -54,6 +54,8 @@ const NuevaProspeccion = (props) => {
     const [score, setScore] = useState("");
     const [puntajeScore, setPuntajeScore] = useState("");
     const [calificacionRiesgo, setCalificacionRiesgo] = useState("");
+    const [decisionBuro, setDecisionBuro] = useState("");
+    const [gastoFinancieroTitular, setGastoFinancieroTitular] = useState("0");
     const [cupoSugeridoAval, setCupoSugeridoAval] = useState("");
     const [cupoSugeridoCoopmego, setCupoSugeridoCoopmego] = useState("0");
     const [prospectoIDCreado, setProspectoIDCreado] = useState();
@@ -71,7 +73,7 @@ const NuevaProspeccion = (props) => {
     const [nombreSocio, setNombreSocio] = useState('');
     const [apellidoPaterno, setApellidoPaterno] = useState('');
     const [apellidoMaterno, setApellidoMaterno] = useState('');
-    const [enteSocio, setEnteSocio] = useState('');
+    const [enteSocio, setEnteSocio] = useState(0);
     const [celularSocio, setCelularSocio] = useState('');
     const [correoSocio, setCorreoSocio] = useState('');
     const [fechaNacimiento, setFechaNacimiento] = useState('');
@@ -88,7 +90,7 @@ const NuevaProspeccion = (props) => {
         montoEgresos: 0,
         montoGastoFinaCodeudor: 0,
         montoRestaGstFinanciero: 0,
-
+        montoGastoFinaTitular: 0
     })
 
 
@@ -368,7 +370,7 @@ const NuevaProspeccion = (props) => {
             setDatosFinancierosObj(datosFinan);
             setInfoSocio(data);
             //TODO validar que no tenga ente
-            setEnteSocio("")
+            setEnteSocio(data.str_ente.trim() !== "" ? Number(data.str_ente):0);
             if (!actualizarInfo) {
                 setStep(1);
                 let retrasoEfecto = setTimeout(function () {
@@ -502,10 +504,17 @@ const NuevaProspeccion = (props) => {
                     datosFinancierosObj.montoGastoFinaCodeudor = Number(data.str_gastos_codeudor);
                     let restaGastoFinancieroBuro = Number.parseFloat(data.response?.result?.parametrosCapacidadPago[0]?.restaGastoFinanciero);                    
                     datosFinancierosObj.montoRestaGstFinanciero = restaGastoFinancieroBuro;
-                    setDatosFinancierosObj(datosFinancierosObj)
+                    let gastoFinancieroTitularBuro = Number.parseFloat(data?.response?.result?.gastoFinanciero[0]?.cuotaEstimadaTitular);
+                    datosFinancierosObj.montoGastoFinaTitular = gastoFinancieroTitularBuro;
+
+                    setDatosFinancierosObj(datosFinancierosObj);
                     //Se captura la calificacion que retorna de la consulta al buro
-                    setCalificacionRiesgo(data.response.result.modeloCoopmego[0].decisionModelo)
+                    setCalificacionRiesgo(data.response.result.modeloCoopmego[0].decisionModelo);
+                    setDecisionBuro(data.response.result.modeloCoopmego[0].tipoDecision);
+                    setGastoFinancieroTitular(data?.response?.result?.gastoFinanciero[0]?.cuotaEstimadaTitular);
                     dataSocio.datosFinancieros = datosFinancierosObj;
+
+
                     setInfoSocio(dataSocio);
                     setEstadoBotonSiguiente(true);
                     setScore(data);
@@ -541,13 +550,13 @@ const NuevaProspeccion = (props) => {
 
             //str_num_documento, ente, nombres, apellidos, celular, correo, cupoSoli, comentario, comentarioAdic, ingresos, egresos, gastoFinanciero, gastoCodeudor, cupoAval,cupoCoopmego, score, token, onSucces, dispatch
             let apellidosCliente = (apellidoMaterno !== null && apellidoMaterno !== '') ? apellidoPaterno + " " + apellidoMaterno : apellidoPaterno;
-            fetchAddProspecto(documento, 0, nombreSocio, apellidosCliente, celularSocio, correoSocio, datosFinancierosObj.montoSolicitado.toString(), comentario, comentarioAdic,
-                datosFinan.montoIngresos.toString(), datosFinan.montoEgresos.toString(), datosFinan.montoRestaGstFinanciero.toString(),datosFinan.montoGastoFinaCodeudor.toString(), cupoSugeridoAval.toString(), cupoSugeridoCoopmego.toString(), puntajeScore.toString(),
+            fetchAddProspecto(documento, enteSocio, nombreSocio, apellidosCliente, celularSocio, correoSocio, datosFinancierosObj.montoSolicitado.toString(), comentario, comentarioAdic,
+                datosFinan.montoIngresos.toString(), datosFinan.montoEgresos.toString(), datosFinan.montoRestaGstFinanciero.toString(), datosFinan.montoGastoFinaCodeudor.toString(), cupoSugeridoAval.toString(), cupoSugeridoCoopmego.toString(), puntajeScore.toString(), calificacionRiesgo, decisionBuro, gastoFinancieroTitular,
                 props.token, (data) => {
                 setProspectoIDCreado(data.int_id_prospecto);
                 setVisitadosSteps([...visitadosSteps, actualStepper + 1])
                 setActualStepper(4);
-                    setStep(-1);
+                setStep(-1);
             }, dispatch)
 
            
@@ -567,6 +576,9 @@ const NuevaProspeccion = (props) => {
         setIsCkeckRestaGtoFinananciero(e);
     }
 
+    const updateCupoSugMegoDesdeCompHijoHandler = (e) => {
+        setCupoSugeridoCoopmego(e);
+    }
     
     const cedulaSocioHandler = (e) => {
         setDocumento(e.valor)
@@ -586,7 +598,8 @@ const NuevaProspeccion = (props) => {
             montoIngresos: dato.montoIngresos,
             montoEgresos: dato.montoEgresos,
             montoGastoFinaCodeudor: dato.montoGastoFinaCodeudor,
-            montoRestaGstFinanciero: dato.restaGastoFinanciero
+            montoRestaGstFinanciero: dato.restaGastoFinanciero,
+            montoGastoFinaTitular: dato.montoGastoFinaTitular
         }
         setDatosFinancierosObj(datosFinanciero)
 
@@ -637,7 +650,7 @@ const NuevaProspeccion = (props) => {
 
     const steps = [
         "Datos personales",
-        "Requisitos",
+        "Alertas",
         "Datos financieros",
         "Simulación",
         "Registro simulación",
@@ -679,6 +692,7 @@ const NuevaProspeccion = (props) => {
                 montoEgresos: Number(data.dcm_total_egresos),
                 montoGastoFinaCodeudor: Number(datosFinancierosObj.montoGastoFinaCodeudor),
                 montoRestaGstFinanciero: Number(datosFinancierosObj.montoRestaGstFinanciero),
+                montoGastoFinaTitular: Number(datosFinancierosObj.montoGastoFinaTitular),
             }
             setDatosFinancierosObj(datosFinan);
 
@@ -780,12 +794,12 @@ const NuevaProspeccion = (props) => {
 
                     {(step === 4) &&
                             <DatosSocio
-                                informacionSocio={infoSocio}
-                                score={score}
-                                token={props.token}
-                                gestion={gestion}
-                                onInfoSocio={getInfoSocioHandler}
-                                onComentario={handleComentario}
+                            informacionSocio={infoSocio}
+                            score={score}
+                            token={props.token}
+                            gestion={gestion}
+                            onInfoSocio={getInfoSocioHandler}
+                            onComentario={handleComentario}
                             onComentarioAdic={handleComentarioAdic}
                             idClienteScore={idClienteScore}
                             comentarioAdicionalValor={comentarioAdic}
@@ -793,6 +807,7 @@ const NuevaProspeccion = (props) => {
                             isCheckMontoRestaFinanciera={isCkeckRestaGtoFinananciero}
                             setDatosFinancierosFunc={datosFinancierosHandler}
                             isCkeckGtosFinancierosHandler={checkGastosFinancieroHandler}
+                            updateCupoSugeridoMego={updateCupoSugMegoDesdeCompHijoHandler}
                             ></DatosSocio>                        
                     }
                   
@@ -803,6 +818,7 @@ const NuevaProspeccion = (props) => {
                             telefono={celularSocio}
                             email={correoSocio}
                             cupoSolicitado={datosFinancierosObj.montoSolicitado}
+                            cupoSugeridoCoopmego={cupoSugeridoCoopmego}
                         ></FinProceso>}
                 </div>
                 <div id="botones" className="f-row ">

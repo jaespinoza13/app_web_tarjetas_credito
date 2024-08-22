@@ -25,6 +25,7 @@ const DatosFinanDatosSocio = (props) => {
     const [montoIngresosSimul, setmontoIngresosSimul] = useState(0);
     const [montoEgresosSimul, setMontoEgresosSimul] = useState(0);
     const [montoGastoFinaCodeudorSimul, setMontoGastoFinaCodeudorSimul] = useState(0);
+    const [montoGastoFinaTitularSimul, setMontoGastoFinanTitularSimul] = useState(0);
     const [restaMontoGastosFinancierosSimul, setRestaMontoGastosFinancierosSimul] = useState(0);
     const [cupoSugeNuevSimulacion, setCupoSugeNuevSimulacion] = useState("");
     const [isCkeckRestaGtoFinanceroSimul, setIsCkeckRestaGtoFinanceroSimul] = useState(false);
@@ -45,6 +46,10 @@ const DatosFinanDatosSocio = (props) => {
         setMontoGastoFinaCodeudorSimul(Number(value));
     }
 
+    const setMontoGastoFinanTitularHandler = (value) => {
+        setMontoGastoFinanTitularSimul(Number(value));
+    }
+
     const setRestaGastosFinancierosHandler = (value) => {
         setRestaMontoGastosFinancierosSimul(value)
     }
@@ -62,13 +67,14 @@ const DatosFinanDatosSocio = (props) => {
         }
     }, [isCkeckRestaGtoFinanceroSimul])
     */
- 
+
     useEffect(() => {
         window.scrollTo(0, 0);
         setmontoIngresosSimul(props.dataFinanciers.montoIngresos);
         setMontoEgresosSimul(props.dataFinanciers.montoEgresos);
         setRestaMontoGastosFinancierosSimul(props.dataFinanciers.montoRestaGstFinanciero);
         setMontoGastoFinaCodeudorSimul(props.dataFinanciers.montoGastoFinaCodeudor);
+        setMontoGastoFinanTitularSimul(props.dataFinanciers.montoGastoFinaTitular);
         setIsCkeckRestaGtoFinanceroSimul(props.isCheckHabilitaRestaMonto);
 
         if (props.gestion === "solicitud") {
@@ -79,16 +85,17 @@ const DatosFinanDatosSocio = (props) => {
 
     }, [])
 
-    
+
     //PARA ACTUALIZAR CAMPO EN CASO SE ACTUALICE 
     useEffect(() => {
         setMontoGastoFinaCodeudorSimul(props.dataFinanciers.montoGastoFinaCodeudor);
         setRestaMontoGastosFinancierosSimul(props.dataFinanciers.montoRestaGstFinanciero);
     }, [props.dataFinanciers])
-    
+
 
 
     useEffect(() => {
+        //RECUPERA EL CUPO SUGERIGO PARA COOPMEGO
         props.nuevoCupoSimulado(cupoSugeNuevSimulacion)
     }, [cupoSugeNuevSimulacion])
 
@@ -106,7 +113,7 @@ const DatosFinanDatosSocio = (props) => {
 
         const strOficial = get(localStorage.getItem("sender_name"));
         const strRol = get(localStorage.getItem("role"));
-        const userOficina = get(localStorage.getItem('office')); 
+        const userOficina = get(localStorage.getItem('office'));
 
         //Se actualiza el check desde hijo hacia padre
         props.isCkeckRestaGtosFinanHjo(isCkeckRestaGtoFinanceroSimul);
@@ -114,7 +121,7 @@ const DatosFinanDatosSocio = (props) => {
         //TODO CAMBIAR LA CEDULA, oficina matriz
         await fetchNuevaSimulacionScore("C", props.dataSimulacion.cedula, props.dataSimulacion.nombresApellidos, userOficina, strOficial, strRol, montoIngresosSimul, montoEgresosSimul, montoRestaGast, montoGastoCodeud,
             props.token, (data) => {
-                console.log("DATA SCORE ",data)
+                console.log("DATA SCORE ", data)
                 setCupoSugeNuevSimulacion(data.str_cupo_sugerido)
                 setMontoGastoFinaCodeudorSimul(data.str_gastos_codeudor)
 
@@ -123,7 +130,8 @@ const DatosFinanDatosSocio = (props) => {
                     montoIngresos: montoIngresosSimul,
                     montoEgresos: montoEgresosSimul,
                     montoGastoFinaCodeudor: montoGastoFinaCodeudorSimul,
-                    restaGastoFinanciero: restaMontoGastosFinancierosSimul
+                    restaGastoFinanciero: restaMontoGastosFinancierosSimul,
+                    montoGastoFinaTitular: montoGastoFinaTitularSimul
                 }
                 props.setDatosFinancierosHij(objetoActualizarDtsFinan);
             }, dispatch);
@@ -174,10 +182,29 @@ const DatosFinanDatosSocio = (props) => {
                                 <h2 className='mr-2'>$</h2><Input className={`w-80  ${(montoEgresosSimul !== "" && montoEgresosSimul !== 0) ? '' : 'no_valido'}`} type={"number"} readOnly={false} setValueHandler={setMontoEgresosHandler} value={montoEgresosSimul} disabled={isCamposDesactivadosSimul} min={0} max={controlValorMaxInputs} ></Input>
                             </div>
                         </div>
+
+                        <div className='mb-2'>
+                            <label>
+                                Gasto financiero
+                            </label>
+                            <div className="f-row">
+                                <h2 className='mr-2'>$</h2><Input className={'w-80'} type={"number"} readOnly={false} setValueHandler={setMontoGastoFinanTitularHandler} value={montoGastoFinaTitularSimul} min={0} max={controlValorMaxInputs} maxlength={6} disabled={true} ></Input>
+                            </div>
+                        </div>
+
                     </Item>
 
 
                     <Item xs={4} sm={4} md={4} lg={4} xl={4} className="justify-content-center">
+
+                        <div className='mb-2'>
+                            <label>
+                                Gasto financiero del titular como codeudor
+                            </label>
+                            <div className="f-row">
+                                <h2 className='mr-2'>$</h2><Input className={'w-80'} type={"number"} readOnly={false} setValueHandler={setMontoGastoFinanCodeudorHandler} value={Number(montoGastoFinaCodeudorSimul) !== 0 ? montoGastoFinaCodeudorSimul : "0"} min={0} max={controlValorMaxInputs} maxlength={6} disabled={true} ></Input>
+                            </div>
+                        </div>
 
                         <div className='mb-2'>
                             <div className="f-row">
@@ -190,27 +217,27 @@ const DatosFinanDatosSocio = (props) => {
                             </div>
                         </div>
 
-                        <div className='mb-2'>
-                            <label>
-                                Gasto Financiero CoDeudor
-                            </label>
-                            <div className="f-row">
-                                <h2 className='mr-2'>$</h2><Input className={'w-80'} type={"number"} readOnly={false} setValueHandler={setMontoGastoFinanCodeudorHandler} value={montoGastoFinaCodeudorSimul} min={0} max={controlValorMaxInputs} maxlength={6} disabled={true} ></Input>
+                        <div className='mt-5 mb-2'>
+                            <div style={{ position: "relative", left: "20%", top: "4px" }}>
+                                <Button className="btn_mg__secondary w-50" onClick={nuevaSimulacionHandler} disabled={isHabilitaBtnCalcular}>
+                                    Simular
+                                </Button>
                             </div>
                         </div>
 
+
                     </Item>
-                    <Item xs={1} sm={1} md={1} lg={1} xl={1} className="f-col justify-content-center">
-                        <div className={"f-row w-100 justify-content-start"}>
-                            <Button className="btn_mg__secondary " onClick={nuevaSimulacionHandler} disabled={isHabilitaBtnCalcular}>
-                               Simular
-                            </Button>
-                        </div>
-                    </Item>
-                    <Item xs={1} sm={1} md={1} lg={1} xl={1} className=""></Item>
+                    {/*<Item xs={1} sm={1} md={1} lg={1} xl={1} className="f-col justify-content-center">*/}
+                    {/*    <div className={"f-row w-100 justify-content-start"}>*/}
+                    {/*        <Button className="btn_mg__secondary " onClick={nuevaSimulacionHandler} disabled={isHabilitaBtnCalcular}>*/}
+                    {/*           Simular*/}
+                    {/*        </Button>*/}
+                    {/*    </div>*/}
+                    {/*</Item>*/}
+                    <Item xs={2} sm={2} md={2} lg={2} xl={2} className=""></Item>
                 </div>
             </Card>
-            
+
 
         </>
     );

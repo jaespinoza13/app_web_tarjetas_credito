@@ -244,9 +244,11 @@ const DatosSocio = (props) => {
 
     const nuevoCupoSimuladoHandler = (e) => {
         setCupoCoopmegoSimulacion(e)
+        //Actualiza el cupo sugerido Componente Padre
+        props.updateCupoSugeridoMego(e);
     }
     
-    /* Number(props.score.response.result.capacidadPago[0].cupoSugerido).toLocaleString('en-US') : Number('0.00').toLocaleString('en-US')}`}*/
+    /* Number(props?.score?.response?.result?.capacidadPago[0].cupoSugerido).toLocaleString('en-US') : Number('0.00').toLocaleString('en-US')}`}*/
     return (
         <div className="f-col w-100">
             <div id="montoSugerido" className="f-row w-100 ">
@@ -256,7 +258,7 @@ const DatosSocio = (props) => {
                         <h3 className="blue">Cupo Sugerido Buró:</h3>
                         <h2 className="strong blue">{`  
                         ${props.score?.response?.result?.capacidadPago[0]?.cupoSugerido ?                            
-                                numberFormatMoney(props.score.response.result.capacidadPago[0].cupoSugerido) : "$ 0,00"}`}
+                                numberFormatMoney(props?.score?.response?.result?.capacidadPago[0].cupoSugerido) : "$ 0,00"}`}
                         </h2>
                     </div>
                 </div>
@@ -279,13 +281,12 @@ const DatosSocio = (props) => {
                 {/*    </div>*/}
             </div>
             <div className="info f-row mb-4 mt-4">
-                <h3 className="strong">{props.score.response.result.identificacionTitular[0]?.nombreRazonSocial}</h3>
+                <h3 className="strong">{props?.score?.response?.result?.identificacionTitular[0]?.nombreRazonSocial}</h3>
             </div>
             <div id="infoSocio" className="w-100">
-                <Accordion contentReady={contentReadyScore} title="Score" rotate={estadoAccordionScore} loading={estadoLoadingScore} toggleAccordion={toggleAccordionScore}>
+                <Accordion contentReady={contentReadyScore} title="" rotate={estadoAccordionScore} loading={estadoLoadingScore} toggleAccordion={toggleAccordionScore}>
                     <div className="m-4 f-row">
-
-                        <Item xs={5} sm={5} md={5} lg={5} xl={5}>
+                        <Item xs={4} sm={4} md={4} lg={4} xl={4}>
                             <h3 className="strong mb-3">Resultado de la calificación</h3>
                             <div className="values  mb-3">
                                 <h4>Ingresos</h4>
@@ -300,9 +301,15 @@ const DatosSocio = (props) => {
                                 </h4>
                             </div>
                             <div className="values  mb-3">
-                                <h4>Resta Gasto Financiero</h4>
+                                <h4>Gasto financiero del titular como codeudor</h4>
+                                <h4 className="strong">                
+                                    {numberFormatMoney(props.informacionSocio.datosFinancieros.montoGastoFinaCodeudor)}
+                                </h4>
+                            </div>
+                            <div className="values  mb-3">
+                                <h4>Gasto Financiero</h4>
                                 <h4 className="strong">                                 
-                                    {numberFormatMoney(props.informacionSocio.datosFinancieros.montoRestaGstFinanciero)}
+                                    {props?.score?.response?.result && props?.score?.response?.result?.gastoFinanciero && props?.score?.response?.result?.gastoFinanciero[0] && props?.score?.response?.result?.gastoFinanciero[0].cuotaEstimadaTitular ? numberFormatMoney(props?.score?.response?.result?.gastoFinanciero[0]?.cuotaEstimadaTitular) : 0}
                                 </h4>
                             </div>
                             <div className="values  mb-3">
@@ -310,37 +317,34 @@ const DatosSocio = (props) => {
                                 <h4 className="strong">
                                     {numberFormatMoney(props.informacionSocio.datosFinancieros.montoSolicitado)}
                                 </h4>
-                            </div>
-                            {/*<div className="values  mb-3">*/}
-                            {/*    <h4>Cupo Sugerido Buró</h4>*/}
-                            {/*    <h4 className="strong">*/}
-                            {/*        {numberFormatMoney(props.score.response.result.capacidadPago[0].cupoSugerido)}*/}
-                            {/*    </h4>*/}
-                            {/*</div>*/}
-                            <div className="values  mb-3">
-                                <h4>Score</h4>
-                                <h4 className="strong">
-                                    {props.score.response.result && props.score.response.result.scoreFinanciero && props.score.response.result.scoreFinanciero[0] && props.score.response.result.scoreFinanciero[0].score ? props.score.response.result.scoreFinanciero[0].score : 0}
-                                </h4>
-                            </div>
-                            <div className="values  mb-3">
-                                <h4>Calificación</h4>
-                                <h4 className="strong">
-                                    {props.score.response.result && props.score.response.result.modeloCoopmego && props.score.response.result.modeloCoopmego[0] && props.score.response.result.modeloCoopmego[0].decisionModelo ? props.score.response.result.modeloCoopmego[0].decisionModelo : 'Sin datos'}
-                                </h4>
-                            </div>
-                            <div className="values  mb-3">
-                                <h4>Decisión</h4>
-                                <h4 className="strong">
-                                    {props.score.response.result && props.score.response.result.modeloCoopmego && props.score.response.result.modeloCoopmego[0] && props.score.response.result.modeloCoopmego[0].tipoDecision ? props.score.response.result.modeloCoopmego[0].tipoDecision : 'Sin datos'}
-                                </h4>
-                            </div>
+                            </div>                            
                             <Button className={["btn_mg btn_mg__primary mt-2 mr-2"]} disabled={false} onClick={descargarReporte}>Descargar reporte</Button>
                         </Item>
                         <Item xs={1} sm={1} md={1} lg={1} xl={1}></Item>
-                            <Item xs={6} sm={6} md={6} lg={6} xl={6}>
+                        <Item xs={2} sm={2} md={2} lg={2} xl={2}>
+                            <div className="values mt-5 mb-3">
+                                <h3 className="mt-1">Score</h3>
+                                <h3 className="strong">
+                                    {props?.score?.response?.result && props?.score?.response?.result?.scoreFinanciero && props?.score?.response?.result?.scoreFinanciero[0] && props?.score?.response?.result?.scoreFinanciero[0].score ? props?.score?.response?.result?.scoreFinanciero[0]?.score : 0}
+                                </h3>
+                            </div>
+                            <div className="values  mb-3">
+                                <h3>Calificación</h3>
+                                <h3 className="strong">
+                                    {props?.score?.response?.result && props?.score?.response?.result?.modeloCoopmego && props?.score?.response?.result?.modeloCoopmego[0] && props?.score?.response?.result?.modeloCoopmego[0].decisionModelo ? props?.score?.response?.result?.modeloCoopmego[0]?.decisionModelo : 'Sin datos'}
+                                </h3>
+                            </div>
+                            <div className="values  mb-3">
+                                <h3>Decisión</h3>
+                                <h3 className="strong">
+                                    {props?.score?.response?.result && props?.score?.response?.result?.modeloCoopmego && props?.score?.response?.result?.modeloCoopmego[0] && props?.score?.response?.result?.modeloCoopmego[0].tipoDecision ? props?.score?.response?.result?.modeloCoopmego[0]?.tipoDecision : 'Sin datos'}
+                                </h3>
+                            </div>
+                        </Item>
+                        <Item xs={1} sm={1} md={1} lg={1} xl={1}></Item>
+                        <Item xs={4} sm={4} md={4} lg={4} xl={4}>
                             <h3 className="strong mb-3" >Detalle de deudas:</h3>
-                            {props.score.response.result.deudaVigenteTotal.map((deuda,index) => {
+                            {props?.score?.response?.result?.deudaVigenteTotal.map((deuda,index) => {
                                 return (
                                     <div key={index }>
                                         <h3 className="strong mb-1">{deuda.sistemaCrediticio}</h3>

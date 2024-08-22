@@ -37,6 +37,11 @@ const FinProceso = (props) => {
                             <h3 className="strong">{numberFormatMoney(props.cupoSolicitado)}</h3>
                         </div>
                         <hr className="dashed"></hr>
+                        <div>
+                            <h3>Cupo sugerido CoopMego</h3>
+                            <h3 className="strong">{numberFormatMoney(props.cupoSugeridoCoopmego)}</h3>
+                        </div>
+                        <hr className="dashed"></hr>
                     </Card>
                 </div>
             </div>
