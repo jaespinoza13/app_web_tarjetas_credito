@@ -298,7 +298,7 @@ function Seguimiento(props) {
         console.log("VALOR ASIS AGENCIA ", valorParametro.textPrincipal)
 
         //setSelectAccionAsistAgencia(valor);
-        if (valorParametro.textPrincipal === "RECEPTAR TARJETAS DE CRÉDIT") {
+        if (valorParametro.textPrincipal === "RECEPTAR TARJETAS DE CRÉDITO") {
             setBoolSeccionRecepcionTarjetas(true);
             setBoolSeccionActivacionTarjetas(false);
             setTextBtnAccionAsistenteAgencia("Recibir");
