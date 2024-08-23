@@ -3,6 +3,7 @@ import { useEffect } from "react";
 
 const Textarea = (props) => {
     const textareaRef = useRef(null);
+    const classNameProps = `${props.className} ${props.value === '' ? 'no_valido' : '' || ''}` ;
     //Filas del text Area comentarioAdicional
     const [filasTextAreaComentarioSol, setFilasTextAreaComentarioSol] = useState(props.rows ? props.rows: 3); 
     const [filasTextMax, setFilasTextMax] = useState(props.rowsMax ? props.rowsMax : 7);
@@ -80,7 +81,7 @@ const Textarea = (props) => {
 
     return <textarea
         ref={textareaRef} 
-        className={props.value === '' ? 'no_valido' : ''} id={props.id} name={props.name}
+        className={classNameProps} id={props.id} name={props.name}
         placeholder={props.placeholder} rows={filasTextAreaComentarioSol} value={props.value} onChange={textareaHandler}
         required={props.esRequerido === null ? false : props.esRequerido} readOnly={props.readOnly}
         style={{ overflow: "hidden" }}

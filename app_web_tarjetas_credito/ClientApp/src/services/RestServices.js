@@ -1457,7 +1457,7 @@ export function fetchUpdResolucion(idSolicitud, token, onSucces, dispatch) {
  * @param {any} token
  * @param {any} onSucces
  * @param {any} dispatch
- */
+*/
 export function fetchAddProcEspecifico(idSolicitud, cupo, estado, comentario, cupoSolicitado, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
@@ -1706,7 +1706,7 @@ export function fetchGetSeparadores( token, onSucces, dispatch) {
      
     }
     ServicioPostExecute(getSeparadores, body, token, { dispatch: dispatch }).then((data) => {
-        //console.log("Separadores,", data);
+        console.log("Separadores,", data);
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));

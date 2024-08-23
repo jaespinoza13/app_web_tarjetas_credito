@@ -106,6 +106,8 @@ const VerSolicitud = (props) => {
     const [estadosDecBanjComiteAll, setEstadosDecBanjComiteAll] = useState([]);
     const [estadosRetornaBandejaComite, setEstadosRetornaBandejaComite] = useState([]);
     const [estadosRetornaComiteAll, setEstadosRetornaComiteAll] = useState([]);
+    const [estadosRetornaBandejaRiesgos, setEstadosRetornaBandejaRiesgos] = useState([]);
+    const [estadosRetornaRiesgosAll, setEstadosRetornaRiesgosAll] = useState([]);
     const [estadosRetornaBandejaJefUac, setEstadosRetornaBandejaJefUac] = useState([]);
     const [estadosRetornaJefeUacAll, setEstadosRetornaJefeUacAll] = useState([]);
     const [estadosSigConfirmPorMontoMenor, setEstadosSigConfirmPorMontoMenor] = useState([]);
@@ -233,7 +235,16 @@ const VerSolicitud = (props) => {
 
             /* ESTADOS PARA RETORNAR BANDEJA PARA EL COMITE */
             setEstadosRetornaComiteAll(ParametrosTC //RETORNO_ESTADO_BANDEJA_TC
-                .filter(param => param.str_nemonico === 'RET_EST_BAN_TC_COM') //RET_EST_BAN_TC_COM  RET_EST_BAN_TC_JEF_UAC  RET_EST_BAN_TC_RIE
+                .filter(param => param.str_nemonico === 'RET_EST_BAN_TC_COM') 
+                .map(estado => ({
+                    prm_id: estado.int_id_parametro,
+                    prm_valor_ini: estado.str_valor_ini,
+                    estados: estado.str_valor_fin
+                })));
+
+            /* ESTADOS PARA RETORNAR BANDEJA PARA RIESGOS */
+            setEstadosRetornaRiesgosAll(ParametrosTC //RETORNO_ESTADO_BANDEJA_TC
+                .filter(param => param.str_nemonico === 'RET_EST_BAN_TC_UNI_RIE') 
                 .map(estado => ({
                     prm_id: estado.int_id_parametro,
                     prm_valor_ini: estado.str_valor_ini,
@@ -388,6 +399,18 @@ const VerSolicitud = (props) => {
         }
     }, [estadosRetornaComiteAll])
 
+    useEffect(() => {
+        if (estadosRetornaRiesgosAll.length > 0) {
+            //console.log(estadosRetornaRiesgosAll)
+            let arrEstados = estadosRetornaRiesgosAll.find((parametr) => (parametr.prm_valor_ini) === props.solicitud.estado)
+            if (arrEstados) {
+                const estadosSiguientes = arrEstados.estados.split('|');
+                setEstadosRetornaBandejaRiesgos(estadosSiguientes);
+            } else {
+                setEstadosRetornaBandejaRiesgos([]);
+            }
+        }
+    }, [estadosRetornaRiesgosAll])
 
     useEffect(() => {
         if (estadosRetornaJefeUacAll.length > 0) {
@@ -471,7 +494,7 @@ const VerSolicitud = (props) => {
        
         fetchAddComentarioAsesor(props.solicitud.solicitud, informe, props.solicitud.idSolicitud, props.token, (data) => {
             if (data.str_res_codigo === "000") {
-                setFaltaComentariosAsesor(false);
+                //setFaltaComentariosAsesor(false); TODO SE COMENTA
                 setModalVisible(false);
             }
         }, dispatch);
@@ -523,7 +546,7 @@ const VerSolicitud = (props) => {
         let nemonico = parametrosTC.find(param => param.prm_valor_ini === props.solicitud.estado)
         let validacionInforme = await validarInforme();
 
-        if (nemonico && validacionInforme === false) {
+        if (nemonico && validacionInforme === false && solicitudTarjeta?.str_estado_actual !== "ANALISIS RIESGOS") {
             fetchAddComentarioSolicitud(props.solicitud.solicitud, comentarioSolicitud, props.solicitud.idSolicitud, false, swithcEsMicrocredito, solicitudTarjeta?.str_cupo_solicitado, props.token, (data) => {
                 if (data.str_res_codigo === "000") {
                     fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, datosUsuario[0].strOficial, '', comentarioSolicitud, nemonico.prm_nemonico, props.token, (data) => {
@@ -533,6 +556,23 @@ const VerSolicitud = (props) => {
                     }, dispatch)
                 }
             }, dispatch);
+        } else if (nemonico && validacionInforme === false && solicitudTarjeta?.str_estado_actual === "ANALISIS RIESGOS") {
+            console.log("ENTRA NUEVO ESTADO Riesgos")
+            fetchAddProcEspecifico(props.solicitud.solicitud, 0, "EST_POR_APROBAR", comentarioSolicitud, solicitudTarjeta?.str_cupo_solicitado, props.token, (data) => {
+                if (data.str_res_codigo === "000") {
+
+                    /* TODO PREGUNTAR QUE DECISION LE COLOCARA DE MANERA AUTOMATICA JHONNY
+                    fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, datosUsuario[0].strOficial, '', comentarioSolicitud, nemonico.prm_nemonico, props.token, (data) => {
+                        setModalVisibleOk(true);
+                        setTextoModal("Su comentario se guardo con éxito.");
+                        //navigate.push('/solicitud');
+                    }, dispatch)
+                    */
+                    setTextoModal("Su comentario se guardo con éxito.");
+                    setModalVisibleOk(true);
+                    navigate.push('/solicitud');
+                }
+            }, dispatch)
         }
         else {
             //window.alert("Error en el proceso de cambio de bandeja, por favor comuniquese con el administrador");
@@ -653,10 +693,9 @@ const VerSolicitud = (props) => {
         if (selectMotivoRetornoBanj !== undefined && nemonico !== undefined) {
           //  descripcionMotivoRetorno = descripcionMotivoRetorno.str_descripcion
 
-            //Comite retorna a un estado de bandeja especifica para POR APROBAR SOLICITUD
-            if (solicitudTarjeta?.str_estado_actual === "POR APROBAR SOLICITUD" || solicitudTarjeta?.str_estado_actual === "POR REVISAR JEFE UAC") {
-                console.log("PRUEBA POR REVISAR JEFE UA")
-                //let comentario = solicitudTarjeta?.str_estado_actual === "POR REVISAR JEFE UAC" ? observacionComite : '';
+            //BANDEJAS POSTERIORES A LA ANALISIS UAC PUEDEN REALIZAR RETORNO A CUALQUIER BANDEJA QUE SELECCIONE
+            if (solicitudTarjeta?.str_estado_actual === "POR APROBAR SOLICITUD" || solicitudTarjeta?.str_estado_actual === "POR REVISAR JEFE UAC" || solicitudTarjeta?.str_estado_actual === "ANALISIS RIESGOS") {
+                console.log("PRUEBA POR UNIDAD DE RIESGOS")
                 fetchAddProcEspecifico(props.solicitud.solicitud, 0, selectCambioEstadoSol, comentarioCambioEstado, solicitudTarjeta?.str_cupo_solicitado, props.token, (data) => {
                     if (data.str_res_codigo === "000") {
                         setModalCambioBandeja(false);
@@ -729,11 +768,12 @@ const VerSolicitud = (props) => {
 
 
     useEffect(() => {
-
+        
         if (selectMotivoRetornoBanj !== "" && selectMotivoRetornoBanj !== "-1" && comentarioCambioEstado !== "") {
-            if ((solicitudTarjeta?.str_estado_actual === "POR APROBAR SOLICITUD" || solicitudTarjeta?.str_estado_actual === "POR REVISAR JEFE UAC" )&& selectCambioEstadoSol !== "" && selectCambioEstadoSol !== "-1") {
+            if ((solicitudTarjeta?.str_estado_actual === "POR APROBAR SOLICITUD" || solicitudTarjeta?.str_estado_actual === "POR REVISAR JEFE UAC" || solicitudTarjeta?.str_estado_actual === "ANALISIS RIESGOS")
+                && selectCambioEstadoSol !== "" && selectCambioEstadoSol !== "-1") {
                 setIsBtnDisableCambioBandeja(false);
-            } else if (solicitudTarjeta?.str_estado_actual !== "POR APROBAR SOLICITUD" && solicitudTarjeta?.str_estado_actual !== "POR REVISAR JEFE UAC") {
+            } else if (solicitudTarjeta?.str_estado_actual !== "POR APROBAR SOLICITUD" && solicitudTarjeta?.str_estado_actual !== "POR REVISAR JEFE UAC" && solicitudTarjeta?.str_estado_actual !== "ANALISIS RIESGOS") {
                 setIsBtnDisableCambioBandeja(false);
             } else {
                 setIsBtnDisableCambioBandeja(true);
@@ -1418,49 +1458,74 @@ const VerSolicitud = (props) => {
             mainText="Guardar"
         >
             {modalVisible && <div className="mb-3">
+                <div className="f-col mt-3">
+                    {informe.map((comentario, index) => {
+                        return (
+                            <div key={index}>
+                                <div className="f-row w-100 mb-1" style={{ backgroundColor: "#004CAC", color: "#fff", padding: "0.4rem 1rem" }}>
+                                    <h3>{comentario.str_tipo}</h3>
+                                    <div className='ml-1 tooltip' style={{ transform: "translateY(2px)" }}>
+                                                                            <InfoRoundedIcon
+                                                                                sx={{
+                                                                                    fontSize: 15,
+                                                                                    padding: 0,
+                                                                                }}
+                                                                            >
+                                                                            </InfoRoundedIcon>
+                                                                            <span className='tooltip-info'>{comentario.str_descripcion}</span>
+                                                                        </div>
+                                </div>
+                                <div className="mb-1">
+                                    <Textarea className="position-static" placeholder="Ingrese su comentario" onChange={(event, key = comentario.int_id_parametro) => { comentarioAdicionalHanlder(event, key) }} esRequerido={false} value={comentario.str_detalle}
+                                        controlAnchoTexArea={false} rows={5} maxlength={1000}></Textarea>
+                                </div>
+                            </div>
+                        )
+                    })
+                    }
+                </div>
+                {/*<table>
+                {/*    <thead>*/}
+                {/*        <tr>*/}
+                {/*            {*/}
+                {/*                informe.map((comentario, index) => {*/}
+                {/*                    return (*/}
+                {/*                        <th key={comentario.int_id_parametro}>*/}
+                {/*                            <div className='f-row justify-content-center'>*/}
+                {/*                                {comentario.str_tipo}*/}
+                {/*                                <div className='ml-1 tooltip' style={{ transform: "translateY(2px)" }}>*/}
+                {/*                                    <InfoRoundedIcon*/}
+                {/*                                        sx={{*/}
+                {/*                                            fontSize: 15,*/}
+                {/*                                            padding: 0,*/}
+                {/*                                        }}*/}
+                {/*                                    >*/}
+                {/*                                    </InfoRoundedIcon>*/}
+                {/*                                    <span className='tooltip-info'>{comentario.str_descripcion}</span>*/}
+                {/*                                </div>*/}
+                {/*                                </div>      */}
+                {/*                        </th>*/}
+                {/*                    );*/}
+                {/*                })*/}
+                {/*            }  */}
+                {/*        </tr>*/}
+                {/*    </thead>*/}
+                {/*    <tbody>*/}
+                {/*        <tr>*/}
+                {/*            {*/}
+                {/*                informe.map((comentario, index) => {*/}
+                {/*                    return (*/}
+                {/*                        <td key={comentario.int_id_parametro}>*/}
+                {/*                            <Textarea placeholder="Ej. Texto de ejemplo" type="textarea" onChange={(event, key = comentario.int_id_parametro) => { comentarioAdicionalHanlder(event, key) }} esRequerido={false} value={comentario.str_detalle} controlAnchoTexArea={true} rows={28} rowsMax={28}*/}
+                {/*                                maxlength={1000}></Textarea>*/}
+                {/*                        </td>*/}
 
-                <table>
-                    <thead>
-                        <tr>
-                            {
-                                informe.map((comentario, index) => {
-                                    return (
-                                        <th key={comentario.int_id_parametro}>
-                                            <div className='f-row justify-content-center'>
-                                                {comentario.str_tipo}
-                                                <div className='ml-1 tooltip' style={{ transform: "translateY(2px)" }}>
-                                                    <InfoRoundedIcon
-                                                        sx={{
-                                                            fontSize: 15,
-                                                            padding: 0,
-                                                        }}
-                                                    >
-                                                    </InfoRoundedIcon>
-                                                    <span className='tooltip-info'>{comentario.str_descripcion}</span>
-                                                </div>
-                                                </div>      
-                                        </th>
-                                    );
-                                })
-                            }  
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            {
-                                informe.map((comentario, index) => {
-                                    return (
-                                        <td key={comentario.int_id_parametro}>
-                                            <Textarea placeholder="Ej. Texto de ejemplo" type="textarea" onChange={(event, key = comentario.int_id_parametro) => { comentarioAdicionalHanlder(event, key) }} esRequerido={false} value={comentario.str_detalle} controlAnchoTexArea={true} rows={28} rowsMax={28}
-                                                maxlength={1000}></Textarea>
-                                        </td>
-
-                                    );
-                                })
-                            }
-                        </tr>                       
-                    </tbody>                    
-                </table>
+                {/*                    );*/}
+                {/*                })*/}
+                {/*            }*/}
+                {/*        </tr>                       */}
+                {/*    </tbody>                    */}
+                {/*</table>*/}
             </div>}
         </Modal>
         <Modal
@@ -1689,7 +1754,36 @@ const VerSolicitud = (props) => {
                         </select>
                     </>
                 }
-                {/*ESTADOS DISPONIBLES PARA RETORNO DE BANDEJA DESDE COMITE*/}
+                {/*ESTADOS DISPONIBLES PARA RETORNO DE BANDEJA UNIDAD DE RIESGOS*/}
+                {solicitudTarjeta?.str_estado_actual === "ANALISIS RIESGOS" &&
+                    <>
+                        <h3 className="mt-4 mb-1">Seleccione a qué estado desea regresar la solicitud:</h3>
+
+                        <select className='w-100' onChange={cambiarEstadoSolHandler} value={selectCambioEstadoSol}>
+                            {estadosRetornaBandejaRiesgos.length > 0
+                                && estadosRetornaBandejaRiesgos?.map((estado, index) => {
+                                    const resultado = validaNombreParam(estado);
+                                    if (index === 0) {
+                                        return (
+                                            <Fragment key={index}>
+                                                <option disabled={true} value={"-1"}>Seleccione una opción</option>
+                                                <option value={resultado.prm_nemonico}> {resultado.prm_valor_ini}</option>
+                                            </Fragment>
+                                        )
+                                    }
+                                    else {
+                                        return (
+                                            <Fragment key={index}>
+                                                <option value={resultado.prm_nemonico}> {resultado.prm_valor_ini}</option>
+                                            </Fragment>
+                                        )
+                                    }
+                                })}
+                        </select>
+                    </>
+                }
+
+                {/*ESTADOS DISPONIBLES PARA RETORNO DE BANDEJA JEFE UAC*/}
                 {solicitudTarjeta?.str_estado_actual === "POR REVISAR JEFE UAC" &&
                     <>
                         <h3 className="mt-4 mb-1">Seleccione a qué estado desea regresar la solicitud:</h3>

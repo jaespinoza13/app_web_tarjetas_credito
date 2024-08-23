@@ -272,7 +272,7 @@ td {
     /* Position the tooltip text - see examples below! */
     position: absolute;
     z-index: 9999;
-    transform: translate(-155px, 18px);
+    transform: translate(-125px, 18px);
 }
 
 .tooltip:hover > span.tooltip-info {
@@ -283,6 +283,7 @@ td {
 span.tooltip-info {
     width: auto;
     padding: 0.5rem 1rem;
+    font-family: "Karbon", sans-serif;
 }
 
 .see-more {
@@ -690,6 +691,9 @@ textarea.no_valido {
     padding-right: 1.5em;
     position: relative;
 }
+    textarea.no_valido.position-static {
+        position: static
+    }
 
 .content-cards {
     min-width: 100%;

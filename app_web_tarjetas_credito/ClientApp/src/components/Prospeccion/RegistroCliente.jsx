@@ -108,7 +108,7 @@ const RegistroCliente = (props) => {
         let correoTotal = valor;
         if (checkMostrarCorreoDominio === false && valorSelectDomCorreo !== '-1') {
             correoTotal += '@' + valorSelectDomCorreo;
-        }       
+        }
 
         setIsCorreoValido(validarCorreo(correoTotal))
         setCorreoCliente(correoTotal);
@@ -147,7 +147,7 @@ const RegistroCliente = (props) => {
     }
 
 
-    const fechaNacimientoHandler = (valor) => {    
+    const fechaNacimientoHandler = (valor) => {
         let correoValidacion = correoHandlerValidador();
         setFechaNacValido((valor.includes("undefined") || valor === null || valor === "" || valor === " ") ? true : false)
         setFechaNacimiento((!valor.includes("undefined") && valor !== null && valor !== "" && valor !== " ") ? valor : null)
@@ -168,30 +168,11 @@ const RegistroCliente = (props) => {
         }
     }, [checkMostrarCorreoDominio, lstDominiosCorreo, correoCompletoRespaldo])
 
-    const validacionDominioCorreo = (correoEvaluar) => {
-        /*if (correoEvaluar.trim() !== "" && checkMostrarCorreoDominio === false) {
-            let dominioCorreo = correoEvaluar.split('@')[1];
-            let validarExistenciaDominio = lstDominiosCorreo.some(item => item.valor.includes(dominioCorreo?.trim()));
-            console.log("correoInfo ", correoEvaluar)
-            console.log("dominioCorreo ", dominioCorreo)
-            //console.log("validarExistenciaDominio ", validarExistenciaDominio)
-            //if (correoEvaluar !== undefined && correoEvaluar.trim() !== "" &&
-            if (correoEvaluar.includes('@') && validarExistenciaDominio === true) {
-                let userCorreo = correoEvaluar.split('@')[0];
-                setCorreoCliente(userCorreo);
-                setValorSelectDomCorreo(dominioCorreo);
-            } else {
-                console.log("correoCompletoRespaldo ", correoCompletoRespaldo)
-                setCorreoCliente(correoCompletoRespaldo);
-                setCheckMostrarCorreoDominio(true);
-            }
-        } else {
-            setCorreoCliente(correoEvaluar);
-        } */
+    const validacionDominioCorreo = (correoEvaluar) => {  
 
         if (checkMostrarCorreoDominio === true) {
             setCorreoCliente(correoEvaluar);
-            setValorSelectDomCorreo("-1");
+            setValorSelectDomCorreo("otro");
             return;
         }
 
@@ -213,7 +194,7 @@ const RegistroCliente = (props) => {
             } else {
                 //console.log("setValorSelectDomCorreo -1 ")
                 setCorreoCliente(userCorreo);
-                setValorSelectDomCorreo("-1");
+                setValorSelectDomCorreo("otro");
             }
 
         } else {//Cuando es vacio
@@ -230,7 +211,7 @@ const RegistroCliente = (props) => {
             setIsCedulaValida(validezCedula);
         }
 
-        if (props.infoSocio && props.paso === 1 && lstDominiosCorreo.length>0) {
+        if (props.infoSocio && props.paso === 1 && lstDominiosCorreo.length > 0) {
             setNombresCliente(props.infoSocio.nombres);
             //console.log("INFO SOC/CL ", props.infoSocio)
 
@@ -239,27 +220,12 @@ const RegistroCliente = (props) => {
             setApellidoPaterno(props.infoSocio.apellidoPaterno);
             setApellidoMaterno(props.infoSocio.apellidoMaterno);
             setCelularCliente(props.infoSocio.celularCliente);
-            setCorreoCompletoRespaldo(props?.infoSocio?.correoCliente ? props.infoSocio.correoCliente: '')
+            setCorreoCompletoRespaldo(props?.infoSocio?.correoCliente ? props.infoSocio.correoCliente : '')
             //Validacion dominio correo
             if (!checkMostrarCorreoDominio) { //Sino corresponde dominio correo a los parametros se debe activar el checkMostrarCorreoDominio
                 validacionDominioCorreo(props.infoSocio.correoCliente);
-                /*let correoInfo = props.infoSocio.correoCliente;
-                let dominioCorreo = props.infoSocio.correoCliente.split('@')[1];
-                let validarExistenciaDominio = lstDominiosCorreo.some(item => item.valor.includes(dominioCorreo.trim()));
-                //console.log("correoInfo ", correoInfo)
-                //console.log("dominioCorreo ", dominioCorreo)
-                //console.log("validarExistenciaDominio ", validarExistenciaDominio)
-
-                if (correoInfo !== undefined && correoInfo.trim() !== "" && correoInfo.includes('@') && validarExistenciaDominio === true) {
-                    let userCorreo = props.infoSocio.correoCliente.split('@')[0];
-                    setCorreoCliente(userCorreo);
-                    setValorSelectDomCorreo(dominioCorreo);
-                } else {
-                    setCorreoCliente(props.infoSocio.correoCliente);
-                    setCheckMostrarCorreoDominio(true);
-                }*/
             }
-            
+
 
             let partesFecha = props.infoSocio.fechaNacimiento?.split('-');
             if (props.infoSocio.fechaNacimiento === null || props.infoSocio.fechaNacimiento.trim() === "") {
@@ -272,10 +238,10 @@ const RegistroCliente = (props) => {
             } else {
                 setFechaNacimiento(props.infoSocio.fechaNacimiento);
                 setFechaNacValido(true);
-            }         
+            }
             setIsCorreoValido(validarCorreo(props.infoSocio.correoCliente))
-            setIsCelularValido(props.infoSocio.celularCliente.length === 10)            
-    
+            setIsCelularValido(props.infoSocio.celularCliente.length === 10)
+
         }
     }, [props.infoSocio, props.paso, lstDominiosCorreo])
 
@@ -288,7 +254,7 @@ const RegistroCliente = (props) => {
             setIsCorreoValido(false);
             setIsCelularValido(false);
             setFechaNacValido(false);
-        };*/ 
+        };*/
     }, [])
 
 
@@ -299,6 +265,7 @@ const RegistroCliente = (props) => {
                     key: dominio.str_valor_ini,
                     valor: dominio.str_valor_ini,
                 }));
+                ParametrosEntregaTC.push({ key: "otro", valor: "otro dominio" })
                 //console.log("DOMINIOS_CORREOS ", ParametrosEntregaTC)
                 setLstDominiosCorreo(ParametrosEntregaTC)
             }
@@ -317,6 +284,11 @@ const RegistroCliente = (props) => {
     }
 
     const cambioDominioCorreoHandler = (valor) => {
+        if (valor === "otro") {
+            setCheckMostrarCorreoDominio(true)
+        } else {
+            setCheckMostrarCorreoDominio(false)
+        }
         setValorSelectDomCorreo(valor)
     }
 
@@ -340,11 +312,11 @@ const RegistroCliente = (props) => {
                         </div>
                     </Item>
                     <Item xs={3} sm={3} md={3} lg={3} xl={3}></Item>
-                </div> 
+                </div>
             }
 
             {props.paso === 1 &&
-                <div className={`f-row w-100 sliding-div ${props.isVisibleBloque ? 'visibleX' : 'hiddenX'}`}>   
+                <div className={`f-row w-100 sliding-div ${props.isVisibleBloque ? 'visibleX' : 'hiddenX'}`}>
                     <Item xs={3} sm={3} md={3} lg={3} xl={3} className=""></Item>
                     <Item xs={6} sm={6} md={6} lg={6} xl={6} className="justify-content-center">
                         <div className={"f-row w-100 justify-content-space-between mb-1"}>
@@ -354,129 +326,145 @@ const RegistroCliente = (props) => {
                             </Button>
 
                         </div>
-                            <Card>
-                                <section>
-                                    <div className='mb-2'>
+                        <Card>
+                            <section>
+                                <div className='mb-2'>
                                     <h3>Cédula:</h3>
-                                        <div className="f-row">
+                                    <div className="f-row">
                                         <Input id="cedula" className={`w-100`} type="number" placeholder="1150216791" setValueHandler={documentoHandler} value={documento} disabled={true}></Input>
-                                        </div>
                                     </div>
+                                </div>
 
-                                    <div className='mb-2'>
+                                <div className='mb-2'>
                                     <h3>Nombres:</h3>
-                                        <div className="f-row">
+                                    <div className="f-row">
                                         <Input id="nombres" className={`w-100 ${nombresCliente !== "" ? '' : 'no_valido'}`} type="text" placeholder="Ej. Luis Miguel" setValueHandler={nombresClienteHandler} value={nombresCliente} controlMayusText={true}></Input>
-                                        </div>
-
                                     </div>
 
-                                    <div className='mb-2'>
+                                </div>
+
+                                <div className='mb-2'>
                                     <h3>Primer Apellido:</h3>
-                                        <div className="f-row">
+                                    <div className="f-row">
                                         <Input id="apellido_paterno" className={`w-100 ${apellidoPaterno !== "" ? '' : 'no_valido'}`} type="text" placeholder="Ej. Salazar" setValueHandler={apellidoPaternoHandler} value={apellidoPaterno} controlMayusText={true}></Input>
-                                        </div>
                                     </div>
+                                </div>
 
-                                    <div className='mb-2'>
+                                <div className='mb-2'>
                                     <h3>Segundo Apellido:</h3>
-                                        <div className="f-row">
+                                    <div className="f-row">
                                         <Input className={`w-100`} type="text" placeholder="Ej. Benitez" setValueHandler={apellidoMaternoHandler} value={apellidoMaterno} controlMayusText={true}></Input>
-                                        </div>
-
                                     </div>
+
+                                </div>
 
                                 <div className='mb-2'>
                                     <div className="f-row w-100 justify-content-space-between">
                                         <div className="">
                                             <h3>Correo:</h3>
                                         </div>
-                                        <div className="f-row">
-                                            <Input disabled={false} type="checkbox" checked={checkMostrarCorreoDominio} setValueHandler={() => setCheckMostrarCorreoDominio(!checkMostrarCorreoDominio)}></Input>
-                                            <h4 className="ml-1">Ingresar con otro correo</h4>
-                                        </div>
+                                        {/*<div className="f-row">*/}
+                                        {/*    <Input disabled={false} type="checkbox" checked={checkMostrarCorreoDominio} setValueHandler={() => setCheckMostrarCorreoDominio(!checkMostrarCorreoDominio)}></Input>*/}
+                                        {/*    <h4 className="ml-1">Ingresar con otro correo</h4>*/}
+                                        {/*</div>*/}
                                     </div>
-                                    
-                                    {checkMostrarCorreoDominio === false && 
-                                        <div className="f-row w-100 ">
-                                        
-                                            <div className="f-col w-50" style={{ position: "relative" }}>
-                                                <input className={`${correoCliente.trim() !== ''  ? '' : 'no_valido'}`} type="text" style={{ paddingRight: "2.5rem" }} value={correoCliente} onChange={(e) => correoClienteHandler(e.target.value)} />
 
+                                    <div className="f-row w-100">
+                                        {checkMostrarCorreoDominio.toString() }
+                                    </div>
 
-                                                <span style={{ position: "absolute", display: "block", top: "0.2px", right: "0.02rem", userSelect: "none", backgroundColor: "#E9ECEF", borderRadius: "20px", padding: "0", margin: "0" }}>
-                                                    <div style={{ paddingTop: "2.5px", paddingRight: "2px", paddingLeft: "2px" }}>
+                                    <div className="f-row w-100 ">
+                                        <div className="f-row w-60" >
+                                            {checkMostrarCorreoDominio === true &&
+                                                    <Input className={`w-100 ${isCorreoValido === true ? '' : 'no_valido'}`} type="text" placeholder="Ej. test@test.com" setValueHandler={correoClienteHandler} value={correoCliente}></Input>
+                                       
+                                            }
+                                            {checkMostrarCorreoDominio === false &&
+                                                <div className={`f-row w-100 justify-content-center align-content-center` }>
+                                                    <input className={`w-95 ${correoCliente.trim() !== '' ? '' : 'no_valido'}`} type="text" value={correoCliente} placeholder="Ej. test@test.com" onChange={(e) => correoClienteHandler(e.target.value)} />
                                                     <AlternateEmailRoundedIcon
                                                         sx={{
-                                                            fontSize: 20,
-                                                            marginTop: 0,
+                                                            fontSize: 21,
+                                                            marginTop: 0.8,
+                                                            marginRight: 0,
                                                             padding: 0
                                                         }}
-                                                        ></AlternateEmailRoundedIcon>
-                                                    </div>
-                                                </span>
-                                            </div>
-                                        
-                                            <div className="f-col w-50">
- 
-                                                {lstDominiosCorreo.length > 0 &&
-                                                    <select className={`${valorSelectDomCorreo.trim() !== '-1' ? '' : 'no_valido'}`} style={{ height: "100%" }} disabled={false} onChange={(e) => cambioDominioCorreoHandler(e.target.value)} value={valorSelectDomCorreo}>
-                                                        {lstDominiosCorreo.length > 0
-                                                            && lstDominiosCorreo?.map((correo, index) => {
-                                                                if (index === 0) {
-                                                                    return (
-                                                                        <Fragment key={index} >
-                                                                            <option disabled={true} value={"-1"}>Seleccione</option>
-                                                                            <option value={correo.key}> {correo.valor}</option>
-                                                                        </Fragment>
-                                                                    )
-                                                                }
-                                                                else {
-                                                                    return(<Fragment key={index} >
-                                                                            <option value={correo.key}> {correo.valor}</option>
+                                                    ></AlternateEmailRoundedIcon>
+                                                </div>
+                                            }
+                                            {/*<input className={`${correoCliente.trim() !== '' ? '' : 'no_valido'}`} type="text" style={{ paddingRight: "2.5rem" }} value={correoCliente} placeholder="Ej. test@test.com" onChange={(e) => correoClienteHandler(e.target.value)} />
+
+                                
+
+                                                {/*<span style={{ position: "absolute", display: "block", top: "0.2px", right: "0.02rem", userSelect: "none", backgroundColor: "#E9ECEF", borderRadius: "20px", padding: "0", margin: "0" }}>*/}
+                                            {/*    <div style={{ paddingTop: "2.5px", paddingRight: "2px", paddingLeft: "2px" }}>*/}
+                                            {/*    <AlternateEmailRoundedIcon*/}
+                                            {/*        sx={{*/}
+                                            {/*            fontSize: 20,*/}
+                                            {/*            marginTop: 0,*/}
+                                            {/*            padding: 0*/}
+                                            {/*        }}*/}
+                                            {/*        ></AlternateEmailRoundedIcon>*/}
+                                            {/*    </div>*/}
+                                            {/*</span>*/}
+                                        </div>
+
+                                        <div className="f-row w-40">
+
+                                            {lstDominiosCorreo.length > 0 &&
+                                                <select className={`w-100 ${valorSelectDomCorreo.trim() !== '-1' ? '' : 'no_valido'}`} style={{ height: "100%" }} disabled={false} onChange={(e) => cambioDominioCorreoHandler(e.target.value)} value={valorSelectDomCorreo}>
+                                                    {lstDominiosCorreo.length > 0
+                                                        && lstDominiosCorreo?.map((correo, index) => {
+                                                            if (index === 0) {
+                                                                return (
+                                                                    <Fragment key={index} >
+                                                                        <option disabled={true} value={"-1"}>Seleccione</option>
+                                                                        <option value={correo.key}> {correo.valor}</option>
                                                                     </Fragment>
-                                                                    )
-                                                                }
-                                                            })}
-                                                    </select>                                                
-                                                }
-                                                
+                                                                )
+                                                            }
+                                                            else {
+                                                                return (<Fragment key={index} >
+                                                                    <option value={correo.key}> {correo.valor}</option>
+                                                                </Fragment>
+                                                                )
+                                                            }
+                                                        })}
+                                                </select>
+                                            }
 
-                                            </div>
 
-                                        </div> 
-                                    }
-
-                                    {checkMostrarCorreoDominio === true &&
-                                        <div className="f-row">
-                                            <Input className={`w-100 ${isCorreoValido === true ? '' : 'no_valido'}`} type="text" placeholder="Ej. test@test.com" setValueHandler={correoClienteHandler} value={correoCliente}></Input>
                                         </div>
-                                    }
 
-
-                                    
                                     </div>
 
-                                    <div className='mb-2'>
+
+
+
+
+
+                                </div>
+
+                                <div className='mb-2'>
                                     <h3>Celular:</h3>
-                                        <div className="f-row">
-                                            <Input className={`w-100 ${isCelularValido === true ? '' : 'no_valido'}`} type="number" placeholder="Ej. 0999999999" setValueHandler={celularClienteHandler} value={celularCliente} maxlength={10}></Input>
-                                        </div>
+                                    <div className="f-row">
+                                        <Input className={`w-100 ${isCelularValido === true ? '' : 'no_valido'}`} type="number" placeholder="Ej. 0999999999" setValueHandler={celularClienteHandler} value={celularCliente} maxlength={10}></Input>
                                     </div>
+                                </div>
 
-                                    <div className='mb-2'>
+                                <div className='mb-2'>
                                     <h3>Fecha Nacimiento:</h3>
-                                        <div className="f-row">
-                                            <Input className={`w-100 ${(fechaNacimiento !== "" && isFechaNacValido === true) ? '' : 'no_valido'}`} type="date" setValueHandler={fechaNacimientoHandler} value={fechaNacimiento} ></Input>
-                                        </div>
+                                    <div className="f-row">
+                                        <Input className={`w-100 ${(fechaNacimiento !== "" && isFechaNacValido === true) ? '' : 'no_valido'}`} type="date" setValueHandler={fechaNacimientoHandler} value={fechaNacimiento} ></Input>
                                     </div>
+                                </div>
 
-                                </section>
+                            </section>
 
-                            </Card>
-                        
-                     
-                        
+                        </Card>
+
+
+
                     </Item>
                     <Item xs={3} sm={3} md={3} lg={3} xl={3} className=""></Item>
                 </div>

@@ -170,7 +170,7 @@ const Personalizacion = (props) => {
                             })}
                     </select>
                 </div>}
-                {tipoEntrega === "COURRIER" &&
+                {tipoEntrega === "DOMICILIO" &&
                     <div>
                         <Toggler className={"f-col"} selectedToggle={direccionEntregaHandler} toggles={tiposDireccion}></Toggler>
                     </div>

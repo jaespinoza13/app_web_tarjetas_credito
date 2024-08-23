@@ -551,7 +551,7 @@ const NuevaProspeccion = (props) => {
             //str_num_documento, ente, nombres, apellidos, celular, correo, cupoSoli, comentario, comentarioAdic, ingresos, egresos, gastoFinanciero, gastoCodeudor, cupoAval,cupoCoopmego, score, token, onSucces, dispatch
             let apellidosCliente = (apellidoMaterno !== null && apellidoMaterno !== '') ? apellidoPaterno + " " + apellidoMaterno : apellidoPaterno;
             fetchAddProspecto(documento, enteSocio, nombreSocio, apellidosCliente, celularSocio, correoSocio, datosFinancierosObj.montoSolicitado.toString(), comentario, comentarioAdic,
-                datosFinan.montoIngresos.toString(), datosFinan.montoEgresos.toString(), datosFinan.montoRestaGstFinanciero.toString(), datosFinan.montoGastoFinaCodeudor.toString(), cupoSugeridoAval.toString(), cupoSugeridoCoopmego.toString(), puntajeScore.toString(), calificacionRiesgo, decisionBuro, gastoFinancieroTitular,
+                datosFinan.montoIngresos.toString(), datosFinan.montoEgresos.toString(), datosFinan.montoRestaGstFinanciero.toString(), datosFinan.montoGastoFinaCodeudor.toString(), cupoSugeridoAval.toString(), cupoSugeridoCoopmego.toString(), puntajeScore.toString(), calificacionRiesgo, decisionBuro, gastoFinancieroTitular.toString(), 
                 props.token, (data) => {
                 setProspectoIDCreado(data.int_id_prospecto);
                 setVisitadosSteps([...visitadosSteps, actualStepper + 1])

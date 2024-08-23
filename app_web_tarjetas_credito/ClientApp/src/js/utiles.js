@@ -715,7 +715,8 @@ export function conversionBase64(file) {
 
 export function validarCorreo(correo) {
     // Expresión regular para validar el formato del correo electrónico
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    //const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const regex = /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/; //TOMADO DEL SISTEMA DE SOPORTE
     let valida = regex.test(correo);
     return valida;
 }
