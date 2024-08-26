@@ -286,8 +286,38 @@ const DatosSocio = (props) => {
             <div id="infoSocio" className="w-100">
                 <Accordion contentReady={contentReadyScore} title="" rotate={estadoAccordionScore} loading={estadoLoadingScore} toggleAccordion={toggleAccordionScore}>
                     <div className="m-4 f-row">
-                        <Item xs={4} sm={4} md={4} lg={4} xl={4}>
-                            <h3 className="strong mb-3">Resultado de la calificación</h3>
+                        <Item xs={1} sm={1} md={1} lg={1} xl={1}> </Item>
+                        <Item xs={2} sm={2} md={2} lg={2} xl={2}> 
+                            <div className="values mb-3">
+                                <h2>Score:</h2>
+                                <h2 className="strong">
+                                    {props?.score?.response?.result?.scoreFinanciero[0]?.score ? props?.score?.response?.result?.scoreFinanciero[0]?.score : 0}
+                                </h2>
+                            </div>
+                        </Item>
+                        <Item xs={2} sm={2} md={2} lg={2} xl={2}></Item>
+                        <Item xs={2} sm={2} md={2} lg={2} xl={2}>
+                            <div className="values  mb-3">
+                                <h2>Calificación:</h2>
+                                <h2 className="strong">
+                                    {props?.score?.response?.result?.modeloCoopmego[0]?.decisionModelo ? props?.score?.response?.result?.modeloCoopmego[0]?.decisionModelo : 'Sin datos'}
+                                </h2>
+                            </div>
+                        </Item>
+                        <Item xs={2} sm={2} md={2} lg={2} xl={2}></Item>
+                        <Item xs={2} sm={2} md={2} lg={2} xl={2}>
+                            <div className="values  mb-3">
+                                <h2>Decisión:</h2>
+                                <h2 className="strong ml-3">
+                                    {props?.score?.response?.result?.modeloCoopmego[0]?.tipoDecision ? props?.score?.response?.result?.modeloCoopmego[0]?.tipoDecision : 'Sin datos'}
+                                </h2>
+                            </div>
+                        </Item>
+                        <Item xs={1} sm={1} md={1} lg={1} xl={1}> </Item>
+                    </div>
+                    <div className="mr-4 mb-4 ml-4 f-row">
+                        <Item xs={5} sm={5} md={5} lg={5} xl={5}>
+                            <h3 className="strong mb-3">Resultado de la calificación:</h3>
                             <div className="values  mb-3">
                                 <h4>Ingresos</h4>
                                 <h4 className="strong">
@@ -338,29 +368,8 @@ const DatosSocio = (props) => {
                             </div>   
                             <Button className={["btn_mg btn_mg__primary mt-2 mr-2"]} disabled={false} onClick={descargarReporte}>Descargar reporte</Button>
                         </Item>
-                        <Item xs={1} sm={1} md={1} lg={1} xl={1}></Item>
-                        <Item xs={2} sm={2} md={2} lg={2} xl={2}>
-                            <div className="values mt-5 mb-3">
-                                <h3 className="mt-1">Score</h3>
-                                <h3 className="strong">
-                                    {props?.score?.response?.result?.scoreFinanciero[0]?.score ? props?.score?.response?.result?.scoreFinanciero[0]?.score : 0}
-                                </h3>
-                            </div>
-                            <div className="values  mb-3">
-                                <h3>Calificación</h3>
-                                <h3 className="strong">
-                                    {props?.score?.response?.result?.modeloCoopmego[0]?.decisionModelo ? props?.score?.response?.result?.modeloCoopmego[0]?.decisionModelo : 'Sin datos'}
-                                </h3>
-                            </div>
-                            <div className="values  mb-3">
-                                <h3>Decisión</h3>
-                                <h3 className="strong">
-                                    {props?.score?.response?.result?.modeloCoopmego[0]?.tipoDecision ? props?.score?.response?.result?.modeloCoopmego[0]?.tipoDecision : 'Sin datos'}
-                                </h3>
-                            </div>
-                        </Item>
-                        <Item xs={1} sm={1} md={1} lg={1} xl={1}></Item>
-                        <Item xs={4} sm={4} md={4} lg={4} xl={4}>
+                        <Item xs={2} sm={2} md={2} lg={2} xl={2}></Item>
+                        <Item xs={5} sm={5} md={5} lg={5} xl={5}>
                             <h3 className="strong mb-3" >Detalle de deudas:</h3>
                             {props?.score?.response?.result?.deudaVigenteTotal.map((deuda,index) => {
                                 return (
