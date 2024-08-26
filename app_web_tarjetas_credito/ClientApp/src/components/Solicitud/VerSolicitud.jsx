@@ -1,5 +1,5 @@
 ﻿/* eslint-disable react-hooks/exhaustive-deps */
-import { IsNullOrEmpty, IsNullOrWhiteSpace, base64ToBlob, conversionTipoTC, descargarArchivo, generarFechaHoy, numberFormatMoney, verificarPdf } from "../../js/utiles";
+import { IsNullOrEmpty, IsNullOrWhiteSpace, base64ToBlob, conversionTipoTC, convertFecha, descargarArchivo, generarFechaHoy, numberFormatMoney, verificarPdf } from "../../js/utiles";
 import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { useEffect, useState } from "react";
@@ -1077,16 +1077,10 @@ const VerSolicitud = (props) => {
                                                     resoluciones.length > 0 ?
 
                                                         resoluciones.map((resolucion, index) => {
-                                                            const fecha = new Date(resolucion?.dtt_fecha_actualizacion);
-                                                            const opciones = {
-                                                                hour: "2-digit",
-                                                                minute: "2-digit",
-                                                                second: "2-digit"
-                                                            };
                                                             return (
                                                                 <tr key={resolucion.int_rss_id}>
                                                                     <td>{resolucion.str_usuario_proc}</td>
-                                                                    <td> {(fecha.toLocaleDateString('en-US', opciones))}</td>
+                                                                    <td> {convertFecha(resolucion?.dtt_fecha_actualizacion)}</td>
                                                                     <td> {resolucion.str_decision_solicitud}</td>
                                                                     <td style={{ width: "50%", justifyContent: "left" }} id={index}>
                                                                         <div style={{ display: "ruby" }}>
@@ -1250,16 +1244,10 @@ const VerSolicitud = (props) => {
                                                 resoluciones.length > 0 ?
 
                                                     resoluciones.map((resolucion, index) => {
-                                                        const fecha = new Date(resolucion?.dtt_fecha_actualizacion);
-                                                        const opciones = {
-                                                            hour: "2-digit",
-                                                            minute: "2-digit",
-                                                            second: "2-digit"
-                                                        };
                                                         return (
                                                             <tr key={resolucion.int_rss_id}>
                                                                 <td>{resolucion.str_usuario_proc}</td>
-                                                                <td> {(fecha.toLocaleDateString('en-US', opciones))}</td>
+                                                                <td> {convertFecha(resolucion?.dtt_fecha_actualizacion)}</td>
                                                                 <td> {resolucion.str_decision_solicitud}</td>
                                                                 <td style={{ width: "60%", justifyContent: "left" }} id={index}>
                                                                     <div style={{ display: "ruby" }}>
@@ -1464,7 +1452,7 @@ const VerSolicitud = (props) => {
                             <div key={index}>
                                 <div className="f-row w-100 mb-1" style={{ backgroundColor: "#004CAC", color: "#fff", padding: "0.4rem 1rem" }}>
                                     <h3>{comentario.str_tipo}</h3>
-                                    <div className='ml-1 tooltip' style={{ transform: "translateY(2px)" }}>
+                                    <div className='ml-1 tooltip' style={{ transform: "translateY(4px)" }}>
                                                                             <InfoRoundedIcon
                                                                                 sx={{
                                                                                     fontSize: 15,
@@ -1685,18 +1673,10 @@ const VerSolicitud = (props) => {
                         <tbody>
                             {
                             lstSeguimientoTC.map((seguimient) => {
-                                const fecha = new Date(seguimient?.dtt_fecha_actualizacion);
-                                const opciones = {
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                    second: "2-digit"
-                                };
-
-
                                     return (<tr key={seguimient.int_flujo_id}>
                                         <td>{seguimient.int_flujo_id}</td>
                                         <td>{seguimient.str_estado_flujo}</td>
-                                        <td>{(fecha.toLocaleDateString('en-US', opciones))}</td>
+                                        <td> {convertFecha(seguimient?.dtt_fecha_actualizacion)}</td>
                                         <td>{seguimient.str_usuario_proc}</td>
                                         <td>{seguimient.str_comentario_proceso}</td>
                                     </tr>);

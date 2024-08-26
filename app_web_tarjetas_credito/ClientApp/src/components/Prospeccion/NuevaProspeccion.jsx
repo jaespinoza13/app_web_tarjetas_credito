@@ -2,7 +2,7 @@
 import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import Card from "../Common/Card";
-import { IsNullOrEmpty, IsNullOrWhiteSpace, validarCorreo } from "../../js/utiles";
+import { IsNullOrEmpty, IsNullOrWhiteSpace, validarCorreo, validarNumCelular } from "../../js/utiles";
 import Button from '../Common/UI/Button';
 import { useState, useEffect, useRef } from 'react';
 import Item from '../Common/UI/Item';
@@ -226,10 +226,9 @@ const NuevaProspeccion = (props) => {
     }, [step]);
 
     const validaCamposSocio = () => {  
-        //apellidoMaterno !== "" &&
-        if (documento !== "" && nombreSocio !== "" && apellidoPaterno !== "" && 
-            (correoSocio !== "" && validarCorreo(correoSocio)) && (celularSocio !== "" && celularSocio.length > 0 && celularSocio.length === 10 &&
-            fechaNacimiento !== "undefined--undefined")) {
+        if (documento !== "" && nombreSocio !== "" && apellidoPaterno !== "" &&
+            (correoSocio !== "" && validarCorreo(correoSocio)) && (celularSocio !== "" && celularSocio.length > 0 && celularSocio.length === 10 && validarNumCelular(celularSocio) &&
+            fechaNacimiento !== "undefined--undefined" && fechaNacimiento !== null)) {
             return true;
         }
         return false;

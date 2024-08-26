@@ -1,7 +1,7 @@
 ﻿import Input from "../Common/UI/Input";
 import Card from "../Common/Card";
 import { useState } from "react";
-import { validaCedula, validarCorreo } from '../../js/utiles';
+import { validaCedula, validarCorreo, validarNumCelular } from '../../js/utiles';
 import Item from "../Common/UI/Item";
 import { useEffect } from "react";
 import Button from "../Common/UI/Button";
@@ -20,7 +20,7 @@ const RegistroCliente = (props) => {
     const [apellidoMaterno, setApellidoMaterno] = useState("");
     const [celularCliente, setCelularCliente] = useState("");
     const [correoCliente, setCorreoCliente] = useState("");
-    const [correoCompletoRespaldo, setCorreoCompletoRespaldo] = useState("");
+    //const [correoCompletoRespaldo, setCorreoCompletoRespaldo] = useState("");
     const [documento, setDocumento] = useState("");
     const [fechaNacimiento, setFechaNacimiento] = useState(null);
     const [checkMostrarCorreoDominio, setCheckMostrarCorreoDominio] = useState(false);
@@ -92,7 +92,7 @@ const RegistroCliente = (props) => {
 
     const celularClienteHandler = (valor) => {
         let correoValidacion = correoHandlerValidador();
-        setIsCelularValido(valor.length === 10)
+        setIsCelularValido(valor.length === 10 && validarNumCelular(valor))
         setCelularCliente(valor);
         props.datosIngresados({
             nombres: nombresCliente,
@@ -106,7 +106,7 @@ const RegistroCliente = (props) => {
     }
     const correoClienteHandler = (valor) => {
         let correoTotal = valor;
-        if (checkMostrarCorreoDominio === false && valorSelectDomCorreo !== '-1') {
+        if (checkMostrarCorreoDominio === false && valorSelectDomCorreo !== '-1' && valorSelectDomCorreo !== 'otro') {
             correoTotal += '@' + valorSelectDomCorreo;
         }
 
@@ -139,7 +139,7 @@ const RegistroCliente = (props) => {
 
     const correoHandlerValidador = () => {
         let correo = correoCliente;
-        if (checkMostrarCorreoDominio === false && valorSelectDomCorreo !== '-1') {
+        if (checkMostrarCorreoDominio === false && valorSelectDomCorreo !== '-1' && valorSelectDomCorreo !== 'otro') {
             return correo += '@' + valorSelectDomCorreo;
         } else {
             return correo;
@@ -162,43 +162,35 @@ const RegistroCliente = (props) => {
         })
     }
 
-    useEffect(() => {
-        if (lstDominiosCorreo.length > 0 && correoCompletoRespaldo !== "") {
-            validacionDominioCorreo(correoCompletoRespaldo);
-        }
-    }, [checkMostrarCorreoDominio, lstDominiosCorreo, correoCompletoRespaldo])
+    const validacionDominioCorreo = (correoEvaluar, estado) => {
 
-    const validacionDominioCorreo = (correoEvaluar) => {  
-
-        if (checkMostrarCorreoDominio === true) {
-            setCorreoCliente(correoEvaluar);
-            setValorSelectDomCorreo("otro");
-            return;
-        }
 
         if (correoEvaluar.trim() !== "") {
 
+            //if (estado === "INICIADOR") {
+            //Primera interaccion se establece cual dominio se coloca
             let userCorreo = correoEvaluar.split('@')[0];
             let dominioCorreo = correoEvaluar.split('@')[1];
-            let validarExistenciaDominio = lstDominiosCorreo.some(item => item.valor.includes(dominioCorreo?.trim()));
+            let validarExistenciaDominio = lstDominiosCorreo.some(item => item.valor === dominioCorreo?.trim());
 
 
             //console.log("correoCompletoRespaldo ", correoCompletoRespaldo)
+            //console.log("checkMostrarCorreoDominio ", checkMostrarCorreoDominio)
             //console.log("correoInfo ", correoEvaluar)
             //console.log("dominioCorreo ", dominioCorreo)
             //console.log("validarExistenciaDominio ", validarExistenciaDominio)
 
-            if (validarExistenciaDominio) {
+            if (validarExistenciaDominio && dominioCorreo?.trim() !== "") {
                 setCorreoCliente(userCorreo);
                 setValorSelectDomCorreo(dominioCorreo);
             } else {
-                //console.log("setValorSelectDomCorreo -1 ")
-                setCorreoCliente(userCorreo);
+                setCorreoCliente(correoEvaluar);
                 setValorSelectDomCorreo("otro");
             }
 
-        } else {//Cuando es vacio
-            //console.log("VACIO")
+
+
+        } else {
             setCorreoCliente(correoEvaluar)
         }
 
@@ -220,10 +212,9 @@ const RegistroCliente = (props) => {
             setApellidoPaterno(props.infoSocio.apellidoPaterno);
             setApellidoMaterno(props.infoSocio.apellidoMaterno);
             setCelularCliente(props.infoSocio.celularCliente);
-            setCorreoCompletoRespaldo(props?.infoSocio?.correoCliente ? props.infoSocio.correoCliente : '')
             //Validacion dominio correo
             if (!checkMostrarCorreoDominio) { //Sino corresponde dominio correo a los parametros se debe activar el checkMostrarCorreoDominio
-                validacionDominioCorreo(props.infoSocio.correoCliente);
+                validacionDominioCorreo(props.infoSocio.correoCliente, "INICIADOR");
             }
 
 
@@ -240,7 +231,7 @@ const RegistroCliente = (props) => {
                 setFechaNacValido(true);
             }
             setIsCorreoValido(validarCorreo(props.infoSocio.correoCliente))
-            setIsCelularValido(props.infoSocio.celularCliente.length === 10)
+            setIsCelularValido(props.infoSocio.celularCliente.length === 10 && validarNumCelular(props.infoSocio.celularCliente))
 
         }
     }, [props.infoSocio, props.paso, lstDominiosCorreo])
@@ -285,9 +276,12 @@ const RegistroCliente = (props) => {
 
     const cambioDominioCorreoHandler = (valor) => {
         if (valor === "otro") {
-            setCheckMostrarCorreoDominio(true)
+            setCheckMostrarCorreoDominio(true);
+            setCorreoCliente("");
         } else {
-            setCheckMostrarCorreoDominio(false)
+            let userCorreo = correoCliente.split('@')[0];
+            setCorreoCliente(userCorreo);
+            setCheckMostrarCorreoDominio(false);
         }
         setValorSelectDomCorreo(valor)
     }
@@ -369,18 +363,15 @@ const RegistroCliente = (props) => {
                                         {/*</div>*/}
                                     </div>
 
-                                    <div className="f-row w-100">
-                                        {checkMostrarCorreoDominio.toString() }
-                                    </div>
 
                                     <div className="f-row w-100 ">
                                         <div className="f-row w-60" >
                                             {checkMostrarCorreoDominio === true &&
-                                                    <Input className={`w-100 ${isCorreoValido === true ? '' : 'no_valido'}`} type="text" placeholder="Ej. test@test.com" setValueHandler={correoClienteHandler} value={correoCliente}></Input>
-                                       
+                                                <Input className={`w-100 ${isCorreoValido === true ? '' : 'no_valido'}`} type="text" placeholder="Ej. test@test.com" setValueHandler={(e) => correoClienteHandler(e)} value={correoCliente}></Input>
+
                                             }
                                             {checkMostrarCorreoDominio === false &&
-                                                <div className={`f-row w-100 justify-content-center align-content-center` }>
+                                                <div className={`f-row w-100 justify-content-center align-content-center`}>
                                                     <input className={`w-95 ${correoCliente.trim() !== '' ? '' : 'no_valido'}`} type="text" value={correoCliente} placeholder="Ej. test@test.com" onChange={(e) => correoClienteHandler(e.target.value)} />
                                                     <AlternateEmailRoundedIcon
                                                         sx={{

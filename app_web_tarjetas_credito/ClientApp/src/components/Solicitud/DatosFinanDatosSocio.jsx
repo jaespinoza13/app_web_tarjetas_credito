@@ -164,7 +164,7 @@ const DatosFinanDatosSocio = (props) => {
         <>
             <Card className={["f-col w-100 justify-content-space-between align-content-center  mt-2"]}>
                 <div style={{ position: "absolute", transform: "translate(-15px, -15px)" }}>
-                    <h3 className="strong">Datos Financieros</h3>
+                    <h3 className="strong">Simulación</h3>
                 </div>
                 <div className={"f-row w-100"}>
                     <Item xs={2} sm={2} md={2} lg={2} xl={2} ></Item>

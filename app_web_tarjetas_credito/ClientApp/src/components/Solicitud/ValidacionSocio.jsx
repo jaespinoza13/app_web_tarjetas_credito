@@ -1,7 +1,7 @@
 ﻿import Input from "../Common/UI/Input";
 import Card from "../Common/Card";
 import { Fragment, useState } from "react";
-import { validaCedula } from '../../js/utiles';
+import { convertFecha, validaCedula } from '../../js/utiles';
 import Item from "../Common/UI/Item";
 import { useEffect } from "react";
 import Button from "../Common/UI/Button";
@@ -107,7 +107,7 @@ const ValidacionSocio = (props) => {
 
                                 <div>
                                     <h3>Fecha Nacimiento:</h3>
-                                    <h4 className="strong">{props.infoSocio.str_fecha_nacimiento}</h4>
+                                    <h4 className="strong">{convertFecha(props.infoSocio.str_fecha_nacimiento)}</h4>
                                     <hr className="dashed"></hr>
                                 </div>
 

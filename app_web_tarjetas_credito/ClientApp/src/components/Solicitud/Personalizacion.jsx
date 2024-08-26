@@ -117,7 +117,7 @@ const Personalizacion = (props) => {
     }
 
     const direccionEntregaHandler = (event) => {
-        if (tipoEntrega === "OFICINA") {
+        if (tipoEntrega === "OFICINA COOPMEGO") {
             setDireccionEntrega(event.target.value);
         } else {
             setDireccionEntrega(tiposDireccion.find(direccion => direccion.key === event));
@@ -147,7 +147,7 @@ const Personalizacion = (props) => {
 
 
                 {tipoEntrega !== "" && <h3 className={"mb-2"}>Selecciona una opción para la entrega</h3>}
-                {tipoEntrega === "OFICINA" && <div>
+                {tipoEntrega === "OFICINA COOPMEGO" && <div>
 
                     <select disabled={false} onChange={direccionEntregaHandler} value={direccionEntrega}>
                         {oficinas.length > 0
@@ -324,7 +324,7 @@ const Personalizacion = (props) => {
                 }
 
                 {tipoEntrega !== "" && <h3 className={"mb-2"}>Selecciona una opción para la entrega</h3>}
-                {tipoEntrega === "OFICINA" && <div>
+                {tipoEntrega === "OFICINA COOPMEGO" && <div>
 
                     <select disabled={false} onChange={direccionEntregaHandler} value={direccionEntrega}>
                         {oficinas.length > 0

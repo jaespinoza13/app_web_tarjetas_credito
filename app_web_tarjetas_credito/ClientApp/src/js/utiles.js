@@ -56,6 +56,27 @@ export function dateFormat(format, date) {
     return format;
 }
 
+export function convertFecha(fecha) {
+    if (fecha !== null && fecha !== undefined) {
+        const newDate = new Date(fecha);
+        const hour = newDate.getHours();
+        const minutes = newDate.getMinutes();
+        const seconds = newDate.getSeconds();
+        if (hour !== 0 && minutes !== 0 && seconds !== 0) {
+            const opciones = {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit"
+            };
+            return newDate.toLocaleDateString('en-US', opciones);
+        } else {
+            return newDate.toLocaleDateString('en-US');
+        }        
+    } else {
+        return "";
+    }    
+}
+
 /**
  * Verifica si una variable es null o contiene un texto vacio o un espacio en blanco
  * @param {any} variable
@@ -720,6 +741,16 @@ export function validarCorreo(correo) {
     let valida = regex.test(correo);
     return valida;
 }
+
+export function validarNumCelular(celular) {
+    
+    // Expresión regular para numero de celular
+    const regex = /^09\d{8}$/; 
+    let valida = regex.test(celular);
+    console.log(`${celular} , ${valida}`);
+    return valida;
+}
+
 
 
 export function numberFormatMoney(numero) {
