@@ -5,7 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using plantilla_app_web.Controllers.Common;
 using plantilla_app_web.Filters;
-using Domain.Models.OrdenesTc.ObtenerOrdenesTc;
+using Domain.Models.OrdenesTc.GetOrdenesTc;
+using Domain.Models.OrdenesTc.UpdOrdenesTc;
 
 namespace app_web_tarjetas_credito.Controllers
 {
@@ -33,6 +34,16 @@ namespace app_web_tarjetas_credito.Controllers
         public ResCrypt Post(ReqGetOrdenesTc req)
         {
             ResGetOrdenesTc res = _ordenesTcDat.getOrdenesTC(req);
+            return Utiles.crypt(res, Request.Headers);
+        }
+
+
+        [Route("updOrdenesTc")]
+        [ServiceFilter(typeof(CryptoFilter))]
+        [HttpPost]
+        public ResCrypt Post(ReqUpdOrdenTc req)
+        {
+            ResUpdOrdenTc res = _ordenesTcDat.updOrdenesTC(req);
             return Utiles.crypt(res, Request.Headers);
         }
 

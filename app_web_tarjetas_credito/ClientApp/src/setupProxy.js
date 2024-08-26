@@ -60,7 +60,8 @@ const context = [
     '/tarjetacredito/getInfoProspecto',
     '/tarjetacredito/getPermisosPerfil',
     '/tarjetacredito/getFuncionalidadesTC',
-    '/ordenestc/getOrdenes'
+    '/ordenestc/getOrdenes',
+    '/ordenestc/updOrdenesTc'
 ];
 
 module.exports = function(app) {

@@ -1,4 +1,4 @@
-import { ServicioGetExecute, getMenuPrincipal, getPreguntaUsuario, ServicioPostExecute, getValidarPreguntaUsuario, setResetPassword, getLogin, getLoginPerfil, getPreguntas, setPreguntas, setPassword, setPasswordPrimeraVez, getListaBases, getListaConexiones, setConexion, addConexion, getListaSeguimiento, getListaDocumentos, getListaColecciones, getDescargarLogsTexto, getLogsTexto, getContenidoLogsTexto, getValidaciones, getScore, getInfoSocio, getInfoEco, addAutorizacion, getSolicitudes, addSolicitud, getContrato, getInfoFinan, addProspecto, getFlujoSolicitud, addComentarioAsesor, addComentarioSolicitud, updResolucion, addResolucion, getResolucion, addProcEspecifico, updSolicitud, getParametros, getReporteOrden, getTarjetasCredito, getInforme, getMedioAprobacion, getSeparadores, addDocumentosAxentria, getDocumentosAxentria, crearSeparadores, getReporteAval, getAlertasCliente, getMotivos, getOficina, getInfoProspecto, getPermisosPerfil, getFuncionalidadesTC, getOrdenes } from './Services';
+import { ServicioGetExecute, getMenuPrincipal, getPreguntaUsuario, ServicioPostExecute, getValidarPreguntaUsuario, setResetPassword, getLogin, getLoginPerfil, getPreguntas, setPreguntas, setPassword, setPasswordPrimeraVez, getListaBases, getListaConexiones, setConexion, addConexion, getListaSeguimiento, getListaDocumentos, getListaColecciones, getDescargarLogsTexto, getLogsTexto, getContenidoLogsTexto, getValidaciones, getScore, getInfoSocio, getInfoEco, addAutorizacion, getSolicitudes, addSolicitud, getContrato, getInfoFinan, addProspecto, getFlujoSolicitud, addComentarioAsesor, addComentarioSolicitud, updResolucion, addResolucion, getResolucion, addProcEspecifico, updSolicitud, getParametros, getReporteOrden, getTarjetasCredito, getInforme, getMedioAprobacion, getSeparadores, addDocumentosAxentria, getDocumentosAxentria, crearSeparadores, getReporteAval, getAlertasCliente, getMotivos, getOficina, getInfoProspecto, getPermisosPerfil, getFuncionalidadesTC, getOrdenes, updOrdenesTc } from './Services';
 import { setAlertText, setErrorRedirigir } from "../redux/Alert/actions";
 import hex_md5 from '../js/md5';
 import { desencriptar, generate, get, set } from '../js/crypt';
@@ -1499,7 +1499,12 @@ export async function fetchGetParametrosSistema(nombreParametro, token, onSucces
         str_nombre: nombreParametro,
         int_id_sis: 0 //Parametro se sobrescribe en el controller
     }
+    //console.log("token ", token)
+   /* if (token.trim() === "") {
+        return
+    }*/
     await ServicioPostExecute(getParametros, body, token, { dispatch: dispatch }).then((data) => {
+        //console.log("data ",data)
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
@@ -1995,6 +2000,41 @@ export function fetchGetOrdenes(intEstadoOrden, token, onSucces, dispatch) {
     }
     console.log(body)
     ServicioPostExecute(getOrdenes, body, token, { dispatch: dispatch }).then((data) => {
+        console.log("data ", data)
+        if (data) {
+            if (data.error) {
+                if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
+            } else {
+                if (data.str_res_estado_transaccion === "OK") {
+                    onSucces(data);
+                } else {
+                    let codigo = data.codigo || data.str_res_codigo;
+                    let mensaje = data.mensaje || data.str_res_info_adicional;
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
+                }
+            }
+        } else {
+            if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
+        }
+    });
+}
+/**
+ * 
+ * @param {any} estado
+ * @param {any} lstOrdenes
+ * @param {any} token
+ * @param {any} onSucces
+ * @param {any} dispatch
+ */
+export function fetchUpdateOrdenes(estado,lstOrdenes, token, onSucces, dispatch) {
+    if (dispatch) dispatch(setErrorRedirigir(""));
+
+    let body = {
+        int_estado: Number(estado),
+        int_ids_array: lstOrdenes// [1, 2, 3]
+    }
+    console.log(body)
+    ServicioPostExecute(updOrdenesTc, body, token, { dispatch: dispatch }).then((data) => {
         console.log("data ", data)
         if (data) {
             if (data.error) {

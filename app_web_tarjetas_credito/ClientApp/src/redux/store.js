@@ -21,6 +21,7 @@ import { GetFuncionalidadesSistema } from "./FuncionalidadesSistema/reducers"
 import { GetSeguimientoOrden } from "./SeguimientoOrden/reducers"
 
 const Reducers = combineReducers({
+    GetParametrosTC,
     GetParametros,
     GetListaMejoras,
     GetListaFuncionalidades,
@@ -32,8 +33,7 @@ const Reducers = combineReducers({
     tokenActive,
     ListaBasesMongoDb,
     solicitud,
-    GetParametrosSistema, 
-    GetParametrosTC,
+    GetParametrosSistema,
     prospecto,
     dataSimulacionCupo,
     GetFuncionalidadesSistema,

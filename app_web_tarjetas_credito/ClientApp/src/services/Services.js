@@ -131,6 +131,7 @@ export const getFuncionalidadesTC = "GET_FUNCIONALIDADES_TC"
 
 /** Ordenes */
 export const getOrdenes = "GET_ORDENES_TC"
+export const updOrdenesTc = "UPDATE_ORDENES_TC"
 
 /**
  * Obtener la Url de un servicio de acuerdo a su nombre de Proceso Unico
@@ -316,6 +317,9 @@ export function ServiceUrl(request, params = []) {
             break;
         case getOrdenes:
             pathOut = "ord/getOrdenes"
+            break;  
+        case updOrdenesTc:
+            pathOut = "ord/updOrdenesTc"
             break;      
         default:
             return null;
@@ -582,6 +586,7 @@ function pathRewrite(path) {
         "tc/getPermisosPerfil": '/tarjetacredito/getPermisosPerfil',
         "tc/getFuncionalidadesTC": '/tarjetacredito/getFuncionalidadesTC',
         "ord/getOrdenes": '/ordenestc/getOrdenes',
+        "ord/updOrdenesTc": '/ordenestc/updOrdenesTc',
     };
     if (path) {
         var p = context[path];

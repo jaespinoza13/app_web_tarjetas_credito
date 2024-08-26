@@ -13,7 +13,8 @@ const TogglerV2 = (props) => {
 
     useEffect(() => {
         setActiveIndex(props.toggles[0].key);
-        setTamArray(props.toggles.length-1)
+        setTamArray(props.toggles.length - 1)
+        props.selectedToggle(props.toggles[0].key);// Retorna la accion del primer boton
     }, []);
 
     return (

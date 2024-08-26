@@ -58,7 +58,7 @@ const ComponentItemsOrden = (props) => {
                 <ComponentOrdenItems
                     ordenItem={props.orden}
                     checkStatusSeleccion={checkSeleccionHijo}
-                    returnItemOrden={(tarj) => itemsOrdenCkeckTotal(tarj, props.orden.oficina)}
+                    returnItemOrden={(tarj) => itemsOrdenCkeckTotal(tarj, props.orden.str_oficina_entrega)}
                     opcionItemDisable={props.opcionItemDisable}
                     seguimientoRedux={infoSeguimiento }
                 ></ComponentOrdenItems>
