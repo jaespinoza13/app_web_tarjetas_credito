@@ -13,7 +13,7 @@ import { get } from '../../js/crypt';
 import Table from '../Common/Table';
 import Chip from '../Common/UI/Chip';
 import TogglerV2 from '../Common/UI/TogglerV2';
-import { fetchGetOrdenes } from '../../services/RestServices';
+import { fetchGetOrdenes, fetchGetParametrosSistema } from '../../services/RestServices';
 import { setSeguimientOrdenAction } from '../../redux/SeguimientoOrden/actions';
 
 const mapStateToProps = (state) => {
@@ -37,16 +37,17 @@ function Seguimiento(props) {
     const dispatch = useDispatch();
 
     //PARAMETROS REQUERIDOS
-    const [parametrosTC, setParametrosTC] = useState([]); 
+    const [estadosSeguimientoTC, setEstadosSeguimientoTC] = useState([]); 
 
     const [inputBusqueda, setInputBusqueda] = useState([]);
 
-    const [ordenItemsCheckTotal, setOrdenItemsCheckTotal] = useState([]);
     const [totalTarjetasEnviar, setTotalTarjetasEnviar] = useState(0);
     const [textoBotonAccion, setTextoBotonAccion] = useState("");
     const [textBtnAccionAsistenteAgencia, setTextBtnAccionAsistenteAgencia] = useState("");
     const [lstOrdenesFiltradas, setLstOrdenesFiltradas] = useState([]);
+    const [lstSeguimientoTC, setLstSeguimientoTC] = useState([]);
     const [lstItemsReceptarOficina, setLstItemsReceptarOficina] = useState([]);
+    const [lstParamsSeguimiento, setLstParamsSeguimiento] = useState([]);
     const [modalEnviarPersonalizacion, setModalEnviarPersonalizacion] = useState(false);
     const [selectFiltrarOrdenes, setSelectFiltrarOrdenes] = useState("PENDIENTE DE PERSONALIZAR");
     //const [selectAccionAsistAgencia, setSelectAccionAsistAgencia] = useState("-1");
@@ -98,7 +99,9 @@ function Seguimiento(props) {
 
 
     useEffect(() => {
-        setLstOrdenesFiltradas(ordenesV2.filter(tarjetas => tarjetas.estado === "PENDIENTE DE PERSONALIZAR"))
+        consultarParametrosSeguimiento();
+
+        //setLstOrdenesFiltradas(ordenesV2.filter(tarjetas => tarjetas.estado === "PENDIENTE DE PERSONALIZAR"))
         //setSeguimientoOrdenRedux(true);
 
         setLstItemsReceptarOficina([...ordenesAgencias]);
@@ -111,10 +114,13 @@ function Seguimiento(props) {
 
         setDatosUsuario([{ strCargo: strRol, strOficial: strOficial, strUserOficial: userOficial, strUserOficina: userOficina }]);
 
+
+
+
         if (props.parametrosTC.lst_parametros?.length > 0) {
             let ParametrosTC = props.parametrosTC.lst_parametros;
-            setParametrosTC(ParametrosTC
-                .filter(param => param.str_nombre === 'ESTADOS_ORDENES_TC')
+            setEstadosSeguimientoTC(ParametrosTC
+                .filter(param => param.str_nombre === 'ESTADOS_SEGUIMIENTO_TC')
                 .map(estado => ({
                     prm_id: estado.int_id_parametro,
                     prm_nombre: estado.str_nombre,
@@ -124,23 +130,29 @@ function Seguimiento(props) {
                 })));
         }
 
+
+
+
         if (strRol === "ASISTENTE DE AGENCIA") {
             setSubMenuOpcionesPerfil(comboOpcionesSegAsisteAgencia)
         } else if (strRol === "ASISTENTE DE OPERACIONES") {
             setSubMenuOpcionesPerfil(comboOpcionesSeguimiento)
         }
 
-        fetchGetOrdenes(12883, props.token, (data) => {
-            console.log("lst_ordenes_tc_ ", data.lst_ordenes_tc);
+        /*fetchGetOrdenes(12883, props.token, (data) => {
+            //console.log("lst_ordenes_tc_ ", data.lst_ordenes_tc);
+            setLstSeguimientoTC(data.lst_ordenes_tc);
 
-        }, dispatch)
+        }, dispatch)*/
+        obtenerLstSeguimientoTC("");
     }, [])
 
     /*
     useEffect(() => {
-        console.log(parametrosTC)
-    }, [parametrosTC])
+        console.log(estadosSeguimientoTC)
+    }, [estadosSeguimientoTC])
     */
+
     const ordenesV2 = [
         {
             fecha_rel: "12/07/2024", num_total_tarjetas: 3, num_tarjetas_error: 3, oficina: "MATRIZ", estado: "PENDIENTE DE PERSONALIZAR",
@@ -279,7 +291,7 @@ function Seguimiento(props) {
 
     
     useEffect(() => {
-        console.log(totalTarjetasAccionDiccionario)
+        //console.log(totalTarjetasAccionDiccionario)
     }, [totalTarjetasAccionDiccionario])
     
 
@@ -295,7 +307,7 @@ function Seguimiento(props) {
     const filtrarTarjetas = (valorSelect) => {
 
         let valor = comboOpcionesSeguimiento.find(opciones => opciones.key === valorSelect);
-        console.log("VALOR ", valor)
+        //console.log("VALOR ", valor)
 
         /*
         if (valor.nemonico === "PENDIENTE DE PERSONALIZAR") {
@@ -309,7 +321,7 @@ function Seguimiento(props) {
 
 
         setSelectFiltrarOrdenes(valor.nemonico);
-        setLstOrdenesFiltradas(ordenesV2.filter(tarjetas => tarjetas.estado === valor.nemonico));
+        //setLstOrdenesFiltradas(ordenesV2.filter(tarjetas => tarjetas.estado === valor.nemonico));
         setTotalTarjetasAccionDiccionario([]);
 
     }
@@ -317,7 +329,7 @@ function Seguimiento(props) {
     const accionAsistenteAgenciaHandler = (valor) => {
         let valorParametro = comboOpcionesSegAsisteAgencia.find(opciones => opciones.key === valor);
 
-        console.log("VALOR ASIS AGENCIA ", valorParametro.textPrincipal)
+        //console.log("VALOR ASIS AGENCIA ", valorParametro.textPrincipal)
 
         //setSelectAccionAsistAgencia(valor);
         if (valorParametro.textPrincipal === "RECEPTAR TARJETAS DE CRÉDIT") {
@@ -344,6 +356,32 @@ function Seguimiento(props) {
 
 
     const headersTarjetas = [{ key: 0, nombre: "Ente" }, { key: 1, nombre: "Fecha recepción" }, { key: 2, nombre: "Identificación" }, { key: 3, nombre: "Nombre del titular" }, { key: 4, nombre: "Tipo de tarjeta" }, { key: 5, nombre: "Tipo de producto" }, { key: 6, nombre: "Acciones" }]
+
+
+    const consultarParametrosSeguimiento = async () => {
+        await fetchGetParametrosSistema("SEGUIMIENTO_LISTADO_TC", props.token, (data) => {
+            if (data.lst_parametros.length > 0) {
+                let ParametrosEntregaTC = data.lst_parametros.map(seguimient => ({
+                    prm_id: seguimient.int_id_parametro,
+                    prm_nombre: seguimient.str_nombre,
+                    prm_nemonico: seguimient.str_nemonico,
+                    prm_valor_ini: seguimient.str_valor_ini,
+                    prm_valor_fin: seguimient.str_valor_fin,
+                    prm_descripcion: seguimient.str_descripcion
+                }));
+                setLstParamsSeguimiento(ParametrosEntregaTC)
+            }
+        }, dispatch)
+    }
+
+
+    const obtenerLstSeguimientoTC = async (valorSelect) => {
+        await fetchGetOrdenes(12884, props.token, (data) => { //12883 PEN_ENV_PERSONALIZAR  | 12884 ENV_PERSONALIZADOR |  12885 VERIFICADA_OPERACIONES
+            //console.log("lst_ordenes_tc_ ", data.lst_ordenes_tc);
+            setLstSeguimientoTC(data.lst_ordenes_tc);
+        }, dispatch)
+    }
+
 
 
     return (
@@ -405,17 +443,6 @@ function Seguimiento(props) {
                     }
 
 
-
-
-                    {/*<div className="m-2" style={{ display: "flex", flexDirection: "column", width: "25%", marginRight: "10px" }}>*/}
-                    {/*    <Card >*/}
-                    {/*        <img style={{ width: "25px" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg" alt="Enviar órdenes a personalizar"></img>*/}
-                    {/*        <h4 className="mt-2">Enviar órdenes a personalizar</h4>*/}
-                    {/*        */}{/* <h5 className="mt-2">Generar las órdenes</h5>*/}
-                    {/*        <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false}>Generar archivo</Button>*/}
-                    {/*    </Card>*/}
-                    {/*</div>*/}
-
                 </div>
 
               
@@ -435,7 +462,7 @@ function Seguimiento(props) {
                 {/*BANDEJAS PARA ASISTENTE DE OPERACIONES*/}
                 {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES" && selectFiltrarOrdenes === "PENDIENTE DE PERSONALIZAR" &&
                     <div className="contentTableOrden mt-3 mb-3">
-                        {lstOrdenesFiltradas.map((orden, index) => {
+                        {lstSeguimientoTC.length > 0 &&  lstSeguimientoTC.map((orden, index) => {
                             return (
                                 <Fragment key={index}>
                                     <ComponentItemsOrden
@@ -454,7 +481,7 @@ function Seguimiento(props) {
 
                 {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES" && selectFiltrarOrdenes === "PENDIENTE DE VERIFICAR" &&
                     <div className="contentTableOrden mt-3 mb-3">
-                        {lstOrdenesFiltradas.map((orden, index) => {
+                        {lstSeguimientoTC.length > 0 && lstSeguimientoTC.map((orden, index) => {
                             return (
                                 <Fragment key={index}>
                                     <ComponentItemsOrden
@@ -473,7 +500,7 @@ function Seguimiento(props) {
 
                 {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES" && selectFiltrarOrdenes === "PENDIENTE DE DISTRIBUIR" &&
                     <div className="contentTableOrden mt-3 mb-3">
-                        {lstOrdenesFiltradas.map((orden, index) => {
+                        {lstSeguimientoTC.length > 0 && lstSeguimientoTC.map((orden, index) => {
                             return (
                                 <Fragment key={index}>
                                     <ComponentItemsOrden

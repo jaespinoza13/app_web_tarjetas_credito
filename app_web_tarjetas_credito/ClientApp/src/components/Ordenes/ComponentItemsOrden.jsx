@@ -2,7 +2,6 @@
 import Input from "../Common/UI/Input";
 import AccordionV2 from '../Common/UI/AccordionV2';
 import Chip from "../Common/UI/Chip";
-import { IsNullOrWhiteSpace } from "../../js/utiles";
 import { connect, useDispatch } from "react-redux";
 import { setSeguimientOrdenAction } from "../../redux/SeguimientoOrden/actions";
 
@@ -32,8 +31,8 @@ const ComponentItemsOrden = (props) => {
 
 
     useEffect(() => {
-        if (props.orden.lst_socios.length > 0) {
-            setCheckSeleccionPadre(totalItemOrdenCheck.length === props.orden.lst_socios.length && totalItemOrdenCheck.length !== 0)
+        if (props.orden.lst_ord_ofi.length > 0) {
+            setCheckSeleccionPadre(totalItemOrdenCheck.length === props.orden.lst_ord_ofi.length && totalItemOrdenCheck.length !== 0)
         }
     }, [totalItemOrdenCheck])
 
@@ -122,7 +121,7 @@ const ComponentHeaderAccordion = (props) => {
                         <h4 className="item-header white">Oficina</h4>
                     </div>
                     <div className="content-block" style={{ width: "21%", minWidth: "270px" }} >
-                        <h4 className="item-header white">{props.header.oficina}</h4>
+                        <h4 className="item-header white">{props.header.str_oficina_entrega}</h4>
                     </div>
                     <div className="content-block" style={{ width: "16%", minWidth: "210px" }} >
                         <h4 className="item-header white">Total de tarjetas</h4>
@@ -209,32 +208,32 @@ const ComponentOrdenItems = ({ ordenItem, checkStatusSeleccion, returnItemOrden,
 
     const toggleSelectAll = (checkStatus) => {
         if (checkStatus) {
-            const resultado = ordenItem.lst_socios.map(itemOrden => itemOrden).flat();
+            const resultado = ordenItem.lst_ord_ofi.map(itemOrden => itemOrden.int_seg_id).flat();
             setTarjetaCheckBox(resultado);
         } else {
             setTarjetaCheckBox([]);
         }
     };
 
-    const checkTarjeta = (ordenCheck) => {
-        if (tarjetasCheckBox.includes(ordenCheck)) {
+    const checkTarjeta = (int_seg_id) => {
+        if (tarjetasCheckBox.includes(int_seg_id)) {
            /* const indexOrden = tarjetasCheckBox.findIndex(ordenItem => ordenItem === ordenCheck);
             console.log("INDEX ", indexOrden);
             console.log(" tarjetasCheckBox[indexOrden] ", tarjetasCheckBox[indexOrden]);
             tarjetasCheckBox[indexOrden].realizar_accion = false;*/
-            setTarjetaCheckBox(tarjetasCheckBox.filter(ordenItem => ordenItem !== ordenCheck));
+            setTarjetaCheckBox(tarjetasCheckBox.filter(ordenItem => ordenItem !== int_seg_id));
         } else {
             //ordenCheck.realizar_accion = true;
-            setTarjetaCheckBox([...tarjetasCheckBox, ordenCheck]);
+            setTarjetaCheckBox([...tarjetasCheckBox, int_seg_id]);
         }
     }
 
-    const clickHandler = (cedula) => {
+    const clickHandler = (str_identificacion) => {
         //console.log("PROPS seguimientoOrden ", seguimientoRedux)
         if (seguimientoRedux.seguimientoAccionClick) {
             dispatch(setSeguimientOrdenAction({
                 seguimientoAccionClick: seguimientoRedux.seguimientoAccionClick,
-                seguimientoCedula: cedula
+                seguimientoCedula: str_identificacion
             }))
         }
     }
@@ -248,7 +247,7 @@ const ComponentOrdenItems = ({ ordenItem, checkStatusSeleccion, returnItemOrden,
     }, [seguimientoRedux])
 
     return (        
-        <Fragment key={ordenItem.cedula}>
+        <Fragment>
             {controlActualizoRedux &&
             <table className='table-accordion2' style={{ overflowY: "hidden" }}>
                 <thead className='thead-accordion2'>
@@ -262,27 +261,28 @@ const ComponentOrdenItems = ({ ordenItem, checkStatusSeleccion, returnItemOrden,
                     </tr>
                 </thead>
                 <tbody style={{ overflowY: "hidden" }}>
-                    {ordenItem.lst_socios.map(cliente => {
+                        {ordenItem.lst_ord_ofi.map(cliente => {
                         return (
-                            <tr key={cliente.cedula}>
-                                <td className='paddingSpacing' onClick={() => clickHandler(cliente.cedula)}>
+                            <tr key={cliente.int_seg_id}>
+                                <td className='paddingSpacing' onClick={() => clickHandler(cliente.int_seg_id)}>
                                     {isActivarOpciones &&
                                         <div style={{ fontSize: "1.07rem", color: "#004CAC", fontFamily: "Karbon-Bold", textDecoration: "underline", cursor: "pointer" }}>
-                                            {cliente.cedula}
+                                            {cliente.str_identificacion}
                                         </div>
                                     }
-                                    {!isActivarOpciones && cliente.cedula}
+                                    {!isActivarOpciones && cliente.str_identificacion}
                                 </td>
-                                <td className='paddingSpacing'>{cliente.nombres}</td>
-                                <td className='paddingSpacing'>{cliente.fecha_proceso}</td>
-                                <td className='paddingSpacing'>{cliente.tipo_tarjeta}</td>
-                                <td className='paddingSpacing'> <Chip type={cliente.tipo_producto}>{cliente.tipo_producto}</Chip></td>
+                                <td className='paddingSpacing'>{cliente.str_denominacion_socio}</td>
+                                <td className='paddingSpacing'>{cliente.dtt_fecha_entrega}</td>
+                                {/*<td className='paddingSpacing'>{cliente.tipo_tarjeta}</td>*/}
+                                <td className='paddingSpacing'>PRINCIPAL</td>
+                                <td className='paddingSpacing'> <Chip type={cliente.str_tipo_tarjeta}>{cliente.str_tipo_tarjeta}</Chip></td>
                                 <td className='paddingSpacing'>
-                                    <Input key={cliente.cedula}
+                                    <Input key={cliente.str_identificacion}
                                         disabled={opcionItemDisable}
                                         type="checkbox"
-                                        checked={tarjetasCheckBox.includes(cliente)}
-                                        setValueHandler={() => checkTarjeta(cliente)}
+                                        checked={tarjetasCheckBox.includes(cliente.int_seg_id)}
+                                        setValueHandler={() => checkTarjeta(cliente.int_seg_id)}
                                     ></Input>
                                 </td>
                             </tr>
