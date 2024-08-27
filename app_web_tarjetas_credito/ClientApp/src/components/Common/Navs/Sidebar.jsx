@@ -93,7 +93,8 @@ function Sidebar(props) {
 
                     {/*Se deja ASESOR DE CR�DITO porque no se reconoce caracter de la tilde*/}
                     {perfilUsuario !== "" && (perfilUsuario === "ASESOR DE NEGOCIO" || /*perfilUsuario === "ASISTENTE DE AGENCIA" || */
-                        perfilUsuario === "ASESOR DE CRÉDITO" || perfilUsuario === "ASESOR DE CR�DITO" || perfilUsuario === "ANALISTA CREDITO" || perfilUsuario === "JEFE DE UAC" || perfilUsuario === "OPERATIVO DE NEGOCIOS" || perfilUsuario === "DIRECTOR DE NEGOCIOS") &&
+                        perfilUsuario === "ASESOR DE CRÉDITO" || perfilUsuario === "ASESOR DE CR�DITO" || perfilUsuario === "ANALISTA CREDITO" || perfilUsuario === "JEFE DE UAC" || perfilUsuario === "OPERATIVO DE NEGOCIOS" || perfilUsuario === "UNIDAD DE RIESGOS"
+                        || perfilUsuario === "DIRECTOR DE NEGOCIOS") &&
                         <div className="sidebar_menu__item">
                             <NavItem>
                                 <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'solicitud' || funcionalidadActiva === 'prospeccion') ? 'active' : ''}`} to="/solicitud">

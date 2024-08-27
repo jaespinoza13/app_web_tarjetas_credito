@@ -60,7 +60,7 @@ function Solicitud(props) {
 
     const [oficinasParametros, setOficinasParametros] = useState([]);
     const [modalAnularVisible, setModalAnularVisible] = useState(false);
-    const [solicitudAnularId, setSolicitudAnularId] = useState(false);
+    const [solicitudAnular, setSolicitudAnular] = useState({ idSolicitud: 0, cupoSolicitadoAnular: 0 });
     const [solicitudCupoAnulacion, setSolicitudCupoAnulacion] = useState(false);
 
 
@@ -106,6 +106,7 @@ function Solicitud(props) {
 
     //FUNCIONALIDADES SETTINGS
     const [funcionalidades, setFuncionalidades] = useState([]);
+    const [tienePermisosCrearSolicitud, setTienePermisosCrearSolicitud] = useState(false);
 
 
     //Carga de solicitudes (SE MODIFICA PARA QUE APAREZCA PRIMERA PANTALLA COMO PREDETERMINADA AL LOGUEARSE)
@@ -115,8 +116,9 @@ function Solicitud(props) {
 
             //TRAE FUNCIONALIDADES (SETTINGS)
             fetchGetFuncionalidadesTC(props.token, (data) => {
+                //console.log(data.lst_funcSettings)
                 console.log(data.lst_funcSettings2)
-                setFuncionalidades(data.lst_funcSettings);
+                setFuncionalidades(data.lst_funcSettings2);
             }, dispatch)
 
             fetchGetSolicitudes(props.token, (data) => {
@@ -161,38 +163,46 @@ function Solicitud(props) {
             setOficinasParametros(oficinasParametrosTC)
         }
 
-        if (props.token && props.funcionalidadesStore.permisos?.length > 0 && accionesSolicitud.length === 0) {
+        /*if (props.token && props.funcionalidadesStore.permisos?.length > 0 && accionesSolicitud.length === 0) {
             
 
             setAccionesSolicitud([
                 { image: "", textPrincipal: `Solicitudes`, textSecundario: "", key: 1 },
                 { image: "", textPrincipal: `Prospectos`, textSecundario: "", key: 2 }
             ])
-        }
+        }*/
 
     }, [props])
 
-    
+
+    //Para definir que acciones puede realizar por perfil
     useEffect(() => {
+        if (funcionalidades?.length > 0 && props?.funcionalidadesStore?.permisos?.length > 0) {
+            //console.log("props?.funcionalidadesStore?.permisos ", props?.funcionalidadesStore?.permisos)
+            //console.log("funcionalidades ", funcionalidades)
 
-        /* TODO VALIDAR
-        
+            //Permisos para crear solicitudes/prospectos
+            setTienePermisosCrearSolicitud(props?.funcionalidadesStore?.permisos.some(permisosAccion => {
+                return funcionalidades.some(funcionalidad => funcionalidad.funcionalidad === permisosAccion.fun_nombre && funcionalidad.keyTexto === "CREAR_SOLICITUD_TC")
+            }))
 
-                {props?.funcionalidadesStore?.permisos?.length > 0 && funcionalidades?.length > 0 && props?.funcionalidadesStore?.permisos.some(permisosAccion => {
-                    funcionalidades.some(funcionalidad => funcionalidad.funcionalidad === permisosAccion.fun_nombre && funcionalidad.keyTexto === "CREAR_SOLICITUD_TC")
-                }) &&
+            //Permisos para toogler acciones
+            let puedeVerProspectos = props?.funcionalidadesStore?.permisos.some(permisosAccion => {
+                return funcionalidades.some(funcionalidad => funcionalidad.funcionalidad === permisosAccion.fun_nombre && funcionalidad.keyTexto === "VER_PROSPECTOS_TC")
+            });
+            if (puedeVerProspectos) {
+                setAccionesSolicitud([
+                    { image: "", textPrincipal: `Solicitudes`, textSecundario: "", key: 1 },
+                    { image: "", textPrincipal: `Prospectos`, textSecundario: "", key: 2 }
+                ])
+            } else {
+                setAccionesSolicitud([
+                    { image: "", textPrincipal: `Solicitudes`, textSecundario: "", key: 1 },
+                ])
+            }
 
-
-        */
-
-        //Para definir que acciones puede realizar por perfil
-        if (funcionalidades.length > 0 && props?.funcionalidadesStore?.permisos?.length > 0) {
-
-            console.log(props.funcionalidadesStore)
-            console.log(props?.funcionalidadesStore?.permisos)
         }
-
-    }, [funcionalidades])
+    }, [funcionalidades, props?.funcionalidadesStore])
 
 
     //ACTUALIZA LA PAGINA DONDE SE QUIERE IR
@@ -329,7 +339,7 @@ function Solicitud(props) {
     }
 
     const deleteSolicitudHandler = () => {
-        fetchAddProcEspecifico(solicitudAnularId, 0, "EST_ANULADA", "", props.token, (data) => {
+        fetchAddProcEspecifico(solicitudAnular.idSolicitud, 0, "EST_ANULADA", "", solicitudAnular.cupoSolicitadoAnular, props.token, (data) => {
             if (data.str_res_codigo === "000") {
                 setModalAnularVisible(false);
                 navigate.push('/')
@@ -354,12 +364,12 @@ function Solicitud(props) {
 
     return (
         <div className="f-row w-100" >
-            {/*<Sidebar enlace={props.location.pathname}></Sidebar>*/}
 
             <div className="container_mg mb-4">
                 {/* {permisoNuevaSol && 
                 <>*/}
 
+                {tienePermisosCrearSolicitud &&
                     <div className="content-cards mt-2">
 
                         <Card>
@@ -387,7 +397,11 @@ function Solicitud(props) {
                             <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false} onClick={descargarEstadoCuenta}>Descargar</Button>
                         </Card>
 
-                    </div>                   
+                    </div>        
+
+                }
+
+                              
                 
 
                 {accionesSolicitud.length > 0 &&
@@ -434,7 +448,10 @@ function Solicitud(props) {
                                             <div className="f-col justify-content-center icon-botton"
                                                 onClick={() => {
                                                     setSolicitudCupoAnulacion(solicitud.dec_cupo_solicitado);
-                                                    setSolicitudAnularId(solicitud.int_id);
+                                                    let solicitudAnular = {
+                                                        idSolicitud: solicitud.int_id, cupoSolicitadoAnular: solicitud.dec_cupo_solicitado
+                                                    } 
+                                                    setSolicitudAnular(solicitudAnular);
                                                     setModalAnularVisible(true)
                                                 }}>
                                                 <DeleteForeverRoundedIcon

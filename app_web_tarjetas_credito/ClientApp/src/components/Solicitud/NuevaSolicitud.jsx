@@ -718,7 +718,7 @@ const NuevaSolicitud = (props) => {
                 str_segmento: "",
                 str_calificacion_buro: calificacionRiesgo,
                 str_decision_buro: decisionBuro,
-                mny_gastos_financiero_titular: gastoFinancieroTitular,
+                mny_gastos_financiero_titular: gastoFinancieroTitular.toString(),
                 str_score_buro: puntajeScore.toString(),
 
             }

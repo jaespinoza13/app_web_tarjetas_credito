@@ -8,7 +8,7 @@ import Switch from "../Common/UI/Switch";
 import Toggler from "../Common/UI/Toggler";
 import Textarea from "../Common/UI/Textarea";
 import Button from "../Common/UI/Button";
-import { IsNullOrWhiteSpace, base64ToBlob, descargarArchivo, generarFechaHoy, numberFormatMoney, verificarPdf } from "../../js/utiles";
+import { IsNullOrWhiteSpace, base64ToBlob, convertFecha, descargarArchivo, generarFechaHoy, numberFormatMoney, verificarPdf } from "../../js/utiles";
 import { useEffect } from "react";
 import DatosFinanDatosSocio from "./DatosFinanDatosSocio";
 
@@ -286,8 +286,38 @@ const DatosSocio = (props) => {
             <div id="infoSocio" className="w-100">
                 <Accordion contentReady={contentReadyScore} title="" rotate={estadoAccordionScore} loading={estadoLoadingScore} toggleAccordion={toggleAccordionScore}>
                     <div className="m-4 f-row">
-                        <Item xs={4} sm={4} md={4} lg={4} xl={4}>
-                            <h3 className="strong mb-3">Resultado de la calificación</h3>
+                        <Item xs={1} sm={1} md={1} lg={1} xl={1}> </Item>
+                        <Item xs={2} sm={2} md={2} lg={2} xl={2}> 
+                            <div className="values mb-3">
+                                <h2>Score:</h2>
+                                <h2 className="strong">
+                                    {props?.score?.response?.result?.scoreFinanciero[0]?.score ? props?.score?.response?.result?.scoreFinanciero[0]?.score : 0}
+                                </h2>
+                            </div>
+                        </Item>
+                        <Item xs={2} sm={2} md={2} lg={2} xl={2}></Item>
+                        <Item xs={2} sm={2} md={2} lg={2} xl={2}>
+                            <div className="values  mb-3">
+                                <h2>Calificación:</h2>
+                                <h2 className="strong">
+                                    {props?.score?.response?.result?.modeloCoopmego[0]?.decisionModelo ? props?.score?.response?.result?.modeloCoopmego[0]?.decisionModelo : 'Sin datos'}
+                                </h2>
+                            </div>
+                        </Item>
+                        <Item xs={2} sm={2} md={2} lg={2} xl={2}></Item>
+                        <Item xs={2} sm={2} md={2} lg={2} xl={2}>
+                            <div className="values  mb-3">
+                                <h2>Decisión:</h2>
+                                <h2 className="strong ml-3">
+                                    {props?.score?.response?.result?.modeloCoopmego[0]?.tipoDecision ? props?.score?.response?.result?.modeloCoopmego[0]?.tipoDecision : 'Sin datos'}
+                                </h2>
+                            </div>
+                        </Item>
+                        <Item xs={1} sm={1} md={1} lg={1} xl={1}> </Item>
+                    </div>
+                    <div className="mr-4 mb-4 ml-4 f-row">
+                        <Item xs={5} sm={5} md={5} lg={5} xl={5}>
+                            <h3 className="strong mb-3">Resultado de la calificación:</h3>
                             <div className="values  mb-3">
                                 <h4>Ingresos</h4>
                                 <h4 className="strong">
@@ -309,45 +339,42 @@ const DatosSocio = (props) => {
                             <div className="values  mb-3">
                                 <h4>Gasto Financiero</h4>
                                 <h4 className="strong">                                 
-                                    {props?.score?.response?.result && props?.score?.response?.result?.gastoFinanciero && props?.score?.response?.result?.gastoFinanciero[0] && props?.score?.response?.result?.gastoFinanciero[0].cuotaEstimadaTitular ? numberFormatMoney(props?.score?.response?.result?.gastoFinanciero[0]?.cuotaEstimadaTitular) : 0}
+                                    {props?.score?.response?.result?.gastoFinanciero[0]?.cuotaEstimadaTitular ? numberFormatMoney(props?.score?.response?.result?.gastoFinanciero[0]?.cuotaEstimadaTitular) : 0}
                                 </h4>
                             </div>
                             <div className="values  mb-3">
                                 <h4>Cupo solicitado</h4>
                                 <h4 className="strong">
-                                    {numberFormatMoney(props.informacionSocio.datosFinancieros.montoSolicitado)}
+                                    {numberFormatMoney(props?.informacionSocio?.datosFinancieros?.montoSolicitado)}
                                 </h4>
-                            </div>                            
+                            </div>    
+                            <div className="values  mb-3">
+                                <h4>Validador de ingresos</h4>
+                                <h4 className="strong">
+                                    {props?.score?.response?.result?.parametrosCapacidadPago[0]?.validadorIngreso}
+                                </h4>
+                            </div>
+                            <div className="values  mb-3">
+                                <h4>Fecha de evaluación</h4>
+                                <h4 className="strong">
+                                    {props?.score?.response?.result?.modeloCoopmego[0].fechaEvalucion ? convertFecha(props?.score?.response?.result?.modeloCoopmego[0]?.fechaEvalucion) : 'Sin datos'}
+                                </h4>
+                            </div>
+                            <div className="values  mb-3">
+                                <h4>Deuda como codeudor</h4>
+                                <h4 className="strong">
+
+                                </h4>
+                            </div>   
                             <Button className={["btn_mg btn_mg__primary mt-2 mr-2"]} disabled={false} onClick={descargarReporte}>Descargar reporte</Button>
                         </Item>
-                        <Item xs={1} sm={1} md={1} lg={1} xl={1}></Item>
-                        <Item xs={2} sm={2} md={2} lg={2} xl={2}>
-                            <div className="values mt-5 mb-3">
-                                <h3 className="mt-1">Score</h3>
-                                <h3 className="strong">
-                                    {props?.score?.response?.result && props?.score?.response?.result?.scoreFinanciero && props?.score?.response?.result?.scoreFinanciero[0] && props?.score?.response?.result?.scoreFinanciero[0].score ? props?.score?.response?.result?.scoreFinanciero[0]?.score : 0}
-                                </h3>
-                            </div>
-                            <div className="values  mb-3">
-                                <h3>Calificación</h3>
-                                <h3 className="strong">
-                                    {props?.score?.response?.result && props?.score?.response?.result?.modeloCoopmego && props?.score?.response?.result?.modeloCoopmego[0] && props?.score?.response?.result?.modeloCoopmego[0].decisionModelo ? props?.score?.response?.result?.modeloCoopmego[0]?.decisionModelo : 'Sin datos'}
-                                </h3>
-                            </div>
-                            <div className="values  mb-3">
-                                <h3>Decisión</h3>
-                                <h3 className="strong">
-                                    {props?.score?.response?.result && props?.score?.response?.result?.modeloCoopmego && props?.score?.response?.result?.modeloCoopmego[0] && props?.score?.response?.result?.modeloCoopmego[0].tipoDecision ? props?.score?.response?.result?.modeloCoopmego[0]?.tipoDecision : 'Sin datos'}
-                                </h3>
-                            </div>
-                        </Item>
-                        <Item xs={1} sm={1} md={1} lg={1} xl={1}></Item>
-                        <Item xs={4} sm={4} md={4} lg={4} xl={4}>
+                        <Item xs={2} sm={2} md={2} lg={2} xl={2}></Item>
+                        <Item xs={5} sm={5} md={5} lg={5} xl={5}>
                             <h3 className="strong mb-3" >Detalle de deudas:</h3>
                             {props?.score?.response?.result?.deudaVigenteTotal.map((deuda,index) => {
                                 return (
                                     <div key={index }>
-                                        <h3 className="strong mb-1">{deuda.sistemaCrediticio}</h3>
+                                        <h3 className="strong mb-1">{deuda.sistemaCrediticio === "Bancos" ? "Entidades Financieras" : deuda.sistemaCrediticio}</h3>
                                     <div>
                                         <div className="values">
                                                 <h4 className="mb-2">Total deuda:</h4>
@@ -568,7 +595,34 @@ const DatosSocio = (props) => {
                         </Accordion>
                         <Accordion className="mt-3" title="Situación financiera CoopMego" rotate={estadoAccordionInfoFinan} loading={estadoLoadingInfoFinan} toggleAccordion={() => { getInfoFinan(); }} contentReady={contentReadyInfoFinan}>
                             <div className={"m-2"}>
-                                <h3>Créditos históricos</h3>
+                                <h3>Captaciones</h3>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Número cta</th>
+                                            <th>Tipo cta</th>
+                                            <th>Valor disponible</th>
+                                            <th>Fecha</th>
+                                            <th>Estado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {
+                                            dpf.map((valor) => {
+                                                return (<tr key={valor.int_id_cuenta}>
+                                                    <td>{valor.str_num_cuenta}</td>
+                                                    <td>{valor.str_tipo_cta}</td>
+                                                    <td>{numberFormatMoney(valor.dcm_ahorro)}</td>
+                                                    <td>{valor.dtt_fecha_movimiento}</td>
+                                                    <td>{valor.str_estado}</td>
+                                                </tr>);
+                                            })
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div className={"m-2"}>
+                                <h3>Nivel de Riesgo Indirecto (Créditos históricos)</h3>
                                 <table>
                                     <thead>
                                         <tr>
@@ -599,34 +653,7 @@ const DatosSocio = (props) => {
                                         }
                                     </tbody>
                                 </table>
-                            </div>
-                            <div className={"m-2"}>
-                                <h3>Captaciones</h3>
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Número cta</th>
-                                            <th>Tipo cta</th>
-                                            <th>Valor disponible</th>
-                                            <th>Fecha</th>
-                                            <th>Estado</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {
-                                            dpf.map((valor) => {
-                                                return (<tr key={valor.int_id_cuenta}>
-                                                    <td>{valor.str_num_cuenta}</td>
-                                                    <td>{valor.str_tipo_cta}</td>
-                                                    <td>{numberFormatMoney(valor.dcm_ahorro)}</td>
-                                                    <td>{valor.dtt_fecha_movimiento}</td>
-                                                    <td>{valor.str_estado}</td>
-                                                </tr>);
-                                            })
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
+                            </div>                            
                         </Accordion>
                     </Fragment>
                 }

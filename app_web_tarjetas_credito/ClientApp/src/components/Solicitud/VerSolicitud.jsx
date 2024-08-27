@@ -1,5 +1,5 @@
 ﻿/* eslint-disable react-hooks/exhaustive-deps */
-import { IsNullOrEmpty, IsNullOrWhiteSpace, base64ToBlob, conversionTipoTC, descargarArchivo, generarFechaHoy, numberFormatMoney, verificarPdf } from "../../js/utiles";
+import { IsNullOrEmpty, IsNullOrWhiteSpace, base64ToBlob, conversionTipoTC, convertFecha, descargarArchivo, generarFechaHoy, numberFormatMoney, verificarPdf } from "../../js/utiles";
 import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { useEffect, useState } from "react";
@@ -30,7 +30,9 @@ const mapStateToProps = (state) => {
         listaFuncionalidades: state.GetListaFuncionalidades.data,
         token: state.tokenActive.data,
         solicitud: state.solicitud.data,
-        parametrosTC: state.GetParametrosTC.data
+        parametrosTC: state.GetParametrosTC.data,
+        funcionalidadesStore: state.GetFuncionalidadesSistema.data
+
     };
 };
 
@@ -90,7 +92,8 @@ const VerSolicitud = (props) => {
     //Datos del socio
     const [datosSocio, setDatosSocio] = useState();
 
-
+    //FUNCIONALIDADES SETTINGS
+    const [funcionalidades, setFuncionalidades] = useState([]);
 
     //Axentria
     const [separadores, setSeparadores] = useState([]);
@@ -103,6 +106,8 @@ const VerSolicitud = (props) => {
     const [estadosDecBanjComiteAll, setEstadosDecBanjComiteAll] = useState([]);
     const [estadosRetornaBandejaComite, setEstadosRetornaBandejaComite] = useState([]);
     const [estadosRetornaComiteAll, setEstadosRetornaComiteAll] = useState([]);
+    const [estadosRetornaBandejaRiesgos, setEstadosRetornaBandejaRiesgos] = useState([]);
+    const [estadosRetornaRiesgosAll, setEstadosRetornaRiesgosAll] = useState([]);
     const [estadosRetornaBandejaJefUac, setEstadosRetornaBandejaJefUac] = useState([]);
     const [estadosRetornaJefeUacAll, setEstadosRetornaJefeUacAll] = useState([]);
     const [estadosSigConfirmPorMontoMenor, setEstadosSigConfirmPorMontoMenor] = useState([]);
@@ -139,6 +144,11 @@ const VerSolicitud = (props) => {
 
     const estadoSolicitud = useRef('');
 
+
+    //Variables validan permiso
+    const [tienePermisosEditarAnalisisCs, setTienePermisosEditarAnalisisCs] = useState(false);
+    const [tienePermisosVerMedioAprobacion, setTienePermisosVerMedioAprobacion] = useState(false);
+    const [tienePermisosDevolverBandeja, setTienePermisosDevolverBandeja] = useState(false);
 
     useEffect(() => {
 
@@ -225,7 +235,16 @@ const VerSolicitud = (props) => {
 
             /* ESTADOS PARA RETORNAR BANDEJA PARA EL COMITE */
             setEstadosRetornaComiteAll(ParametrosTC //RETORNO_ESTADO_BANDEJA_TC
-                .filter(param => param.str_nemonico === 'RET_EST_BAN_TC_COM') //RET_EST_BAN_TC_COM  RET_EST_BAN_TC_JEF_UAC  RET_EST_BAN_TC_RIE
+                .filter(param => param.str_nemonico === 'RET_EST_BAN_TC_COM') 
+                .map(estado => ({
+                    prm_id: estado.int_id_parametro,
+                    prm_valor_ini: estado.str_valor_ini,
+                    estados: estado.str_valor_fin
+                })));
+
+            /* ESTADOS PARA RETORNAR BANDEJA PARA RIESGOS */
+            setEstadosRetornaRiesgosAll(ParametrosTC //RETORNO_ESTADO_BANDEJA_TC
+                .filter(param => param.str_nemonico === 'RET_EST_BAN_TC_UNI_RIE') 
                 .map(estado => ({
                     prm_id: estado.int_id_parametro,
                     prm_valor_ini: estado.str_valor_ini,
@@ -282,11 +301,39 @@ const VerSolicitud = (props) => {
             }, dispatch);
         }
 
+        //TRAE FUNCIONALIDADES (SETTINGS)
         fetchGetFuncionalidadesTC(props.token, (data) => {
-            console.log("lst_funcSettings ", data.lst_funcSettings)
+            //console.log(data.lst_funcSettings)
+            console.log(data.lst_funcSettings2)
+            setFuncionalidades(data.lst_funcSettings2);
         }, dispatch)
 
     }, []);
+
+
+    //Para definir que acciones puede realizar por perfil
+    useEffect(() => {
+        if (funcionalidades?.length > 0 && props?.funcionalidadesStore?.permisos?.length > 0) {
+            //console.log("props?.funcionalidadesStore?.permisos ", props?.funcionalidadesStore?.permisos)
+            //console.log("funcionalidades ", funcionalidades)
+
+            //Permiso para editar el analisis Cs
+            setTienePermisosEditarAnalisisCs(props?.funcionalidadesStore?.permisos.some(permisosAccion => {
+                return funcionalidades.some(funcionalidad => funcionalidad.funcionalidad === permisosAccion.fun_nombre && funcionalidad.keyTexto === "ANALISIS_Cs")
+            }))
+            //Permiso para ver el medio de aprobacion
+            setTienePermisosVerMedioAprobacion(props?.funcionalidadesStore?.permisos.some(permisosAccion => {
+                return funcionalidades.some(funcionalidad => funcionalidad.funcionalidad === permisosAccion.fun_nombre && funcionalidad.keyTexto === "MEDIO_APROBACION_TC")
+            }))
+            //Permiso para devolver bandeja
+            setTienePermisosDevolverBandeja(props?.funcionalidadesStore?.permisos.some(permisosAccion => {
+                return funcionalidades.some(funcionalidad => funcionalidad.funcionalidad === permisosAccion.fun_nombre && funcionalidad.keyTexto === "RETORNAR_BANDEJA_TC")
+            }))
+
+           
+
+        }
+    }, [funcionalidades, props?.funcionalidadesStore])
 
 
     const actualizaInformaFlujoSol = () => {
@@ -352,6 +399,18 @@ const VerSolicitud = (props) => {
         }
     }, [estadosRetornaComiteAll])
 
+    useEffect(() => {
+        if (estadosRetornaRiesgosAll.length > 0) {
+            //console.log(estadosRetornaRiesgosAll)
+            let arrEstados = estadosRetornaRiesgosAll.find((parametr) => (parametr.prm_valor_ini) === props.solicitud.estado)
+            if (arrEstados) {
+                const estadosSiguientes = arrEstados.estados.split('|');
+                setEstadosRetornaBandejaRiesgos(estadosSiguientes);
+            } else {
+                setEstadosRetornaBandejaRiesgos([]);
+            }
+        }
+    }, [estadosRetornaRiesgosAll])
 
     useEffect(() => {
         if (estadosRetornaJefeUacAll.length > 0) {
@@ -435,7 +494,7 @@ const VerSolicitud = (props) => {
        
         fetchAddComentarioAsesor(props.solicitud.solicitud, informe, props.solicitud.idSolicitud, props.token, (data) => {
             if (data.str_res_codigo === "000") {
-                setFaltaComentariosAsesor(false);
+                //setFaltaComentariosAsesor(false); TODO SE COMENTA
                 setModalVisible(false);
             }
         }, dispatch);
@@ -487,8 +546,8 @@ const VerSolicitud = (props) => {
         let nemonico = parametrosTC.find(param => param.prm_valor_ini === props.solicitud.estado)
         let validacionInforme = await validarInforme();
 
-        if (nemonico && validacionInforme === false) {
-            fetchAddComentarioSolicitud(props.solicitud.solicitud, comentarioSolicitud, props.solicitud.idSolicitud, false, swithcEsMicrocredito, props.token, (data) => {
+        if (nemonico && validacionInforme === false && solicitudTarjeta?.str_estado_actual !== "ANALISIS RIESGOS") {
+            fetchAddComentarioSolicitud(props.solicitud.solicitud, comentarioSolicitud, props.solicitud.idSolicitud, false, swithcEsMicrocredito, solicitudTarjeta?.str_cupo_solicitado, props.token, (data) => {
                 if (data.str_res_codigo === "000") {
                     fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, datosUsuario[0].strOficial, '', comentarioSolicitud, nemonico.prm_nemonico, props.token, (data) => {
                         setModalVisibleOk(true);
@@ -497,6 +556,23 @@ const VerSolicitud = (props) => {
                     }, dispatch)
                 }
             }, dispatch);
+        } else if (nemonico && validacionInforme === false && solicitudTarjeta?.str_estado_actual === "ANALISIS RIESGOS") {
+            console.log("ENTRA NUEVO ESTADO Riesgos")
+            fetchAddProcEspecifico(props.solicitud.solicitud, 0, "EST_POR_APROBAR", comentarioSolicitud, solicitudTarjeta?.str_cupo_solicitado, props.token, (data) => {
+                if (data.str_res_codigo === "000") {
+
+                    /* TODO PREGUNTAR QUE DECISION LE COLOCARA DE MANERA AUTOMATICA JHONNY
+                    fetchAddResolucion(props.solicitud.solicitud, solicitudTarjeta?.str_cupo_solicitado, datosUsuario[0].strOficial, '', comentarioSolicitud, nemonico.prm_nemonico, props.token, (data) => {
+                        setModalVisibleOk(true);
+                        setTextoModal("Su comentario se guardo con éxito.");
+                        //navigate.push('/solicitud');
+                    }, dispatch)
+                    */
+                    setTextoModal("Su comentario se guardo con éxito.");
+                    setModalVisibleOk(true);
+                    navigate.push('/solicitud');
+                }
+            }, dispatch)
         }
         else {
             //window.alert("Error en el proceso de cambio de bandeja, por favor comuniquese con el administrador");
@@ -617,11 +693,10 @@ const VerSolicitud = (props) => {
         if (selectMotivoRetornoBanj !== undefined && nemonico !== undefined) {
           //  descripcionMotivoRetorno = descripcionMotivoRetorno.str_descripcion
 
-            //Comite retorna a un estado de bandeja especifica para POR APROBAR SOLICITUD
-            if (solicitudTarjeta?.str_estado_actual === "POR APROBAR SOLICITUD" || solicitudTarjeta?.str_estado_actual === "POR REVISAR JEFE UAC") {
-                console.log("PRUEBA POR REVISAR JEFE UA")
-                //let comentario = solicitudTarjeta?.str_estado_actual === "POR REVISAR JEFE UAC" ? observacionComite : '';
-                fetchAddProcEspecifico(props.solicitud.solicitud, 0, selectCambioEstadoSol, comentarioCambioEstado, props.token, (data) => {
+            //BANDEJAS POSTERIORES A LA ANALISIS UAC PUEDEN REALIZAR RETORNO A CUALQUIER BANDEJA QUE SELECCIONE
+            if (solicitudTarjeta?.str_estado_actual === "POR APROBAR SOLICITUD" || solicitudTarjeta?.str_estado_actual === "POR REVISAR JEFE UAC" || solicitudTarjeta?.str_estado_actual === "ANALISIS RIESGOS") {
+                console.log("PRUEBA POR UNIDAD DE RIESGOS")
+                fetchAddProcEspecifico(props.solicitud.solicitud, 0, selectCambioEstadoSol, comentarioCambioEstado, solicitudTarjeta?.str_cupo_solicitado, props.token, (data) => {
                     if (data.str_res_codigo === "000") {
                         setModalCambioBandeja(false);
                         setModalVisibleOk(true);
@@ -632,7 +707,7 @@ const VerSolicitud = (props) => {
 
             } else { //Otros perfiles solo retornan a bandeja anterior
                 //Variable true para retornar bandeja anterior
-                fetchAddComentarioSolicitud(props.solicitud.solicitud, comentarioCambioEstado, props.solicitud.idSolicitud, true, swithcEsMicrocredito, props.token, (data) => {
+                fetchAddComentarioSolicitud(props.solicitud.solicitud, comentarioCambioEstado, props.solicitud.idSolicitud, true, swithcEsMicrocredito, solicitudTarjeta?.str_cupo_solicitado, props.token, (data) => {
                     //navigate.push('/solicitud');
                     setModalCambioBandeja(false);
                     setModalVisibleOk(true);
@@ -693,11 +768,12 @@ const VerSolicitud = (props) => {
 
 
     useEffect(() => {
-
+        
         if (selectMotivoRetornoBanj !== "" && selectMotivoRetornoBanj !== "-1" && comentarioCambioEstado !== "") {
-            if ((solicitudTarjeta?.str_estado_actual === "POR APROBAR SOLICITUD" || solicitudTarjeta?.str_estado_actual === "POR REVISAR JEFE UAC" )&& selectCambioEstadoSol !== "" && selectCambioEstadoSol !== "-1") {
+            if ((solicitudTarjeta?.str_estado_actual === "POR APROBAR SOLICITUD" || solicitudTarjeta?.str_estado_actual === "POR REVISAR JEFE UAC" || solicitudTarjeta?.str_estado_actual === "ANALISIS RIESGOS")
+                && selectCambioEstadoSol !== "" && selectCambioEstadoSol !== "-1") {
                 setIsBtnDisableCambioBandeja(false);
-            } else if (solicitudTarjeta?.str_estado_actual !== "POR APROBAR SOLICITUD" && solicitudTarjeta?.str_estado_actual !== "POR REVISAR JEFE UAC") {
+            } else if (solicitudTarjeta?.str_estado_actual !== "POR APROBAR SOLICITUD" && solicitudTarjeta?.str_estado_actual !== "POR REVISAR JEFE UAC" && solicitudTarjeta?.str_estado_actual !== "ANALISIS RIESGOS") {
                 setIsBtnDisableCambioBandeja(false);
             } else {
                 setIsBtnDisableCambioBandeja(true);
@@ -723,7 +799,7 @@ const VerSolicitud = (props) => {
         //let descripcionMotivoRechazoComite = motivosNegacionComite.find(motivo => motivo.str_nemonico === selectMotivoNiegaSolComite);
         //if (descripcionMotivoRechazoComite !== undefined) {
         //    descripcionMotivoRechazoComite = descripcionMotivoRechazoComite.str_descripcion
-        fetchAddProcEspecifico(props.solicitud.solicitud, 0, "EST_RECHAZADA", observacionComite, props.token, (data) => { //EST_RECHAZADA 11277
+        fetchAddProcEspecifico(props.solicitud.solicitud, 0, "EST_RECHAZADA", observacionComite, solicitudTarjeta?.str_cupo_solicitado, props.token, (data) => { //EST_RECHAZADA 11277
                 if (data.str_res_codigo === "000") {
                     setModalRechazo(false);
 
@@ -751,7 +827,7 @@ const VerSolicitud = (props) => {
         //Si cupo que se va aprobar es el mismo que el socio solicito
         if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_APROBADA") { //APROBADO
 
-            fetchAddProcEspecifico(props.solicitud.solicitud, solicitudTarjeta.str_cupo_solicitado, "EST_APROBADA", observacionComite, props.token, (data) => { //APROBADO 11276
+            fetchAddProcEspecifico(props.solicitud.solicitud, solicitudTarjeta.str_cupo_solicitado, "EST_APROBADA", observacionComite, solicitudTarjeta?.str_cupo_solicitado, props.token, (data) => { //APROBADO 11276
                 if (data.str_res_codigo === "000") {
                     let decision = parametrosTC.find(param => param.prm_nemonico === valorDecisionSelect)
                     let parametroDecNec = parametrosTC.find(param => param.prm_valor_ini === props.solicitud.estado)
@@ -766,7 +842,7 @@ const VerSolicitud = (props) => {
         }
         //Si cupo que se va aprobar es menor al que solicita el socio
         else if (valorDecisionSelect === "EST_APROBADA" && validaCupo.estadoSig === "EST_VERIFICAR_SOCIO") { //VERIFICAR SOCIO
-            fetchAddProcEspecifico(props.solicitud.solicitud, Number.parseFloat(montoAprobado).toFixed(2), "EST_VERIFICAR_SOCIO", observacionComite, props.token, (data) => { //VERIFICAR SOCIO 11278
+            fetchAddProcEspecifico(props.solicitud.solicitud, Number.parseFloat(montoAprobado).toFixed(2), "EST_VERIFICAR_SOCIO", observacionComite, solicitudTarjeta?.str_cupo_solicitado, props.token, (data) => { //VERIFICAR SOCIO 11278
                 if (data.str_res_codigo === "000") {
                     let decision = parametrosTC.find(param => param.prm_nemonico === valorDecisionSelect)
                     let parametroDecNec = parametrosTC.find(param => param.prm_valor_ini === props.solicitud.estado)
@@ -854,7 +930,7 @@ const VerSolicitud = (props) => {
 
     const guardarResolucionSocio = () => {
         if (selectResolucionSocio === "EST_APROBADA_CLIENTE") {
-            fetchAddProcEspecifico(props.solicitud.solicitud, solicitudTarjeta.str_cupo_aprobado, "EST_APROBADA_CLIENTE", comentarioResolucionSocio, props.token, (data) => {
+            fetchAddProcEspecifico(props.solicitud.solicitud, solicitudTarjeta.str_cupo_aprobado, "EST_APROBADA_CLIENTE", comentarioResolucionSocio, solicitudTarjeta?.str_cupo_solicitado, props.token, (data) => {
                 if (data.str_res_codigo === "000") {
 
                     let decision = parametrosTC.find(param => param.prm_nemonico === selectResolucionSocio)
@@ -873,7 +949,7 @@ const VerSolicitud = (props) => {
             let descripcionMotivoRechazaSocio = motivosNegacionSocio.find(motivo => motivo.str_nemonico === selectMotivoNiegaSocio);
             if (selectMotivoNiegaSocio !== undefined) {
                 descripcionMotivoRechazaSocio = descripcionMotivoRechazaSocio.str_descripcion
-                fetchAddProcEspecifico(props.solicitud.solicitud, solicitudTarjeta.str_cupo_aprobado, "EST_RECHAZADA", descripcionMotivoRechazaSocio, props.token, (data) => { 
+                fetchAddProcEspecifico(props.solicitud.solicitud, solicitudTarjeta.str_cupo_aprobado, "EST_RECHAZADA", descripcionMotivoRechazaSocio, solicitudTarjeta?.str_cupo_solicitado, props.token, (data) => { 
                     if (data.str_res_codigo === "000") {
                         let decision = parametrosTC.find(param => param.prm_nemonico === selectResolucionSocio)
                         let parametroDecNec = parametrosTC.find(param => param.prm_valor_ini === props.solicitud.estado)
@@ -1001,16 +1077,10 @@ const VerSolicitud = (props) => {
                                                     resoluciones.length > 0 ?
 
                                                         resoluciones.map((resolucion, index) => {
-                                                            const fecha = new Date(resolucion?.dtt_fecha_actualizacion);
-                                                            const opciones = {
-                                                                hour: "2-digit",
-                                                                minute: "2-digit",
-                                                                second: "2-digit"
-                                                            };
                                                             return (
                                                                 <tr key={resolucion.int_rss_id}>
                                                                     <td>{resolucion.str_usuario_proc}</td>
-                                                                    <td> {(fecha.toLocaleDateString('en-US', opciones))}</td>
+                                                                    <td> {convertFecha(resolucion?.dtt_fecha_actualizacion)}</td>
                                                                     <td> {resolucion.str_decision_solicitud}</td>
                                                                     <td style={{ width: "50%", justifyContent: "left" }} id={index}>
                                                                         <div style={{ display: "ruby" }}>
@@ -1135,7 +1205,7 @@ const VerSolicitud = (props) => {
                                     <Card className={["f-col"]}>
                                         {solicitudTarjeta?.str_estado_actual === "CREADA" &&
                                             <div className="mb-1 f-row justify-content-start align-content-center" style={{ minWidth: "300px" }}>
-                                                <h3 className="strong mr-1">¿Es MICROCRÉDITO?</h3>
+                                                <h3 className="strong mr-1">¿ES MICROCRÉDITO?</h3>
                                                 <div className="f-col justify-content-center">
                                                     <Switch onChange={(valor) => setSwithcEsMicrocredito(valor)} value={swithcEsMicrocredito}></Switch>
                                                 </div>
@@ -1144,24 +1214,27 @@ const VerSolicitud = (props) => {
                                         }
                                         <div className="f-row">
 
-                                            {permisoAccionAnalisis3Cs.includes(solicitudTarjeta?.str_estado_actual) &&
-                                                <Button className="btn_mg__primary mr-2" onClick={modalHandler}>Análisis C's</Button>
+                                            {/*{permisoAccionAnalisis3Cs.includes(solicitudTarjeta?.str_estado_actual) &&*/}
+                                            {tienePermisosEditarAnalisisCs &&
+                                                <Button className="btn_mg__primary mr-2 nowrap" onClick={modalHandler}>Análisis C's</Button>
                                             }
 
-                                            {permisoImprimirMedio.includes(solicitudTarjeta?.str_estado_actual) &&
-                                                <Button className="btn_mg__primary mr-2" onClick={() => descargarMedio(props.solicitud.solicitud)}>Medio de aprobación</Button>
+                                            {/* {permisoImprimirMedio.includes(solicitudTarjeta?.str_estado_actual) &&*/}
+                                            {tienePermisosVerMedioAprobacion &&
+                                                <Button className="btn_mg__primary mr-2 nowrap" onClick={() => descargarMedio(props.solicitud.solicitud)}>Medio de aprobación</Button>
                                             }
 
-                                            {estadosPuedenRegresarBandeja.includes(solicitudTarjeta?.str_estado_actual) &&
-                                                <Button className="btn_mg__primary mr-2" onClick={openModalCambiarBandeja}>Devolver</Button>
+                                            {/*{estadosPuedenRegresarBandeja.includes(solicitudTarjeta?.str_estado_actual) &&*/}
+                                            {tienePermisosDevolverBandeja &&
+                                                <Button className="btn_mg__primary mr-2 nowrap" onClick={openModalCambiarBandeja}>Devolver</Button>
                                             }
 
 
                                             {/*VERIFICAR SOCIO*/}
                                             {solicitudTarjeta?.str_estado_actual === estadosSigConfirmPorMontoMenorAll[0]?.prm_valor_ini &&                                               
-                                                <Button className={["btn_mg btn_mg__primary mr-2"]} onClick={openModalResolucionSocio}>Resolución socio </Button> 
+                                                <Button className={["btn_mg btn_mg__primary mr-2 nowrap"]} onClick={openModalResolucionSocio}>Resolución socio </Button> 
                                             }
-                                            <Button className={["btn_mg btn_mg__primary mr-2"]} onClick={changeEstadoModalSeguimiento}>Seguimiento </Button>
+                                            <Button className={["btn_mg btn_mg__primary mr-2"]} onClick={changeEstadoModalSeguimiento}>Seguimiento</Button>
                                      
 
                                         </div>
@@ -1171,16 +1244,10 @@ const VerSolicitud = (props) => {
                                                 resoluciones.length > 0 ?
 
                                                     resoluciones.map((resolucion, index) => {
-                                                        const fecha = new Date(resolucion?.dtt_fecha_actualizacion);
-                                                        const opciones = {
-                                                            hour: "2-digit",
-                                                            minute: "2-digit",
-                                                            second: "2-digit"
-                                                        };
                                                         return (
                                                             <tr key={resolucion.int_rss_id}>
                                                                 <td>{resolucion.str_usuario_proc}</td>
-                                                                <td> {(fecha.toLocaleDateString('en-US', opciones))}</td>
+                                                                <td> {convertFecha(resolucion?.dtt_fecha_actualizacion)}</td>
                                                                 <td> {resolucion.str_decision_solicitud}</td>
                                                                 <td style={{ width: "60%", justifyContent: "left" }} id={index}>
                                                                     <div style={{ display: "ruby" }}>
@@ -1379,49 +1446,74 @@ const VerSolicitud = (props) => {
             mainText="Guardar"
         >
             {modalVisible && <div className="mb-3">
+                <div className="f-col mt-3">
+                    {informe.map((comentario, index) => {
+                        return (
+                            <div key={index}>
+                                <div className="f-row w-100 mb-1" style={{ backgroundColor: "#004CAC", color: "#fff", padding: "0.4rem 1rem" }}>
+                                    <h3>{comentario.str_tipo}</h3>
+                                    <div className='ml-1 tooltip' style={{ transform: "translateY(4px)" }}>
+                                                                            <InfoRoundedIcon
+                                                                                sx={{
+                                                                                    fontSize: 15,
+                                                                                    padding: 0,
+                                                                                }}
+                                                                            >
+                                                                            </InfoRoundedIcon>
+                                                                            <span className='tooltip-info'>{comentario.str_descripcion}</span>
+                                                                        </div>
+                                </div>
+                                <div className="mb-1">
+                                    <Textarea className="position-static" placeholder="Ingrese su comentario" onChange={(event, key = comentario.int_id_parametro) => { comentarioAdicionalHanlder(event, key) }} esRequerido={false} value={comentario.str_detalle}
+                                        controlAnchoTexArea={false} rows={5} maxlength={1000}></Textarea>
+                                </div>
+                            </div>
+                        )
+                    })
+                    }
+                </div>
+                {/*<table>
+                {/*    <thead>*/}
+                {/*        <tr>*/}
+                {/*            {*/}
+                {/*                informe.map((comentario, index) => {*/}
+                {/*                    return (*/}
+                {/*                        <th key={comentario.int_id_parametro}>*/}
+                {/*                            <div className='f-row justify-content-center'>*/}
+                {/*                                {comentario.str_tipo}*/}
+                {/*                                <div className='ml-1 tooltip' style={{ transform: "translateY(2px)" }}>*/}
+                {/*                                    <InfoRoundedIcon*/}
+                {/*                                        sx={{*/}
+                {/*                                            fontSize: 15,*/}
+                {/*                                            padding: 0,*/}
+                {/*                                        }}*/}
+                {/*                                    >*/}
+                {/*                                    </InfoRoundedIcon>*/}
+                {/*                                    <span className='tooltip-info'>{comentario.str_descripcion}</span>*/}
+                {/*                                </div>*/}
+                {/*                                </div>      */}
+                {/*                        </th>*/}
+                {/*                    );*/}
+                {/*                })*/}
+                {/*            }  */}
+                {/*        </tr>*/}
+                {/*    </thead>*/}
+                {/*    <tbody>*/}
+                {/*        <tr>*/}
+                {/*            {*/}
+                {/*                informe.map((comentario, index) => {*/}
+                {/*                    return (*/}
+                {/*                        <td key={comentario.int_id_parametro}>*/}
+                {/*                            <Textarea placeholder="Ej. Texto de ejemplo" type="textarea" onChange={(event, key = comentario.int_id_parametro) => { comentarioAdicionalHanlder(event, key) }} esRequerido={false} value={comentario.str_detalle} controlAnchoTexArea={true} rows={28} rowsMax={28}*/}
+                {/*                                maxlength={1000}></Textarea>*/}
+                {/*                        </td>*/}
 
-                <table>
-                    <thead>
-                        <tr>
-                            {
-                                informe.map((comentario, index) => {
-                                    return (
-                                        <th key={comentario.int_id_parametro}>
-                                            <div className='f-row justify-content-center'>
-                                                {comentario.str_tipo}
-                                                <div className='ml-1 tooltip' style={{ transform: "translateY(2px)" }}>
-                                                    <InfoRoundedIcon
-                                                        sx={{
-                                                            fontSize: 15,
-                                                            padding: 0,
-                                                        }}
-                                                    >
-                                                    </InfoRoundedIcon>
-                                                    <span className='tooltip-info'>{comentario.str_descripcion}</span>
-                                                </div>
-                                                </div>      
-                                        </th>
-                                    );
-                                })
-                            }  
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            {
-                                informe.map((comentario, index) => {
-                                    return (
-                                        <td key={comentario.int_id_parametro}>
-                                            <Textarea placeholder="Ej. Texto de ejemplo" type="textarea" onChange={(event, key = comentario.int_id_parametro) => { comentarioAdicionalHanlder(event, key) }} esRequerido={false} value={comentario.str_detalle} controlAnchoTexArea={true} rows={28} rowsMax={28}
-                                                maxlength={1000}></Textarea>
-                                        </td>
-
-                                    );
-                                })
-                            }
-                        </tr>                       
-                    </tbody>                    
-                </table>
+                {/*                    );*/}
+                {/*                })*/}
+                {/*            }*/}
+                {/*        </tr>                       */}
+                {/*    </tbody>                    */}
+                {/*</table>*/}
             </div>}
         </Modal>
         <Modal
@@ -1581,18 +1673,10 @@ const VerSolicitud = (props) => {
                         <tbody>
                             {
                             lstSeguimientoTC.map((seguimient) => {
-                                const fecha = new Date(seguimient?.dtt_fecha_actualizacion);
-                                const opciones = {
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                    second: "2-digit"
-                                };
-
-
                                     return (<tr key={seguimient.int_flujo_id}>
                                         <td>{seguimient.int_flujo_id}</td>
                                         <td>{seguimient.str_estado_flujo}</td>
-                                        <td>{(fecha.toLocaleDateString('en-US', opciones))}</td>
+                                        <td> {convertFecha(seguimient?.dtt_fecha_actualizacion)}</td>
                                         <td>{seguimient.str_usuario_proc}</td>
                                         <td>{seguimient.str_comentario_proceso}</td>
                                     </tr>);
@@ -1650,7 +1734,36 @@ const VerSolicitud = (props) => {
                         </select>
                     </>
                 }
-                {/*ESTADOS DISPONIBLES PARA RETORNO DE BANDEJA DESDE COMITE*/}
+                {/*ESTADOS DISPONIBLES PARA RETORNO DE BANDEJA UNIDAD DE RIESGOS*/}
+                {solicitudTarjeta?.str_estado_actual === "ANALISIS RIESGOS" &&
+                    <>
+                        <h3 className="mt-4 mb-1">Seleccione a qué estado desea regresar la solicitud:</h3>
+
+                        <select className='w-100' onChange={cambiarEstadoSolHandler} value={selectCambioEstadoSol}>
+                            {estadosRetornaBandejaRiesgos.length > 0
+                                && estadosRetornaBandejaRiesgos?.map((estado, index) => {
+                                    const resultado = validaNombreParam(estado);
+                                    if (index === 0) {
+                                        return (
+                                            <Fragment key={index}>
+                                                <option disabled={true} value={"-1"}>Seleccione una opción</option>
+                                                <option value={resultado.prm_nemonico}> {resultado.prm_valor_ini}</option>
+                                            </Fragment>
+                                        )
+                                    }
+                                    else {
+                                        return (
+                                            <Fragment key={index}>
+                                                <option value={resultado.prm_nemonico}> {resultado.prm_valor_ini}</option>
+                                            </Fragment>
+                                        )
+                                    }
+                                })}
+                        </select>
+                    </>
+                }
+
+                {/*ESTADOS DISPONIBLES PARA RETORNO DE BANDEJA JEFE UAC*/}
                 {solicitudTarjeta?.str_estado_actual === "POR REVISAR JEFE UAC" &&
                     <>
                         <h3 className="mt-4 mb-1">Seleccione a qué estado desea regresar la solicitud:</h3>
