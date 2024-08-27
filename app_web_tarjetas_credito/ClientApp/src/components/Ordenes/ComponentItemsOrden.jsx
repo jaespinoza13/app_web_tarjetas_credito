@@ -5,7 +5,6 @@ import Chip from "../Common/UI/Chip";
 import { connect, useDispatch } from "react-redux";
 import { setSeguimientOrdenAction } from "../../redux/SeguimientoOrden/actions";
 
-
 const mapStateToProps = (state) => {
     return {
         seguimientoOrden:state.GetSeguimientoOrden.data,
@@ -14,7 +13,6 @@ const mapStateToProps = (state) => {
 
 
 const ComponentItemsOrden = (props) => {
-
     const [checkSeleccionPadre, setCheckSeleccionPadre] = useState(false);
     const [checkSeleccionHijo, setCheckSeleccionHijo] = useState(false);
     const [totalItemOrdenCheck, setTotalItemOrdenCheck] = useState([]);
@@ -44,27 +42,33 @@ const ComponentItemsOrden = (props) => {
         }
     }, [props.seguimientoOrden])
 
+    /*
+    useEffect(() => {
+        return () => {
+            setCheckSeleccionPadre(false)
+            setCheckSeleccionHijo(false)
+            setTotalItemOrdenCheck([])
+            setInfoSeguimiento()
+        }
+    }, [])*/
+
 
     return (
-        <Fragment key={props.index}>
-            <ComponentHeaderAccordion
-                index={props.index}
-                header={props.orden}
-                inicialStateCheck={checkSeleccionPadre}
-                checkStatusChange={(e) => { setStatusCheckHandler(e) }}
-                pantallaTituloExponer={props.pantallaTituloExponer}
-                opcionHeader={props.opcionHeader}
-            >
-                <ComponentOrdenItems
-                    ordenItem={props.orden}
-                    checkStatusSeleccion={checkSeleccionHijo}
-                    returnItemOrden={(tarj) => itemsOrdenCkeckTotal(tarj, props.orden.str_oficina_entrega)}
-                    opcionItemDisable={props.opcionItemDisable}
-                    seguimientoRedux={infoSeguimiento }
-                ></ComponentOrdenItems>
-            </ComponentHeaderAccordion>
-
-        </Fragment>
+        <ComponentHeaderAccordion
+            header={props.orden}
+            inicialStateCheck={checkSeleccionPadre}
+            checkStatusChange={(e) => { setStatusCheckHandler(e) }}
+            pantallaTituloExponer={props.pantallaTituloExponer}
+            opcionHeader={props.opcionHeader}
+        >
+            <ComponentOrdenItems
+                ordenItem={props.orden}
+                checkStatusSeleccion={checkSeleccionHijo}
+                returnItemOrden={(tarj) => itemsOrdenCkeckTotal(tarj, props.orden.str_oficina_entrega)}
+                opcionItemDisable={props.opcionItemDisable}
+                seguimientoRedux={infoSeguimiento }
+            ></ComponentOrdenItems>
+        </ComponentHeaderAccordion>
 
     )
 

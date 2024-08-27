@@ -13,8 +13,9 @@ import { get } from '../../js/crypt';
 import Table from '../Common/Table';
 import Chip from '../Common/UI/Chip';
 import TogglerV2 from '../Common/UI/TogglerV2';
-import { fetchGetOrdenes, fetchGetParametrosSistema } from '../../services/RestServices';
+import { fetchGetOrdenes, fetchGetParametrosSistema, fetchUpdateOrdenes } from '../../services/RestServices';
 import { setSeguimientOrdenAction } from '../../redux/SeguimientoOrden/actions';
+import Modal from '../Common/Modal/Modal';
 
 const mapStateToProps = (state) => {
     var bd = state.GetWebService.data;
@@ -42,17 +43,15 @@ function Seguimiento(props) {
 
     const [inputBusqueda, setInputBusqueda] = useState([]);
 
-    const [totalTarjetasEnviar, setTotalTarjetasEnviar] = useState(0);
     const [textoBotonAccion, setTextoBotonAccion] = useState("");
     const [textBtnAccionAsistenteAgencia, setTextBtnAccionAsistenteAgencia] = useState("");
-    const [lstOrdenesFiltradas, setLstOrdenesFiltradas] = useState([]);
     const [lstSeguimientoTC, setLstSeguimientoTC] = useState([]);
-    //const [lstItemsReceptarOficina, setLstItemsReceptarOficina] = useState([]);
     const [lstParamsSeguimiento, setLstParamsSeguimiento] = useState([]);
-    const [modalEnviarPersonalizacion, setModalEnviarPersonalizacion] = useState(false);
     const [controlConsultaCargaComp, setControlConsultaCargaComp] = useState(false);
     const [selectFiltrarOrdenes, setSelectFiltrarOrdenes] = useState("");
-    //const [selectAccionAsistAgencia, setSelectAccionAsistAgencia] = useState("-1");
+    const [totalTarjetasAccionDiccionario, setTotalTarjetasAccionDiccionario] = useState([]);
+    const [numtotalTarjetasCambioEstado, setNumtotalTarjetasCambioEstado] = useState([]);
+    const [subMenuOpcionesPerfil, setSubMenuOpcionesPerfil] = useState([]);
 
     const [comboOpcionesSeguimiento, setComboOpcionesSeguimiento] = useState(
         [
@@ -67,10 +66,10 @@ function Seguimiento(props) {
             { image: "", textPrincipal: `ACTIVAR TARJETAS DE CRÉDITO`, textSecundario: "", key: 1 },
         ]);
 
+    const headersTarjetas = [{ key: 0, nombre: "Ente" }, { key: 1, nombre: "Fecha recepción" }, { key: 2, nombre: "Identificación" }, { key: 3, nombre: "Nombre del titular" }, { key: 4, nombre: "Tipo de tarjeta" }, { key: 5, nombre: "Tipo de producto" }, { key: 6, nombre: "Acciones" }]
 
 
-
-
+    // Secciones para activar componentes
     const [boolSeccionRecepcionTarjetas, setBoolSeccionRecepcionTarjetas] = useState(false);
     const [boolSeccionActivacionTarjetas, setBoolSeccionActivacionTarjetas] = useState(false);
 
@@ -78,10 +77,11 @@ function Seguimiento(props) {
     const [datosUsuario, setDatosUsuario] = useState([]);
 
 
+    //Modales
+    const [modalCambioEstadoOrdenes, setModalCambioEstadoOrdenes] = useState(false);
+    const [textoCambioEstadoOrden, setTextoCambioEstadoOrden] = useState("");
+    const [modalVisibleOk, setModalVisibleOk] = useState(false);
     const [textoTitulo, setTextoTitulo] = useState("");
-    const [totalTarjetasAccionDiccionario, setTotalTarjetasAccionDiccionario] = useState([])
-
-    const [subMenuOpcionesPerfil, setSubMenuOpcionesPerfil] = useState([]);
 
     useEffect(() => {
         if (selectFiltrarOrdenes === "EST_SEG_PEN_ENV_PER") {
@@ -133,7 +133,7 @@ function Seguimiento(props) {
         }
 
 
-    }, [props, controlConsultaCargaComp ])
+    }, [props, controlConsultaCargaComp])
 
 
 
@@ -145,7 +145,7 @@ function Seguimiento(props) {
         //Para definir el toogle del perfil que este logueado (Se usa permisos de funcionalidad y parametros)
         if (props?.funcionalidadesStore?.permisos?.length > 0 && lstParamsSeguimiento?.length > 0 && estadosSeguimientoTC?.length > 0) {
             //console.log(lstParamsSeguimiento)
-           
+
 
             let paramOpciones = [];
             props?.funcionalidadesStore?.permisos?.forEach(permiso => {
@@ -156,6 +156,7 @@ function Seguimiento(props) {
             paramOpciones?.forEach(paramOpc => {
                 let separador = paramOpc?.prm_valor_fin.split('|');
                 let estadoParametroSeguimiento = estadosSeguimientoTC?.find(paramEstadoSeg => paramEstadoSeg?.prm_nemonico === separador[0]?.toString());
+                let estadoParamSeguimSigEstado = estadosSeguimientoTC?.find(paramEstadoSeg => paramEstadoSeg?.prm_nemonico === separador[2]?.toString());
                 //key: estadoParametroSeguimiento?.prm_id,
                 let opcion = {
                     key: separador[0], //Se coloca el nemonico
@@ -163,6 +164,7 @@ function Seguimiento(props) {
                     image: "",
                     textSecundario: "",
                     prm_id: estadoParametroSeguimiento?.prm_id,
+                    prm_id_sig_estado: estadoParamSeguimSigEstado?.prm_id,
                 }
                 toogleOpciones = [...toogleOpciones, opcion]
             });
@@ -221,61 +223,93 @@ function Seguimiento(props) {
     }
 
 
-    /*function AddUpdateItemOrden(clave, valor) {
-
-        if (valor.length === 0) {
-            setTotalTarjetasAccionDiccionario(prevTotalTarjetasAccionDiccionario => {
-                let updatedDictionary = { ...prevTotalTarjetasAccionDiccionario };
-                delete updatedDictionary[clave];
-                return updatedDictionary;
-            });
-        }
-        if (totalTarjetasAccionDiccionario.hasOwnProperty(clave) && totalTarjetasAccionDiccionario[clave].length === 0) {
-            //console.log("--> ",totalTarjetasAccionDiccionario[clave])
-            // Si la clave ya existe, actualizamos el arreglo asociado
-            setTotalTarjetasAccionDiccionario(prevTotalTarjetasAccionDiccionario => ({
-                ...prevTotalTarjetasAccionDiccionario,
-                [clave]: [...prevTotalTarjetasAccionDiccionario[clave], valor]
-            }));
-        } else {
-            // Si la clave no existe, creamos un nuevo arreglo con el valor
-            setTotalTarjetasAccionDiccionario(prevTotalTarjetasAccionDiccionario => ({
-                ...prevTotalTarjetasAccionDiccionario,
-                [clave]: [valor]
-            }));
-        }
-    }*/
-
     function AddUpdateItemOrden(clave, valor) {
         //Actualizar o agregar el objeto
         setTotalTarjetasAccionDiccionario(prevTotalTarjetasAccionDiccionario => ({
             ...prevTotalTarjetasAccionDiccionario,
-            [clave]: [valor]
+            [clave]: valor
         }));
     }
 
-
+    
     useEffect(() => {
-        console.log(totalTarjetasAccionDiccionario)
+        let itemOrdenesSeleccionadas = [];
+        for (const key in totalTarjetasAccionDiccionario) {
+            if (totalTarjetasAccionDiccionario.hasOwnProperty(key) && totalTarjetasAccionDiccionario[key]?.length > 0) { // Aseguramos que la clave es parte del objeto y no del prototipo
+                const value = totalTarjetasAccionDiccionario[key];
+                itemOrdenesSeleccionadas = [...itemOrdenesSeleccionadas, ...value];
+            }
+        }
+        //console.log("itemOrdenesSeleccionadas ", itemOrdenesSeleccionadas)
+        setNumtotalTarjetasCambioEstado(itemOrdenesSeleccionadas);
     }, [totalTarjetasAccionDiccionario])
 
 
 
-    const closeModaEnvioPersonalizacion = () => {
-        setModalEnviarPersonalizacion(false);
+    const closeModalCambioEstadoOrdenes = () => {
+        setTextoCambioEstadoOrden("");
+        setModalCambioEstadoOrdenes(false);
     }
 
-    const envioPersonalizacionHandler = () => {
-        closeModaEnvioPersonalizacion();
+    const envioPersonalizacionHandler = async () => {
+        closeModalCambioEstadoOrdenes();
+        //console.log("selectFiltrarOrdenes ", selectFiltrarOrdenes)
+        if (selectFiltrarOrdenes === "EST_SEG_PEN_ENV_PER") { //Verificar TC si llegaron bien del proveedor
+            let itemOrdenes = [];
+            lstSeguimientoTC.forEach(seguim => {
+                seguim.lst_ord_ofi.forEach(tarjeta => {
+                    itemOrdenes = [...itemOrdenes, tarjeta.int_seg_id]
+                })
+            })
+
+            if (itemOrdenes.length > 0) {
+                let paramEstadoSeguimiento = subMenuOpcionesPerfil.find(opciones => opciones.key === selectFiltrarOrdenes);
+                actualizarOrdenes(paramEstadoSeguimiento.prm_id_sig_estado, itemOrdenes, (callback) => {
+                    setTextoTitulo("Las tarjetas de crédito se han enviado a personalizar.")
+                    setModalVisibleOk(true);
+                    filtrarTarjetas(selectFiltrarOrdenes);//Realizar nueva consulta
+                });              
+                    
+            } else {
+                return
+            }
+        }
+
+        else if (selectFiltrarOrdenes === "EST_SEG_ENV_PER") {
+            let paramEstadoSeguimiento = subMenuOpcionesPerfil.find(opciones => opciones.key === selectFiltrarOrdenes);            
+            if (numtotalTarjetasCambioEstado.length > 0) {
+                actualizarOrdenes(paramEstadoSeguimiento.prm_id_sig_estado, numtotalTarjetasCambioEstado, (callback) => {
+                    setTextoTitulo("Las tarjetas de crédito han sido verificadas con éxito.")
+                    setModalVisibleOk(true);
+                    filtrarTarjetas(selectFiltrarOrdenes);//Realizar nueva consulta
+                });
+            } else {
+                return
+            }
+            
+        }        
+        else if (selectFiltrarOrdenes === "EST_SEG_VER_OPR") { //Para enviar a las agencias (distibucion TC)
+            let paramEstadoSeguimiento = subMenuOpcionesPerfil.find(opciones => opciones.key === selectFiltrarOrdenes);
+            if (numtotalTarjetasCambioEstado.length > 0) {
+                actualizarOrdenes(paramEstadoSeguimiento.prm_id_sig_estado, numtotalTarjetasCambioEstado, (callback) => {
+                    setTextoTitulo("Se han distribuido las tarjetas de crédito con éxito.")
+                    setModalVisibleOk(true);
+                    filtrarTarjetas(selectFiltrarOrdenes);//Realizar nueva consulta
+                });
+            } else {
+                return
+            }
+        }
+
     }
 
-    const filtrarTarjetas = (keyToogle) => {
-        let itemToogle = subMenuOpcionesPerfil.find(opciones => opciones.key === keyToogle);
-        setSelectFiltrarOrdenes(itemToogle.key);
-        obtenerLstSeguimientoTC(itemToogle.prm_id);
-        setTotalTarjetasAccionDiccionario([]);
+    const actualizarOrdenes = async (nuevoEstado, listaItems, callbackReturn) => {
+        await fetchUpdateOrdenes(nuevoEstado, listaItems, props.token, (data) => { 
+            callbackReturn(true);
+        }, dispatch)
+        
     }
-
+    //TODO VALIDAR
     const accionAsistenteAgenciaHandler = (valor) => {
         let valorParametro = subMenuOpcionesPerfil.find(opciones => opciones.key === valor);
         //setSelectAccionAsistAgencia(valor);
@@ -293,17 +327,17 @@ function Seguimiento(props) {
     }
 
     const setSeguimientoOrdenRedux = (activarAccionClick) => {
-
         dispatch(setSeguimientOrdenAction({
             seguimientoAccionClick: activarAccionClick,
         }))
-
     }
 
-
-
-    const headersTarjetas = [{ key: 0, nombre: "Ente" }, { key: 1, nombre: "Fecha recepción" }, { key: 2, nombre: "Identificación" }, { key: 3, nombre: "Nombre del titular" }, { key: 4, nombre: "Tipo de tarjeta" }, { key: 5, nombre: "Tipo de producto" }, { key: 6, nombre: "Acciones" }]
-
+    const filtrarTarjetas = (keyToogle) => {
+        let itemToogle = subMenuOpcionesPerfil.find(opciones => opciones.key === keyToogle);
+        setSelectFiltrarOrdenes(keyToogle);
+        obtenerLstSeguimientoTC(itemToogle.prm_id);
+        setTotalTarjetasAccionDiccionario([]);
+    }
 
     const consultarParametrosSeguimiento = async () => {
         await fetchGetParametrosSistema("SEGUIMIENTO_LISTADO_TC", props.token, (data) => {
@@ -330,7 +364,24 @@ function Seguimiento(props) {
         }, dispatch)
     }
 
+    const cerrarModalVisible = () => {
+        setTextoTitulo("");
+        setModalVisibleOk(false);
+    }
 
+
+    const modalCambioEstadoOrdenesHandler = () => {
+        if (selectFiltrarOrdenes === "EST_SEG_PEN_ENV_PER") {
+            setTextoCambioEstadoOrden("¿Está seguro de enviar a personalizar las tarjetas de crédito?");
+        } else if (selectFiltrarOrdenes === "EST_SEG_ENV_PER") {
+            setTextoCambioEstadoOrden("¿Está seguro de recibir las tarjetas de crédito?");
+        } else if (selectFiltrarOrdenes === "EST_SEG_VER_OPR") {
+            setTextoCambioEstadoOrden("¿Está seguro de hacer el envío de tarjetas de crédito a las oficinas/agencias?");
+        } else if (selectFiltrarOrdenes === "EST_SEG_ENV_AGN") {
+            setTextoCambioEstadoOrden("Falta implementar");
+        }
+        setModalCambioEstadoOrdenes(true)
+    }
 
     return (
         <div className="f-row w-100" >
@@ -367,15 +418,15 @@ function Seguimiento(props) {
                     <div className="contentTableOrden mt-3 mb-3">
                         {lstSeguimientoTC.length > 0 && lstSeguimientoTC.map((orden, index) => {
                             return (
-                                <Fragment key={index}>
-                                    <ComponentItemsOrden
-                                        index={index}
-                                        orden={orden}
-                                        returnItems={returnItemsHandler}
-                                        pantallaTituloExponer="Seguimiento"
-                                        opcionHeader={false}
-                                        opcionItemDisable={true}
-                                    ></ComponentItemsOrden>
+                                <Fragment key={orden.str_oficina_entrega}>  
+                                <ComponentItemsOrden
+                                    index={index}
+                                    orden={orden}
+                                    returnItems={returnItemsHandler}
+                                    pantallaTituloExponer="Seguimiento"
+                                    opcionHeader={false}
+                                    opcionItemDisable={true}
+                                ></ComponentItemsOrden>
                                 </Fragment>
                             )
                         })}
@@ -386,14 +437,14 @@ function Seguimiento(props) {
                     <div className="contentTableOrden mt-3 mb-3">
                         {lstSeguimientoTC.length > 0 && lstSeguimientoTC.map((orden, index) => {
                             return (
-                                <Fragment key={index}>
-                                    <ComponentItemsOrden
-                                        index={index}
-                                        orden={orden}
-                                        returnItems={returnItemsHandler}
-                                        pantallaTituloExponer="Seguimiento"
-                                        opcionHeader={true}
-                                        opcionItemDisable={false}
+                                <Fragment key={orden.str_oficina_entrega}>  
+                                <ComponentItemsOrden
+                                    index={index}
+                                    orden={orden}
+                                    returnItems={returnItemsHandler}
+                                    pantallaTituloExponer="Seguimiento"
+                                    opcionHeader={true}
+                                    opcionItemDisable={false}
                                     ></ComponentItemsOrden>
                                 </Fragment>
                             )
@@ -405,15 +456,15 @@ function Seguimiento(props) {
                     <div className="contentTableOrden mt-3 mb-3">
                         {lstSeguimientoTC.length > 0 && lstSeguimientoTC.map((orden, index) => {
                             return (
-                                <Fragment key={index}>
-                                    <ComponentItemsOrden
-                                        index={index}
-                                        orden={orden}
-                                        returnItems={returnItemsHandler}
-                                        pantallaTituloExponer="Seguimiento"
-                                        opcionHeader={true}
-                                        opcionItemDisable={true}
-                                    ></ComponentItemsOrden>
+                                <Fragment key={orden.str_oficina_entrega}>                                
+                                <ComponentItemsOrden
+                                    index={index}
+                                    orden={orden}
+                                    returnItems={returnItemsHandler}
+                                    pantallaTituloExponer="Seguimiento"
+                                    opcionHeader={true}
+                                    opcionItemDisable={true}
+                                ></ComponentItemsOrden>
                                 </Fragment>
                             )
                         })}
@@ -426,7 +477,7 @@ function Seguimiento(props) {
                 }
 
                 {/*todo: temporal tarjetasV2 */}
-                {tarjetasV2.length === 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" && boolSeccionActivacionTarjetas=== true &&
+                {tarjetasV2.length === 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" && boolSeccionActivacionTarjetas === true &&
                     <div className="f-row mt-4 mb-5 align-content-center justify-content-center">
                         <h3 className="strong">Sin datos para mostrar</h3>
                     </div>
@@ -515,11 +566,14 @@ function Seguimiento(props) {
 
 
                 {/*SECCION BOTONES PARA ASISTENTE DE OPERACIONES*/}
-                {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES" && lstSeguimientoTC.length > 0 &&
+                {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES" && lstSeguimientoTC.length > 0 && 
                     <div className='row w-100 mt-2 f-row justify-content-center'>
-                        <Button onClick={() => { setModalEnviarPersonalizacion(true) }} className="btn_mg__primary" disabled={false}>{textoBotonAccion}</Button>
+                        <Button onClick={modalCambioEstadoOrdenesHandler} className="btn_mg__primary" disabled={(selectFiltrarOrdenes === "EST_SEG_ENV_PER" && numtotalTarjetasCambioEstado.length === 0) ? true: false}>{textoBotonAccion}</Button>
                     </div>
                 }
+
+           
+
 
                 {/*SECCION BOTONES PARA ASISTENTE DE AGENCIA*/}
                 {boolSeccionRecepcionTarjetas === true && datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA" &&
@@ -533,23 +587,39 @@ function Seguimiento(props) {
             </div>
 
             <ModalDinamico
-                modalIsVisible={modalEnviarPersonalizacion}
+                modalIsVisible={modalCambioEstadoOrdenes}
                 titulo={`Aviso!!!`}
-                onCloseClick={closeModaEnvioPersonalizacion}
+                onCloseClick={closeModalCambioEstadoOrdenes}
                 type="sm"
             >
                 <div className="pbmg4 ptmg4">
                     <div className="f-row mb-4">
                         {/*<h3 className="">¿Está seguro de realizar el envio de </h3>  <h3 className="strong">&nbsp;{totalTarjetasEnviar}&nbsp;</h3>  <h3>tarjetas a personalizar?</h3>*/}
-                        <h3 className="">¿Está seguro de realizar el envio de tarjetas a personalizar?</h3>
+                        <h3 className="">{textoCambioEstadoOrden}</h3>
                     </div>
                     <div className="center_text_items">
-                        <button className="btn_mg btn_mg__primary mt-2" disabled={false} type="submit" onClick={envioPersonalizacionHandler}>Enviar</button>
-                        <button className="btn_mg btn_mg__secondary mt-2 " onClick={closeModaEnvioPersonalizacion}>Cancelar</button>
+                        <button className="btn_mg btn_mg__primary mt-2" disabled={false} type="submit" onClick={envioPersonalizacionHandler}>Sí</button>
+                        <button className="btn_mg btn_mg__secondary mt-2 " onClick={closeModalCambioEstadoOrdenes}>No</button>
                     </div>
 
                 </div>
             </ModalDinamico>
+
+            <Modal
+                modalIsVisible={modalVisibleOk}
+                titulo={`Aviso!`}
+                onNextClick={cerrarModalVisible}
+                onCloseClick={cerrarModalVisible}
+                isBtnDisabled={false}
+                type="sm"
+                mainText="Continuar"
+            >
+                <div className="mt-3 mb-3">
+                    <h3 className="strong">{textoTitulo}</h3>
+                </div>
+            </Modal>
+
+
         </div>
 
     )

@@ -55,8 +55,8 @@ namespace Infrastructure.TarjetaCredito
             try
             {
                 req.llenarDatosConfig(_settings);
-                req.str_id_servicio = "REQ_" + _settings.service_get_ordenes;
-                var options = new RestClientOptions(_settings.ws_ordenes_tc + _settings.service_get_ordenes)
+                req.str_id_servicio = "REQ_" + _settings.service_upd_ordenes;
+                var options = new RestClientOptions(_settings.ws_ordenes_tc + _settings.service_upd_ordenes)
                 {
                     ThrowOnAnyError = true,
                     MaxTimeout = _settings.time_out

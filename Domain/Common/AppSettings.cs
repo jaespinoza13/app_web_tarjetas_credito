@@ -129,6 +129,7 @@ namespace Domain.Common {
 
         #region OrdenesTC
         public string service_get_ordenes { get; set; } = String.Empty;
+        public string service_upd_ordenes { get; set; } = String.Empty;
         #endregion
     }
 

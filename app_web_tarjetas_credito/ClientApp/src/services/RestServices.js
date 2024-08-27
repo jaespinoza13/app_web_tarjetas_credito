@@ -1998,9 +1998,9 @@ export function fetchGetOrdenes(intEstadoOrden, token, onSucces, dispatch) {
     let body = {
         int_estado_orden: Number(intEstadoOrden)
     }
-    console.log(body)
+    //console.log(body)
     ServicioPostExecute(getOrdenes, body, token, { dispatch: dispatch }).then((data) => {
-        console.log("data ", data)
+        //console.log("data ", data)
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
@@ -2026,15 +2026,15 @@ export function fetchGetOrdenes(intEstadoOrden, token, onSucces, dispatch) {
  * @param {any} onSucces
  * @param {any} dispatch
  */
-export function fetchUpdateOrdenes(estado,lstOrdenes, token, onSucces, dispatch) {
+export async function  fetchUpdateOrdenes(estado,lstOrdenes, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
         int_estado: Number(estado),
-        int_ids_array: lstOrdenes// [1, 2, 3]
+        int_ids_array: lstOrdenes
     }
-    console.log(body)
-    ServicioPostExecute(updOrdenesTc, body, token, { dispatch: dispatch }).then((data) => {
+    //console.log(body)
+    await ServicioPostExecute(updOrdenesTc, body, token, { dispatch: dispatch }).then((data) => {
         console.log("data ", data)
         if (data) {
             if (data.error) {
