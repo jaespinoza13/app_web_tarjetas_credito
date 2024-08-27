@@ -4,6 +4,7 @@ import AccordionV2 from '../Common/UI/AccordionV2';
 import Chip from "../Common/UI/Chip";
 import { connect, useDispatch } from "react-redux";
 import { setSeguimientOrdenAction } from "../../redux/SeguimientoOrden/actions";
+import { convertFecha } from "../../js/utiles";
 
 const mapStateToProps = (state) => {
     return {
@@ -277,9 +278,8 @@ const ComponentOrdenItems = ({ ordenItem, checkStatusSeleccion, returnItemOrden,
                                     {!isActivarOpciones && cliente.str_identificacion}
                                 </td>
                                 <td className='paddingSpacing'>{cliente.str_denominacion_socio}</td>
-                                <td className='paddingSpacing'>{cliente.dtt_fecha_entrega}</td>
-                                {/*<td className='paddingSpacing'>{cliente.tipo_tarjeta}</td>*/}
-                                <td className='paddingSpacing'>PRINCIPAL</td>
+                                <td className='paddingSpacing'>{convertFecha(cliente.dtt_fecha_entrega)}</td>
+                                <td className='paddingSpacing'>{cliente.str_tipo_propietario}</td>
                                 <td className='paddingSpacing'> <Chip type={cliente.str_tipo_tarjeta}>{cliente.str_tipo_tarjeta}</Chip></td>
                                 <td className='paddingSpacing'>
                                     <Input key={cliente.str_identificacion}

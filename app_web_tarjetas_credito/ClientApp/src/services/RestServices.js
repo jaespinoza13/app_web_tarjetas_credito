@@ -2038,9 +2038,9 @@ export async function  fetchUpdateOrdenes(estado,lstOrdenes, token, onSucces, di
         int_estado: Number(estado),
         int_ids_array: lstOrdenes
     }
-    //console.log(body)
+    console.log(body)
     await ServicioPostExecute(updOrdenesTc, body, token, { dispatch: dispatch }).then((data) => {
-        console.log("data ", data)
+        //console.log("data ", data)
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
