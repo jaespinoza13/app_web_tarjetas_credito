@@ -308,6 +308,7 @@ const UploadDocumentos = (props) => {
             //Se realiza una clonacion del objeto para no modificar el original
             let resultaSeparadores = structuredClone(props.contenido)
             documentosSolicitudCruce.forEach(documento => {
+                console.log(documento)
                 let grupoSeparadorIndex = resultaSeparadores.findIndex(grupoDoc => grupoDoc.str_separador === documento.str_grupo);
                 resultaSeparadores[grupoSeparadorIndex].str_login_carga = documento.str_usuario_carga;
                 resultaSeparadores[grupoSeparadorIndex].dtt_fecha_sube = documento.dtt_ult_modificacion;
@@ -380,7 +381,7 @@ const UploadDocumentos = (props) => {
         //Obtener secuencia de publicacion
         let CheckPublidadorId = publicadorCheckBox[contadorPublicacion.current];
         let archivoPub = lstArchivosParaPublicar.filter(documento => documento.int_id_separador === CheckPublidadorId)[0];
-
+        console.log("archivoPub ", archivoPub)
         if (contadorPublicacion.current === publicadorCheckBox.length && publicadorCheckBox.length !== 0) {
             controlTerminaSubirDocs.current = true;
 
@@ -419,20 +420,25 @@ const UploadDocumentos = (props) => {
                 contadorPublicacion.current = 0;
                 controlTerminaSubirDocs.current = false;
             }
-            else {
+            /*else {
                 let mensaje = 'Error en la publicación del archivo. Consulte con el adminitrador: \n';
                 console.log("mensaje ", mensaje)
                 window.alert(mensaje);
-            }
+            }*/
 
             //resetCargarArchivos();
-            return;
+            //return;
         }
-
+        /*console.log("contadorPublicacion.current ", contadorPublicacion.current)
+        console.log("lstArchivosParaPublicar ", lstArchivosParaPublicar)
+        console.log("CheckPublidadorId ", CheckPublidadorId)
+        console.log("lstArchivosParaPublicar ", lstArchivosParaPublicar)*/
         if (contadorPublicacion.current < lstArchivosParaPublicar.length && CheckPublidadorId !== undefined && archivoPub !== undefined) {
+            console.log("Entra publicar ", archivoPub)
             let validarSeparador = separadorCheckBox.includes(archivoPub.int_id_separador);
             let validarPublicacion = publicadorCheckBox.includes(archivoPub.int_id_separador);
-
+            console.log("validarSeparador ", validarSeparador)
+            console.log("validarPublicacion ", validarPublicacion)
             if (validarPublicacion) {
                 //Obtener el archivo en base64
                 let busquedaArchivo = archivosCargados.find(arch => arch.id_separador === archivoPub.int_id_separador);
@@ -480,6 +486,7 @@ const UploadDocumentos = (props) => {
         await fetchAddDocumentosAxentria(props.solicitud, version, validarSeparador, rutaArchivo, nombreSeparador, props.cedulaSocio, props.datosUsuario[0].strUserOficial,
             props.datosSocio?.str_nombres + ' ' + props.datosSocio?.str_apellido_paterno + ' ' + props.datosSocio?.str_apellido_materno,
             grupoSeparador, '', archivoABase64, props.token, (data) => {
+                console.log(data)
                 respuesta = data;
             }, dispatch);
         return respuesta;

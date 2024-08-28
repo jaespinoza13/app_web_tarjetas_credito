@@ -37,7 +37,7 @@ const ComponentItemsOrden = (props) => {
 
 
     useEffect(() => {  
-        console.log("PROPS seguimientoOrden ", props.seguimientoOrden)
+        //console.log("PROPS seguimientoOrden ", props.seguimientoOrden)
         if (props.seguimientoOrden) {
             setInfoSeguimiento(props.seguimientoOrden)
         }
