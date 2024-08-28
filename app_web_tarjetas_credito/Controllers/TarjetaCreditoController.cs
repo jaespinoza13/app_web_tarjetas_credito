@@ -269,7 +269,7 @@ namespace plantilla_app_web.Controllers
             return Utiles.crypt(res, Request.Headers);
         }
 
-
+        /* TODO ELIMINAR NO SE UTILIZA
         [Route("getTarjetasCredito")]
         [ServiceFilter(typeof(CryptoFilter))]
         [HttpPost]
@@ -277,7 +277,7 @@ namespace plantilla_app_web.Controllers
         {
             ResGetTarjetasCredito res = tarjetaCreditoDat.getTarjetasCredito(req);
             return Utiles.crypt(res, Request.Headers);
-        }
+        }*/
 
 
         [Route("addProcEspecifico")]

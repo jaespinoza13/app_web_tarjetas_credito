@@ -1619,7 +1619,7 @@ export function fetchGetReporteOrden(numOrden, token, onSucces, dispatch) {
     });
 }
 
-
+//TODO: no se lo utiliza
 export function fetchGetTarjetasCredito(nemonico_producto, tipo_tarjeta, estado_tarjeta ,token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 

@@ -13,7 +13,8 @@ builder.Services.AddTransient<CryptoFilter>();
 
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings:BasicAuth"));
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings:Endpoints"));
-builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings:EndpointServices"));
+builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings:EndpointServices"));//TODO: Eliminar cuando todos esten migrados
+builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings:EndpointServicesApiGateway"));
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings:HttpConfig"));
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings:EnvConfig"));
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings:LoadParameters"));

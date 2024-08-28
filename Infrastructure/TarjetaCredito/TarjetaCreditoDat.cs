@@ -170,8 +170,10 @@ namespace Infrastructure.TarjetaCredito
             try
             {
                 req.llenarDatosConfig(_settings);
-                req.str_id_servicio = "REQ_" + _settings.service_get_info_socio;
-                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_info_socio)
+                //req.str_id_servicio = "REQ_" + _settings.service_get_info_socio;                
+                //var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_info_socio)
+                req.str_id_servicio = "REQ_" + _settings.service_get_info_socio_gateway;
+                var options = new RestClientOptions(_settings.ws_apigateway_tarjeta_credito + _settings.service_get_info_socio_gateway)
                 {
                     ThrowOnAnyError = true,
                     MaxTimeout = _settings.time_out
@@ -179,7 +181,8 @@ namespace Infrastructure.TarjetaCredito
                 var client = new RestClient(options);
 
                 var request = new RestRequest();
-                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                //request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                request.AddHeader("Authorization-Gateway", "Auth-Gateway " + _settings.auth_ws_gateway_tarjeta_credito);
                 request.AddHeader("Content-Type", "application/json");
                 request.AddParameter("application/json", req, ParameterType.RequestBody);
                 request.Method = Method.Post;
@@ -204,15 +207,18 @@ namespace Infrastructure.TarjetaCredito
             try
             {
                 req.llenarDatosConfig(_settings);
-                req.str_id_servicio = "REQ_" + _settings.service_get_info_economica;
-                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_info_economica)
+                //req.str_id_servicio = "REQ_" + _settings.service_get_info_economica;
+                //var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_info_economica)
+                req.str_id_servicio = "REQ_" + _settings.service_get_info_economica_gateway;
+                var options = new RestClientOptions(_settings.ws_apigateway_tarjeta_credito + _settings.service_get_info_economica_gateway)
                 {
                     ThrowOnAnyError = true,
                     MaxTimeout = _settings.time_out
                 };
                 var client = new RestClient(options);
                 var request = new RestRequest();
-                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                //request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                request.AddHeader("Authorization-Gateway", "Auth-Gateway " + _settings.auth_ws_gateway_tarjeta_credito);
                 request.AddHeader("Content-Type", "application/json");
                 request.AddParameter("application/json", req, ParameterType.RequestBody);
                 request.Method = Method.Post;
@@ -310,8 +316,11 @@ namespace Infrastructure.TarjetaCredito
             try
             {
                 req.llenarDatosConfig(_settings);
-                req.str_id_servicio = "REQ_" + _settings.service_get_solicitudes;
-                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_solicitudes)
+                //req.str_id_servicio = "REQ_" + _settings.service_get_solicitudes;
+                //var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_solicitudes)
+
+                req.str_id_servicio = "REQ_" + _settings.service_get_solicitudes_gateway;
+                var options = new RestClientOptions(_settings.ws_apigateway_tarjeta_credito + _settings.service_get_solicitudes_gateway)
                 {
                     ThrowOnAnyError = true,
                     MaxTimeout = _settings.time_out
@@ -319,7 +328,8 @@ namespace Infrastructure.TarjetaCredito
 
                 var client = new RestClient(options);
                 var request = new RestRequest();
-                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                //request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                request.AddHeader("Authorization-Gateway", "Auth-Gateway " + _settings.auth_ws_gateway_tarjeta_credito);
                 request.AddHeader("Content-Type", "application/json");
                 request.AddParameter("application/json", req, ParameterType.RequestBody);
                 request.Method = Method.Post;
@@ -346,15 +356,19 @@ namespace Infrastructure.TarjetaCredito
             try
             {
                 req.llenarDatosConfig(_settings);
-                req.str_id_servicio = "REQ_" + _settings.service_add_solicitud;
-                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_add_solicitud){
+                //req.str_id_servicio = "REQ_" + _settings.service_add_solicitud;
+                //var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_add_solicitud){
+                req.str_id_servicio = "REQ_" + _settings.service_add_solicitud_gateway;
+                var options = new RestClientOptions(_settings.ws_apigateway_tarjeta_credito + _settings.service_add_solicitud_gateway) 
+                { 
                     ThrowOnAnyError = true,
                     MaxTimeout = _settings.time_out
                 };
 
                 var client = new RestClient(options);
                 var request = new RestRequest();
-                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                //request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                request.AddHeader("Authorization-Gateway", "Auth-Gateway " + _settings.auth_ws_gateway_tarjeta_credito);
                 request.AddHeader("Content-Type", "application/json");
                 request.AddParameter("application/json", req, ParameterType.RequestBody);
                 request.Method = Method.Post;
@@ -380,8 +394,10 @@ namespace Infrastructure.TarjetaCredito
             try
             {
                 req.llenarDatosConfig(_settings);
-                req.str_id_servicio = "REQ_" + _settings.service_get_info_finan;
-                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_info_finan)
+                //req.str_id_servicio = "REQ_" + _settings.service_get_info_finan;
+                //var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_info_finan)
+                req.str_id_servicio = "REQ_" + _settings.service_get_info_finan_gateway;
+                var options = new RestClientOptions(_settings.ws_apigateway_tarjeta_credito + _settings.service_get_info_finan_gateway)
                 {
                     ThrowOnAnyError = true,
                     MaxTimeout = _settings.time_out
@@ -389,7 +405,8 @@ namespace Infrastructure.TarjetaCredito
 
                 var client = new RestClient(options);
                 var request = new RestRequest();
-                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                //request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                request.AddHeader("Authorization-Gateway", "Auth-Gateway " + _settings.auth_ws_gateway_tarjeta_credito);
                 request.AddHeader("Content-Type", "application/json");
                 request.AddParameter("application/json", req, ParameterType.RequestBody);
                 request.Method = Method.Post;
@@ -415,8 +432,10 @@ namespace Infrastructure.TarjetaCredito
             try
             {
                 req.llenarDatosConfig(_settings);
-                req.str_id_servicio = "REQ_" + _settings.service_add_prospecto;
-                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_add_prospecto)
+                //req.str_id_servicio = "REQ_" + _settings.service_add_prospecto;
+                //var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_add_prospecto)
+                req.str_id_servicio = "REQ_" + _settings.service_add_prospecto_gateway;
+                var options = new RestClientOptions(_settings.ws_apigateway_tarjeta_credito + _settings.service_add_prospecto_gateway)
                 {
                     ThrowOnAnyError = true,
                     MaxTimeout = _settings.time_out
@@ -424,7 +443,8 @@ namespace Infrastructure.TarjetaCredito
 
                 var client = new RestClient(options);
                 var request = new RestRequest();
-                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                //request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                request.AddHeader("Authorization-Gateway", "Auth-Gateway " + _settings.auth_ws_gateway_tarjeta_credito);
                 request.AddHeader("Content-Type", "application/json");
                 request.AddParameter("application/json", req, ParameterType.RequestBody);
                 request.Method = Method.Post;
@@ -450,8 +470,10 @@ namespace Infrastructure.TarjetaCredito
             try
             {
                 req.llenarDatosConfig(_settings);
-                req.str_id_servicio = "REQ_" + _settings.service_get_informe_tc;
-                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_informe_tc)
+                //req.str_id_servicio = "REQ_" + _settings.service_get_informe_tc;
+                //var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_informe_tc)
+                req.str_id_servicio = "REQ_" + _settings.service_get_info_socio_gateway;
+                var options = new RestClientOptions(_settings.ws_apigateway_tarjeta_credito + _settings.service_get_informe_tc_gateway)
                 {
                     ThrowOnAnyError = true,
                     MaxTimeout = _settings.time_out
@@ -459,7 +481,8 @@ namespace Infrastructure.TarjetaCredito
 
                 var client = new RestClient(options);
                 var request = new RestRequest();
-                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                //request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                request.AddHeader("Authorization-Gateway", "Auth-Gateway " + _settings.auth_ws_gateway_tarjeta_credito);
                 request.AddHeader("Content-Type", "application/json");
                 request.AddParameter("application/json", req, ParameterType.RequestBody);
                 request.Method = Method.Post;
@@ -485,8 +508,10 @@ namespace Infrastructure.TarjetaCredito
             try
             {
                 req.llenarDatosConfig(_settings);
-                req.str_id_servicio = "REQ_" + _settings.service_get_flujo_solicitud;
-                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_flujo_solicitud)
+                //req.str_id_servicio = "REQ_" + _settings.service_get_flujo_solicitud;
+                //var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_flujo_solicitud)
+                req.str_id_servicio = "REQ_" + _settings.service_get_flujo_solicitud_gateway;
+                var options = new RestClientOptions(_settings.ws_apigateway_tarjeta_credito + _settings.service_get_flujo_solicitud_gateway)
                 {
                     ThrowOnAnyError = true,
                     MaxTimeout = _settings.time_out
@@ -494,7 +519,8 @@ namespace Infrastructure.TarjetaCredito
 
                 var client = new RestClient(options);
                 var request = new RestRequest();
-                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                //request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                request.AddHeader("Authorization-Gateway", "Auth-Gateway " + _settings.auth_ws_gateway_tarjeta_credito);
                 request.AddHeader("Content-Type", "application/json");
                 request.AddParameter("application/json", req, ParameterType.RequestBody);
                 request.Method = Method.Post;
@@ -521,8 +547,10 @@ namespace Infrastructure.TarjetaCredito
             try
             {
                 req.llenarDatosConfig(_settings);
-                req.str_id_servicio = "REQ_" + _settings.service_add_informe_tc;
-                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_add_informe_tc)
+                //req.str_id_servicio = "REQ_" + _settings.service_add_informe_tc;
+                //var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_add_informe_tc)
+                req.str_id_servicio = "REQ_" + _settings.service_add_informe_tc_gateway;
+                var options = new RestClientOptions(_settings.ws_apigateway_tarjeta_credito + _settings.service_add_informe_tc_gateway)
                 {
                     ThrowOnAnyError = true,
                     MaxTimeout = _settings.time_out
@@ -530,7 +558,8 @@ namespace Infrastructure.TarjetaCredito
 
                 var client = new RestClient(options);
                 var request = new RestRequest();
-                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                //request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                request.AddHeader("Authorization-Gateway", "Auth-Gateway " + _settings.auth_ws_gateway_tarjeta_credito);
                 request.AddHeader("Content-Type", "application/json");
                 request.AddParameter("application/json", req, ParameterType.RequestBody);
                 request.Method = Method.Post;
@@ -556,8 +585,10 @@ namespace Infrastructure.TarjetaCredito
             try
             {
                 req.llenarDatosConfig(_settings);
-                req.str_id_servicio = "REQ_" + _settings.service_add_comentario_solicitud;
-                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_add_comentario_solicitud)
+                //req.str_id_servicio = "REQ_" + _settings.service_add_comentario_solicitud;
+                //var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_add_comentario_solicitud)
+                req.str_id_servicio = "REQ_" + _settings.service_add_comentario_solicitud_gateway;
+                var options = new RestClientOptions(_settings.ws_apigateway_tarjeta_credito + _settings.service_add_comentario_solicitud_gateway)
                 {
                     ThrowOnAnyError = true,
                     MaxTimeout = _settings.time_out
@@ -565,7 +596,8 @@ namespace Infrastructure.TarjetaCredito
 
                 var client = new RestClient(options);
                 var request = new RestRequest();
-                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                //request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                request.AddHeader("Authorization-Gateway", "Auth-Gateway " + _settings.auth_ws_gateway_tarjeta_credito);
                 request.AddHeader("Content-Type", "application/json");
                 request.AddParameter("application/json", req, ParameterType.RequestBody);
                 request.Method = Method.Post;
@@ -591,8 +623,10 @@ namespace Infrastructure.TarjetaCredito
             try
             {
                 req.llenarDatosConfig(_settings);
-                req.str_id_servicio = "REQ_" + _settings.service_get_resolucion;
-                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_resolucion)
+                //req.str_id_servicio = "REQ_" + _settings.service_get_resolucion;
+                //var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_resolucion)
+                req.str_id_servicio = "REQ_" + _settings.service_get_resolucion_gateway;
+                var options = new RestClientOptions(_settings.ws_apigateway_tarjeta_credito + _settings.service_get_resolucion_gateway)
                 {
                     ThrowOnAnyError = true,
                     MaxTimeout = _settings.time_out
@@ -600,7 +634,8 @@ namespace Infrastructure.TarjetaCredito
 
                 var client = new RestClient(options);
                 var request = new RestRequest();
-                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                //request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                request.AddHeader("Authorization-Gateway", "Auth-Gateway " + _settings.auth_ws_gateway_tarjeta_credito);
                 request.AddHeader("Content-Type", "application/json");
                 request.AddParameter("application/json", req, ParameterType.RequestBody);
                 request.Method = Method.Post;
@@ -626,8 +661,10 @@ namespace Infrastructure.TarjetaCredito
             try
             {
                 req.llenarDatosConfig(_settings);
-                req.str_id_servicio = "REQ_" + _settings.service_add_resolucion;
-                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_add_resolucion)
+                //req.str_id_servicio = "REQ_" + _settings.service_add_resolucion;
+                //var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_add_resolucion)
+                req.str_id_servicio = "REQ_" + _settings.service_add_resolucion_gateway;
+                var options = new RestClientOptions(_settings.ws_apigateway_tarjeta_credito + _settings.service_add_resolucion_gateway)
                 {
                     ThrowOnAnyError = true,
                     MaxTimeout = _settings.time_out
@@ -635,7 +672,8 @@ namespace Infrastructure.TarjetaCredito
 
                 var client = new RestClient(options);
                 var request = new RestRequest();
-                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                //request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                request.AddHeader("Authorization-Gateway", "Auth-Gateway " + _settings.auth_ws_gateway_tarjeta_credito);
                 request.AddHeader("Content-Type", "application/json");
                 request.AddParameter("application/json", req, ParameterType.RequestBody);
                 request.Method = Method.Post;
@@ -696,8 +734,10 @@ namespace Infrastructure.TarjetaCredito
             try
             {
                 req.llenarDatosConfig(_settings);
-                req.str_id_servicio = "REQ_" + _settings.service_add_proc_espec;
-                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_add_proc_espec)
+                //req.str_id_servicio = "REQ_" + _settings.service_add_proc_espec;
+                //var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_add_proc_espec)
+                req.str_id_servicio = "REQ_" + _settings.service_add_proc_espec_gateway;
+                var options = new RestClientOptions(_settings.ws_apigateway_tarjeta_credito + _settings.service_add_proc_espec_gateway)
                 {
                     ThrowOnAnyError = true,
                     MaxTimeout = _settings.time_out
@@ -705,7 +745,8 @@ namespace Infrastructure.TarjetaCredito
 
                 var client = new RestClient(options);
                 var request = new RestRequest();
-                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                //request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                request.AddHeader("Authorization-Gateway", "Auth-Gateway " + _settings.auth_ws_gateway_tarjeta_credito);
                 request.AddHeader("Content-Type", "application/json");
                 request.AddParameter("application/json", req, ParameterType.RequestBody);
                 request.Method = Method.Post;
@@ -731,8 +772,10 @@ namespace Infrastructure.TarjetaCredito
             try
             {
                 req.llenarDatosConfig(_settings);
-                req.str_id_servicio = "REQ_" + _settings.service_upd_solicitud;
-                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_upd_solicitud)
+                //req.str_id_servicio = "REQ_" + _settings.service_upd_solicitud;
+                //var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_upd_solicitud)
+                req.str_id_servicio = "REQ_" + _settings.service_upd_solicitud_gateway;
+                var options = new RestClientOptions(_settings.ws_apigateway_tarjeta_credito + _settings.service_upd_solicitud_gateway)
                 {
                     ThrowOnAnyError = true,
                     MaxTimeout = _settings.time_out
@@ -740,7 +783,8 @@ namespace Infrastructure.TarjetaCredito
 
                 var client = new RestClient(options);
                 var request = new RestRequest();
-                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                //request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                request.AddHeader("Authorization-Gateway", "Auth-Gateway " + _settings.auth_ws_gateway_tarjeta_credito);
                 request.AddHeader("Content-Type", "application/json");
                 request.AddParameter("application/json", req, ParameterType.RequestBody);
                 request.Method = Method.Post;
@@ -766,9 +810,11 @@ namespace Infrastructure.TarjetaCredito
             try
             {
                 req.llenarDatosConfig(_settings);
-                req.str_id_servicio = "REQ_" + _settings.service_get_parametros_sistema;
+                //req.str_id_servicio = "REQ_" + _settings.service_get_parametros_sistema;
                 req.int_id_sis = _settings.id_sistema;
-                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_parametros_sistema)
+                //var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_parametros_sistema)
+                req.str_id_servicio = "REQ_" + _settings.service_get_parametros_gateway;
+                var options = new RestClientOptions(_settings.ws_apigateway_tarjeta_credito + _settings.service_get_parametros_gateway)
                 {
                     ThrowOnAnyError = true,
                     MaxTimeout = _settings.time_out
@@ -776,7 +822,8 @@ namespace Infrastructure.TarjetaCredito
 
                 var client = new RestClient(options);
                 var request = new RestRequest();
-                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                //request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                request.AddHeader("Authorization-Gateway", "Auth-Gateway " + _settings.auth_ws_gateway_tarjeta_credito);
                 request.AddHeader("Content-Type", "application/json");
                 request.AddParameter("application/json", req, ParameterType.RequestBody);
                 request.Method = Method.Post;
@@ -802,8 +849,10 @@ namespace Infrastructure.TarjetaCredito
             try
             {
                 req.llenarDatosConfig(_settings);
-                req.str_id_servicio = "REQ_" + _settings.service_get_motivos;
-                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_motivos)
+                //req.str_id_servicio = "REQ_" + _settings.service_get_motivos;
+                //var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_motivos)
+                req.str_id_servicio = "REQ_" + _settings.service_get_motivos_gateway;
+                var options = new RestClientOptions(_settings.ws_apigateway_tarjeta_credito + _settings.service_get_motivos_gateway)
                 {
                     ThrowOnAnyError = true,
                     MaxTimeout = _settings.time_out
@@ -811,7 +860,8 @@ namespace Infrastructure.TarjetaCredito
 
                 var client = new RestClient(options);
                 var request = new RestRequest();
-                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                //request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                request.AddHeader("Authorization-Gateway", "Auth-Gateway " + _settings.auth_ws_gateway_tarjeta_credito);
                 request.AddHeader("Content-Type", "application/json");
                 request.AddParameter("application/json", req, ParameterType.RequestBody);
                 request.Method = Method.Post;
@@ -872,8 +922,10 @@ namespace Infrastructure.TarjetaCredito
             try
             {
                 req.llenarDatosConfig(_settings);
-                req.str_id_servicio = "REQ_" + _settings.service_get_medio_aprobacion;
-                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_medio_aprobacion)
+                //req.str_id_servicio = "REQ_" + _settings.service_get_medio_aprobacion;
+                //var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_medio_aprobacion)
+                req.str_id_servicio = "REQ_" + _settings.service_get_medio_aprobacion_gateway;
+                var options = new RestClientOptions(_settings.ws_apigateway_tarjeta_credito + _settings.service_get_medio_aprobacion_gateway)
                 {
                     ThrowOnAnyError = true,
                     MaxTimeout = _settings.time_out
@@ -881,7 +933,8 @@ namespace Infrastructure.TarjetaCredito
 
                 var client = new RestClient(options);
                 var request = new RestRequest();
-                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                //request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                request.AddHeader("Authorization-Gateway", "Auth-Gateway " + _settings.auth_ws_gateway_tarjeta_credito);
                 request.AddHeader("Content-Type", "application/json");
                 request.AddParameter("application/json", req, ParameterType.RequestBody);
                 request.Method = Method.Post;
@@ -936,14 +989,17 @@ namespace Infrastructure.TarjetaCredito
             return res;
         }
 
+        /*
         public ResGetTarjetasCredito getTarjetasCredito(ReqGetTarjetasCredito req)
         {
             ResGetTarjetasCredito res = new ResGetTarjetasCredito();
             try
             {
                 req.llenarDatosConfig(_settings);
-                req.str_id_servicio = "REQ_" + _settings.service_get_tarjetas_credito;
-                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_tarjetas_credito)
+                //req.str_id_servicio = "REQ_" + _settings.service_get_tarjetas_credito;
+                //var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_tarjetas_credito)
+                req.str_id_servicio = "REQ_" + _settings.service_get_tarjetas_credito_gateway;
+                var options = new RestClientOptions(_settings.ws_apigateway_tarjeta_credito + _settings.service_get_tarjetas_credito_gateway)
                 {
                     ThrowOnAnyError = true,
                     MaxTimeout = _settings.time_out
@@ -951,7 +1007,8 @@ namespace Infrastructure.TarjetaCredito
 
                 var client = new RestClient(options);
                 var request = new RestRequest();
-                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                //request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                request.AddHeader("Authorization-Gateway", "Auth-Gateway " + _settings.auth_ws_gateway_tarjeta_credito);
                 request.AddHeader("Content-Type", "application/json");
                 request.AddParameter("application/json", req, ParameterType.RequestBody);
                 request.Method = Method.Post;
@@ -969,7 +1026,7 @@ namespace Infrastructure.TarjetaCredito
                 Console.WriteLine(ex.ToString());
             }
             return res;
-        }
+        }*/
 
 
         public ResGetSeparadores getSeparadores(ReqGetSeparadores req)
@@ -978,8 +1035,10 @@ namespace Infrastructure.TarjetaCredito
             try
             {
                 req.llenarDatosConfig(_settings);
-                req.str_id_servicio = "REQ_" + _settings.service_get_separadores;
-                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_separadores)
+                //req.str_id_servicio = "REQ_" + _settings.service_get_separadores;
+                //var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_separadores)
+                req.str_id_servicio = "REQ_" + _settings.service_get_separadores_gateway;
+                var options = new RestClientOptions(_settings.ws_apigateway_tarjeta_credito + _settings.service_get_separadores_gateway)
                 {
                     ThrowOnAnyError = true,
                     MaxTimeout = _settings.time_out
@@ -987,7 +1046,8 @@ namespace Infrastructure.TarjetaCredito
 
                 var client = new RestClient(options);
                 var request = new RestRequest();
-                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                //request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                request.AddHeader("Authorization-Gateway", "Auth-Gateway " + _settings.auth_ws_gateway_tarjeta_credito);
                 request.AddHeader("Content-Type", "application/json");
                 request.AddParameter("application/json", req, ParameterType.RequestBody);
                 request.Method = Method.Post;
@@ -1051,8 +1111,10 @@ namespace Infrastructure.TarjetaCredito
             try
             {
                 req.llenarDatosConfig(_settings);
-                req.str_id_servicio = "REQ_" + _settings.service_get_documentos_axentria;
-                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_documentos_axentria)
+                //req.str_id_servicio = "REQ_" + _settings.service_get_documentos_axentria;
+                //var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_documentos_axentria)
+                req.str_id_servicio = "REQ_" + _settings.service_get_documentos_axentria_gateway;
+                var options = new RestClientOptions(_settings.ws_apigateway_tarjeta_credito + _settings.service_get_documentos_axentria_gateway)
                 {
                     ThrowOnAnyError = true,
                     MaxTimeout = _settings.time_out
@@ -1060,7 +1122,8 @@ namespace Infrastructure.TarjetaCredito
 
                 var client = new RestClient(options);
                 var request = new RestRequest();
-                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                // request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                request.AddHeader("Authorization-Gateway", "Auth-Gateway " + _settings.auth_ws_gateway_tarjeta_credito);
                 request.AddHeader("Content-Type", "application/json");
                 request.AddParameter("application/json", req, ParameterType.RequestBody);
                 request.Method = Method.Post;
@@ -1088,8 +1151,10 @@ namespace Infrastructure.TarjetaCredito
             try
             {
                 req.llenarDatosConfig(_settings);
-                req.str_id_servicio = "REQ_" + _settings.service_crear_separadores;
-                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_crear_separadores)
+                //req.str_id_servicio = "REQ_" + _settings.service_crear_separadores;
+                //var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_crear_separadores)
+                req.str_id_servicio = "REQ_" + _settings.service_crear_separadores_gateway;
+                var options = new RestClientOptions(_settings.ws_apigateway_tarjeta_credito + _settings.service_crear_separadores_gateway)
                 {
                     ThrowOnAnyError = true,
                     MaxTimeout = _settings.time_out
@@ -1097,7 +1162,8 @@ namespace Infrastructure.TarjetaCredito
 
                 var client = new RestClient(options);
                 var request = new RestRequest();
-                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                //request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                request.AddHeader("Authorization-Gateway", "Auth-Gateway " + _settings.auth_ws_gateway_tarjeta_credito);
                 request.AddHeader("Content-Type", "application/json");
                 request.AddParameter("application/json", req, ParameterType.RequestBody);
                 request.Method = Method.Post;
@@ -1195,8 +1261,10 @@ namespace Infrastructure.TarjetaCredito
             try
             {
                 req.llenarDatosConfig(_settings);
-                req.str_id_servicio = "REQ_" + _settings.service_get_info_prospecto;
-                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_info_prospecto)
+                //req.str_id_servicio = "REQ_" + _settings.service_get_info_prospecto;
+                //var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_info_prospecto)
+                req.str_id_servicio = "REQ_" + _settings.service_get_info_prospecto_gateway;
+                var options = new RestClientOptions(_settings.ws_apigateway_tarjeta_credito + _settings.service_get_info_prospecto_gateway)
                 {
                     ThrowOnAnyError = true,
                     MaxTimeout = _settings.time_out
@@ -1204,7 +1272,8 @@ namespace Infrastructure.TarjetaCredito
 
                 var client = new RestClient(options);
                 var request = new RestRequest();
-                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                // request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                request.AddHeader("Authorization-Gateway", "Auth-Gateway " + _settings.auth_ws_gateway_tarjeta_credito);
                 request.AddHeader("Content-Type", "application/json");
                 request.AddParameter("application/json", req, ParameterType.RequestBody);
                 request.Method = Method.Post;
@@ -1230,8 +1299,10 @@ namespace Infrastructure.TarjetaCredito
             try
             {
                 req.llenarDatosConfig(_settings);
-                req.str_id_servicio = "REQ_" + _settings.service_get_permisos_perfil;
-                var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_permisos_perfil)
+                //req.str_id_servicio = "REQ_" + _settings.service_get_permisos_perfil;
+                //var options = new RestClientOptions(_settings.ws_tarjeta_credito + _settings.service_get_permisos_perfil)
+                req.str_id_servicio = "REQ_" + _settings.service_get_permisos_perfil_gateway;
+                var options = new RestClientOptions(_settings.ws_apigateway_tarjeta_credito + _settings.service_get_permisos_perfil_gateway)
                 {
                     ThrowOnAnyError = true,
                     MaxTimeout = _settings.time_out
@@ -1239,7 +1310,8 @@ namespace Infrastructure.TarjetaCredito
 
                 var client = new RestClient(options);
                 var request = new RestRequest();
-                request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                //request.AddHeader("Authorization-Mego", "Auth-Mego " + _settings.auth_ws_tarjeta_credito);
+                request.AddHeader("Authorization-Gateway", "Auth-Gateway " + _settings.auth_ws_gateway_tarjeta_credito);
                 request.AddHeader("Content-Type", "application/json");
                 request.AddParameter("application/json", req, ParameterType.RequestBody);
                 request.Method = Method.Post;

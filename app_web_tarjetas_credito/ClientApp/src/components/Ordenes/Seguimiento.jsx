@@ -322,14 +322,14 @@ function Seguimiento(props) {
             }
         }
     }
-    //TODO: VALIDAR ESTA ACCION SE LISTE NUEVAMENTE
-    const cambioEstadoTCSegAsistPlatafHandler = async () => {
+
+    const cambioEstadoTCAgenciaOficinas = async (tituloMensajeAviso) => {
         closeModalCambioEstadoOrdenes();
         if (seguimientoIdAccion !== 0) {
             let tarjetasArray = [seguimientoIdAccion];
             tarjetasArray.push();
             actualizarOrdenes(subMenuOpcionesPerfil[0]?.prm_id_sig_estado, tarjetasArray, (callback) => {
-                setTextoTitulo("La tarjeta de crédito se cambio a estado por Activarse");
+                setTextoTitulo(tituloMensajeAviso);
                 setModalVisibleOk(true);
                 setSeguimientoIdAccion(0);
                 obtenerLstSeguimientoTC(subMenuOpcionesPerfil[0].prm_id);  //Realizar nueva consulta
@@ -357,6 +357,8 @@ function Seguimiento(props) {
             setSelectFiltrarOrdenes(valor);
         }
         else if (valor === "EST_SEG_POR_ACT") { //ACTIVACION DE TARJETAS CREDITO
+            console.log("ENTRO ")
+            obtenerLstSeguimientoTC(valorParametro.prm_id);
             setBoolSeccionActivacionTarjetas(true);
             setBoolSeccionRecepcionTarjetas(false);
             setSelectFiltrarOrdenes("");
@@ -438,7 +440,12 @@ function Seguimiento(props) {
                     <img className="img-icons-acciones" src="Imagenes/return.svg" alt="Regresar Tc"></img>
                 </button>
 
-                <button className="btn_mg_icons noborder" title="Activar Tc" onClick={() => { console.log("seguimiento ", seguimiento) }}>
+                <button className="btn_mg_icons noborder" title="Activar Tc"
+                    onClick={() => {
+                        setSeguimientoIdAccion(Number(seguimiento));
+                        setTextoCambioEstadoOrden('¿Esta seguro de activar la tarjeta de crédito?');
+                        setModalCambioEstadoOrdenes(true);
+                    }}>
                     <img className="img-icons-acciones" src="Imagenes/activate.svg" alt="Activar Tc"></img>
                 </button>
 
@@ -448,7 +455,6 @@ function Seguimiento(props) {
 
 
     const AccionesAsistentePlataforma = ({ seguimiento }) => {
-        //console.log("AccionesAsistentePlataforma ", seguimiento)
         return (
             <div className="f-row" style={{ gap: "6px", justifyContent: "center" }}>
 
@@ -655,12 +661,10 @@ function Seguimiento(props) {
                         <Button onClick={modalCambioEstadoOrdenesHandler} className="btn_mg__primary" disabled={(selectFiltrarOrdenes === "EST_SEG_ENV_PER" && numtotalTarjetasCambioEstado.length === 0) ? true: false}>{textoBotonAccion}</Button>
                     </div>
                 }
-
-           
-
+                
 
                 {/*SECCION BOTONES PARA ASISTENTE DE AGENCIA*/}
-                {boolSeccionRecepcionTarjetas === true && datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA" &&
+                {boolSeccionRecepcionTarjetas === true && datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA" && lstSeguimientoTC.length > 0 && 
                     <div className='row w-100 mt-2 f-row justify-content-center'>
                         <Button onClick={modalCambioEstadoOrdenesHandler} className="btn_mg__primary" disabled={(selectFiltrarOrdenes === "EST_SEG_ENV_AGN" && numtotalTarjetasCambioEstado.length === 0) ? true : false}>{textBtnAccionAsistenteAgencia}</Button>
                     </div>
@@ -682,13 +686,17 @@ function Seguimiento(props) {
                         <h3 className="">{textoCambioEstadoOrden}</h3>
                     </div>
                     <div className="center_text_items">
-                        {datosUsuario[0]?.strCargo !== "ASISTENTE DE PLATAFORMA DE SERVICIOS" &&
+                        {datosUsuario[0]?.strCargo !== "ASISTENTE DE PLATAFORMA DE SERVICIOS" && datosUsuario[0]?.strCargo !== "ASISTENTE DE AGENCIA" &&
                             <button className="btn_mg btn_mg__primary mt-2" disabled={false} type="submit" onClick={cambioEstadoTCSeguimientoHandler}>Sí</button>
                         }                        
                         {datosUsuario[0]?.strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS" && 
-                            <button className="btn_mg btn_mg__primary mt-2" disabled={false} type="submit" onClick={cambioEstadoTCSegAsistPlatafHandler}>Sí</button>
-                        }                        
-
+                            <button className="btn_mg btn_mg__primary mt-2" disabled={false} type="submit"
+                                onClick={() => cambioEstadoTCAgenciaOficinas("La tarjeta de crédito se cambio al estado por Activarse")}>Sí</button>
+                        }
+                        {datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" &&
+                            <button className="btn_mg btn_mg__primary mt-2" disabled={false} type="submit" 
+                                onClick={() => cambioEstadoTCAgenciaOficinas("La tarjeta de crédito se activo con éxito")}>Sí</button>
+                        } 
                         <button className="btn_mg btn_mg__secondary mt-2 " onClick={closeModalCambioEstadoOrdenes}>No</button>
                     </div>
 
