@@ -13,7 +13,7 @@ import { get } from '../../js/crypt';
 import Table from '../Common/Table';
 import Chip from '../Common/UI/Chip';
 import TogglerV2 from '../Common/UI/TogglerV2';
-import { fetchGetOrdenes, fetchGetParametrosSistema, fetchUpdateOrdenes } from '../../services/RestServices';
+import { fetchGetFuncionalidadesTC, fetchGetOrdenes, fetchGetParametrosSistema, fetchUpdateOrdenes } from '../../services/RestServices';
 import { setSeguimientOrdenAction } from '../../redux/SeguimientoOrden/actions';
 import Modal from '../Common/Modal/Modal';
 
@@ -52,6 +52,7 @@ function Seguimiento(props) {
     const [totalTarjetasAccionDiccionario, setTotalTarjetasAccionDiccionario] = useState([]);
     const [numtotalTarjetasCambioEstado, setNumtotalTarjetasCambioEstado] = useState([]);
     const [subMenuOpcionesPerfil, setSubMenuOpcionesPerfil] = useState([]);
+    const [funcionalidades, setFuncionalidades] = useState([]);
 
     const [comboOpcionesSeguimiento, setComboOpcionesSeguimiento] = useState(
         [
@@ -135,6 +136,14 @@ function Seguimiento(props) {
                     })));
             }
             consultarParametrosSeguimiento();
+            
+            //TRAE FUNCIONALIDADES (SETTINGS)
+            fetchGetFuncionalidadesTC(props.token, (data) => {
+                //console.log(data.lst_funcSettings)
+                console.log(data.lst_funcSettings2)
+                console.log(data.lst_func_seguimiento_settings)
+                setFuncionalidades(data.lst_func_seguimiento_settings);
+            }, dispatch)
         }
 
 
@@ -143,44 +152,46 @@ function Seguimiento(props) {
 
 
     useEffect(() => {
-        // console.log("BETR ")
-        //console.log("props?.funcionalidadesStore?.permisos ", props?.funcionalidadesStore?.permisos)
-        //console.log("lstParamsSeguimiento ", lstParamsSeguimiento)
-        //console.log("estadosSeguimientoTC ", estadosSeguimientoTC)
         //Para definir el toogle del perfil que este logueado (Se usa permisos de funcionalidad y parametros)
         if (props?.funcionalidadesStore?.permisos?.length > 0 && lstParamsSeguimiento?.length > 0 && estadosSeguimientoTC?.length > 0) {
+            //console.log(props?.funcionalidadesStore?.permisos)
             //console.log(lstParamsSeguimiento)
-
+            //console.log(estadosSeguimientoTC)
 
             let paramOpciones = [];
-            props?.funcionalidadesStore?.permisos?.forEach(permiso => {
-                paramOpciones = [...paramOpciones, lstParamsSeguimiento?.find(parametroSeg => parametroSeg?.prm_valor_ini === permiso?.fun_nombre)];
-            })
-
             let toogleOpciones = [];
-            paramOpciones?.forEach(paramOpc => {
-                let separador = paramOpc?.prm_valor_fin.split('|');
-                let estadoParametroSeguimiento = estadosSeguimientoTC?.find(paramEstadoSeg => paramEstadoSeg?.prm_nemonico === separador[0]?.toString());
-                let estadoParamSeguimSigEstado = estadosSeguimientoTC?.find(paramEstadoSeg => paramEstadoSeg?.prm_nemonico === separador[2]?.toString());
-                let opcion = {
-                    key: separador[0], //Se coloca el nemonico
-                    textPrincipal: separador[1], //Nombre del campo a presentar
-                    image: "",
-                    textSecundario: "",
-                    prm_id: estadoParametroSeguimiento?.prm_id,
-                    prm_id_sig_estado: estadoParamSeguimSigEstado?.prm_id,
+            props?.funcionalidadesStore?.permisos?.forEach(permiso => {
+                let parametroEncontrado = lstParamsSeguimiento?.find(parametroSeg => parametroSeg?.prm_valor_ini === permiso?.fun_nombre);
+                if (parametroEncontrado) {
+                    paramOpciones = [...paramOpciones, parametroEncontrado];
                 }
-                toogleOpciones = [...toogleOpciones, opcion]
             });
-            toogleOpciones.sort((a, b) => a.prm_id - b.prm_id);
-            setSubMenuOpcionesPerfil(toogleOpciones);
+            if (paramOpciones.length > 0)
+            {
+                paramOpciones?.forEach(paramOpc => {
+                    let separador = paramOpc?.prm_valor_fin.split('|');
+                    let estadoParametroSeguimiento = estadosSeguimientoTC?.find(paramEstadoSeg => paramEstadoSeg?.prm_nemonico === separador[0]?.toString());
+                    let estadoParamSeguimSigEstado = estadosSeguimientoTC?.find(paramEstadoSeg => paramEstadoSeg?.prm_nemonico === separador[2]?.toString());
+                    let opcion = {
+                        key: separador[0], //Se coloca el nemonico
+                        textPrincipal: separador[1], //Nombre del campo a presentar
+                        image: "",
+                        textSecundario: "",
+                        prm_id: estadoParametroSeguimiento?.prm_id,
+                        prm_id_sig_estado: estadoParamSeguimSigEstado?.prm_id,
+                    }
+                    toogleOpciones = [...toogleOpciones, opcion]
+                });
+                toogleOpciones.sort((a, b) => a.prm_id - b.prm_id);
+                setSubMenuOpcionesPerfil(toogleOpciones);
 
-            //Obtener la informacion de seeguimiento para ASISTENTE DE PLATAFORMA DE SERVICIOS
-            if (datosUsuario[0].strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS") {
-                //console.log("toogleOpciones ", toogleOpciones)
-                obtenerLstSeguimientoTC(toogleOpciones[0].prm_id);
-            }
-            
+                //Obtener la informacion de seeguimiento para ASISTENTE DE PLATAFORMA DE SERVICIOS
+                if (datosUsuario[0].strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS") {
+                    //console.log("toogleOpciones ", toogleOpciones)
+                    obtenerLstSeguimientoTC(toogleOpciones[0].prm_id);
+                }
+
+            }        
 
         }
     }, [props?.funcionalidadesStore?.permisos, lstParamsSeguimiento, estadosSeguimientoTC])
@@ -193,7 +204,7 @@ function Seguimiento(props) {
                 itemOrdenesSeleccionadas = [...itemOrdenesSeleccionadas, ...value];
             }
         }
-        console.log("itemOrdenesSeleccionadas ", itemOrdenesSeleccionadas)
+        //console.log("itemOrdenesSeleccionadas ", itemOrdenesSeleccionadas)
         setNumtotalTarjetasCambioEstado(itemOrdenesSeleccionadas);
     }, [totalTarjetasAccionDiccionario])
 
@@ -324,6 +335,7 @@ function Seguimiento(props) {
     }
 
     const cambioEstadoTCAgenciaOficinas = async (tituloMensajeAviso) => {
+        console.log("seguimientoIdAccion ", seguimientoIdAccion)
         closeModalCambioEstadoOrdenes();
         if (seguimientoIdAccion !== 0) {
             let tarjetasArray = [seguimientoIdAccion];
@@ -357,11 +369,10 @@ function Seguimiento(props) {
             setSelectFiltrarOrdenes(valor);
         }
         else if (valor === "EST_SEG_POR_ACT") { //ACTIVACION DE TARJETAS CREDITO
-            console.log("ENTRO ")
             obtenerLstSeguimientoTC(valorParametro.prm_id);
             setBoolSeccionActivacionTarjetas(true);
             setBoolSeccionRecepcionTarjetas(false);
-            setSelectFiltrarOrdenes("");
+            setSelectFiltrarOrdenes(valor);
         }
 
     }
@@ -398,9 +409,8 @@ function Seguimiento(props) {
 
 
     const obtenerLstSeguimientoTC = async (valorSelect) => {
-        console.log("valorSelect ", valorSelect);
         await fetchGetOrdenes(Number(valorSelect), props.token, (data) => { //12883 PEN_ENV_PERSONALIZAR  | 12884 ENV_PERSONALIZADOR |  12885 VERIFICADA_OPERACIONES
-            console.log("lst_ordenes_tc_ ", data.lst_ordenes_tc);
+            //console.log("lst_ordenes_tc_ ", data.lst_ordenes_tc);
             setLstSeguimientoTC(data.lst_ordenes_tc);
         }, dispatch)
     }
@@ -419,7 +429,7 @@ function Seguimiento(props) {
         } else if (selectFiltrarOrdenes === "EST_SEG_VER_OPR") {
             setTextoCambioEstadoOrden("¿Está seguro de hacer el envío de tarjetas de crédito a las oficinas/agencias?");
         } else if (selectFiltrarOrdenes === "EST_SEG_ENV_AGN") {
-            setTextoCambioEstadoOrden("¿Está seguro de cambiar a Recibido las tarjetas de crédito?");
+            setTextoCambioEstadoOrden("¿Está seguro de cambiar a Recibido para las tarjetas de crédito seleccionadas?");
         }
         setModalCambioEstadoOrdenes(true)
     }
@@ -575,7 +585,7 @@ function Seguimiento(props) {
                 }
 
                 {/*todo: temporal tarjetasV2 */}
-                {tarjetasV2.length === 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" && boolSeccionActivacionTarjetas === true &&
+                {lstSeguimientoTC.length === 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" && boolSeccionActivacionTarjetas === true &&
                     <div className="f-row mt-4 mb-5 align-content-center justify-content-center">
                         <h3 className="strong">Sin datos para mostrar</h3>
                     </div>
@@ -682,7 +692,6 @@ function Seguimiento(props) {
             >
                 <div className="pbmg4 ptmg4">
                     <div className="f-row mb-4">
-                        {/*<h3 className="">¿Está seguro de realizar el envio de </h3>  <h3 className="strong">&nbsp;{totalTarjetasEnviar}&nbsp;</h3>  <h3>tarjetas a personalizar?</h3>*/}
                         <h3 className="">{textoCambioEstadoOrden}</h3>
                     </div>
                     <div className="center_text_items">
@@ -693,10 +702,16 @@ function Seguimiento(props) {
                             <button className="btn_mg btn_mg__primary mt-2" disabled={false} type="submit"
                                 onClick={() => cambioEstadoTCAgenciaOficinas("La tarjeta de crédito se cambio al estado por Activarse")}>Sí</button>
                         }
-                        {datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" &&
+                        
+                        {datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" && selectFiltrarOrdenes === "EST_SEG_ENV_AGN" &&
+                            <button className="btn_mg btn_mg__primary mt-2" disabled={false} type="submit"
+                                onClick={cambioEstadoTCSeguimientoHandler}>Sí</button>
+                        } 
+
+                        {datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" && selectFiltrarOrdenes === "EST_SEG_POR_ACT" && 
                             <button className="btn_mg btn_mg__primary mt-2" disabled={false} type="submit" 
                                 onClick={() => cambioEstadoTCAgenciaOficinas("La tarjeta de crédito se activo con éxito")}>Sí</button>
-                        } 
+                        }
                         <button className="btn_mg btn_mg__secondary mt-2 " onClick={closeModalCambioEstadoOrdenes}>No</button>
                     </div>
 

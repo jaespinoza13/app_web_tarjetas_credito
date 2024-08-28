@@ -105,7 +105,7 @@ function Menus({ listaMenus, id_perfil, token, setListas, setListaFunc, listaFun
             }, dispatch)
             fetchGetPermisosPerfil(tokeni, (data) => {
                 dispatch(setFuncionalidadesSistemaAction({ permisos: data.lst_funcionalidades }));
-               // console.log("lst_funcionalidades ", data.lst_funcionalidades)
+               //console.log("lst_funcionalidades ", data.lst_funcionalidades)
             }, dispatch)
         }
     }, [idPerfil, tokeni, existeParametrosSistema.length, dispatch, sendedParams, existeParametrosSistema]);

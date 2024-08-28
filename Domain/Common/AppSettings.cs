@@ -90,7 +90,6 @@ namespace Domain.Common {
         public string service_get_info_socio { get; set; } = String.Empty;
         public string service_get_info_economica { get; set; } = String.Empty;
         public string service_add_autorizacion { get; set; } = String.Empty;
-        public string service_get_contrato { get; set; } = String.Empty;
         public string service_get_solicitudes { get; set; } = String.Empty;
         public string service_add_solicitud { get; set; } = String.Empty;
         public string service_get_info_finan { get; set; } = String.Empty;
@@ -102,9 +101,6 @@ namespace Domain.Common {
         public string service_get_resolucion { get; set; } = String.Empty;
         public string service_add_resolucion { get; set; } = String.Empty;
         public string service_upd_resolucion { get; set; } = String.Empty;
-        public string service_get_reporte_orden { get; set; } = String.Empty;
-        //public string service_get_ordenes { get; set; } = String.Empty;
-        public string service_get_tarjetas_credito { get; set; } = String.Empty;
         public string service_get_medio_aprobacion { get; set; } = String.Empty;
         public string service_add_proc_espec { get; set; } = String.Empty;
         public string service_upd_solicitud { get; set; } = String.Empty;
@@ -148,23 +144,27 @@ namespace Domain.Common {
         public string service_get_parametros_gateway { get; set; } = String.Empty;
         public string service_get_motivos_gateway { get; set; } = String.Empty;
         public string service_get_medio_aprobacion_gateway { get; set; } = String.Empty;
-        public string service_get_tarjetas_credito_gateway { get; set; } = String.Empty;
         public string service_get_separadores_gateway { get; set; } = String.Empty;
         public string service_get_documentos_axentria_gateway { get; set; } = String.Empty;
         public string service_crear_separadores_gateway { get; set; } = String.Empty;
         public string service_get_info_prospecto_gateway { get; set; } = String.Empty;
         public string service_get_permisos_perfil_gateway { get; set; } = String.Empty;
-        
+        public string service_get_validaciones_gateway { get; set; } = String.Empty;
+        public string service_get_alertas_cliente_gateway { get; set; } = String.Empty;
+        public string service_get_score_gateway { get; set; } = String.Empty;
+        public string service_add_autorizacion_gateway { get; set; } = String.Empty;
+        public string service_get_reporte_aval_gateway { get; set; } = String.Empty;
+
         #endregion
 
 
 
 
 
-        #region BotonesAccionSolicitud
-        public List<string> permisosAccion { get; set; } = new();
-        //public Dictionary<string, FuncionalidadDTO> permisosAccion2 { get; set; }
-        public List<FuncionalidadDTO> permisosAccion2 { get; set; } = new();
+        #region Permisos
+        //public List<string> permisosAccion { get; set; } = new();
+        public List<FuncionalidadDTO> permisosAccionSolicitudProsp { get; set; } = new();
+        public List<FuncionalidadDTO> permisosPasoSiguienteEstadoSeguimiento { get; set; } = new();
         #endregion
 
     }

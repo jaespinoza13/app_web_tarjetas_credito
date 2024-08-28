@@ -1,6 +1,4 @@
 ﻿import { useState, useEffect } from 'react';
-import { fetchGetReporteOrden } from "../../services/RestServices";
-import Sidebar from '../Common/Navs/Sidebar';
 import Card from '../Common/Card';
 import { useHistory } from 'react-router-dom';
 import Table from '../Common/Table';
@@ -84,9 +82,9 @@ function VerOrden(props) {
 
     //columns, data, accountNumber, name, typeMovement
     const onDescargarReporte = () => {
-       fetchGetReporteOrden(nrOrnden, props.token, (data) => {
+       /*fetchGetReporteOrden(nrOrnden, props.token, (data) => {
             setReporteBytes(data.byt_reporte);
-        }, dispatch);
+        }, dispatch);*/
     };
 
     useEffect(() => {

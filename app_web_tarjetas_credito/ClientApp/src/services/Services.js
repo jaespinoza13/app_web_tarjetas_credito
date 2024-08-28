@@ -98,7 +98,7 @@ export const getValidaciones = "GET_INFORMACION_CLIENTE"
 export const getScore = "GET_SCORE"
 export const getInfoSocio = "GET_INFO_SOCIO"
 export const getInfoEco = "GET_INFORMACION_ECONOMICA"
-export const getContrato = "GET_CONTRATO"
+//export const getContrato = "GET_CONTRATO"
 export const addAutorizacion = "ADD_AUTORIZACION"
 export const getSolicitudes = "GET_SOLICITUDES_TC"
 export const addSolicitud = "ADD_SOLICITUD_TC"
@@ -111,8 +111,6 @@ export const addComentarioAsesor = "ADD_INFORME_TC"
 export const getResolucion = "GET_RESOLUCION"
 export const addResolucion = "ADD_RESOLUCION"
 export const updResolucion = "UPD_RESOLUCION"
-export const getReporteOrden = "GET_REPORTE_ORDEN"
-export const getTarjetasCredito = "GET_TARJETAS_CREDITO"
 export const getMedioAprobacion = "GET_MEDIO_APROBACION"
 export const addProcEspecifico = "ADD_PROCESO_ESPECIFICO"
 export const updSolicitud = "UPD_SOLICITUD_TC"
@@ -228,9 +226,9 @@ export function ServiceUrl(request, params = []) {
         case addAutorizacion:
             pathOut = 'tc/addAut'
             break;
-        case getContrato:
+        /*case getContrato:
             pathOut = 'tc/getContrato'
-            break;
+            break;*/
         case getSolicitudes:
             pathOut = "tc/getSolic"
             break;
@@ -263,12 +261,6 @@ export function ServiceUrl(request, params = []) {
             break;
         case updResolucion:
             pathOut = "tc/updResolucion"
-            break;
-        case getReporteOrden:
-            pathOut = "tc/getReporteOrden"
-            break;
-        case getTarjetasCredito:
-            pathOut = "tc/getTarjetasCredito"
             break;
         case getMedioAprobacion:
             pathOut = "tc/getMedioAprobacion"
@@ -556,7 +548,7 @@ function pathRewrite(path) {
         "tc/socio": '/tarjetacredito/infoSocio',
         "tc/infoEco": '/tarjetacredito/infoEco',
         "tc/addAut": '/tarjetacredito/addAutorizacion',
-        "tc/getContrato": '/tarjetacredito/getContrato',
+        //"tc/getContrato": '/tarjetacredito/getContrato',
         "tc/getSolic": '/tarjetacredito/getSolicitudes',
         "tc/addSolic": '/tarjetacredito/addSolicitud',
         "tc/getInfoFin": '/tarjetacredito/getInfoFinan',
@@ -568,8 +560,6 @@ function pathRewrite(path) {
         "tc/getResolucion": '/tarjetacredito/getResoluciones',
         "tc/addResolucion": '/tarjetacredito/addResolucion',
         "tc/updResolucion": '/tarjetacredito/updResolucion',
-        "tc/getReporteOrden": '/tarjetacredito/getReporteOrden',
-        "tc/getTarjetasCredito": '/tarjetacredito/getTarjetasCredito',
         "tc/getMedioAprobacion": '/tarjetacredito/getMedioAprobacion',
         "tc/addProcEspec": '/tarjetacredito/addProcEspecifico',
         "tc/updSol": '/tarjetacredito/updSolicitud',

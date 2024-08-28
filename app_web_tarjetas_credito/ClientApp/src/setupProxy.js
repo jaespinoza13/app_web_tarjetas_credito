@@ -4,6 +4,7 @@ const { env } = require('process');
 const target = env.ASPNETCORE_HTTPS_PORT ? `https://localhost:${env.ASPNETCORE_HTTPS_PORT}` :
   env.ASPNETCORE_URLS ? env.ASPNETCORE_URLS.split(';')[0] : 'http://localhost:5000';
 
+
 const context = [
     "/login",
     "/config",
@@ -30,7 +31,6 @@ const context = [
     "/tarjetacredito/score",
     "/tarjetacredito/infoSocio",
     "/tarjetacredito/infoEco",
-    "/tarjetacredito/getContrato",
     "/tarjetacredito/addAutorizacion",
     "/tarjetacredito/getSolicitudes",
     "/tarjetacredito/addSolicitud",
@@ -43,8 +43,6 @@ const context = [
     '/tarjetacredito/getResoluciones',
     '/tarjetacredito/addResolucion',
     '/tarjetacredito/updResolucion',
-    "/tarjetacredito/getReporteOrden",
-    "/tarjetacredito/getTarjetasCredito",
     "/tarjetacredito/getMedioAprobacion",
     '/tarjetacredito/addProcEspecifico',
     '/tarjetacredito/updSolicitud',

@@ -18,7 +18,7 @@ builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSet
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings:HttpConfig"));
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings:EnvConfig"));
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings:LoadParameters"));
-builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings:BotonesAccionSolicitud"));
+builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings:Permisos"));
 
 var app = builder.Build();
 
