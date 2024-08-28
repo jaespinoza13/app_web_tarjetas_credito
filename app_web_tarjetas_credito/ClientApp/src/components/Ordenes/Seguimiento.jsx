@@ -27,8 +27,8 @@ const mapStateToProps = (state) => {
         parametrosTC: state.GetParametrosTC.data,
         ws: bd,
         listaFuncionalidades: state.GetListaFuncionalidades.data,
-        funcionalidadesStore: state.GetFuncionalidadesSistema.data
-        //seguimientoOrden:state.GetSeguimientoOrden.data,
+        funcionalidadesStore: state.GetFuncionalidadesSistema.data,
+        seguimientoOrden: state.GetSeguimientoOrden.data,
     };
 };
 
@@ -86,8 +86,20 @@ function Seguimiento(props) {
     const [textoTitulo, setTextoTitulo] = useState("");
 
 
+    const [isOpenModalAccionTarjeta, setIsOpenModalAccionTarjeta] = useState(false);
+
     //Identificador de item seguimiento
     const [seguimientoIdAccion, setSeguimientoIdAccion] = useState(0);
+
+    useEffect(() => {
+        //console.log("PROPS seguimientoOrden ", props.seguimientoOrden)
+        if (props.seguimientoOrden.seguimientoCedula) {
+            //setSeguimientoIdAccion(props.seguimientoOrden)
+            setIsOpenModalAccionTarjeta(true);
+            console.log("PADRE ",props.seguimientoOrden)
+        }
+    }, [props.seguimientoOrden])
+
 
     useEffect(() => {
         if (selectFiltrarOrdenes === "EST_SEG_PEN_ENV_PER") {
@@ -186,7 +198,7 @@ function Seguimiento(props) {
                 setSubMenuOpcionesPerfil(toogleOpciones);
 
                 //Obtener la informacion de seeguimiento para ASISTENTE DE PLATAFORMA DE SERVICIOS
-                if (datosUsuario[0].strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS") {
+                if (datosUsuario[0]?.strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS") {
                     //console.log("toogleOpciones ", toogleOpciones)
                     obtenerLstSeguimientoTC(toogleOpciones[0].prm_id);
                 }
@@ -270,6 +282,11 @@ function Seguimiento(props) {
         setTextoCambioEstadoOrden("");
     }
 
+    const closeModalAccionTarjeta = () => {
+        setIsOpenModalAccionTarjeta(false);
+        setSeguimientoIdAccion(0);
+    }
+
     const cambioEstadoTCSeguimientoHandler = async () => {
         closeModalCambioEstadoOrdenes();
         //console.log("selectFiltrarOrdenes ", selectFiltrarOrdenes)
@@ -335,7 +352,7 @@ function Seguimiento(props) {
     }
 
     const cambioEstadoTCAgenciaOficinas = async (tituloMensajeAviso) => {
-        console.log("seguimientoIdAccion ", seguimientoIdAccion)
+        //console.log("seguimientoIdAccion ", seguimientoIdAccion)
         closeModalCambioEstadoOrdenes();
         if (seguimientoIdAccion !== 0) {
             let tarjetasArray = [seguimientoIdAccion];
@@ -435,6 +452,12 @@ function Seguimiento(props) {
     }
 
 
+    const accionSeguimientoRealizar = () => {
+        console.log("FALTA IMPLEMENTAR")
+
+        closeModalAccionTarjeta();
+    }
+
 
     // ACCIONES PARA TABLE
     const AccionesAsistenteAgencia = ({ seguimiento }) => {
@@ -497,7 +520,7 @@ function Seguimiento(props) {
                 <div className='f-row w-100'>
 
 
-                    {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES" && subMenuOpcionesPerfil?.length > 0 &&
+                    {datosUsuario.length > 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE OPERACIONES" && subMenuOpcionesPerfil?.length > 0 &&
                         <div className="f-row w-100 justify-content-center">
                             <div className="mb-4" style={{ marginTop: "2.5rem" }}>
                                 <TogglerV2 toggles={subMenuOpcionesPerfil} selectedToggle={(e) => filtrarTarjetas(e)}></TogglerV2>
@@ -506,7 +529,7 @@ function Seguimiento(props) {
                         </div>
                     }
 
-                    {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA" && subMenuOpcionesPerfil?.length > 0 &&
+                    {datosUsuario.length > 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" && subMenuOpcionesPerfil?.length > 0 &&
 
                         <div className="f-row w-100 justify-content-center">
                             <div className="mb-4" style={{ marginTop: "2.5rem" }}>
@@ -522,7 +545,7 @@ function Seguimiento(props) {
 
 
                 {/*BANDEJAS PARA ASISTENTE DE OPERACIONES*/}
-                {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES" && selectFiltrarOrdenes === "EST_SEG_PEN_ENV_PER" &&
+                {datosUsuario.length > 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE OPERACIONES" && selectFiltrarOrdenes === "EST_SEG_PEN_ENV_PER" &&
                     <div className="contentTableOrden mt-3 mb-3">
                         {lstSeguimientoTC.length > 0 && lstSeguimientoTC.map((orden, index) => {
                             return (
@@ -541,7 +564,7 @@ function Seguimiento(props) {
                     </div>
                 }
 
-                {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES" && selectFiltrarOrdenes === "EST_SEG_ENV_PER" &&
+                {datosUsuario.length > 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE OPERACIONES" && selectFiltrarOrdenes === "EST_SEG_ENV_PER" &&
                     <div className="contentTableOrden mt-3 mb-3">
                         {lstSeguimientoTC.length > 0 && lstSeguimientoTC.map((orden, index) => {
                             return (
@@ -560,7 +583,7 @@ function Seguimiento(props) {
                     </div>
                 }
 
-                {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES" && selectFiltrarOrdenes === "EST_SEG_VER_OPR" &&
+                {datosUsuario.length > 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE OPERACIONES" && selectFiltrarOrdenes === "EST_SEG_VER_OPR" &&
                     <div className="contentTableOrden mt-3 mb-3">
                         {lstSeguimientoTC.length > 0 && lstSeguimientoTC.map((orden, index) => {
                             return (
@@ -600,7 +623,7 @@ function Seguimiento(props) {
 
 
                 {/*BANDEJAS PARA ASISTENTE DE AGENCIA*/}
-                {boolSeccionRecepcionTarjetas === true && datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA" && lstSeguimientoTC.length > 0 &&
+                {boolSeccionRecepcionTarjetas === true && datosUsuario.length > 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" && lstSeguimientoTC.length > 0 &&
                     <div className="contentTableOrden mt-3 mb-3">
                         {lstSeguimientoTC.length > 0 && lstSeguimientoTC.map((orden, index) => {
                             return (
@@ -619,7 +642,7 @@ function Seguimiento(props) {
                     </div>
                 }
 
-                {boolSeccionActivacionTarjetas === true && datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA" && lstSeguimientoTC.length > 0  &&
+                {boolSeccionActivacionTarjetas === true && datosUsuario.length > 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" && lstSeguimientoTC.length > 0  &&
                     <div className="contentTableOrden mt-3 mb-3">
                         <Table headers={headersTarjetas}>
                             {lstSeguimientoTC[0]?.lst_ord_ofi.map((seguim, index) => {
@@ -642,7 +665,7 @@ function Seguimiento(props) {
                 {/*FIN BANDEJAS PARA ASISTENTE DE AGENCIA*/}
 
                 {/*BANDEJA PARA ASISTENTE  DE PLATAFORMA DE SERVICIOS*/}
-                {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS" && lstSeguimientoTC.length > 0 &&               
+                {datosUsuario.length > 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS" && lstSeguimientoTC.length > 0 &&               
                     <div className="contentTableOrden mt-3 mb-3">
                         <Table headers={headersTarjetas}>
                             {lstSeguimientoTC[0]?.lst_ord_ofi.map((seguim, index) => {
@@ -666,7 +689,7 @@ function Seguimiento(props) {
 
 
                 {/*SECCION BOTONES PARA ASISTENTE DE OPERACIONES*/}
-                {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES" && lstSeguimientoTC.length > 0 && 
+                {datosUsuario.length > 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE OPERACIONES" && lstSeguimientoTC.length > 0 && 
                     <div className='row w-100 mt-2 f-row justify-content-center'>
                         <Button onClick={modalCambioEstadoOrdenesHandler} className="btn_mg__primary" disabled={(selectFiltrarOrdenes === "EST_SEG_ENV_PER" && numtotalTarjetasCambioEstado.length === 0) ? true: false}>{textoBotonAccion}</Button>
                     </div>
@@ -674,7 +697,7 @@ function Seguimiento(props) {
                 
 
                 {/*SECCION BOTONES PARA ASISTENTE DE AGENCIA*/}
-                {boolSeccionRecepcionTarjetas === true && datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA" && lstSeguimientoTC.length > 0 && 
+                {boolSeccionRecepcionTarjetas === true && datosUsuario.length > 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" && lstSeguimientoTC.length > 0 && 
                     <div className='row w-100 mt-2 f-row justify-content-center'>
                         <Button onClick={modalCambioEstadoOrdenesHandler} className="btn_mg__primary" disabled={(selectFiltrarOrdenes === "EST_SEG_ENV_AGN" && numtotalTarjetasCambioEstado.length === 0) ? true : false}>{textBtnAccionAsistenteAgencia}</Button>
                     </div>
@@ -732,6 +755,34 @@ function Seguimiento(props) {
                 </div>
             </Modal>
 
+
+            <Modal
+                modalIsVisible={isOpenModalAccionTarjeta}
+                type="md"
+                onCloseClick={closeModalAccionTarjeta}
+                onNextClick={accionSeguimientoRealizar}
+                mainText="Continuar"
+                titulo="Acción a realizar">
+
+                <div className="f-row w-100" style={{ marginTop: "2rem", marginBottom: "2rem" }}>
+                    <div className="f-row">
+                        <h3 className="strong mr-2 mt-1">Acción que puede realizar: </h3>
+                    </div>
+
+                    {datosUsuario[0]?.strCargo === "ASISTENTE DE OPERACIONES" &&
+                        <select style={{ width: "55%" }}>
+                            <option value="-1">SELECCIONE UNA ACCION</option>
+                            <option value="RECHAZADA_OPERACIONES">RECHAZAR</option>
+                        </select>            
+                    }
+                    {datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" &&
+                        <select style={{ width: "55%" }}>
+                            <option value="-1">SELECCIONE UNA ACCION</option>
+                            <option value="RECHAZADA_AGENCIA">RECHAZAR</option>
+                        </select>
+                    }
+                </div>
+            </Modal>
 
         </div>
 

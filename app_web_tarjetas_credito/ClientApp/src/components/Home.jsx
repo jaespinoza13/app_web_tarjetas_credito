@@ -50,15 +50,15 @@ function Home(props) {
 
     
     useEffect(() => {
-        if (datosUsuario.length > 0 && IsNullOrEmpty(datosUsuario[0].strCargo.trim())) {
+        if (datosUsuario.length > 0 && IsNullOrEmpty(datosUsuario[0]?.strCargo.trim())) {
             navigate.push("/logout");
             return;
         }
 
-        if (datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES") {
+        if (datosUsuario.length > 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE OPERACIONES") {
             navigate.push("/reprocesar")
         }
-        else if (datosUsuario.length > 0 && (datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA" || datosUsuario[0].strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS")) {
+        else if (datosUsuario.length > 0 && (datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" || datosUsuario[0]?.strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS")) {
             navigate.push("/seguimiento")
         }
          else if (datosUsuario.length > 0) {

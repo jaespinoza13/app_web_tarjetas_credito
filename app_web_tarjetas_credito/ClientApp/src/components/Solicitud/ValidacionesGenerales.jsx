@@ -95,7 +95,7 @@ const ValidacionesGenerales = (props) => {
 
         //const oficinaFormato = oficinas.find(ofic => Number(ofic.prm_valor_fin) === Number(props.datosUsuario[0].strUserOficina))
 
-        await fetchScore("C", props.infoSocio.cedula, nombresApellidos.toUpperCase(), ciudadDeOficina, props.datosUsuario[0].strOficial, props.datosUsuario[0].strCargo, props.token, (data) => {
+        await fetchScore("C", props.infoSocio.cedula, nombresApellidos.toUpperCase(), ciudadDeOficina, props.datosUsuario[0].strOficial, props.datosUsuario[0]?.strCargo, props.token, (data) => {
             descargarArchivoConsulta(data);
         }, dispatch);
     }

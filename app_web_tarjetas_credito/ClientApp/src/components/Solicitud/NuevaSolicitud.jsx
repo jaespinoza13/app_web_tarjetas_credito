@@ -574,7 +574,7 @@ const NuevaSolicitud = (props) => {
                 //Se refresca informacion
                 await refrescarDatosInformativos();
                 //TODO cambiar cedula a a -> cedulaSocio
-                await fetchScore("C", "1105952475", nombreSocioTC, datosUsuario[0].strUserOficina, datosUsuario[0].strOficial, datosUsuario[0].strCargo, props.token, (data) => {
+                await fetchScore("C", "1105952475", nombreSocioTC, datosUsuario[0].strUserOficina, datosUsuario[0].strOficial, datosUsuario[0]?.strCargo, props.token, (data) => {
                    
                     setIdClienteScore(data.int_cliente);
                     setPuntajeScore(data?.response?.result?.scoreFinanciero[0]?.score)
@@ -609,7 +609,7 @@ const NuevaSolicitud = (props) => {
                 if (!datosFinan.montoGastoFinaCodeudor || datosFinan.montoGastoFinaCodeudor === "" || datosFinan.montoGastoFinaCodeudor === " " || IsNullOrEmpty(datosFinan.montoGastoFinaCodeudor)) datosFinan.montoGastoFinaCodeudor = 0;
 
                 //TODO CAMBIAR LA CEDULA ->cedulaSocio
-                await fetchNuevaSimulacionScore("C", "1105952475", nombreSocioTC, datosUsuario[0].strUserOficina, datosUsuario[0].strOficial, datosUsuario[0].strCargo, datosFinan.montoIngresos, datosFinan.montoEgresos, datosFinan.montoRestaGstFinanciero, datosFinan.montoGastoFinaCodeudor,
+                await fetchNuevaSimulacionScore("C", "1105952475", nombreSocioTC, datosUsuario[0].strUserOficina, datosUsuario[0].strOficial, datosUsuario[0]?.strCargo, datosFinan.montoIngresos, datosFinan.montoEgresos, datosFinan.montoRestaGstFinanciero, datosFinan.montoGastoFinaCodeudor,
                     props.token, (data) => {
                         setIdClienteScore(data.int_cliente);
                         setCupoSugeridoCoopM(data.str_cupo_sugerido);
@@ -819,7 +819,7 @@ const NuevaSolicitud = (props) => {
             solicitud: solicitudIdCreado,
             cedulaPersona: cedulaSocio,
             idSolicitud: parametrosTC.filter(estado => estado.prm_nemonico === "EST_CREADA")[0]?.prm_id,
-            rol: datosUsuario[0].strCargo,
+            rol: datosUsuario[0]?.strCargo,
             estado: parametrosTC.filter(estado => estado.prm_nemonico === "EST_CREADA")[0]?.prm_valor_ini,
             oficinaSolicitud: nombreOficinaDeSolicitud,
             calificacionRiesgo: calificacionRiesgo

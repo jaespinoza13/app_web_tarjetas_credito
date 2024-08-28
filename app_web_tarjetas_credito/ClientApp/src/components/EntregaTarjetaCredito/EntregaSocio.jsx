@@ -107,7 +107,7 @@ function EntregaSocio(props) {
                 </div>
 
 
-                {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS" &&
+                {datosUsuario.length > 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS" &&
                     <div className="contentTableOrden mt-3 mb-3">
                         <Table headers={headersTarjetas}>
                             {/*BODY*/}
@@ -133,7 +133,7 @@ function EntregaSocio(props) {
 
 
 
-                {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA" &&
+                {datosUsuario.length > 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" &&
                     <div className="contentTableOrden mt-3 mb-3">
                         <Table headers={headersTarjetas}>
                             {/*BODY*/}
