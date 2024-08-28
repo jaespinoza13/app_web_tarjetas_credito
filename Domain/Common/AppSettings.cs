@@ -85,11 +85,11 @@ namespace Domain.Common {
         public string service_get_reporte_aval { get; set; } = String.Empty;
         public string auth_ws_aval { get; set; } = String.Empty;
         public string ws_tarjeta_credito { get; set; } = String.Empty;
+        public string ws_ordenes_tc { get; set; } = String.Empty;
         public string auth_ws_tarjeta_credito { get; set; } = String.Empty;
         public string service_get_info_socio { get; set; } = String.Empty;
         public string service_get_info_economica { get; set; } = String.Empty;
         public string service_add_autorizacion { get; set; } = String.Empty;
-        public string service_get_contrato { get; set; } = String.Empty;
         public string service_get_solicitudes { get; set; } = String.Empty;
         public string service_add_solicitud { get; set; } = String.Empty;
         public string service_get_info_finan { get; set; } = String.Empty;
@@ -101,9 +101,6 @@ namespace Domain.Common {
         public string service_get_resolucion { get; set; } = String.Empty;
         public string service_add_resolucion { get; set; } = String.Empty;
         public string service_upd_resolucion { get; set; } = String.Empty;
-        public string service_get_reporte_orden { get; set; } = String.Empty;
-        public string service_get_ordenes { get; set; } = String.Empty;
-        public string service_get_tarjetas_credito { get; set; } = String.Empty;
         public string service_get_medio_aprobacion { get; set; } = String.Empty;
         public string service_add_proc_espec { get; set; } = String.Empty;
         public string service_upd_solicitud { get; set; } = String.Empty;
@@ -119,10 +116,55 @@ namespace Domain.Common {
         public string service_get_permisos_perfil { get; set; } = String.Empty;
         #endregion
 
-        #region BotonesAccionSolicitud
-        public List<string> permisosAccion { get; set; } = new();
-        //public Dictionary<string, FuncionalidadDTO> permisosAccion2 { get; set; }
-        public List<FuncionalidadDTO> permisosAccion2 { get; set; }
+        #region OrdenesTC
+        
+        public string service_get_ordenes { get; set; } = String.Empty;
+        public string service_upd_ordenes { get; set; } = String.Empty;
+
+        #endregion
+
+        #region ApiGatewayTarjetasCredito
+
+        public string ws_apigateway_tarjeta_credito { get; set; } = String.Empty;
+        public string auth_ws_gateway_tarjeta_credito { get; set; } = String.Empty;
+        public string service_get_info_socio_gateway { get; set; } = String.Empty;
+        public string service_get_info_economica_gateway { get; set; } = String.Empty;
+        public string service_get_solicitudes_gateway { get; set; } = String.Empty;
+        public string service_add_solicitud_gateway { get; set; } = String.Empty;
+        public string service_get_info_finan_gateway { get; set; } = String.Empty;
+        public string service_add_prospecto_gateway { get; set; } = String.Empty;
+        public string service_get_informe_tc_gateway { get; set; } = String.Empty;
+        public string service_get_flujo_solicitud_gateway { get; set; } = String.Empty;
+        public string service_add_informe_tc_gateway { get; set; } = String.Empty;
+        public string service_add_comentario_solicitud_gateway { get; set; } = String.Empty;
+        public string service_get_resolucion_gateway { get; set; } = String.Empty;
+        public string service_add_resolucion_gateway { get; set; } = String.Empty;
+        public string service_add_proc_espec_gateway { get; set; } = String.Empty;
+        public string service_upd_solicitud_gateway { get; set; } = String.Empty;
+        public string service_get_parametros_gateway { get; set; } = String.Empty;
+        public string service_get_motivos_gateway { get; set; } = String.Empty;
+        public string service_get_medio_aprobacion_gateway { get; set; } = String.Empty;
+        public string service_get_separadores_gateway { get; set; } = String.Empty;
+        public string service_get_documentos_axentria_gateway { get; set; } = String.Empty;
+        public string service_crear_separadores_gateway { get; set; } = String.Empty;
+        public string service_get_info_prospecto_gateway { get; set; } = String.Empty;
+        public string service_get_permisos_perfil_gateway { get; set; } = String.Empty;
+        public string service_get_validaciones_gateway { get; set; } = String.Empty;
+        public string service_get_alertas_cliente_gateway { get; set; } = String.Empty;
+        public string service_get_score_gateway { get; set; } = String.Empty;
+        public string service_add_autorizacion_gateway { get; set; } = String.Empty;
+        public string service_get_reporte_aval_gateway { get; set; } = String.Empty;
+
+        #endregion
+
+
+
+
+
+        #region Permisos
+        //public List<string> permisosAccion { get; set; } = new();
+        public List<FuncionalidadDTO> permisosAccionSolicitudProsp { get; set; } = new();
+        public List<FuncionalidadDTO> permisosPasoSiguienteEstadoSeguimiento { get; set; } = new();
         #endregion
 
     }

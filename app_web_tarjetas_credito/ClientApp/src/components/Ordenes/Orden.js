@@ -7,7 +7,7 @@ import Card from '../Common/Card';
 import Button from '../Common/UI/Button';
 import Table from '../Common/Table';
 import ModalDinamico from '../Common/Modal/ModalDinamico';
-import { fetchGetOrdenes, fetchGetReporteOrden } from '../../services/RestServices';
+import { fetchGetOrdenes } from '../../services/RestServices';
 import { IsNullOrWhiteSpace, base64ToBlob, descargarArchivo, generarFechaHoy, verificarPdf } from '../../js/utiles';
 import { lstOrdenesMock } from './ObjetosMock';
 import Toggler from '../Common/UI/Toggler';
@@ -162,8 +162,8 @@ function Orden(props) {
     }
 
     const descargarReporteOrden = (orden) => {
-        fetchGetReporteOrden(orden.toString(), props.token, (data) => {
-            if (/*data.str_res_codigo === "000" &&*/ verificarPdf(data.byt_reporte)) { /*TODO DESCOMENTAR CUANDO SE COMPLETE DESARROLLO*/ 
+        /*fetchGetReporteOrden(orden.toString(), props.token, (data) => {
+            if (/*data.str_res_codigo === "000" && verificarPdf(data.byt_reporte)) { /*TODO DESCOMENTAR CUANDO SE COMPLETE DESARROLLO
                 const blob = base64ToBlob(data.byt_reporte, 'application/pdf');
                 let fechaHoy = generarFechaHoy();
                 const nombreArchivo = `Orden${orden}_${(fechaHoy)}`;
@@ -171,7 +171,7 @@ function Orden(props) {
             }else {
                 window.alert("ERROR AL GENERAR EL REPORTE, COMUNIQUESE CON EL ADMINISTRADOR");
             }
-        }, dispatch);
+        }, dispatch);*/
     }
 
     const AccionesOrden = ({ numOrden, estadoOrden }) => {   

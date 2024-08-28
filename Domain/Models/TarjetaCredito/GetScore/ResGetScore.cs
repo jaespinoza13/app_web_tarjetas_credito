@@ -356,7 +356,7 @@ namespace Domain.Models.TarjetaCredito.GetScore
         public List<DetalleTarjetaCredito> detalleTarjetaCredito { get; set; }
         public List<OperacionesVigentesBanco> operacionesVigentesBanco { get; set; }
         public List<EstructuraOperacionBancosDetalle> estructuraOperacionBancosDetalle { get; set; }
-        public List<object> operacionesVigentesCooperativa { get; set; }
+        public List<OperacionesVigentesCooperativa> operacionesVigentesCooperativa { get; set; }
         public List<object> estructuraOperacionCooperativaDetalle { get; set; }
         public List<object> operacionesVigentesEmpresa { get; set; }
         public List<object> operacionesVigentesServicio { get; set; }
@@ -488,5 +488,26 @@ namespace Domain.Models.TarjetaCredito.GetScore
         public string nombreUsuario { get; set; }
     }
 
-
+    public class OperacionesVigentesCooperativa
+    {
+        public string sistemaCrediticio { get; set; } = string.Empty;
+        public string codigoInstitucionFinanciera { get; set; } = string.Empty;
+        public DateTime? fechaCorte { get; set; }
+        public string razonSocial { get; set; } = string.Empty;
+        public string tipoDeudorDescripcion { get; set; } = string.Empty;
+        public string tipoCreditoDescripcion { get; set; } = string.Empty;
+        public string numeroOperacion { get; set; } = string.Empty;
+        public decimal valorOperacion { get; set; }
+        public decimal plazoXOperacion { get; set; }
+        public decimal plazoXOpPendiente { get; set; }
+        public decimal saldoTotalCalculado { get; set; }
+        public decimal valorxVencerTotal { get; set; }
+        public decimal valorVencidoTotal { get; set; }
+        public decimal valorNoDevengaInteresTotal { get; set; }
+        public decimal valorDemandaJudicial { get; set; }
+        public decimal carteraCastigada { get; set; }
+        public string peorEdadVenXOp119 { get; set; } = string.Empty;
+        public decimal diasMorosidad { get; set; }
+        public decimal cuotaEstimadaOperacion { get; set; }
+    }
 }

@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { useEffect } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import Button from '../Common/UI/Button';
-import { IsNullOrWhiteSpace } from '../../js/utiles';
+import { IsNullOrWhiteSpace, convertFecha } from '../../js/utiles';
 import "../../css/Components/Seguimiento.css";
 import Input from '../Common/UI/Input';
 import { Fragment } from 'react';
@@ -13,6 +13,9 @@ import { get } from '../../js/crypt';
 import Table from '../Common/Table';
 import Chip from '../Common/UI/Chip';
 import TogglerV2 from '../Common/UI/TogglerV2';
+import { fetchGetFuncionalidadesTC, fetchGetOrdenes, fetchGetParametrosSistema, fetchUpdateOrdenes } from '../../services/RestServices';
+import { setSeguimientOrdenAction } from '../../redux/SeguimientoOrden/actions';
+import Modal from '../Common/Modal/Modal';
 
 const mapStateToProps = (state) => {
     var bd = state.GetWebService.data;
@@ -20,10 +23,12 @@ const mapStateToProps = (state) => {
         bd = sessionStorage.getItem("WSSELECTED");
     }
     return {
+        token: state.tokenActive.data,
+        parametrosTC: state.GetParametrosTC.data,
         ws: bd,
         listaFuncionalidades: state.GetListaFuncionalidades.data,
-        token: state.tokenActive.data,
-        parametrosTC: state.GetParametrosTC.data
+        funcionalidadesStore: state.GetFuncionalidadesSistema.data
+        //seguimientoOrden:state.GetSeguimientoOrden.data,
     };
 };
 
@@ -34,19 +39,20 @@ function Seguimiento(props) {
     const dispatch = useDispatch();
 
     //PARAMETROS REQUERIDOS
-    const [parametrosTC, setParametrosTC] = useState([]); 
+    const [estadosSeguimientoTC, setEstadosSeguimientoTC] = useState([]);
 
     const [inputBusqueda, setInputBusqueda] = useState([]);
 
-    const [ordenItemsCheckTotal, setOrdenItemsCheckTotal] = useState([]);
-    const [totalTarjetasEnviar, setTotalTarjetasEnviar] = useState(0);
     const [textoBotonAccion, setTextoBotonAccion] = useState("");
     const [textBtnAccionAsistenteAgencia, setTextBtnAccionAsistenteAgencia] = useState("");
-    const [lstOrdenesFiltradas, setLstOrdenesFiltradas] = useState([]);
-    const [lstItemsReceptarOficina, setLstItemsReceptarOficina] = useState([]);
-    const [modalEnviarPersonalizacion, setModalEnviarPersonalizacion] = useState(false);
-    const [selectFiltrarOrdenes, setSelectFiltrarOrdenes] = useState("PENDIENTE DE PERSONALIZAR");
-    const [selectAccionAsistAgencia, setSelectAccionAsistAgencia] = useState("-1");
+    const [lstSeguimientoTC, setLstSeguimientoTC] = useState([]);
+    const [lstParamsSeguimiento, setLstParamsSeguimiento] = useState([]);
+    const [controlConsultaCargaComp, setControlConsultaCargaComp] = useState(false);
+    const [selectFiltrarOrdenes, setSelectFiltrarOrdenes] = useState("");
+    const [totalTarjetasAccionDiccionario, setTotalTarjetasAccionDiccionario] = useState([]);
+    const [numtotalTarjetasCambioEstado, setNumtotalTarjetasCambioEstado] = useState([]);
+    const [subMenuOpcionesPerfil, setSubMenuOpcionesPerfil] = useState([]);
+    const [funcionalidades, setFuncionalidades] = useState([]);
 
     const [comboOpcionesSeguimiento, setComboOpcionesSeguimiento] = useState(
         [
@@ -61,10 +67,11 @@ function Seguimiento(props) {
             { image: "", textPrincipal: `ACTIVAR TARJETAS DE CRÉDITO`, textSecundario: "", key: 1 },
         ]);
 
+    const headersTarjetas =
+        [{ key: 0, nombre: "Identificación" }, { key: 1, nombre: "Nombre del titular" }, { key: 2, nombre: "Fecha proceso" }, { key: 3, nombre: "Tipo de tarjeta" }, { key: 4, nombre: "Tipo de producto" }, { key: 5, nombre: "Acciones" }]
 
 
-
-
+    // Secciones para activar componentes
     const [boolSeccionRecepcionTarjetas, setBoolSeccionRecepcionTarjetas] = useState(false);
     const [boolSeccionActivacionTarjetas, setBoolSeccionActivacionTarjetas] = useState(false);
 
@@ -72,121 +79,149 @@ function Seguimiento(props) {
     const [datosUsuario, setDatosUsuario] = useState([]);
 
 
+    //Modales
+    const [modalCambioEstadoOrdenes, setModalCambioEstadoOrdenes] = useState(false);
+    const [textoCambioEstadoOrden, setTextoCambioEstadoOrden] = useState("");
+    const [modalVisibleOk, setModalVisibleOk] = useState(false);
     const [textoTitulo, setTextoTitulo] = useState("");
-    const [totalTarjetasAccionDiccionario, setTotalTarjetasAccionDiccionario] = useState([])
 
-    const [subMenuOpcionesPerfil, setSubMenuOpcionesPerfil] = useState([]);
+
+    //Identificador de item seguimiento
+    const [seguimientoIdAccion, setSeguimientoIdAccion] = useState(0);
 
     useEffect(() => {
-        if (selectFiltrarOrdenes === "PENDIENTE DE PERSONALIZAR") {
+        if (selectFiltrarOrdenes === "EST_SEG_PEN_ENV_PER") {
+            setSeguimientoOrdenRedux(true);
             setTextoBotonAccion("Enviar");
         }
-        else if (selectFiltrarOrdenes === "PENDIENTE DE VERIFICAR") {
+        else if (selectFiltrarOrdenes === "EST_SEG_ENV_PER") {
+            setSeguimientoOrdenRedux(false);
             setTextoBotonAccion("Recibir");
         }
-        else if (selectFiltrarOrdenes === "PENDIENTE DE DISTRIBUIR") {
+        else if (selectFiltrarOrdenes === "EST_SEG_VER_OPR") {
+            setSeguimientoOrdenRedux(false);
             setTextoBotonAccion("Distribuir");
+        } else {
+            setSeguimientoOrdenRedux(false);
         }
         //setTotalTarjetasAccionDiccionario([])
-    }, [lstOrdenesFiltradas])
+    }, [selectFiltrarOrdenes])
 
 
     useEffect(() => {
-        setLstOrdenesFiltradas(ordenesV2.filter(tarjetas => tarjetas.estado === "PENDIENTE DE PERSONALIZAR"))
-        setLstItemsReceptarOficina([...ordenesAgencias]);
 
-        const strOficial = get(localStorage.getItem("sender_name"));
-        const strRol = get(localStorage.getItem("role"));
+        //setLstOrdenesFiltradas(ordenesV2.filter(tarjetas => tarjetas.estado === "PENDIENTE DE PERSONALIZAR"))
+        //setSeguimientoOrdenRedux(true);
 
-        const userOficial = get(localStorage.getItem('sender'));
-        const userOficina = get(localStorage.getItem('office'));
+        //setLstItemsReceptarOficina([...ordenesAgencias]);
+        if (!IsNullOrWhiteSpace(props.token) && !controlConsultaCargaComp && props.parametrosTC?.lst_parametros?.length > 0) {
+            setControlConsultaCargaComp(true);
+            const strOficial = get(localStorage.getItem("sender_name"));
+            const strRol = get(localStorage.getItem("role"));
 
-        setDatosUsuario([{ strCargo: strRol, strOficial: strOficial, strUserOficial: userOficial, strUserOficina: userOficina }]);
+            const userOficial = get(localStorage.getItem('sender'));
+            const userOficina = get(localStorage.getItem('office'));
 
-        if (props.parametrosTC.lst_parametros?.length > 0) {
-            let ParametrosTC = props.parametrosTC.lst_parametros;
-            setParametrosTC(ParametrosTC
-                .filter(param => param.str_nombre === 'ESTADOS_ORDENES_TC')
-                .map(estado => ({
-                    prm_id: estado.int_id_parametro,
-                    prm_nombre: estado.str_nombre,
-                    prm_nemonico: estado.str_nemonico,
-                    prm_valor_ini: estado.str_valor_ini,
-                    prm_valor_fin: estado.str_valor_fin
-                })));
+            setDatosUsuario([{ strCargo: strRol, strOficial: strOficial, strUserOficial: userOficial, strUserOficina: userOficina }]);
+            if (props.parametrosTC.lst_parametros?.length > 0) {
+                let ParametrosTC = props.parametrosTC.lst_parametros;
+                setEstadosSeguimientoTC(ParametrosTC
+                    ?.filter(param => param.str_nombre === 'ESTADOS_SEGUIMIENTO_TC')
+                    ?.map(estado => ({
+                        prm_id: estado.int_id_parametro,
+                        prm_nombre: estado.str_nombre,
+                        prm_nemonico: estado.str_nemonico,
+                        prm_valor_ini: estado.str_valor_ini,
+                        prm_valor_fin: estado.str_valor_fin
+                    })));
+            }
+            consultarParametrosSeguimiento();
+            
+            //TRAE FUNCIONALIDADES (SETTINGS)
+            fetchGetFuncionalidadesTC(props.token, (data) => {
+                //console.log(data.lst_funcSettings)
+                console.log(data.lst_funcSettings2)
+                console.log(data.lst_func_seguimiento_settings)
+                setFuncionalidades(data.lst_func_seguimiento_settings);
+            }, dispatch)
         }
 
-        if (strRol === "ASISTENTE DE AGENCIA") {
-            setSubMenuOpcionesPerfil(comboOpcionesSegAsisteAgencia)
-        } else if (strRol === "ASISTENTE DE OPERACIONES") {
-            setSubMenuOpcionesPerfil(comboOpcionesSeguimiento)
-        }
+
+    }, [props, controlConsultaCargaComp])
 
 
-    }, [])
 
-    /*
     useEffect(() => {
-        console.log(parametrosTC)
-    }, [parametrosTC])
-    */
-    const ordenesV2 = [
-        {
-            fecha_rel: "12/07/2024", num_total_tarjetas: 3, num_tarjetas_error: 3, oficina: "MATRIZ", estado: "PENDIENTE DE PERSONALIZAR",
-            lst_socios: [
-                { cedula: "1150214370", nombres: "DANNY VASQUEZ", solicitud: "1", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLD", fecha_proceso: "12/07/2024 22:30", oficina_solicita: "MATRIZ", tipo_tarjeta: "Principal", realizar_accion: false },
-                { cedula: "0111978465", nombres: "LUIS CONDE", solicitud: "13", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "BLACK", fecha_proceso: "12/07/2024 22:30", oficina_solicita: "MATRIZ", tipo_tarjeta: "Principal", realizar_accion: false },
-                { "cedula": "1102658321", "nombres": "MARIA GONZALEZ", "solicitud": "22", "estado": "PEN_ENV_PERSONALIZAR", "tipo_producto": "ESTÁNDAR", "fecha_proceso": "12/07/2024 10:15", "oficina_solicita": "MATRIZ", "tipo_tarjeta": "Principal", realizar_accion: false },
-            ]
-        },
-        {
-            fecha_rel: "12/07/2024", num_total_tarjetas: 2, num_tarjetas_error: 1, oficina: "EL VALLE", estado: "PENDIENTE DE PERSONALIZAR",
-            lst_socios: [
-                { cedula: "1101898147", nombres: "NICOLE ALBAN", solicitud: "2", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "ESTÁNDAR", fecha_proceso: "12/07/2024 22:30", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal", realizar_accion: false },
-                { cedula: "0913547802", nombres: "ANA RUIZ", solicitud: "12", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLD", fecha_proceso: "12/07/2024 22:33", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal", realizar_accion: false },
-            ]
-        },
-        {
-            fecha_rel: "13/07/2024", num_total_tarjetas: 3, num_tarjetas_error: 0, oficina: "ALAMOR", estado: "PENDIENTE DE VERIFICAR",
-            lst_socios: [
-                { cedula: "1106849276", nombres: "SAMANTA CARRION", solicitud: "5", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLD", fecha_proceso: "13/07/2024 15:35", oficina_solicita: "ALAMOR", tipo_tarjeta: "Principal", realizar_accion: false },
-                { cedula: "0681486841", nombres: "FULANITO CABRERA", solicitud: "17", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "BLACK", fecha_proceso: "13/07/2024 15:35", oficina_solicita: "ALAMOR", tipo_tarjeta: "Principal", realizar_accion: false },
-                { cedula: "0804512376", nombres: "CARLOS LOPEZ", solicitud: "11", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLD", fecha_proceso: "13/07/2024 15:35", oficina_solicita: "ALAMOR", tipo_tarjeta: "Principal", realizar_accion: false },
-            ]
-        },
-        {
-            fecha_rel: "14/07/2024", num_total_tarjetas: 2, num_tarjetas_error: 0, oficina: "AGENCIA NORTE", estado: "PENDIENTE DE VERIFICAR",
-            lst_socios: [
-                { cedula: "1954984972", nombres: "MARTHA PINEDA", solicitud: "9", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "ESTÁNDAR", fecha_proceso: "14/07/2024 17:30", oficina_solicita: "AGENCIA NORTE", tipo_tarjeta: "Principal", realizar_accion: false },
-                { cedula: "0981864365", nombres: "PIEDA TOLEDO", solicitud: "10", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLD", fecha_proceso: "14/07/2024 17:30", oficina_solicita: "AGENCIA NORTE", tipo_tarjeta: "Principal", realizar_accion: false },
-            ]
-        },
-        {
-            fecha_rel: "12/07/2024", num_total_tarjetas: 3, num_tarjetas_error: 0, oficina: "AGENCIA CUARTO CENTENARIO", estado: "PENDIENTE DE VERIFICAR",
-            lst_socios: [
-                { cedula: "1104732936", nombres: "LEO MONTALVAN", solicitud: "4", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "BLACK", fecha_proceso: "12/07/2024 22:30", oficina_solicita: "AGENCIA CUARTO CENTENARIO", tipo_tarjeta: "Principal", realizar_accion: false },
-                { cedula: "0515846844", nombres: "LUISA VALDEZ", solicitud: "11", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "ESTÁNDAR", fecha_proceso: "12/07/2024 16:30", oficina_solicita: "AGENCIA CUARTO CENTENARIO", tipo_tarjeta: "Principal", realizar_accion: false },
-                { cedula: "0849655446", nombres: "MARIA ORTEGA", solicitud: "12", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLD", fecha_proceso: "12/07/2024 16:30", oficina_solicita: "AGENCIA CUARTO CENTENARIOR", tipo_tarjeta: "Principal", realizar_accion: false },
-            ]
-        },
-        {
-            fecha_rel: "12/07/2024", num_total_tarjetas: 5, num_tarjetas_error: 3, oficina: "MATRIZ", estado: "PENDIENTE DE DISTRIBUIR",
-            lst_socios: [
-                { cedula: "0111978465", nombres: "LUIS CONDE", solicitud: "13", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLD", fecha_proceso: "12/07/2024 22:30", oficina_solicita: "MATRIZ", tipo_tarjeta: "Principal", realizar_accion: false },
-                { cedula: "1305876421", nombres: "SOFIA RAMIREZ", solicitud: "13", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "ESTÁNDAR", fecha_proceso: "12/07/2024 22:31", oficina_solicita: "MATRIZ", tipo_tarjeta: "Principal", realizar_accion: false },
-                { cedula: "0601789456", nombres: "FERNANDO GOMEZ", solicitud: "13", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "ESTÁNDAR", fecha_proceso: "12/07/2024 22:32", oficina_solicita: "MATRIZ", tipo_tarjeta: "Principal", realizar_accion: false },
-                { cedula: "1105874213", nombres: "LAURA CASTILLO", solicitud: "23", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "BLACK", fecha_proceso: "12/07/2024 22:30", oficina_solicita: "MATRIZ", tipo_tarjeta: "Principal", realizar_accion: false },
-                { cedula: "0907654321", nombres: "MIGUEL DIAZ", solicitud: "14", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLD", fecha_proceso: "12/07/2024 22:30", oficina_solicita: "MATRIZ", tipo_tarjeta: "Principal", realizar_accion: false },
+        //Para definir el toogle del perfil que este logueado (Se usa permisos de funcionalidad y parametros)
+        if (props?.funcionalidadesStore?.permisos?.length > 0 && lstParamsSeguimiento?.length > 0 && estadosSeguimientoTC?.length > 0) {
+            //console.log(props?.funcionalidadesStore?.permisos)
+            //console.log(lstParamsSeguimiento)
+            //console.log(estadosSeguimientoTC)
 
-            ]
-        },
-        {
-            fecha_rel: "14/07/2024", num_total_tarjetas: 1, num_tarjetas_error: 0, oficina: "AGENCIA SUR", estado: "PENDIENTE DE DISTRIBUIR",
-            lst_socios: [
-                { cedula: "1235434654", nombres: "LORENA PINEDA", solicitud: "9", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "BLACK", fecha_proceso: "14/07/2024 17:30", oficina_solicita: "AGENCIA SUR", tipo_tarjeta: "Principal", realizar_accion: false },
-            ]
-        },
-    ]
+            let paramOpciones = [];
+            let toogleOpciones = [];
+            props?.funcionalidadesStore?.permisos?.forEach(permiso => {
+                let parametroEncontrado = lstParamsSeguimiento?.find(parametroSeg => parametroSeg?.prm_valor_ini === permiso?.fun_nombre);
+                if (parametroEncontrado) {
+                    paramOpciones = [...paramOpciones, parametroEncontrado];
+                }
+            });
+            if (paramOpciones.length > 0)
+            {
+                paramOpciones?.forEach(paramOpc => {
+                    let separador = paramOpc?.prm_valor_fin.split('|');
+                    let estadoParametroSeguimiento = estadosSeguimientoTC?.find(paramEstadoSeg => paramEstadoSeg?.prm_nemonico === separador[0]?.toString());
+                    let estadoParamSeguimSigEstado = estadosSeguimientoTC?.find(paramEstadoSeg => paramEstadoSeg?.prm_nemonico === separador[2]?.toString());
+                    let opcion = {
+                        key: separador[0], //Se coloca el nemonico
+                        textPrincipal: separador[1], //Nombre del campo a presentar
+                        image: "",
+                        textSecundario: "",
+                        prm_id: estadoParametroSeguimiento?.prm_id,
+                        prm_id_sig_estado: estadoParamSeguimSigEstado?.prm_id,
+                    }
+                    toogleOpciones = [...toogleOpciones, opcion]
+                });
+                toogleOpciones.sort((a, b) => a.prm_id - b.prm_id);
+                setSubMenuOpcionesPerfil(toogleOpciones);
+
+                //Obtener la informacion de seeguimiento para ASISTENTE DE PLATAFORMA DE SERVICIOS
+                if (datosUsuario[0].strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS") {
+                    //console.log("toogleOpciones ", toogleOpciones)
+                    obtenerLstSeguimientoTC(toogleOpciones[0].prm_id);
+                }
+
+            }        
+
+        }
+    }, [props?.funcionalidadesStore?.permisos, lstParamsSeguimiento, estadosSeguimientoTC])
+
+    useEffect(() => {
+        let itemOrdenesSeleccionadas = [];
+        for (const key in totalTarjetasAccionDiccionario) {
+            if (totalTarjetasAccionDiccionario.hasOwnProperty(key) && totalTarjetasAccionDiccionario[key]?.length > 0) { // Aseguramos que la clave es parte del objeto y no del prototipo
+                const value = totalTarjetasAccionDiccionario[key];
+                itemOrdenesSeleccionadas = [...itemOrdenesSeleccionadas, ...value];
+            }
+        }
+        //console.log("itemOrdenesSeleccionadas ", itemOrdenesSeleccionadas)
+        setNumtotalTarjetasCambioEstado(itemOrdenesSeleccionadas);
+    }, [totalTarjetasAccionDiccionario])
+
+
+    const returnItemsHandler = (arrayItems, oficina) => {
+        AddUpdateItemOrden(oficina, arrayItems);
+    }
+
+    function AddUpdateItemOrden(clave, valor) {
+        //Actualizar o agregar el objeto
+        setTotalTarjetasAccionDiccionario(prevTotalTarjetasAccionDiccionario => ({
+            ...prevTotalTarjetasAccionDiccionario,
+            [clave]: valor
+        }));
+    }
+
+
 
 
     const ordenesAgencias = [
@@ -228,192 +263,296 @@ function Seguimiento(props) {
         { ente: "4443", cedula: "0509876543", nombres: "PEDRO RAMOS", tipo_producto: "GOLD", fecha_proceso: "14/07/2024 15:35", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
     ]
 
-    const returnItemsHandler = (arrayItems, oficina) => {
-        AddUpdateItemOrden(oficina, arrayItems);
+
+
+    const closeModalCambioEstadoOrdenes = () => {
+        setModalCambioEstadoOrdenes(false);
+        setTextoCambioEstadoOrden("");
     }
 
+    const cambioEstadoTCSeguimientoHandler = async () => {
+        closeModalCambioEstadoOrdenes();
+        //console.log("selectFiltrarOrdenes ", selectFiltrarOrdenes)
+        if (selectFiltrarOrdenes === "EST_SEG_PEN_ENV_PER") { //Verificar TC si llegaron bien del proveedor
+            let itemOrdenes = [];
+            lstSeguimientoTC.forEach(seguim => {
+                seguim.lst_ord_ofi.forEach(tarjeta => {
+                    itemOrdenes = [...itemOrdenes, tarjeta.int_seg_id]
+                })
+            })
 
-    /*function AddUpdateItemOrden(clave, valor) {
+            if (itemOrdenes.length > 0) {
+                let paramEstadoSeguimiento = subMenuOpcionesPerfil.find(opciones => opciones.key === selectFiltrarOrdenes);
+                actualizarOrdenes(paramEstadoSeguimiento.prm_id_sig_estado, itemOrdenes, (callback) => {
+                    setTextoTitulo("Las tarjetas de crédito se han enviado a personalizar.")
+                    setModalVisibleOk(true);
+                    filtrarTarjetas(selectFiltrarOrdenes);//Realizar nueva consulta
+                });              
+                    
+            } else {
+                return
+            }
+        }
 
-        if (valor.length === 0) {
-            setTotalTarjetasAccionDiccionario(prevTotalTarjetasAccionDiccionario => {
-                let updatedDictionary = { ...prevTotalTarjetasAccionDiccionario };
-                delete updatedDictionary[clave];
-                return updatedDictionary;
+        else if (selectFiltrarOrdenes === "EST_SEG_ENV_PER") {
+            let paramEstadoSeguimiento = subMenuOpcionesPerfil.find(opciones => opciones.key === selectFiltrarOrdenes);            
+            if (numtotalTarjetasCambioEstado.length > 0) {
+                actualizarOrdenes(paramEstadoSeguimiento.prm_id_sig_estado, numtotalTarjetasCambioEstado, (callback) => {
+                    setTextoTitulo("Las tarjetas de crédito han sido verificadas con éxito.")
+                    setModalVisibleOk(true);
+                    filtrarTarjetas(selectFiltrarOrdenes);//Realizar nueva consulta
+                });
+            } else {
+                return
+            }
+            
+        }        
+        else if (selectFiltrarOrdenes === "EST_SEG_VER_OPR") { //Para enviar a las agencias (distibucion TC)
+            let paramEstadoSeguimiento = subMenuOpcionesPerfil.find(opciones => opciones.key === selectFiltrarOrdenes);
+            if (numtotalTarjetasCambioEstado.length > 0) {
+                actualizarOrdenes(paramEstadoSeguimiento.prm_id_sig_estado, numtotalTarjetasCambioEstado, (callback) => {
+                    setTextoTitulo("Se han distribuido las tarjetas de crédito con éxito.")
+                    setModalVisibleOk(true);
+                    filtrarTarjetas(selectFiltrarOrdenes);//Realizar nueva consulta
+                });
+            } else {
+                return
+            }
+        }
+        //Para ASISTENTE DE AGENCIA
+        else if (selectFiltrarOrdenes === "EST_SEG_ENV_AGN") { //Para receptar TC en las oficinas/agencias
+            let paramEstadoSeguimiento = subMenuOpcionesPerfil.find(opciones => opciones.key === selectFiltrarOrdenes);
+            if (numtotalTarjetasCambioEstado.length > 0) {
+                actualizarOrdenes(paramEstadoSeguimiento.prm_id_sig_estado, numtotalTarjetasCambioEstado, (callback) => {
+                    setTextoTitulo("Las tarjetas de crédito se cambiaron de estado a Recibido");
+                    setModalVisibleOk(true);
+                    filtrarTarjetas(selectFiltrarOrdenes);//Realizar nueva consulta
+                });
+            } else {
+                return
+            }
+        }
+    }
+
+    const cambioEstadoTCAgenciaOficinas = async (tituloMensajeAviso) => {
+        console.log("seguimientoIdAccion ", seguimientoIdAccion)
+        closeModalCambioEstadoOrdenes();
+        if (seguimientoIdAccion !== 0) {
+            let tarjetasArray = [seguimientoIdAccion];
+            tarjetasArray.push();
+            actualizarOrdenes(subMenuOpcionesPerfil[0]?.prm_id_sig_estado, tarjetasArray, (callback) => {
+                setTextoTitulo(tituloMensajeAviso);
+                setModalVisibleOk(true);
+                setSeguimientoIdAccion(0);
+                obtenerLstSeguimientoTC(subMenuOpcionesPerfil[0].prm_id);  //Realizar nueva consulta
             });
-        }
-        if (totalTarjetasAccionDiccionario.hasOwnProperty(clave) && totalTarjetasAccionDiccionario[clave].length === 0) {
-            //console.log("--> ",totalTarjetasAccionDiccionario[clave])
-            // Si la clave ya existe, actualizamos el arreglo asociado
-            setTotalTarjetasAccionDiccionario(prevTotalTarjetasAccionDiccionario => ({
-                ...prevTotalTarjetasAccionDiccionario,
-                [clave]: [...prevTotalTarjetasAccionDiccionario[clave], valor]
-            }));
         } else {
-            // Si la clave no existe, creamos un nuevo arreglo con el valor
-            setTotalTarjetasAccionDiccionario(prevTotalTarjetasAccionDiccionario => ({
-                ...prevTotalTarjetasAccionDiccionario,
-                [clave]: [valor]
-            }));
+            return
         }
-    }*/
-    
-    function AddUpdateItemOrden(clave, valor) {
-       //Actualizar o agregar el objeto
-        setTotalTarjetasAccionDiccionario(prevTotalTarjetasAccionDiccionario => ({
-            ...prevTotalTarjetasAccionDiccionario,
-            [clave]: [valor]
-        }));
     }
 
-    
-    useEffect(() => {
-        console.log(totalTarjetasAccionDiccionario)
-    }, [totalTarjetasAccionDiccionario])
-    
-
-
-    const closeModaEnvioPersonalizacion = () => {
-        setModalEnviarPersonalizacion(false);
-    }
-
-    const envioPersonalizacionHandler = () => {
-        closeModaEnvioPersonalizacion();
-    }
-
-    const filtrarTarjetas = (valorSelect) => {
-
-        let valor = comboOpcionesSeguimiento.find(opciones => opciones.key === valorSelect);
-        console.log("VALOR ", valor)
-
-        setSelectFiltrarOrdenes(valor.nemonico);
-        setLstOrdenesFiltradas(ordenesV2.filter(tarjetas => tarjetas.estado === valor.nemonico));
-        setTotalTarjetasAccionDiccionario([]);
-
+    const actualizarOrdenes = async (nuevoEstado, listaItems, callbackReturn) => {
+        await fetchUpdateOrdenes(nuevoEstado, listaItems, props.token, (data) => { 
+            callbackReturn(true);
+        }, dispatch)
+        
     }
 
     const accionAsistenteAgenciaHandler = (valor) => {
-        let valorParametro = comboOpcionesSegAsisteAgencia.find(opciones => opciones.key === valor);
-
-        console.log("VALOR ASIS AGENCIA ", valorParametro.textPrincipal)
-
+        let valorParametro = subMenuOpcionesPerfil.find(opciones => opciones.key === valor);
         //setSelectAccionAsistAgencia(valor);
-        if (valorParametro.textPrincipal === "RECEPTAR TARJETAS DE CRÉDITO") {
+        if (valor === "EST_SEG_ENV_AGN") { //RECEPTAR TARJETAS CREDITO
+            obtenerLstSeguimientoTC(valorParametro.prm_id);
             setBoolSeccionRecepcionTarjetas(true);
             setBoolSeccionActivacionTarjetas(false);
             setTextBtnAccionAsistenteAgencia("Recibir");
+            setSelectFiltrarOrdenes(valor);
         }
-        else if (valorParametro.textPrincipal === "ACTIVAR TARJETAS DE CRÉDITO") {
+        else if (valor === "EST_SEG_POR_ACT") { //ACTIVACION DE TARJETAS CREDITO
+            obtenerLstSeguimientoTC(valorParametro.prm_id);
             setBoolSeccionActivacionTarjetas(true);
             setBoolSeccionRecepcionTarjetas(false);
+            setSelectFiltrarOrdenes(valor);
         }
 
     }
 
+    const setSeguimientoOrdenRedux = (activarAccionClick) => {
+        dispatch(setSeguimientOrdenAction({
+            seguimientoAccionClick: activarAccionClick,
+        }))
+    }
+
+    const filtrarTarjetas = (keyToogle) => {
+        let itemToogle = subMenuOpcionesPerfil.find(opciones => opciones.key === keyToogle);
+        setSelectFiltrarOrdenes(keyToogle);
+        obtenerLstSeguimientoTC(itemToogle.prm_id);
+        setTotalTarjetasAccionDiccionario([]);
+    }
+
+    const consultarParametrosSeguimiento = async () => {
+        await fetchGetParametrosSistema("SEGUIMIENTO_LISTADO_TC", props.token, (data) => {
+            //console.log("data.lst_parametros ",data.lst_parametros)
+            if (data.lst_parametros.length > 0) {
+                let ParametrosEntregaTC = data.lst_parametros.map(seguimient => ({
+                    prm_id: seguimient.int_id_parametro,
+                    prm_nombre: seguimient.str_nombre,
+                    prm_nemonico: seguimient.str_nemonico,
+                    prm_valor_ini: seguimient.str_valor_ini,
+                    prm_valor_fin: seguimient.str_valor_fin,
+                    prm_descripcion: seguimient.str_descripcion
+                }));
+                setLstParamsSeguimiento(ParametrosEntregaTC)
+            }
+        }, dispatch)
+    }
 
 
-    const headersTarjetas = [{ key: 0, nombre: "Ente" }, { key: 1, nombre: "Fecha recepción" }, { key: 2, nombre: "Identificación" }, { key: 3, nombre: "Nombre del titular" }, { key: 4, nombre: "Tipo de tarjeta" }, { key: 5, nombre: "Tipo de producto" }, { key: 6, nombre: "Acciones" }]
+    const obtenerLstSeguimientoTC = async (valorSelect) => {
+        await fetchGetOrdenes(Number(valorSelect), props.token, (data) => { //12883 PEN_ENV_PERSONALIZAR  | 12884 ENV_PERSONALIZADOR |  12885 VERIFICADA_OPERACIONES
+            //console.log("lst_ordenes_tc_ ", data.lst_ordenes_tc);
+            setLstSeguimientoTC(data.lst_ordenes_tc);
+        }, dispatch)
+    }
+
+    const cerrarModalVisible = () => {
+        setTextoTitulo("");
+        setModalVisibleOk(false);
+    }
+
+
+    const modalCambioEstadoOrdenesHandler = () => {
+        if (selectFiltrarOrdenes === "EST_SEG_PEN_ENV_PER") {
+            setTextoCambioEstadoOrden("¿Está seguro de enviar a personalizar las tarjetas de crédito?");
+        } else if (selectFiltrarOrdenes === "EST_SEG_ENV_PER") {
+            setTextoCambioEstadoOrden("¿Está seguro de recibir las tarjetas de crédito?");
+        } else if (selectFiltrarOrdenes === "EST_SEG_VER_OPR") {
+            setTextoCambioEstadoOrden("¿Está seguro de hacer el envío de tarjetas de crédito a las oficinas/agencias?");
+        } else if (selectFiltrarOrdenes === "EST_SEG_ENV_AGN") {
+            setTextoCambioEstadoOrden("¿Está seguro de cambiar a Recibido para las tarjetas de crédito seleccionadas?");
+        }
+        setModalCambioEstadoOrdenes(true)
+    }
+
+
+
+    // ACCIONES PARA TABLE
+    const AccionesAsistenteAgencia = ({ seguimiento }) => {
+        console.log("AccionesAsistentePlataforma ", seguimiento)
+        return (
+            <div className="f-row" style={{ gap: "6px", justifyContent: "center" }}>
+
+                <button className="btn_mg_icons noborder" title="Visualizar documentos">
+                    <img className="img-icons-acciones" src="Imagenes/search.svg" alt="Visualizar documentos"></img>
+                </button>
+
+                <button className="btn_mg_icons noborder" title="Regresar Tc">
+                    <img className="img-icons-acciones" src="Imagenes/return.svg" alt="Regresar Tc"></img>
+                </button>
+
+                <button className="btn_mg_icons noborder" title="Activar Tc"
+                    onClick={() => {
+                        setSeguimientoIdAccion(Number(seguimiento));
+                        setTextoCambioEstadoOrden('¿Esta seguro de activar la tarjeta de crédito?');
+                        setModalCambioEstadoOrdenes(true);
+                    }}>
+                    <img className="img-icons-acciones" src="Imagenes/activate.svg" alt="Activar Tc"></img>
+                </button>
+
+            </div>
+        )
+    }
+
+
+    const AccionesAsistentePlataforma = ({ seguimiento }) => {
+        return (
+            <div className="f-row" style={{ gap: "6px", justifyContent: "center" }}>
+
+                <button className="btn_mg_icons noborder" title="Imprimir contrato">
+                    <img className="img-icons-acciones" src="Imagenes/printIcon.svg" alt="Imprimir contrato"></img>
+                </button>
+
+                <button className="btn_mg_icons noborder" title="Subir Doc Escaneado">
+                    <img className="img-icons-acciones" src="Imagenes/upload_file.svg" alt="Subir Doc Escaneado"></img>
+                </button>
+
+                <button className="btn_mg_icons noborder" title="Entregar Tc"
+                    onClick={() => {
+                        setSeguimientoIdAccion(Number(seguimiento));
+                        setTextoCambioEstadoOrden('¿Esta seguro de realizar la entrega de la tarjeta de crédito?');
+                        setModalCambioEstadoOrdenes(true);
+                    }}>
+                    <img className="img-icons-acciones" src="Imagenes/entregar.svg" alt="Entregar Tc"></img>
+                </button>
+
+            </div>
+        )
+    }
+
 
 
     return (
         <div className="f-row w-100" >
-            {/*<Sidebar enlace={props.location.pathname}></Sidebar>*/}
             <div className="container_mg">
-                {/*<h2 className="mt-5 mb-3">{textoTitulo}</h2>*/}
                 <div className='f-row w-100'>
 
-                    {/*{datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES" &&*/}
-                    {/*    <div className="content-filtro">*/}
-                    {/*        <div className="f-row w-100">*/}
-                    {/*            <h3 className="strong mr-4">Seleccione el estado que desea revisar:</h3>*/}
-                    {/*            <select style={{ width: "350px" }} id="tarjetas_select" name="tarjetas_select" value={selectFiltrarOrdenes} onChange={(e) => filtrarTarjetas(e.target.value)}>*/}
-                    {/*                <option value="PENDIENTE DE PERSONALIZAR">PENDIENTE DE PERSONALIZAR</option>*/}
-                    {/*                <option value="PENDIENTE DE VERIFICAR">PENDIENTE DE VERIFICAR</option>*/}
-                    {/*                <option value="PENDIENTE DE DISTRIBUIR">PENDIENTE DE DISTRIBUIR</option>*/}
-                    {/*            </select>*/}
-                    {/*        </div>*/}
-                    {/*    </div>*/}
-                    {/*}*/}
 
-                    {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES" &&
+                    {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES" && subMenuOpcionesPerfil?.length > 0 &&
                         <div className="f-row w-100 justify-content-center">
-                            <div className="mb-4" style={{ marginTop:"2.5rem" }}>
+                            <div className="mb-4" style={{ marginTop: "2.5rem" }}>
                                 <TogglerV2 toggles={subMenuOpcionesPerfil} selectedToggle={(e) => filtrarTarjetas(e)}></TogglerV2>
                             </div>
-                            
+
                         </div>
                     }
-                    
 
+                    {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA" && subMenuOpcionesPerfil?.length > 0 &&
 
-                    {/*{datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA" &&*/}
-                    {/*    <div className="content-filtro">*/}
-                    {/*        <div className="f-row w-100">*/}
-                    {/*            <h3 className="strong mr-4">Acción a realizar:</h3>*/}
-                    {/*            <select style={{ width: "350px" }} id="tarjetas_selectAsisAgencia" name="tarjetas_selectAsisAgencia" value={selectAccionAsistAgencia} onChange={(e) => accionAsistenteAgenciaHandler(e.target.value)}>*/}
-                    {/*                <option value="-1" disabled={true }>Seleccione una opción</option>*/}
-                    {/*                <option value="RECEPCION_TARJETAS_CREDITO">RECEPTAR TARJETAS DE CRÉDITO</option>*/}
-                    {/*                <option value="ACTIVAR_TARJETAS_CREDITO">ACTIVAR TARJETAS DE CRÉDITO</option>*/}
-                    {/*            </select>*/}
-                    {/*           */}{/* <Button className="btn_mg btn_mg__primary ml-3" disabled={false} type="submit" onClick={accionAsistenteAgenciaHandler}>Buscar</Button>*/}
-                    {/*        </div>*/}
-                    {/*    </div>*/}
-                    {/*}*/}
-
-
-
-                    {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA" &&
-
-                      <div className="f-row w-100 justify-content-center">
-                            <div className="mb-4" style={{ marginTop:"2.5rem" }}>
+                        <div className="f-row w-100 justify-content-center">
+                            <div className="mb-4" style={{ marginTop: "2.5rem" }}>
                                 <TogglerV2 toggles={subMenuOpcionesPerfil} selectedToggle={(e) => accionAsistenteAgenciaHandler(e)}></TogglerV2>
                             </div>
-                            
+
                         </div>
 
                     }
 
 
-
-
-                    {/*<div className="m-2" style={{ display: "flex", flexDirection: "column", width: "25%", marginRight: "10px" }}>*/}
-                    {/*    <Card >*/}
-                    {/*        <img style={{ width: "25px" }} src="Imagenes/credit_card_FILL0_wght300_GRAD0_opsz24.svg" alt="Enviar órdenes a personalizar"></img>*/}
-                    {/*        <h4 className="mt-2">Enviar órdenes a personalizar</h4>*/}
-                    {/*        */}{/* <h5 className="mt-2">Generar las órdenes</h5>*/}
-                    {/*        <Button autoWidth tabIndex="3" className={["btn_mg btn_mg__primary mt-2"]} disabled={false}>Generar archivo</Button>*/}
-                    {/*    </Card>*/}
-                    {/*</div>*/}
-
-                </div>
-
-              
-
-                <div className="f-row w-100 mt-3" style={{ display: "flex", justifyContent: "right", paddingRight: "30px" }}>
-                    <div className="input-wrapper">
-                        <Input className="w-20 ml-1 inputBusqueda" id="buscarOrden" type="text" disabled={false} value={inputBusqueda} setValueHandler={(e) => setInputBusqueda(e)} placeholder={"Buscar"}></Input>
-                        <img className="input-icon icon" src="Imagenes/search.svg" alt="Buscar"></img>
-                    </div>
-
-                    <div className="input-fitro">
-                        <img className="input-icon icon" src="Imagenes/filter.svg" alt="Filtrar"></img>
-                    </div>
                 </div>
 
 
                 {/*BANDEJAS PARA ASISTENTE DE OPERACIONES*/}
-                {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES" && selectFiltrarOrdenes === "PENDIENTE DE PERSONALIZAR" &&
+                {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES" && selectFiltrarOrdenes === "EST_SEG_PEN_ENV_PER" &&
                     <div className="contentTableOrden mt-3 mb-3">
-                        {lstOrdenesFiltradas.map((orden, index) => {
+                        {lstSeguimientoTC.length > 0 && lstSeguimientoTC.map((orden, index) => {
                             return (
-                                <Fragment key={index}>
-                                    <ComponentItemsOrden
-                                        index={index}
-                                        orden={orden}
-                                        returnItems={returnItemsHandler}
-                                        pantallaTituloExponer="Seguimiento"
-                                        opcionHeader={false}
-                                        opcionItemDisable={true}
+                                <Fragment key={orden.str_oficina_entrega}>  
+                                <ComponentItemsOrden
+                                    index={index}
+                                    orden={orden}
+                                    returnItems={returnItemsHandler}
+                                    pantallaTituloExponer="Seguimiento"
+                                    opcionHeader={false}
+                                    opcionItemDisable={true}
+                                ></ComponentItemsOrden>
+                                </Fragment>
+                            )
+                        })}
+                    </div>
+                }
+
+                {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES" && selectFiltrarOrdenes === "EST_SEG_ENV_PER" &&
+                    <div className="contentTableOrden mt-3 mb-3">
+                        {lstSeguimientoTC.length > 0 && lstSeguimientoTC.map((orden, index) => {
+                            return (
+                                <Fragment key={orden.str_oficina_entrega}>  
+                                <ComponentItemsOrden
+                                    index={index}
+                                    orden={orden}
+                                    returnItems={returnItemsHandler}
+                                    pantallaTituloExponer="Seguimiento"
+                                    opcionHeader={true}
+                                    opcionItemDisable={false}
                                     ></ComponentItemsOrden>
                                 </Fragment>
                             )
@@ -421,55 +560,54 @@ function Seguimiento(props) {
                     </div>
                 }
 
-                {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES" && selectFiltrarOrdenes === "PENDIENTE DE VERIFICAR" &&
+                {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES" && selectFiltrarOrdenes === "EST_SEG_VER_OPR" &&
                     <div className="contentTableOrden mt-3 mb-3">
-                        {lstOrdenesFiltradas.map((orden, index) => {
+                        {lstSeguimientoTC.length > 0 && lstSeguimientoTC.map((orden, index) => {
                             return (
-                                <Fragment key={index}>
-                                    <ComponentItemsOrden
-                                        index={index}
-                                        orden={orden}
-                                        returnItems={returnItemsHandler}
-                                        pantallaTituloExponer="Seguimiento"
-                                        opcionHeader={true}
-                                        opcionItemDisable={false}
-                                    ></ComponentItemsOrden>
+                                <Fragment key={orden.str_oficina_entrega}>                                
+                                <ComponentItemsOrden
+                                    index={index}
+                                    orden={orden}
+                                    returnItems={returnItemsHandler}
+                                    pantallaTituloExponer="Seguimiento"
+                                    opcionHeader={true}
+                                    opcionItemDisable={true}
+                                ></ComponentItemsOrden>
                                 </Fragment>
                             )
                         })}
                     </div>
                 }
+                {lstSeguimientoTC.length === 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE OPERACIONES" &&
+                    <div className="f-row mt-4 mb-5 align-content-center justify-content-center">
+                        <h3 className="strong">Sin datos para mostrar</h3>
+                    </div>
+                }
 
-                {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES" && selectFiltrarOrdenes === "PENDIENTE DE DISTRIBUIR" &&
-                    <div className="contentTableOrden mt-3 mb-3">
-                        {lstOrdenesFiltradas.map((orden, index) => {
-                            return (
-                                <Fragment key={index}>
-                                    <ComponentItemsOrden
-                                        index={index}
-                                        orden={orden}
-                                        returnItems={returnItemsHandler}
-                                        pantallaTituloExponer="Seguimiento"
-                                        opcionHeader={true}
-                                        opcionItemDisable={true}
-                                    ></ComponentItemsOrden>
-                                </Fragment>
-                            )
-                        })}
+                {/*todo: temporal tarjetasV2 */}
+                {lstSeguimientoTC.length === 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" && boolSeccionActivacionTarjetas === true &&
+                    <div className="f-row mt-4 mb-5 align-content-center justify-content-center">
+                        <h3 className="strong">Sin datos para mostrar</h3>
+                    </div>
+                }
+
+                {lstSeguimientoTC.length === 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" && boolSeccionRecepcionTarjetas === true &&
+                    <div className="f-row mt-4 mb-5 align-content-center justify-content-center">
+                        <h3 className="strong">Sin datos para mostrar</h3>
                     </div>
                 }
                 {/*FIN BANDEJAS PARA ASISTENTE DE OPERACIONES*/}
 
 
                 {/*BANDEJAS PARA ASISTENTE DE AGENCIA*/}
-                {boolSeccionRecepcionTarjetas === true && datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA" &&
+                {boolSeccionRecepcionTarjetas === true && datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA" && lstSeguimientoTC.length > 0 &&
                     <div className="contentTableOrden mt-3 mb-3">
-                        {lstItemsReceptarOficina.map((itemOrden, index) => {
+                        {lstSeguimientoTC.length > 0 && lstSeguimientoTC.map((orden, index) => {
                             return (
                                 <Fragment key={index}>
                                     <ComponentItemsOrden
                                         index={index}
-                                        orden={itemOrden}
+                                        orden={orden}
                                         returnItems={returnItemsHandler}
                                         pantallaTituloExponer="Seguimiento"
                                         opcionHeader={true}
@@ -481,21 +619,19 @@ function Seguimiento(props) {
                     </div>
                 }
 
-                {boolSeccionActivacionTarjetas === true && datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA" &&
+                {boolSeccionActivacionTarjetas === true && datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA" && lstSeguimientoTC.length > 0  &&
                     <div className="contentTableOrden mt-3 mb-3">
                         <Table headers={headersTarjetas}>
-                            {/*BODY*/}
-                            {tarjetasV2.map((tarjeta, index) => {
+                            {lstSeguimientoTC[0]?.lst_ord_ofi.map((seguim, index) => {
                                 return (
-                                    <tr key={tarjeta.ente}>
-                                        <td>{tarjeta.ente}</td>
-                                        <td>{tarjeta.fecha_proceso}</td>
-                                        <td>{tarjeta.cedula}</td>
-                                        <td>{tarjeta.nombres}</td>
-                                        <td>{tarjeta.tipo_tarjeta}</td>
-                                        <td><Chip type={tarjeta.tipo_producto}>{tarjeta.tipo_producto}</Chip></td>
+                                    <tr key={seguim.int_seg_id}>
+                                        <td>{seguim.str_identificacion}</td>
+                                        <td>{seguim.str_denominacion_socio}</td>
+                                        <td>{seguim.dtt_fecha_entrega}</td>
+                                        <td>{seguim.str_tipo_propietario}</td>
+                                        <td><Chip type={seguim.str_tipo_tarjeta}>{seguim.str_tipo_tarjeta}</Chip></td>
                                         <td>
-                                            <AccionesTarjetaV2 />
+                                            <AccionesAsistenteAgencia seguimiento={seguim.int_seg_id}/>
                                         </td>
                                     </tr>
                                 );
@@ -506,46 +642,41 @@ function Seguimiento(props) {
                 {/*FIN BANDEJAS PARA ASISTENTE DE AGENCIA*/}
 
                 {/*BANDEJA PARA ASISTENTE  DE PLATAFORMA DE SERVICIOS*/}
-                {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS" &&
-                    <Fragment>
-                        <div className="contentTableOrden mt-3 mb-3">
-                            <Table headers={headersTarjetas}>
-                                {/*BODY*/}
-                                {tarjetas.map((tarjeta, index) => {
-                                    return (
-                                        <tr key={tarjeta.ente}>
-                                            <td>{tarjeta.ente}</td>
-                                            <td>{tarjeta.fecha_proceso}</td>
-                                            <td>{tarjeta.cedula}</td>
-                                            <td>{tarjeta.nombres}</td>
-                                            <td>{tarjeta.tipo_tarjeta}</td>
-                                            <td><Chip type={tarjeta.tipo_producto}>{tarjeta.tipo_producto}</Chip></td>
-                                            <td>
-                                                <AccionesTarjeta />
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                            </Table>
-                        </div>
-
-
-                    </Fragment>
+                {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS" && lstSeguimientoTC.length > 0 &&               
+                    <div className="contentTableOrden mt-3 mb-3">
+                        <Table headers={headersTarjetas}>
+                            {lstSeguimientoTC[0]?.lst_ord_ofi.map((seguim, index) => {
+                                return (
+                                    <tr key={seguim.int_seg_id}>
+                                        <td>{seguim.str_identificacion}</td>
+                                        <td>{seguim.str_denominacion_socio}</td>
+                                        <td>{convertFecha(seguim.dtt_fecha_entrega)}</td>
+                                        <td>{seguim.str_tipo_propietario}</td>
+                                        <td><Chip type={seguim.str_tipo_tarjeta}>{seguim.str_tipo_tarjeta}</Chip></td>
+                                        <td>
+                                            <AccionesAsistentePlataforma seguimiento={seguim.int_seg_id}/>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                        </Table>
+                    </div>
                 }
                 {/*FIN BANDEJA PARA ASISTENTE  DE PLATAFORMA DE SERVICIOS*/}
 
 
                 {/*SECCION BOTONES PARA ASISTENTE DE OPERACIONES*/}
-                {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES" &&
+                {datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE OPERACIONES" && lstSeguimientoTC.length > 0 && 
                     <div className='row w-100 mt-2 f-row justify-content-center'>
-                        <Button onClick={() => { setModalEnviarPersonalizacion(true) }} className="btn_mg__primary" disabled={false}>{textoBotonAccion}</Button>
+                        <Button onClick={modalCambioEstadoOrdenesHandler} className="btn_mg__primary" disabled={(selectFiltrarOrdenes === "EST_SEG_ENV_PER" && numtotalTarjetasCambioEstado.length === 0) ? true: false}>{textoBotonAccion}</Button>
                     </div>
                 }
+                
 
                 {/*SECCION BOTONES PARA ASISTENTE DE AGENCIA*/}
-                {boolSeccionRecepcionTarjetas === true && datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA" &&
+                {boolSeccionRecepcionTarjetas === true && datosUsuario.length > 0 && datosUsuario[0].strCargo === "ASISTENTE DE AGENCIA" && lstSeguimientoTC.length > 0 && 
                     <div className='row w-100 mt-2 f-row justify-content-center'>
-                        <Button className="btn_mg__primary" disabled={false}>{textBtnAccionAsistenteAgencia}</Button>
+                        <Button onClick={modalCambioEstadoOrdenesHandler} className="btn_mg__primary" disabled={(selectFiltrarOrdenes === "EST_SEG_ENV_AGN" && numtotalTarjetasCambioEstado.length === 0) ? true : false}>{textBtnAccionAsistenteAgencia}</Button>
                     </div>
                 }
 
@@ -554,225 +685,57 @@ function Seguimiento(props) {
             </div>
 
             <ModalDinamico
-                modalIsVisible={modalEnviarPersonalizacion}
+                modalIsVisible={modalCambioEstadoOrdenes}
                 titulo={`Aviso!!!`}
-                onCloseClick={closeModaEnvioPersonalizacion}
+                onCloseClick={closeModalCambioEstadoOrdenes}
                 type="sm"
             >
                 <div className="pbmg4 ptmg4">
                     <div className="f-row mb-4">
-                        {/*<h3 className="">¿Está seguro de realizar el envio de </h3>  <h3 className="strong">&nbsp;{totalTarjetasEnviar}&nbsp;</h3>  <h3>tarjetas a personalizar?</h3>*/}
-                        <h3 className="">¿Está seguro de realizar el envio de tarjetas a personalizar?</h3>
+                        <h3 className="">{textoCambioEstadoOrden}</h3>
                     </div>
                     <div className="center_text_items">
-                        <button className="btn_mg btn_mg__primary mt-2" disabled={false} type="submit" onClick={envioPersonalizacionHandler}>Enviar</button>
-                        <button className="btn_mg btn_mg__secondary mt-2 " onClick={closeModaEnvioPersonalizacion}>Cancelar</button>
+                        {datosUsuario[0]?.strCargo !== "ASISTENTE DE PLATAFORMA DE SERVICIOS" && datosUsuario[0]?.strCargo !== "ASISTENTE DE AGENCIA" &&
+                            <button className="btn_mg btn_mg__primary mt-2" disabled={false} type="submit" onClick={cambioEstadoTCSeguimientoHandler}>Sí</button>
+                        }                        
+                        {datosUsuario[0]?.strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS" && 
+                            <button className="btn_mg btn_mg__primary mt-2" disabled={false} type="submit"
+                                onClick={() => cambioEstadoTCAgenciaOficinas("La tarjeta de crédito se cambio al estado por Activarse")}>Sí</button>
+                        }
+                        
+                        {datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" && selectFiltrarOrdenes === "EST_SEG_ENV_AGN" &&
+                            <button className="btn_mg btn_mg__primary mt-2" disabled={false} type="submit"
+                                onClick={cambioEstadoTCSeguimientoHandler}>Sí</button>
+                        } 
+
+                        {datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" && selectFiltrarOrdenes === "EST_SEG_POR_ACT" && 
+                            <button className="btn_mg btn_mg__primary mt-2" disabled={false} type="submit" 
+                                onClick={() => cambioEstadoTCAgenciaOficinas("La tarjeta de crédito se activo con éxito")}>Sí</button>
+                        }
+                        <button className="btn_mg btn_mg__secondary mt-2 " onClick={closeModalCambioEstadoOrdenes}>No</button>
                     </div>
 
                 </div>
             </ModalDinamico>
+
+            <Modal
+                modalIsVisible={modalVisibleOk}
+                titulo={`Aviso!`}
+                onNextClick={cerrarModalVisible}
+                onCloseClick={cerrarModalVisible}
+                isBtnDisabled={false}
+                type="sm"
+                mainText="Continuar"
+            >
+                <div className="mt-3 mb-3">
+                    <h3 className="strong">{textoTitulo}</h3>
+                </div>
+            </Modal>
+
+
         </div>
 
     )
 
 }
-
-/*
-const ComponentItemsOrden = (props) => {
-
-    const [checkSeleccionPadre, setCheckSeleccionPadre] = useState(false);
-    const [checkSeleccionHijo, setCheckSeleccionHijo] = useState(false);
-    const [totalItemOrdenCheck, setTotalItemOrdenCheck] = useState([]);
-
-    const setStatusCheckHandler = (valor) => {
-        setCheckSeleccionHijo(valor);
-    }
-
-    const itemsOrdenCkeckTotal = (array) => {
-        setTotalItemOrdenCheck(array)        
-        props.returnItems(array);
-    }
-
-    
-    useEffect(() => {
-        if (props.orden.lst_socios.length > 0) {
-            setCheckSeleccionPadre(totalItemOrdenCheck.length === props.orden.lst_socios.length && totalItemOrdenCheck.length !== 0)
-        }
-    }, [totalItemOrdenCheck])
-    
-
-    return (
-        <Fragment key={props.index}>
-            <TituloComponente index={props.index} header={props.orden} inicialStateCheck={checkSeleccionPadre} checkStatusChange={(e) => { setStatusCheckHandler(e) }} >
-                <ComponentOrdenItems ordenItem={props.orden} checkStatusSeleccion={checkSeleccionHijo} returnItemOrden={itemsOrdenCkeckTotal} ></ComponentOrdenItems>
-            </TituloComponente>
-
-        </Fragment>
-
-    )
-
-}
-
-const TituloComponente = (props) => {
-
-
-    const [checkSeleccionAll, setCheckSeleccionAll] = useState(false);
-
-    useEffect(() => {
-        props.checkStatusChange(checkSeleccionAll);
-    }, [props, checkSeleccionAll])
-
-    let titulo = (
-        <div className="w-95 f-row">
-            <div className='content-headertable' >
-                <div className="content-block" style={{ width: "9%", minWidth: "50px" }} >
-                    <h4 className="item-header white">Oficina</h4>
-                </div>
-                <div className="content-block" style={{ width: "21%", minWidth: "270px" }} >
-                    <h4 className="item-header white">{props.header.oficina}</h4>
-                </div>
-                <div className="content-block" style={{ width: "14%", minWidth: "130px" }} >
-                    <h4 className="item-header white">Total de tarjetas</h4>
-                </div>
-                <div className="content-block" style={{ width: "7%", minWidth: "50px" }} >
-                    <h4 className="item-header white">{props.header.num_total_tarjetas}</h4>
-                </div>
-                <div className="content-block" style={{ width: "5%", minWidth: "130px" }} >
-                    <h4 className="item-header white">Fecha procesado</h4>
-                </div>
-                <div className="content-block" style={{ width: "12%", minWidth: "120px" }} >
-                    <h4 className="item-header white">{props.header.fecha_rel}</h4>
-                </div>
-                <div className="" style={{ position: "absolute", right: "80px" }}>
-                    <input type="checkbox" name={props.header.orden} checked={props.inicialStateCheck}
-                        onChange={(e) => setCheckSeleccionAll(!checkSeleccionAll)}
-                    />
-                </div>
-            </div>
-        </div>
-    )
-
-    return (
-        <Fragment key={props.index}>
-            <div className="mb-1">
-                <AccordionV2 title={titulo} classNameTitulo={"accordionStyle2"} >
-                    {props.children}
-                </AccordionV2>
-            </div>
-        </Fragment>
-
-    )
-}
-
-
-const ComponentOrdenItems = ({ ordenItem, checkStatusSeleccion, returnItemOrden }) => {
-
-    const [tarjetasCheckBox, setTarjetaCheckBox] = useState([]);
-
-    useEffect(() => {
-        seleccionMultiple();
-    }, [checkStatusSeleccion])
-    
-    useEffect(() => {
-        returnItemOrden(tarjetasCheckBox);
-    }, [tarjetasCheckBox])
-
-    const seleccionMultiple = (e) => {
-        toggleSelectAll(checkStatusSeleccion);
-    }
-
-    const toggleSelectAll = (checkStatus) => {
-        if (checkStatus) {
-            const resultado = ordenItem.lst_socios.map(itemOrden => itemOrden).flat();
-            setTarjetaCheckBox(resultado);
-        } else {
-            setTarjetaCheckBox([]);
-        }
-    };
-
-    const checkTarjeta = (ordenCheck) => {
-        if (tarjetasCheckBox.includes(ordenCheck)) {
-            setTarjetaCheckBox(tarjetasCheckBox.filter(ordenItem => ordenItem !== ordenCheck));
-        } else {
-            setTarjetaCheckBox([...tarjetasCheckBox, ordenCheck]);
-        }
-    }
-
-    return (
-        <Fragment key={ordenItem.cedula}>
-            <table className='table-accordion2' style={{ overflowY: "hidden" }}>
-                <thead className='thead-accordion2'>
-                    <tr>
-                        <th className='paddingSpacing'>Identificación</th>
-                        <th className='paddingSpacing'>Nombre del titular</th>
-                        <th className='paddingSpacing'>Tipo de tarjeta</th>
-                        <th className='paddingSpacing'>Tipo de producto</th>
-                        <th className='paddingSpacing'> </th>
-                    </tr>
-                </thead>
-                <tbody style={{ overflowY: "hidden" }}>
-                    {ordenItem.lst_socios.map(cliente => {
-                        return (
-                            <tr key={cliente.cedula}>
-                                <td className='paddingSpacing'>{cliente.cedula}</td>
-                                <td className='paddingSpacing'>{cliente.nombres}</td>
-                                <td className='paddingSpacing'>{cliente.tipo_tarjeta}</td>
-                                <td className='paddingSpacing'>{cliente.tipo_producto}</td>
-                                <td className='paddingSpacing'>
-                                    <Input key={cliente.cedula} disabled={false} type="checkbox" checked={tarjetasCheckBox.includes(cliente)} setValueHandler={() => checkTarjeta(cliente)}></Input>
-                                </td>
-
-                            </tr>
-                        )
-                    })}
-                </tbody>
-            </table>
-        </Fragment>
-    )
-}
-*/
-
-
-
-const AccionesTarjeta = () => {
-    return (
-        <div className="f-row" style={{ gap: "6px", justifyContent: "center" }}>
-
-            <button className="btn_mg_icons noborder" title="Imprimir contrato">
-                <img className="img-icons-acciones" src="Imagenes/printIcon.svg" alt="Imprimir contrato"></img>
-            </button>
-
-            <button className="btn_mg_icons noborder" title="Subir Doc Escaneado">
-                <img className="img-icons-acciones" src="Imagenes/upload_file.svg" alt="Subir Doc Escaneado"></img>
-            </button>
-
-            <button className="btn_mg_icons noborder" title="Entregar Tc">
-                <img className="img-icons-acciones" src="Imagenes/entregar.svg" alt="Entregar Tc"></img>
-            </button>
-
-        </div>
-    )
-}
-
-
-const AccionesTarjetaV2 = () => {
-    return (
-        <div className="f-row" style={{ gap: "6px", justifyContent: "center" }}>
-
-            <button className="btn_mg_icons noborder" title="Visualizar documentos">
-                <img className="img-icons-acciones" src="Imagenes/search.svg" alt="Visualizar documentos"></img>
-            </button>
-
-            <button className="btn_mg_icons noborder" title="Regresar Tc">
-                <img className="img-icons-acciones" src="Imagenes/return.svg" alt="Regresar Tc"></img>
-            </button>
-
-            <button className="btn_mg_icons noborder" title="Activar Tc">
-                <img className="img-icons-acciones" src="Imagenes/activate.svg" alt="Activar Tc"></img>
-            </button>
-
-        </div>
-    )
-}
-
 export default connect(mapStateToProps, {})(Seguimiento);

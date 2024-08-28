@@ -13,7 +13,7 @@ import SeguimientoTransaccion from './components/Logs/SeguimientoTran';
 import { IsNullOrWhiteSpace, validateToken } from './js/utiles';
 import './scss/main.css'
 import { desencriptar, generate, get, set } from './js/crypt';
-import { fetchMenuPrincipal, fetchGetParametrosSistema, fetchGetFuncionalidadesTC, fetchGetPermisosPerfil } from './services/RestServices';
+import { fetchMenuPrincipal, fetchGetParametrosSistema, fetchGetPermisosPerfil } from './services/RestServices';
 import { connect, useDispatch } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import Solicitud from './components/Solicitud/Solicitud';
@@ -105,7 +105,7 @@ function Menus({ listaMenus, id_perfil, token, setListas, setListaFunc, listaFun
             }, dispatch)
             fetchGetPermisosPerfil(tokeni, (data) => {
                 dispatch(setFuncionalidadesSistemaAction({ permisos: data.lst_funcionalidades }));
-                console.log("lst_funcionalidades ", data.lst_funcionalidades)
+               //console.log("lst_funcionalidades ", data.lst_funcionalidades)
             }, dispatch)
         }
     }, [idPerfil, tokeni, existeParametrosSistema.length, dispatch, sendedParams, existeParametrosSistema]);

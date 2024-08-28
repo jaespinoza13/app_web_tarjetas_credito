@@ -1,4 +1,4 @@
-import { ServicioGetExecute, getMenuPrincipal, getPreguntaUsuario, ServicioPostExecute, getValidarPreguntaUsuario, setResetPassword, getLogin, getLoginPerfil, getPreguntas, setPreguntas, setPassword, setPasswordPrimeraVez, getListaBases, getListaConexiones, setConexion, addConexion, getListaSeguimiento, getListaDocumentos, getListaColecciones, getDescargarLogsTexto, getLogsTexto, getContenidoLogsTexto, getValidaciones, getScore, getInfoSocio, getInfoEco, addAutorizacion, getSolicitudes, addSolicitud, getContrato, getInfoFinan, addProspecto, getFlujoSolicitud, addComentarioAsesor, addComentarioSolicitud, updResolucion, addResolucion, getResolucion, addProcEspecifico, updSolicitud, getParametros, getReporteOrden, getOrdenes, getTarjetasCredito, getInforme, getMedioAprobacion, getSeparadores, addDocumentosAxentria, getDocumentosAxentria, crearSeparadores, getReporteAval, getAlertasCliente, getMotivos, getOficina, getInfoProspecto, getPermisosPerfil, getFuncionalidadesTC } from './Services';
+import { ServicioGetExecute, getMenuPrincipal, getPreguntaUsuario, ServicioPostExecute, getValidarPreguntaUsuario, setResetPassword, getLogin, getLoginPerfil, getPreguntas, setPreguntas, setPassword, setPasswordPrimeraVez, getListaBases, getListaConexiones, setConexion, addConexion, getListaSeguimiento, getListaDocumentos, getListaColecciones, getDescargarLogsTexto, getLogsTexto, getContenidoLogsTexto, getValidaciones, getScore, getInfoSocio, getInfoEco, addAutorizacion, getSolicitudes, addSolicitud, getInfoFinan, addProspecto, getFlujoSolicitud, addComentarioAsesor, addComentarioSolicitud, updResolucion, addResolucion, getResolucion, addProcEspecifico, updSolicitud, getParametros, getInforme, getMedioAprobacion, getSeparadores, addDocumentosAxentria, getDocumentosAxentria, crearSeparadores, getReporteAval, getAlertasCliente, getMotivos, getOficina, getInfoProspecto, getPermisosPerfil, getFuncionalidadesTC, getOrdenes, updOrdenesTc } from './Services';
 import { setAlertText, setErrorRedirigir } from "../redux/Alert/actions";
 import hex_md5 from '../js/md5';
 import { desencriptar, generate, get, set } from '../js/crypt';
@@ -1018,39 +1018,6 @@ export async function fetchAddAutorizacion(strTipoIdentificacion, intRegistrarAu
     });
 }
 
-/**
-* Agregar la autorizacion de consulta al buró
-* @author retorres
-* @version 1.0
-* @param {string} strEnte
-* @param {(contenido:string, nroTotalRegistros: number) => void} onSuccess
-* @param {Function} dispatch
-*/
-export function fetchGetContrato(token, onSucces, dispatch) {
-    if (dispatch) dispatch(setErrorRedirigir(""));
-
-    let body = {
-        
-    }
-    ServicioPostExecute(getContrato, body, token, { dispatch: dispatch }).then((data) => {
-        if (data) {
-            if (data.error) {
-                if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
-            } else {
-                if (data.str_res_estado_transaccion === "OK") {
-                    onSucces(data);
-                } else {
-                    let codigo = data.codigo || data.str_res_codigo;
-                    let mensaje = data.mensaje || data.str_res_info_adicional;
-                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
-                }
-            }
-        } else {
-            if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
-        }
-    });
-}
-
 export function fetchGetSolicitudes(token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
@@ -1082,9 +1049,9 @@ export function fetchGetSolicitudes(token, onSucces, dispatch) {
 
 export function fetchAddSolicitud(body,token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
-    console.log("body SOL", body);
+    //console.log("body SOL", body);
     ServicioPostExecute(addSolicitud, body, token, { dispatch: dispatch }).then((data) => {
-        console.log("RES ADD SOL", data);
+        //console.log("RES ADD SOL", data);
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
@@ -1171,7 +1138,7 @@ export function fetchAddProspecto(str_num_documento, ente, nombres, apellidos, c
         mny_gastos_financiero_titular: gastoFinancieroTitular
     }
 
-    console.log("body", body)
+    //console.log("body", body)
     ServicioPostExecute(addProspecto, body, token, { dispatch: dispatch }).then((data) => {
         //console.log("DATA",  data)
         if (data) {
@@ -1504,7 +1471,12 @@ export async function fetchGetParametrosSistema(nombreParametro, token, onSucces
         str_nombre: nombreParametro,
         int_id_sis: 0 //Parametro se sobrescribe en el controller
     }
+    //console.log("token ", token)
+   /* if (token.trim() === "") {
+        return
+    }*/
     await ServicioPostExecute(getParametros, body, token, { dispatch: dispatch }).then((data) => {
+        //console.log("data ",data)
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
@@ -1589,86 +1561,6 @@ export function fetchUpdateCupoSolicitud(idSolicitud, idFlujoSol, estadoSol, dec
     });
 }
 
-export function fetchGetReporteOrden(numOrden, token, onSucces, dispatch) {
-    if (dispatch) dispatch(setErrorRedirigir(""));
-
-    let body = {
-        str_numero_orden: numOrden
-    }
-    ServicioPostExecute(getReporteOrden, body, token, { dispatch: dispatch }).then((data) => {
-        if (data) {
-            if (data.error) {
-                if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
-            } else {
-                if (data.str_res_estado_transaccion === "OK") {
-                    onSucces(data);
-                } else {
-                    let codigo = data.codigo || data.str_res_codigo;
-                    let mensaje = data.mensaje || data.str_res_info_adicional;
-                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
-                }
-            }
-        } else {
-            if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
-        }
-    });
-}
-
-
-
-export function fetchGetOrdenes(tipo_requerido, token, onSucces, dispatch) {
-    if (dispatch) dispatch(setErrorRedirigir(""));
-
-    let body = {
-        str_orden_tipo: tipo_requerido
-    }
-    //console.log(body)
-    ServicioPostExecute(getOrdenes, body, token, { dispatch: dispatch }).then((data) => {
-        if (data) {
-            if (data.error) {
-                if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
-            } else {
-                if (data.str_res_estado_transaccion === "OK") {
-                    onSucces(data);
-                } else {
-                    let codigo = data.codigo || data.str_res_codigo;
-                    let mensaje = data.mensaje || data.str_res_info_adicional;
-                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
-                }
-            }
-        } else {
-            if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
-        }
-    });
-}
-
-export function fetchGetTarjetasCredito(nemonico_producto, tipo_tarjeta, estado_tarjeta ,token, onSucces, dispatch) {
-    if (dispatch) dispatch(setErrorRedirigir(""));
-
-    let body = {
-        str_nem_prod: nemonico_producto,
-        str_tipo_prod: tipo_tarjeta,
-        str_estado_tc: estado_tarjeta,
-    }
-    ServicioPostExecute(getTarjetasCredito, body, token, { dispatch: dispatch }).then((data) => {
-        if (data) {
-            if (data.error) {
-                if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
-            } else {
-                if (data.str_res_estado_transaccion === "OK") {
-                    onSucces(data);
-                } else {
-                    let codigo = data.codigo || data.str_res_codigo;
-                    let mensaje = data.mensaje || data.str_res_info_adicional;
-                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
-                }
-            }
-        } else {
-            if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
-        }
-    });
-}
-
 export function fetchGetMedioAprobacion(estadoSoli, idSolicitud, cedula, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
@@ -1743,10 +1635,10 @@ export async function fetchAddDocumentosAxentria(solicitudId, versionDoc,requier
             file: archivo
         } 
     }
-    //console.log("BODY ADD ARC ", body)
+    console.log("BODY ADD ARC ", body)
     
     await ServicioPostExecute(addDocumentosAxentria, body, token, { dispatch: dispatch }).then((data) => {
-        //console.log("Add Doc Axe,", data);
+        console.log("Add Doc Axe,", data);
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
@@ -1850,13 +1742,13 @@ export async function fetchReporteAval(idCliente, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
-        int_cliente: Number(idCliente),
+        int_cliente: idCliente,
         int_id_con: -1 //NECESARIO PASAR ESE VALOR
     };
 
     await ServicioPostExecute(getReporteAval, body, token, { dispatch: dispatch }).then((data) => {
+        //console.log("Reporte AVAL", data.file_bytes)
         if (data) {
-            //console.log("Reporte AVAL", data.file_bytes)
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
             } else {
@@ -1987,6 +1879,81 @@ export function fetchGetFuncionalidadesTC(token, onSucces, dispatch) {
 
     }
     ServicioPostExecute(getFuncionalidadesTC, body, token, { dispatch: dispatch }).then((data) => {
+        //console.log("data ", data)
+        if (data) {
+            if (data.error) {
+                if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
+            } else {
+                if (data.str_res_estado_transaccion === "OK") {
+                    onSucces(data);
+                } else {
+                    let codigo = data.codigo || data.str_res_codigo;
+                    let mensaje = data.mensaje || data.str_res_info_adicional;
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
+                }
+            }
+        } else {
+            if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
+        }
+    });
+}
+
+
+
+/***********************************************************************************************/
+/*******************************************ORDENES*********************************************/
+/***********************************************************************************************/
+
+/**
+ * 
+ * @param {any} intEstadoOrden
+ * @param {any} token
+ * @param {any} onSucces
+ * @param {any} dispatch
+ */
+export function fetchGetOrdenes(intEstadoOrden, token, onSucces, dispatch) {
+    if (dispatch) dispatch(setErrorRedirigir(""));
+
+    let body = {
+        int_estado_orden: Number(intEstadoOrden)
+    }
+    //console.log(body)
+    ServicioPostExecute(getOrdenes, body, token, { dispatch: dispatch }).then((data) => {
+        //console.log("data ", data)
+        if (data) {
+            if (data.error) {
+                if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
+            } else {
+                if (data.str_res_estado_transaccion === "OK") {
+                    onSucces(data);
+                } else {
+                    let codigo = data.codigo || data.str_res_codigo;
+                    let mensaje = data.mensaje || data.str_res_info_adicional;
+                    if (dispatch) dispatch(setAlertText({ code: codigo, text: mensaje }));
+                }
+            }
+        } else {
+            if (dispatch) dispatch(setAlertText({ code: "1", text: "Error en la comunicac\u00f3n con el servidor" }));
+        }
+    });
+}
+/**
+ * 
+ * @param {any} estado
+ * @param {any} lstOrdenes
+ * @param {any} token
+ * @param {any} onSucces
+ * @param {any} dispatch
+ */
+export async function  fetchUpdateOrdenes(estado,lstOrdenes, token, onSucces, dispatch) {
+    if (dispatch) dispatch(setErrorRedirigir(""));
+
+    let body = {
+        int_estado: Number(estado),
+        int_ids_array: lstOrdenes
+    }
+    console.log(body)
+    await ServicioPostExecute(updOrdenesTc, body, token, { dispatch: dispatch }).then((data) => {
         //console.log("data ", data)
         if (data) {
             if (data.error) {

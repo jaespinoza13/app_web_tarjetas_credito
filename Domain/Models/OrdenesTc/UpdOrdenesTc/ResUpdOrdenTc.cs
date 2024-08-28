@@ -5,11 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Models.TarjetaCredito.ObtenerOrdenReporte
+namespace Domain.Models.OrdenesTc.UpdOrdenesTc
 {
-    public class ResGetReporteOrden : ResComun
+    public class ResUpdOrdenTc: ResComun
     {
-        public byte[] byt_reporte { get; set; }
-
     }
 }

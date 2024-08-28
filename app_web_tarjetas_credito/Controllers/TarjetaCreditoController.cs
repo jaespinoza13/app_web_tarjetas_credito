@@ -8,8 +8,6 @@ using Domain.Models.TarjetaCredito.AddProspeccion;
 using Domain.Models.TarjetaCredito.AddResolucion;
 using Domain.Models.TarjetaCredito.AddSolicitud;
 using Domain.Models.TarjetaCredito.GetComentarios;
-using Domain.Models.TarjetaCredito.GetContrato;
-using Domain.Models.TarjetaCredito.GetContratos;
 using Domain.Models.TarjetaCredito.GetFlujoSolicitud;
 using Domain.Models.TarjetaCredito.GetInfoEconomica;
 using Domain.Models.TarjetaCredito.GetInfoFinanciera;
@@ -20,16 +18,13 @@ using Domain.Models.TarjetaCredito.GetScore;
 using Domain.Models.TarjetaCredito.GetSolicitudes;
 using Domain.Models.TarjetaCredito.GetValidaciones;
 using Domain.Models.TarjetaCredito.UpdResoluciones;
-using Domain.Models.TarjetaCredito.ObtenerOrdenReporte;
 using Domain.Models.TarjetaCredito.UpdSolicitud;
-using Infrastructure.Login;
 using Infrastructure.TarjetaCredito;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using plantilla_app_web.Controllers.Common;
 using plantilla_app_web.Filters;
 using Domain.Models.TarjetaCredito.GetOrdenes;
-using Domain.Models.TarjetaCredito.GetTarjetasCredito;
 using Domain.Models.TarjetaCredito.GetMedioAprobacion;
 using Domain.Models.TarjetaCredito.Axentria.GetSeparadores;
 using Domain.Models.TarjetaCredito.Axentria.AddDocumentos;
@@ -123,15 +118,6 @@ namespace plantilla_app_web.Controllers
         {
             ResGetInfoSocio resGetInfoSocio = tarjetaCreditoDat.getInfoSocio(req);
             return Utiles.crypt(resGetInfoSocio, Request.Headers);
-        }
-
-        [Route("getContrato")]
-        [ServiceFilter(typeof(CryptoFilter))]
-        [HttpPost]
-        public ResCrypt Post(ReqGetContrato req)
-        {
-            ResGetContrato res = tarjetaCreditoDat.getContrato(req);
-            return Utiles.crypt(res, Request.Headers);
         }
 
         [Route("addAutorizacion")]
@@ -242,16 +228,6 @@ namespace plantilla_app_web.Controllers
             return Utiles.crypt(res, Request.Headers);
         }
 
-
-        [Route("getReporteOrden")]
-        [ServiceFilter(typeof(CryptoFilter))]
-        [HttpPost]
-        public ResCrypt Post(ReqGetReporteOrden req)
-        {
-            ResGetReporteOrden res = tarjetaCreditoDat.getReporteOrden(req);
-            return Utiles.crypt(res, Request.Headers);
-        }
-
         [Route("getMedioAprobacion")]
         [ServiceFilter(typeof(CryptoFilter))]
         [HttpPost]
@@ -269,17 +245,6 @@ namespace plantilla_app_web.Controllers
             ResGetOrdenes res = tarjetaCreditoDat.getOrdenes(req);
             return Utiles.crypt(res, Request.Headers);
         }
-
-
-        [Route("getTarjetasCredito")]
-        [ServiceFilter(typeof(CryptoFilter))]
-        [HttpPost]
-        public ResCrypt Post(ReqGetTarjetasCredito req)
-        {
-            ResGetTarjetasCredito res = tarjetaCreditoDat.getTarjetasCredito(req);
-            return Utiles.crypt(res, Request.Headers);
-        }
-
 
         [Route("addProcEspecifico")]
         [ServiceFilter(typeof(CryptoFilter))]

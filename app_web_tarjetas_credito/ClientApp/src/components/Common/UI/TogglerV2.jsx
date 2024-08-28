@@ -1,5 +1,5 @@
 ﻿import { Fragment, useEffect, useState } from "react";
-import '../../../css/Components/TogglerV2.css'; 
+import '../../../css/Components/TogglerV2.css';
 import Button from "./Button";
 
 
@@ -13,21 +13,17 @@ const TogglerV2 = (props) => {
 
     useEffect(() => {
         setActiveIndex(props.toggles[0].key);
-        setTamArray(props.toggles.length-1)
+        setTamArray(props.toggles.length - 1)
+        props.selectedToggle(props.toggles[0].key);// Retorna la accion del primer boton
     }, []);
 
     return (
         <div className={`togglerv2 ${props.className}`} value={activeIndex}>
 
-            {props.toggles.map((element) => (
+            {props.toggles.map((element, index) => (
                 <Button
                     key={element.key}
-                    className={`btn_mg__togglerv2 
-                        ${element.key === activeIndex ? 'active' : ''}
-                        ${element.key === 0 ? 'inicialBotton' : ''}
-                        ${element.key === tamArray ? 'endBotton' : ''}
-                        ${(element.key !== tamArray && element.key !== 0) ? 'middBotton' : ''}
-                        `}
+                    className={`btn_mg__togglerv2 ${element.key === activeIndex ? 'active' : ''} ${index === 0 ? 'inicialBotton' : ''} ${index === tamArray ? 'endBotton' : ''} ${(index !== tamArray && index !== 0) ? 'middBotton' : ''}`}
                     onClick={() => { togglerHandler(element.key) }}>
                     {
                         <Fragment key={element.key}>

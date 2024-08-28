@@ -2,12 +2,22 @@
 import Input from "../Common/UI/Input";
 import AccordionV2 from '../Common/UI/AccordionV2';
 import Chip from "../Common/UI/Chip";
+import { connect, useDispatch } from "react-redux";
+import { setSeguimientOrdenAction } from "../../redux/SeguimientoOrden/actions";
+import { convertFecha } from "../../js/utiles";
+
+const mapStateToProps = (state) => {
+    return {
+        seguimientoOrden:state.GetSeguimientoOrden.data,
+    };
+};
+
 
 const ComponentItemsOrden = (props) => {
-
     const [checkSeleccionPadre, setCheckSeleccionPadre] = useState(false);
     const [checkSeleccionHijo, setCheckSeleccionHijo] = useState(false);
     const [totalItemOrdenCheck, setTotalItemOrdenCheck] = useState([]);
+    const [infoSeguimiento, setInfoSeguimiento] = useState();
 
     const setStatusCheckHandler = (valor) => {
         setCheckSeleccionHijo(valor);
@@ -20,31 +30,46 @@ const ComponentItemsOrden = (props) => {
 
 
     useEffect(() => {
-        if (props.orden.lst_socios.length > 0) {
-            setCheckSeleccionPadre(totalItemOrdenCheck.length === props.orden.lst_socios.length && totalItemOrdenCheck.length !== 0)
+        if (props.orden.lst_ord_ofi.length > 0) {
+            setCheckSeleccionPadre(totalItemOrdenCheck.length === props.orden.lst_ord_ofi.length && totalItemOrdenCheck.length !== 0)
         }
     }, [totalItemOrdenCheck])
 
 
-    return (
-        <Fragment key={props.index}>
-            <ComponentHeaderAccordion
-                index={props.index}
-                header={props.orden}
-                inicialStateCheck={checkSeleccionPadre}
-                checkStatusChange={(e) => { setStatusCheckHandler(e) }}
-                pantallaTituloExponer={props.pantallaTituloExponer}
-                opcionHeader={props.opcionHeader}
-            >
-                <ComponentOrdenItems
-                    ordenItem={props.orden}
-                    checkStatusSeleccion={checkSeleccionHijo}
-                    returnItemOrden={(tarj) => itemsOrdenCkeckTotal(tarj, props.orden.oficina)}
-                    opcionItemDisable={props.opcionItemDisable }
-                ></ComponentOrdenItems>
-            </ComponentHeaderAccordion>
+    useEffect(() => {  
+        console.log("PROPS seguimientoOrden ", props.seguimientoOrden)
+        if (props.seguimientoOrden) {
+            setInfoSeguimiento(props.seguimientoOrden)
+        }
+    }, [props.seguimientoOrden])
 
-        </Fragment>
+    /*
+    useEffect(() => {
+        return () => {
+            setCheckSeleccionPadre(false)
+            setCheckSeleccionHijo(false)
+            setTotalItemOrdenCheck([])
+            setInfoSeguimiento()
+        }
+    }, [])*/
+
+
+    return (
+        <ComponentHeaderAccordion
+            header={props.orden}
+            inicialStateCheck={checkSeleccionPadre}
+            checkStatusChange={(e) => { setStatusCheckHandler(e) }}
+            pantallaTituloExponer={props.pantallaTituloExponer}
+            opcionHeader={props.opcionHeader}
+        >
+            <ComponentOrdenItems
+                ordenItem={props.orden}
+                checkStatusSeleccion={checkSeleccionHijo}
+                returnItemOrden={(tarj) => itemsOrdenCkeckTotal(tarj, props.orden.str_oficina_entrega)}
+                opcionItemDisable={props.opcionItemDisable}
+                seguimientoRedux={infoSeguimiento }
+            ></ComponentOrdenItems>
+        </ComponentHeaderAccordion>
 
     )
 
@@ -101,7 +126,7 @@ const ComponentHeaderAccordion = (props) => {
                         <h4 className="item-header white">Oficina</h4>
                     </div>
                     <div className="content-block" style={{ width: "21%", minWidth: "270px" }} >
-                        <h4 className="item-header white">{props.header.oficina}</h4>
+                        <h4 className="item-header white">{props.header.str_oficina_entrega}</h4>
                     </div>
                     <div className="content-block" style={{ width: "16%", minWidth: "210px" }} >
                         <h4 className="item-header white">Total de tarjetas</h4>
@@ -166,9 +191,13 @@ const ComponentHeaderAccordion = (props) => {
 }
 
 
-const ComponentOrdenItems = ({ ordenItem, checkStatusSeleccion, returnItemOrden, opcionItemDisable }) => {
+const ComponentOrdenItems = ({ ordenItem, checkStatusSeleccion, returnItemOrden, opcionItemDisable, seguimientoRedux }) => {
+
+    const dispatch = useDispatch();
 
     const [tarjetasCheckBox, setTarjetaCheckBox] = useState([]);
+    const [isActivarOpciones, setIsActivarOpciones] = useState();
+    const [controlActualizoRedux, setControlActualizoRedux] = useState(false);
 
     useEffect(() => {
         seleccionMultiple();
@@ -184,28 +213,47 @@ const ComponentOrdenItems = ({ ordenItem, checkStatusSeleccion, returnItemOrden,
 
     const toggleSelectAll = (checkStatus) => {
         if (checkStatus) {
-            const resultado = ordenItem.lst_socios.map(itemOrden => itemOrden).flat();
+            const resultado = ordenItem.lst_ord_ofi.map(itemOrden => itemOrden.int_seg_id).flat();
             setTarjetaCheckBox(resultado);
         } else {
             setTarjetaCheckBox([]);
         }
     };
 
-    const checkTarjeta = (ordenCheck) => {
-        if (tarjetasCheckBox.includes(ordenCheck)) {
+    const checkTarjeta = (int_seg_id) => {
+        if (tarjetasCheckBox.includes(int_seg_id)) {
            /* const indexOrden = tarjetasCheckBox.findIndex(ordenItem => ordenItem === ordenCheck);
             console.log("INDEX ", indexOrden);
             console.log(" tarjetasCheckBox[indexOrden] ", tarjetasCheckBox[indexOrden]);
             tarjetasCheckBox[indexOrden].realizar_accion = false;*/
-            setTarjetaCheckBox(tarjetasCheckBox.filter(ordenItem => ordenItem !== ordenCheck));
+            setTarjetaCheckBox(tarjetasCheckBox.filter(ordenItem => ordenItem !== int_seg_id));
         } else {
             //ordenCheck.realizar_accion = true;
-            setTarjetaCheckBox([...tarjetasCheckBox, ordenCheck]);
+            setTarjetaCheckBox([...tarjetasCheckBox, int_seg_id]);
         }
     }
 
-    return (
-        <Fragment key={ordenItem.cedula}>
+    const clickHandler = (str_identificacion) => {
+        //console.log("PROPS seguimientoOrden ", seguimientoRedux)
+        if (seguimientoRedux.seguimientoAccionClick) {
+            dispatch(setSeguimientOrdenAction({
+                seguimientoAccionClick: seguimientoRedux.seguimientoAccionClick,
+                seguimientoCedula: str_identificacion
+            }))
+        }
+    }
+
+    useEffect(() => {
+        //console.log("PROPS seguimientoOrden ", seguimientoRedux)
+        if (seguimientoRedux !== undefined && Object.entries(seguimientoRedux).length !== 0) {
+            setIsActivarOpciones(seguimientoRedux.seguimientoAccionClick)
+            setControlActualizoRedux(true)
+        }
+    }, [seguimientoRedux])
+
+    return (        
+        <Fragment>
+            {controlActualizoRedux &&
             <table className='table-accordion2' style={{ overflowY: "hidden" }}>
                 <thead className='thead-accordion2'>
                     <tr>
@@ -218,30 +266,38 @@ const ComponentOrdenItems = ({ ordenItem, checkStatusSeleccion, returnItemOrden,
                     </tr>
                 </thead>
                 <tbody style={{ overflowY: "hidden" }}>
-                    {ordenItem.lst_socios.map(cliente => {
+                        {ordenItem.lst_ord_ofi.map(cliente => {
                         return (
-                            <tr key={cliente.cedula}>
-                                <td className='paddingSpacing'>{cliente.cedula}</td>
-                                <td className='paddingSpacing'>{cliente.nombres}</td>
-                                <td className='paddingSpacing'>{cliente.fecha_proceso}</td>
-                                <td className='paddingSpacing'>{cliente.tipo_tarjeta}</td>
-                                <td className='paddingSpacing'> <Chip type={cliente.tipo_producto}>{cliente.tipo_producto}</Chip></td>
+                            <tr key={cliente.int_seg_id}>
+                                <td className='paddingSpacing' onClick={() => clickHandler(cliente.int_seg_id)}>
+                                    {isActivarOpciones &&
+                                        <div style={{ fontSize: "1.07rem", color: "#004CAC", fontFamily: "Karbon-Bold", textDecoration: "underline", cursor: "pointer" }}>
+                                            {cliente.str_identificacion}
+                                        </div>
+                                    }
+                                    {!isActivarOpciones && cliente.str_identificacion}
+                                </td>
+                                <td className='paddingSpacing'>{cliente.str_denominacion_socio}</td>
+                                <td className='paddingSpacing'>{convertFecha(cliente.dtt_fecha_entrega)}</td>
+                                <td className='paddingSpacing'>{cliente.str_tipo_propietario}</td>
+                                <td className='paddingSpacing'> <Chip type={cliente.str_tipo_tarjeta}>{cliente.str_tipo_tarjeta}</Chip></td>
                                 <td className='paddingSpacing'>
-                                    <Input key={cliente.cedula}
+                                    <Input key={cliente.str_identificacion}
                                         disabled={opcionItemDisable}
                                         type="checkbox"
-                                        checked={tarjetasCheckBox.includes(cliente)}
-                                        setValueHandler={() => checkTarjeta(cliente)}
+                                        checked={tarjetasCheckBox.includes(cliente.int_seg_id)}
+                                        setValueHandler={() => checkTarjeta(cliente.int_seg_id)}
                                     ></Input>
                                 </td>
                             </tr>
                         )
                     })}
                 </tbody>
-            </table>
+                </table>
+            }
         </Fragment>
+        
     )
 }
 
-
-export default ComponentItemsOrden;
+export default connect(mapStateToProps, {})(ComponentItemsOrden);
