@@ -13,9 +13,12 @@ import { get } from '../../js/crypt';
 import Table from '../Common/Table';
 import Chip from '../Common/UI/Chip';
 import TogglerV2 from '../Common/UI/TogglerV2';
-import { fetchGetFuncionalidadesTC, fetchGetOrdenes, fetchGetParametrosSistema, fetchUpdateOrdenes } from '../../services/RestServices';
+import { fetchGetFuncionalidadesTC, fetchGetOrdenes, fetchGetParametrosSistema, fetchGetSeparadores, fetchUpdateOrdenes } from '../../services/RestServices';
 import { setSeguimientOrdenAction } from '../../redux/SeguimientoOrden/actions';
 import Modal from '../Common/Modal/Modal';
+import DriveFolderUploadRoundedIcon from '@mui/icons-material/DriveFolderUploadRounded';
+import CreditScoreRoundedIcon from '@mui/icons-material/CreditScoreRounded';
+import UploadDocumentos from "../Common/UploaderDocuments";
 
 const mapStateToProps = (state) => {
     var bd = state.GetWebService.data;
@@ -78,6 +81,8 @@ function Seguimiento(props) {
     //Info sesión
     const [datosUsuario, setDatosUsuario] = useState([]);
 
+    //Identificador de item seguimiento
+    const [seguimientoIdAccion, setSeguimientoIdAccion] = useState(0);
 
     //Modales
     const [modalCambioEstadoOrdenes, setModalCambioEstadoOrdenes] = useState(false);
@@ -85,11 +90,11 @@ function Seguimiento(props) {
     const [modalVisibleOk, setModalVisibleOk] = useState(false);
     const [textoTitulo, setTextoTitulo] = useState("");
 
-
     const [isOpenModalAccionTarjeta, setIsOpenModalAccionTarjeta] = useState(false);
+    const [isOpenModalGestorDocumental, setIsOpenModalGestorDocumental] = useState(false);
 
-    //Identificador de item seguimiento
-    const [seguimientoIdAccion, setSeguimientoIdAccion] = useState(0);
+    //Axentria
+    const [separadores, setSeparadores] = useState([]);
 
     useEffect(() => {
         //console.log("PROPS seguimientoOrden ", props.seguimientoOrden)
@@ -103,16 +108,19 @@ function Seguimiento(props) {
 
     useEffect(() => {
         if (selectFiltrarOrdenes === "EST_SEG_PEN_ENV_PER") {
-            setSeguimientoOrdenRedux(true);
+            setSeguimientoOrdenRedux(false);
             setTextoBotonAccion("Enviar");
         }
+        //TODO: VALIDAR RECHAZADA OPERACIONES
         else if (selectFiltrarOrdenes === "EST_SEG_ENV_PER") {
-            setSeguimientoOrdenRedux(false);
+            setSeguimientoOrdenRedux(true);
             setTextoBotonAccion("Recibir");
         }
         else if (selectFiltrarOrdenes === "EST_SEG_VER_OPR") {
             setSeguimientoOrdenRedux(false);
             setTextoBotonAccion("Distribuir");
+        } else if (selectFiltrarOrdenes === "EST_SEG_ENV_AGN") {
+            setSeguimientoOrdenRedux(true);
         } else {
             setSeguimientoOrdenRedux(false);
         }
@@ -287,6 +295,10 @@ function Seguimiento(props) {
         setSeguimientoIdAccion(0);
     }
 
+    const closeModalGestorDocumentalHandler = () => {
+        setIsOpenModalGestorDocumental(false);
+    }
+
     const cambioEstadoTCSeguimientoHandler = async () => {
         closeModalCambioEstadoOrdenes();
         //console.log("selectFiltrarOrdenes ", selectFiltrarOrdenes)
@@ -458,22 +470,58 @@ function Seguimiento(props) {
         closeModalAccionTarjeta();
     }
 
+    const descargarContratoHandler = () => {
+
+        const pdfUrl = "Imagenes/CONTRATO.pdf";
+        const link = document.createElement("a");
+        link.href = pdfUrl;
+        link.download = "document.pdf"; // specify the filename
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+
+    const openModalGestorDocumentalHandler = async () => {
+        if (props.token) {
+            fetchGetSeparadores(props.token, (data) => {
+                //console.log("RES, ", data.lst_separadores)
+                setSeparadores(data.lst_separadores);
+                setIsOpenModalGestorDocumental(true)
+            }, dispatch);
+        }
+        
+    }
+
 
     // ACCIONES PARA TABLE
     const AccionesAsistenteAgencia = ({ seguimiento }) => {
-        console.log("AccionesAsistentePlataforma ", seguimiento)
+        //console.log("AccionesAsistentePlataforma ", seguimiento) //f-row w-100 icon-retorno
         return (
             <div className="f-row" style={{ gap: "6px", justifyContent: "center" }}>
 
-                <button className="btn_mg_icons noborder" title="Visualizar documentos">
-                    <img className="img-icons-acciones" src="Imagenes/search.svg" alt="Visualizar documentos"></img>
+
+                <button className="btn_mg_icons noborder mr-1" title="Imprimir contrato" onClick={descargarContratoHandler}>
+                    <img className="img-icons-acciones" src="Imagenes/printIcon.svg" alt="Imprimir contrato"></img>
                 </button>
 
-                <button className="btn_mg_icons noborder" title="Regresar Tc">
-                    <img className="img-icons-acciones" src="Imagenes/return.svg" alt="Regresar Tc"></img>
-                </button>
+                <div onClick={openModalGestorDocumentalHandler} title="Gestor documental" className="btn_mg_icons noborder mr-1">
+                    <DriveFolderUploadRoundedIcon
+                        sx={{
+                            fontSize: 35,
+                            marginTop: 0.5,
+                            padding: 0,
+                        }}
+                    >
+                    </DriveFolderUploadRoundedIcon>
+                </div>
+                
 
-                <button className="btn_mg_icons noborder" title="Activar Tc"
+                {/*<button className="btn_mg_icons noborder" title="Visualizar documentos">*/}
+                {/*    <img className="img-icons-acciones" src="Imagenes/search.svg" alt="Visualizar documentos"></img>*/}
+                {/*</button>*/}
+
+                <button className="btn_mg_icons noborder" title="Activar TC"
                     onClick={() => {
                         setSeguimientoIdAccion(Number(seguimiento));
                         setTextoCambioEstadoOrden('¿Esta seguro de activar la tarjeta de crédito?');
@@ -491,22 +539,47 @@ function Seguimiento(props) {
         return (
             <div className="f-row" style={{ gap: "6px", justifyContent: "center" }}>
 
-                <button className="btn_mg_icons noborder" title="Imprimir contrato">
+                <button className="btn_mg_icons noborder mr-1" title="Imprimir contrato" onClick={descargarContratoHandler}>
                     <img className="img-icons-acciones" src="Imagenes/printIcon.svg" alt="Imprimir contrato"></img>
                 </button>
 
-                <button className="btn_mg_icons noborder" title="Subir Doc Escaneado">
-                    <img className="img-icons-acciones" src="Imagenes/upload_file.svg" alt="Subir Doc Escaneado"></img>
-                </button>
+                <div onClick={openModalGestorDocumentalHandler} title="Gestor documental" className="btn_mg_icons noborder mr-1">
+                    <DriveFolderUploadRoundedIcon
+                        sx={{
+                            fontSize: 35,
+                            marginTop: 0.5,
+                            padding: 0,
+                        }}
+                    >
+                    </DriveFolderUploadRoundedIcon>
+                </div>
+                {/*<button className="btn_mg_icons noborder" title="Subir Doc Escaneado">*/}
+                {/*    <img className="img-icons-acciones" src="Imagenes/upload_file.svg" alt="Subir Doc Escaneado"></img>*/}
+                {/*</button>*/}
 
-                <button className="btn_mg_icons noborder" title="Entregar Tc"
-                    onClick={() => {
-                        setSeguimientoIdAccion(Number(seguimiento));
-                        setTextoCambioEstadoOrden('¿Esta seguro de realizar la entrega de la tarjeta de crédito?');
-                        setModalCambioEstadoOrdenes(true);
+                <div onClick={() => {
+                    setSeguimientoIdAccion(Number(seguimiento));
+                    setTextoCambioEstadoOrden('¿Esta seguro de realizar la entrega de la tarjeta de crédito?');
+                    setModalCambioEstadoOrdenes(true);
+                }} title="Entregar Tc" className="btn_mg_icons noborder mr-1">
+                <CreditScoreRoundedIcon
+                    sx={{
+                        fontSize: 35,
+                        marginTop: 0.5,
+                        padding: 0,
                     }}>
-                    <img className="img-icons-acciones" src="Imagenes/entregar.svg" alt="Entregar Tc"></img>
-                </button>
+                    </CreditScoreRoundedIcon>
+                </div>
+
+
+                {/*<button className="btn_mg_icons noborder" title="Entregar Tc"*/}
+                {/*    onClick={() => {*/}
+                {/*        setSeguimientoIdAccion(Number(seguimiento));*/}
+                {/*        setTextoCambioEstadoOrden('¿Esta seguro de realizar la entrega de la tarjeta de crédito?');*/}
+                {/*        setModalCambioEstadoOrdenes(true);*/}
+                {/*    }}>*/}
+                {/*    <img className="img-icons-acciones" src="Imagenes/entregar.svg" alt="Entregar Tc"></img>*/}
+                {/*</button>*/}
 
             </div>
         )
@@ -783,6 +856,37 @@ function Seguimiento(props) {
                     }
                 </div>
             </Modal>
+
+
+
+            <Modal
+                modalIsVisible={isOpenModalGestorDocumental}
+                titulo={`GESTOR DOCUMENTAL`}
+                onNextClick={closeModalGestorDocumentalHandler}
+                onCloseClick={closeModalGestorDocumentalHandler}
+                isBtnDisabled={false}
+                type="lg2"
+                mainText="Salir"
+            >
+                <div className={"m-2"}>
+                    <UploadDocumentos
+                        grupoDocumental={separadores}
+                        contenido={separadores}
+                        token={props.token}
+                        cedulaSocio={"1150214375"}
+                        solicitud={12}
+                        datosSocio={{ str_nombres: "FULANITO", str_apellido_paterno: "FABIAN", str_apellido_materno: "MARTINEZ" }}
+                        datosUsuario={datosUsuario}
+                        seleccionToogleSolicitud={""}
+                        oficinaSolicitud={"MATRIZ"}
+                        estadoSolicitud={"APROBADA"}
+                        cupoSolicitado={"-"}
+                        oficialSolicitud={""}
+                        calificacionRiesgo={""}
+                    ></UploadDocumentos>
+                </div>
+            </Modal>
+
 
         </div>
 

@@ -179,7 +179,7 @@ function Solicitud(props) {
     useEffect(() => {
         if (funcionalidades?.length > 0 && props?.funcionalidadesStore?.permisos?.length > 0) {
             //console.log("props?.funcionalidadesStore?.permisos ", props?.funcionalidadesStore?.permisos)
-            //console.log("funcionalidades ", funcionalidades)
+            console.log("props?.funcionalidadesStore?.permisos ", props?.funcionalidadesStore?.permisos)
 
             //Permisos para crear solicitudes/prospectos
             setTienePermisosCrearSolicitud(props?.funcionalidadesStore?.permisos.some(permisosAccion => {
