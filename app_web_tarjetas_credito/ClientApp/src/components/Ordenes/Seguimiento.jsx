@@ -874,7 +874,7 @@ function Seguimiento(props) {
                         contenido={separadores}
                         token={props.token}
                         cedulaSocio={"1150214375"}
-                        solicitud={12}
+                        solicitud={null}
                         datosSocio={{ str_nombres: "FULANITO", str_apellido_paterno: "FABIAN", str_apellido_materno: "MARTINEZ" }}
                         datosUsuario={datosUsuario}
                         seleccionToogleSolicitud={""}

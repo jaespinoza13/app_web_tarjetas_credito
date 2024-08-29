@@ -523,7 +523,7 @@ const UploadDocumentos = (props) => {
 
                         <div style={{ display: "flex" }}>
                             <p className='normal'>SOLICITUD NRO: </p>
-                            <p className="negrita"> {props.solicitud}</p>
+                            <p className="negrita"> {props?.solicitud}</p>
                         </div>
 
                         <div style={{ display: "flex" }}>
