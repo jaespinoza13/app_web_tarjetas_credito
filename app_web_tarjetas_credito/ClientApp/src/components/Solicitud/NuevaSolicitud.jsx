@@ -94,17 +94,12 @@ const NuevaSolicitud = (props) => {
     //Boton siguiente
     const [estadoBotonSiguiente, setEstadoBotonSiguiente] = useState(true);
 
-    //Score
+    //Datos del Score
     const [archivoAutorizacion, setArchivoAutorizacion] = useState('');
     const [step, setStep] = useState(0);
-
-
     const [idClienteScore, setIdClienteScore] = useState(0);
-
-    // Para registro Solicitud
     const [calificacionRiesgo, setCalificacionRiesgo] = useState("");
     const [decisionBuro, setDecisionBuro] = useState("");
-    const [gastoFinancieroTitular, setGastoFinancieroTitular] = useState("0");
     const [cupoSugeridoAval, setCupoSugeridoAval] = useState(0);
     const [cupoSugeridoCoopM, setCupoSugeridoCoopM] = useState(0);
 
@@ -567,14 +562,14 @@ const NuevaSolicitud = (props) => {
             //Redux guardar informaciion necesaria para nueva simulacion en DatosSocio
             //TODO CAMBIAR DE CEDULA
             dispatch(setDataSimulacionStateAction({
-                cedula: "1105952475", nombresApellidos: nombreSocioTC
+                cedula: "1150214375", nombresApellidos: nombreSocioTC
             }))
 
             if (!realizaNuevaSimulacion.current) {
                 //Se refresca informacion
                 await refrescarDatosInformativos();
                 //TODO cambiar cedula a a -> cedulaSocio
-                await fetchScore("C", "1105952475", nombreSocioTC, datosUsuario[0].strUserOficina, datosUsuario[0].strOficial, datosUsuario[0]?.strCargo, props.token, (data) => {
+                await fetchScore("C", "1150214375", nombreSocioTC, datosUsuario[0].strUserOficina, datosUsuario[0].strOficial, datosUsuario[0]?.strCargo, props.token, (data) => {
                    
                     setIdClienteScore(data.int_cliente);
                     setPuntajeScore(data?.response?.result?.scoreFinanciero[0]?.score)
@@ -590,7 +585,6 @@ const NuevaSolicitud = (props) => {
                     //Se captura la calificacion que retorna de la consulta al buro
                     setCalificacionRiesgo(data.response.result.modeloCoopmego[0].decisionModelo)
                     setDecisionBuro(data.response.result.modeloCoopmego[0].tipoDecision)
-                    setGastoFinancieroTitular(data?.response?.result?.gastoFinanciero[0]?.cuotaEstimadaTitular);
                     dataSocio.datosFinancieros = datosFinancierosObj;
                     dataSocio.gastoFinanciero = datosFinancierosObj;
                     setInfoSocio(dataSocio);
@@ -609,7 +603,7 @@ const NuevaSolicitud = (props) => {
                 if (!datosFinan.montoGastoFinaCodeudor || datosFinan.montoGastoFinaCodeudor === "" || datosFinan.montoGastoFinaCodeudor === " " || IsNullOrEmpty(datosFinan.montoGastoFinaCodeudor)) datosFinan.montoGastoFinaCodeudor = 0;
 
                 //TODO CAMBIAR LA CEDULA ->cedulaSocio
-                await fetchNuevaSimulacionScore("C", "1105952475", nombreSocioTC, datosUsuario[0].strUserOficina, datosUsuario[0].strOficial, datosUsuario[0]?.strCargo, datosFinan.montoIngresos, datosFinan.montoEgresos, datosFinan.montoRestaGstFinanciero, datosFinan.montoGastoFinaCodeudor,
+                await fetchNuevaSimulacionScore("C", "1150214375", nombreSocioTC, datosUsuario[0].strUserOficina, datosUsuario[0].strOficial, datosUsuario[0]?.strCargo, datosFinan.montoIngresos, datosFinan.montoEgresos, datosFinan.montoRestaGstFinanciero, datosFinan.montoGastoFinaCodeudor,
                     props.token, (data) => {
                         setIdClienteScore(data.int_cliente);
                         setCupoSugeridoCoopM(data.str_cupo_sugerido);
@@ -718,7 +712,9 @@ const NuevaSolicitud = (props) => {
                 str_segmento: "",
                 str_calificacion_buro: calificacionRiesgo,
                 str_decision_buro: decisionBuro,
-                mny_gastos_financiero_titular: gastoFinancieroTitular.toString(),
+                mny_gastos_financiero_titular: datosFinancierosObj.montoGastoFinaTitular.toString(), //Gasto Financiero como Titular
+                mny_resta_gastos_financiero: datosFinancierosObj.montoRestaGstFinanciero.toString(), //Resta Gasto Financiero
+                mny_gastos_codeudor: datosFinancierosObj.montoGastoFinaCodeudor.toString(), // Gasto Financiero titular como deudor
                 str_score_buro: puntajeScore.toString(),
 
             }

@@ -182,12 +182,12 @@ const VerDetalle = (props) => {
                             <hr className="f-row dashed w-100"></hr>
                             <div className="f-row w-90 justify-content-space-between">
                                 <label>Calificación:</label>
-                                {/*<h4 className="strong">{dataProspecto.str_comentario_adicional}</h4>*/}
+                                <h4 className="strong">{dataProspecto.str_calificacion_buro}</h4>
                             </div>
                             <hr className="f-row dashed w-100"></hr>
                             <div className="f-row w-90 justify-content-space-between">
                                 <label>Decisión:</label>
-                                {/*<h4 className="strong">{dataProspecto.str_comentario_adicional}</h4>*/}
+                                <h4 className="strong">{dataProspecto.str_decision_buro}</h4>
                             </div>
                             <hr className="f-row dashed w-100"></hr>
                         </section>
@@ -208,7 +208,7 @@ const VerDetalle = (props) => {
                             <hr className="f-row dashed"></hr>
                             <div className="f-row w-90 justify-content-space-between">
                                 <label>Gasto Financiero:</label>
-                               {/* <h4 className="strong">{numberFormatMoney(dataProspecto.mny_egresos)}</h4>*/}
+                                <h4 className="strong">{numberFormatMoney(dataProspecto.mny_gastos_financieros)}</h4>
                             </div>
                             <hr className="dashed"></hr>
                             <div className="f-row w-90 justify-content-space-between">
@@ -218,7 +218,7 @@ const VerDetalle = (props) => {
                             <hr className="dashed"></hr>
                             <div className="f-row w-90 justify-content-space-between">
                                 <label>Resta Gasto Financiero:</label>
-                                <h4 className="strong">{numberFormatMoney(dataProspecto.mny_gastos_financieros)}</h4>
+                                <h4 className="strong">{numberFormatMoney(dataProspecto.mny_resta_gastos_financieros)}</h4>
                             </div>
                             <hr className="dashed"></hr>
                             <div className="f-row w-90 justify-content-space-between">

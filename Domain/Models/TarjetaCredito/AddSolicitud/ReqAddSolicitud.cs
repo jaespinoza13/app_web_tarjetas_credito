@@ -43,9 +43,9 @@ namespace Domain.Models.TarjetaCredito.AddSolicitud
 
         // tcr_solicitudes
         public string str_codigo_producto { get; set; } = string.Empty;
-        public string mny_cupo_solicitado { get; set; }
-        public string mny_cupo_sugerido_aval { get; set; }
-        public string mny_cupo_sugerido_coopmego { get; set; }
+        public string mny_cupo_solicitado { get; set; } = string.Empty;
+        public string mny_cupo_sugerido_aval { get; set; } = string.Empty;
+        public string mny_cupo_sugerido_coopmego { get; set; } = string.Empty;
         public int int_entidad_sucursal { get; set; }
         public string str_denominacion_socio { get; set; } = string.Empty;
         public string str_direccion { get; set; } = string.Empty;
@@ -101,6 +101,8 @@ namespace Domain.Models.TarjetaCredito.AddSolicitud
         public string str_decision_buro { get; set; } = string.Empty;
         public string str_score_buro { get; set; } = string.Empty;
         public string mny_gastos_financiero_titular { get; set; } = string.Empty;
+        public string mny_gastos_codeudor { get; set; } = string.Empty;
+        public string mny_resta_gastos_financiero { get; set; } = string.Empty;
 
     }
 }

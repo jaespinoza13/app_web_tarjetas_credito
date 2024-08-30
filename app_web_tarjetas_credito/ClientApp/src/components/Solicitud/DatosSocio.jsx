@@ -423,12 +423,12 @@ const DatosSocio = (props) => {
                                                 {`${infoSocio[0]?.str_fecha_nacimiento}`}
                                             </h4>
                                         </div>
-                                        <div className="values mb-3">
-                                            <h4>Años reside en el pais</h4>
-                                            <h4 className="strong">
-                                                {`N/D`}
-                                            </h4>
-                                        </div>
+                                        {/*<div className="values mb-3">*/}
+                                        {/*    <h4>Años reside en el pais</h4>*/}
+                                        {/*    <h4 className="strong">*/}
+                                        {/*        {`N/D`}*/}
+                                        {/*    </h4>*/}
+                                        {/*</div>*/}
                                         <div className="values mb-3">
                                             <h4>Nivel de educación</h4>
                                             <h4 className="strong">
@@ -499,12 +499,6 @@ const DatosSocio = (props) => {
                                             <h4>Medio de información</h4>
                                             <h4 className="strong">
                                                 {`${infoSocio[0]?.str_medio_informacion}`}
-                                            </h4>
-                                        </div>
-                                        <div className="values mb-3">
-                                            <h4>Calificación de riesgo</h4>
-                                            <h4 className="strong">
-                                                {`${props.calificacionRiesgo}`}
                                             </h4>
                                         </div>
                                     </div>
@@ -613,7 +607,7 @@ const DatosSocio = (props) => {
                                                     <td>{valor.str_num_cuenta}</td>
                                                     <td>{valor.str_tipo_cta}</td>
                                                     <td>{numberFormatMoney(valor.dcm_ahorro)}</td>
-                                                    <td>{valor.dtt_fecha_movimiento}</td>
+                                                    <td>{convertFecha(valor.dtt_fecha_movimiento)}</td>
                                                     <td>{valor.str_estado}</td>
                                                 </tr>);
                                             })

@@ -36,8 +36,8 @@ const ValidacionesGenerales = (props) => {
 
 
     //Accordion Alertas  Validas
-    const [contentReadyAlertasValidas, setContentReadyAlertasValidas] = useState(props?.lst_validaciones?.lst_validaciones_err?.length !== 0 ? false: true);
-    const [estadoAccordionAlertasValidas, setEstadoAccordionAlertasValidas] = useState(props?.lst_validaciones?.lst_validaciones_err?.length !== 0 ? false : true);
+    const [contentReadyAlertasValidas, setContentReadyAlertasValidas] = useState(true);
+    const [estadoAccordionAlertasValidas, setEstadoAccordionAlertasValidas] = useState(true);
     const [estadoLoadingAlertasValidas, setEstadoLoadingAlertasValidas] = useState(false);
 
     useEffect(() => {
@@ -55,6 +55,14 @@ const ValidacionesGenerales = (props) => {
 
 
     }, []);
+
+    useEffect(() => {
+        if (props?.lst_validaciones) {
+            setContentReadyAlertasValidas(props?.lst_validaciones?.lst_validaciones_err?.length !== 0 ? false : true);
+            setEstadoAccordionAlertasValidas(props?.lst_validaciones?.lst_validaciones_err?.length !== 0 ? false : true);
+        }
+
+    }, [props?.lst_validaciones]);
 
     useEffect(() => {
         if (props.datosUsuario?.length > 0) {
@@ -147,7 +155,7 @@ const ValidacionesGenerales = (props) => {
                                             <div className="f-row validacion mt-1 mb-2" key={validacion.str_descripcion_alerta}>
                                                 <img className="btn_mg mr-3" style={{ width: "15px", height: "15px" }} src="/Imagenes/statusBlocked.png" alt="Se requiere cumplir"></img>
                                                 <h3>{validacion.str_descripcion_alerta}</h3>
-                                                {(validacion.str_nemonico === "ALERTA_SOLICITUD_TC_090" && validacion.str_estado_alerta === "False") &&
+                                                {(validacion.str_nemonico === "ALERTA_SOLICITUD_TC_090" && validacion.str_estado_alerta === "False" && props.onSetShowAutorizacion != null) &&
                                                     <button className="btn_mg_icons" onClick={getDocAutorizacion}>
                                                         <img src="/Imagenes/right.svg" alt="Cumplir requisito"></img>
                                                     </button>
