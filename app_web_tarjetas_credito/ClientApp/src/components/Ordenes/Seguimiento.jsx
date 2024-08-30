@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { useEffect } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import Button from '../Common/UI/Button';
-import { IsNullOrWhiteSpace, convertFecha } from '../../js/utiles';
+import { IsNullOrWhiteSpace, dateFormat } from '../../js/utiles';
 import "../../css/Components/Seguimiento.css";
 import Input from '../Common/UI/Input';
 import { Fragment } from 'react';
@@ -746,7 +746,7 @@ function Seguimiento(props) {
                                     <tr key={seguim.int_seg_id}>
                                         <td>{seguim.str_identificacion}</td>
                                         <td>{seguim.str_denominacion_socio}</td>
-                                        <td>{convertFecha(seguim.dtt_fecha_entrega)}</td>
+                                        <td>{dateFormat("dd-MMM-yyyy HH:MIN:SS",seguim.dtt_fecha_entrega)}</td>
                                         <td>{seguim.str_tipo_propietario}</td>
                                         <td><Chip type={seguim.str_tipo_tarjeta}>{seguim.str_tipo_tarjeta}</Chip></td>
                                         <td>

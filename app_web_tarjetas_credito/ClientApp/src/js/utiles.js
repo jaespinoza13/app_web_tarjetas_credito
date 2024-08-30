@@ -55,7 +55,7 @@ export function dateFormat(format, date) {
     format = format.replaceAll("DD", String(dia).padStart(2, '0'));
     return format;
 }
-
+/*
 export function convertFecha(fecha) {
     if (fecha !== null && fecha !== undefined) {
         const newDate = new Date(fecha);
@@ -75,7 +75,7 @@ export function convertFecha(fecha) {
     } else {
         return "";
     }    
-}
+}*/
 
 /**
  * Verifica si una variable es null o contiene un texto vacio o un espacio en blanco
@@ -736,18 +736,15 @@ export function conversionBase64(file) {
 
 export function validarCorreo(correo) {
     // Expresión regular para validar el formato del correo electrónico
-    //const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const regex = /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/; //TOMADO DEL SISTEMA DE SOPORTE
     let valida = regex.test(correo);
     return valida;
 }
 
-export function validarNumCelular(celular) {
-    
+export function validarNumCelular(celular) {    
     // Expresión regular para numero de celular
     const regex = /^09\d{8}$/; 
     let valida = regex.test(celular);
-    console.log(`${celular} , ${valida}`);
     return valida;
 }
 

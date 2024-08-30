@@ -4,7 +4,7 @@ import '../../scss/main.css';
 import '../../scss/components/solicitud.css';
 import { useState, useEffect } from "react";
 import { fetchAddProcEspecifico, fetchGetFuncionalidadesTC, fetchGetSolicitudes } from "../../services/RestServices";
-import { IsNullOrWhiteSpace, numberFormatMoney } from '../../js/utiles';
+import { IsNullOrWhiteSpace, dateFormat, numberFormatMoney } from '../../js/utiles';
 import Modal from '../Common/Modal/Modal';
 import Card from '../Common/Card';
 import { get } from '../../js/crypt';
@@ -425,7 +425,7 @@ function Solicitud(props) {
                                         <td style={{ width: "10%" }} onClick={() => { moveToSolicitud(solicitud.int_id) }}>
                                             {solicitud.int_id}
                                         </td>
-                                        <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{solicitud.dtt_fecha_solicitud}</td>
+                                        <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{dateFormat("dd-MMM-yyyy HH:MIN:SS", solicitud.dtt_fecha_solicitud)}</td>
                                         <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{solicitud.str_identificacion}</td>
                                         <td style={{ textWrap: "balance" }} onClick={() => { moveToSolicitud(solicitud.int_id) }}>{`${solicitud.str_nombres} ${solicitud.str_apellidos}`}</td>
                                         <td onClick={() => { moveToSolicitud(solicitud.int_id) }}>{numberFormatMoney(solicitud.dec_cupo_solicitado)}</td>
@@ -488,7 +488,7 @@ function Solicitud(props) {
                                 return (
                                     <tr key={prospecto.pro_id} onClick={() => { moveToProspecto(prospecto.pro_id) }}>
                                         <td style={{ maxWidth: "5%" }}>{prospecto.pro_id}</td>
-                                        <td>{prospecto.pro_fecha_solicitud}</td>
+                                        <td>{dateFormat("dd-MMM-yyyy HH:MIN:SS", prospecto.pro_fecha_solicitud)}</td>
                                         <td>{prospecto.pro_num_documento}</td>
                                         <td style={{ textWrap: "balance" }}>{`${prospecto.pro_nombres} ${prospecto.pro_apellidos}`}</td>
                                         <td>{numberFormatMoney(prospecto.pro_cupo_solicitado)}</td>
