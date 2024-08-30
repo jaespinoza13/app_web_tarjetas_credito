@@ -4,7 +4,7 @@ import AccordionV2 from '../Common/UI/AccordionV2';
 import Chip from "../Common/UI/Chip";
 import { connect, useDispatch } from "react-redux";
 import { setSeguimientOrdenAction } from "../../redux/SeguimientoOrden/actions";
-import { convertFecha } from "../../js/utiles";
+import { dateFormat } from "../../js/utiles";
 
 const mapStateToProps = (state) => {
     return {
@@ -87,38 +87,6 @@ const ComponentHeaderAccordion = (props) => {
 
     let titulo = (
         <div className="w-95 f-row">
-            {props.pantallaTituloExponer === "EnvioRececepcionPersonalizacion" &&
-
-                <div className='content-headertable' >
-                    <div className="content-block" style={{ width: "9%", minWidth: "50px" }} >
-                        <h4 className="item-header white">Oficina</h4>
-                    </div>
-                    <div className="content-block" style={{ width: "21%", minWidth: "270px" }} >
-                        <h4 className="item-header white">{props.header.oficina}</h4>
-                    </div>
-                    <div className="content-block" style={{ width: "14%", minWidth: "130px" }} >
-                        <h4 className="item-header white">Total de tarjetas</h4>
-                    </div>
-                    <div className="content-block" style={{ width: "7%", minWidth: "50px" }} >
-                        <h4 className="item-header white">{props.header.num_total_tarjetas}</h4>
-                    </div>
-                    <div className="content-block" style={{ width: "5%", minWidth: "130px" }} >
-                        <h4 className="item-header white">Fecha procesado</h4>
-                    </div>
-                    <div className="content-block" style={{ width: "12%", minWidth: "120px" }} >
-                        <h4 className="item-header white">{props.header.fecha_rel}</h4>
-                    </div>
-                    {props.opcionHeader === true  &&
-                        <div className="" style={{ position: "absolute", right: "80px" }}>
-                            <input type="checkbox" name={props.header.orden} checked={props.inicialStateCheck}
-                                onChange={(e) => setCheckSeleccionAll(!checkSeleccionAll)}
-                            />
-                        </div>
-                    }
-                </div>
-            }
-
-            {/* {props.pantallaTituloExponer === "RececepcionTarjetasProveedor" &&*/}
             {props.pantallaTituloExponer === "Seguimiento" &&
 
                 <div className='content-headertable' >
@@ -132,7 +100,7 @@ const ComponentHeaderAccordion = (props) => {
                         <h4 className="item-header white">Total de tarjetas</h4>
                     </div>
                     <div className="content-block" style={{ width: "7%", minWidth: "50px" }} >
-                        <h4 className="item-header white">{props.header.num_total_tarjetas}</h4>
+                        <h4 className="item-header white">{props.header.int_total_tarjetas}</h4>
                     </div>                   
                     {props.opcionHeader === true &&
                         <div className="" style={{ position: "absolute", right: "80px" }}>
@@ -140,36 +108,6 @@ const ComponentHeaderAccordion = (props) => {
                             name={props.header.orden}
                             checked={props.inicialStateCheck}
                             onChange={(e) => setCheckSeleccionAll(!checkSeleccionAll)}
-                            />
-                        </div>
-                    }
-                </div>
-            }
-
-            {props.pantallaTituloExponer === "RecepcionTarjetasOficina" &&
-                <div className='content-headertable' >
-                    <div className="content-block" style={{ width: "9%", minWidth: "50px" }} >
-                        <h4 className="item-header white">Oficina</h4>
-                    </div>
-                    <div className="content-block" style={{ width: "21%", minWidth: "270px" }} >
-                        <h4 className="item-header white">{props.header.oficina}</h4>
-                    </div>
-                    <div className="content-block" style={{ width: "14%", minWidth: "150px" }} >
-                        <h4 className="item-header white">Fecha de envio</h4>
-                    </div>
-                    <div className="content-block" style={{ width: "16%", minWidth: "150px" }} >
-                        <h4 className="item-header white">{props.header.fecha_envio}</h4>
-                    </div>
-                    <div className="content-block" style={{ width: "16%", minWidth: "220px" }} >
-                        <h4 className="item-header white">Total de tarjetas</h4>
-                    </div>
-                    <div className="content-block" style={{ width: "7%", minWidth: "50px" }} >
-                        <h4 className="item-header white">{props.header.num_total_tarjetas}</h4>
-                    </div>
-                    {props.opcionHeader === true &&
-                        <div className="" style={{ position: "absolute", right: "80px" }}>
-                            <input type="checkbox" name={props.header.orden} checked={props.inicialStateCheck}
-                                onChange={(e) => setCheckSeleccionAll(!checkSeleccionAll)}
                             />
                         </div>
                     }
@@ -269,7 +207,7 @@ const ComponentOrdenItems = ({ ordenItem, checkStatusSeleccion, returnItemOrden,
                         {ordenItem.lst_ord_ofi.map(cliente => {
                         return (
                             <tr key={cliente.int_seg_id}>
-                                <td className='paddingSpacing' onClick={() => clickHandler(cliente.int_seg_id)}>
+                                <td className='' onClick={() => clickHandler(cliente.int_seg_id)}>
                                     {isActivarOpciones &&
                                         <div style={{ fontSize: "1.07rem", color: "#004CAC", fontFamily: "Karbon-Bold", textDecoration: "underline", cursor: "pointer" }}>
                                             {cliente.str_identificacion}
@@ -278,10 +216,10 @@ const ComponentOrdenItems = ({ ordenItem, checkStatusSeleccion, returnItemOrden,
                                     {!isActivarOpciones && cliente.str_identificacion}
                                 </td>
                                 <td className='paddingSpacing'>{cliente.str_denominacion_socio}</td>
-                                <td className='paddingSpacing'>{convertFecha(cliente.dtt_fecha_entrega)}</td>
+                                <td className='paddingSpacing'>{dateFormat("dd-MMM-yyyy HH:MIN:SS", cliente.dtt_fecha_entrega)}</td>
                                 <td className='paddingSpacing'>{cliente.str_tipo_propietario}</td>
                                 <td className='paddingSpacing'> <Chip type={cliente.str_tipo_tarjeta}>{cliente.str_tipo_tarjeta}</Chip></td>
-                                <td className='paddingSpacing'>
+                                <td className='paddingSpacing' style={{ textAlign: "end", paddingRight: "29px" }}>
                                     <Input key={cliente.str_identificacion}
                                         disabled={opcionItemDisable}
                                         type="checkbox"

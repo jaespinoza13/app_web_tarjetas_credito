@@ -8,7 +8,7 @@ import Switch from "../Common/UI/Switch";
 import Toggler from "../Common/UI/Toggler";
 import Textarea from "../Common/UI/Textarea";
 import Button from "../Common/UI/Button";
-import { IsNullOrWhiteSpace, base64ToBlob, convertFecha, descargarArchivo, generarFechaHoy, numberFormatMoney, verificarPdf } from "../../js/utiles";
+import { IsNullOrWhiteSpace, base64ToBlob, dateFormat, descargarArchivo, generarFechaHoy, numberFormatMoney, verificarPdf } from "../../js/utiles";
 import { useEffect } from "react";
 import DatosFinanDatosSocio from "./DatosFinanDatosSocio";
 
@@ -357,7 +357,7 @@ const DatosSocio = (props) => {
                             <div className="values  mb-3">
                                 <h4>Fecha de evaluación</h4>
                                 <h4 className="strong">
-                                    {props?.score?.response?.result?.modeloCoopmego[0].fechaEvalucion ? convertFecha(props?.score?.response?.result?.modeloCoopmego[0]?.fechaEvalucion) : 'Sin datos'}
+                                    {props?.score?.response?.result?.modeloCoopmego[0].fechaEvalucion ? dateFormat("dd-MMM-yyyy",props?.score?.response?.result?.modeloCoopmego[0]?.fechaEvalucion) : 'Sin datos'}
                                 </h4>
                             </div>
                             <div className="values  mb-3">
@@ -420,7 +420,9 @@ const DatosSocio = (props) => {
                                         <div className="values  mb-3">
                                             <h4>Fecha de nacimiento</h4>
                                             <h4 className="strong">
-                                                {`${infoSocio[0]?.str_fecha_nacimiento}`}
+                                                {infoSocio[0]?.str_fecha_nacimiento && 
+                                                    dateFormat("dd-MMM-yyyy", infoSocio[0]?.str_fecha_nacimiento)
+                                                }
                                             </h4>
                                         </div>
                                         {/*<div className="values mb-3">*/}
@@ -607,7 +609,7 @@ const DatosSocio = (props) => {
                                                     <td>{valor.str_num_cuenta}</td>
                                                     <td>{valor.str_tipo_cta}</td>
                                                     <td>{numberFormatMoney(valor.dcm_ahorro)}</td>
-                                                    <td>{convertFecha(valor.dtt_fecha_movimiento)}</td>
+                                                    <td>{dateFormat("dd-MMM-yyyy", valor.dtt_fecha_movimiento)}</td>
                                                     <td>{valor.str_estado}</td>
                                                 </tr>);
                                             })

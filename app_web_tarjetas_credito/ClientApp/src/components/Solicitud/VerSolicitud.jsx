@@ -1,5 +1,5 @@
 ﻿/* eslint-disable react-hooks/exhaustive-deps */
-import { IsNullOrEmpty, IsNullOrWhiteSpace, base64ToBlob, conversionTipoTC, convertFecha, descargarArchivo, generarFechaHoy, numberFormatMoney, verificarPdf } from "../../js/utiles";
+import { IsNullOrEmpty, IsNullOrWhiteSpace, base64ToBlob, conversionTipoTC, dateFormat, descargarArchivo, generarFechaHoy, numberFormatMoney, verificarPdf } from "../../js/utiles";
 import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { useEffect, useState } from "react";
@@ -1080,7 +1080,7 @@ const VerSolicitud = (props) => {
                                                             return (
                                                                 <tr key={resolucion.int_rss_id}>
                                                                     <td>{resolucion.str_usuario_proc}</td>
-                                                                    <td> {convertFecha(resolucion?.dtt_fecha_actualizacion)}</td>
+                                                                    <td> {dateFormat("dd-MMM-yyyy HH:MIN:SS",resolucion?.dtt_fecha_actualizacion)}</td>
                                                                     <td> {resolucion.str_decision_solicitud}</td>
                                                                     <td style={{ width: "50%", justifyContent: "left" }} id={index}>
                                                                         <div style={{ display: "ruby" }}>
@@ -1247,7 +1247,7 @@ const VerSolicitud = (props) => {
                                                         return (
                                                             <tr key={resolucion.int_rss_id}>
                                                                 <td>{resolucion.str_usuario_proc}</td>
-                                                                <td> {convertFecha(resolucion?.dtt_fecha_actualizacion)}</td>
+                                                                <td> {dateFormat("dd-MMM-yyyy HH:MIN:SS",resolucion?.dtt_fecha_actualizacion)}</td>
                                                                 <td> {resolucion.str_decision_solicitud}</td>
                                                                 <td style={{ width: "60%", justifyContent: "left" }} id={index}>
                                                                     <div style={{ display: "ruby" }}>
@@ -1676,7 +1676,7 @@ const VerSolicitud = (props) => {
                                     return (<tr key={seguimient.int_flujo_id}>
                                         <td>{seguimient.int_flujo_id}</td>
                                         <td>{seguimient.str_estado_flujo}</td>
-                                        <td> {convertFecha(seguimient?.dtt_fecha_actualizacion)}</td>
+                                        <td> {dateFormat("dd-MMM-yyyy HH:MIN:SS",seguimient?.dtt_fecha_actualizacion)}</td>
                                         <td>{seguimient.str_usuario_proc}</td>
                                         <td>{seguimient.str_comentario_proceso}</td>
                                     </tr>);
