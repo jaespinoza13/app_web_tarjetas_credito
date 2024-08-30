@@ -55,7 +55,6 @@ const NuevaProspeccion = (props) => {
     const [puntajeScore, setPuntajeScore] = useState("");
     const [calificacionRiesgo, setCalificacionRiesgo] = useState("");
     const [decisionBuro, setDecisionBuro] = useState("");
-    const [gastoFinancieroTitular, setGastoFinancieroTitular] = useState("0");
     const [cupoSugeridoAval, setCupoSugeridoAval] = useState("");
     const [cupoSugeridoCoopmego, setCupoSugeridoCoopmego] = useState("0");
     const [prospectoIDCreado, setProspectoIDCreado] = useState();
@@ -487,14 +486,14 @@ const NuevaProspeccion = (props) => {
             nombreSocioTC = (apellidoMaterno !== null && apellidoMaterno !== '' && apellidoMaterno !== ' ') ? nombreSocioTC + " " + apellidoMaterno : nombreSocioTC;
             //Redux guardar informaciion necesaria para nueva simulacion en DatosSocio
             dispatch(setDataSimulacionStateAction({
-                cedula: "1105952475", nombresApellidos: nombreSocioTC
+                cedula: "1150214375", nombresApellidos: nombreSocioTC
             }))
 
 
             if (!realizaNuevaSimulacion.current) {
 
                 //TODO: CAMBIAR LA CEDULA por "documento"
-                await fetchScore("C", "1105952475", nombreSocioTC, datosUsuario[0].strUserOficina, datosUsuario[0].strOficial, datosUsuario[0]?.strCargo, props.token, (data) => {
+                await fetchScore("C", "1150214375", nombreSocioTC, datosUsuario[0].strUserOficina, datosUsuario[0].strOficial, datosUsuario[0]?.strCargo, props.token, (data) => {
 
                     setIdClienteScore(data.int_cliente);
                     setPuntajeScore(data?.response?.result?.scoreFinanciero[0]?.score)
@@ -510,7 +509,6 @@ const NuevaProspeccion = (props) => {
                     //Se captura la calificacion que retorna de la consulta al buro
                     setCalificacionRiesgo(data.response.result.modeloCoopmego[0].decisionModelo);
                     setDecisionBuro(data.response.result.modeloCoopmego[0].tipoDecision);
-                    setGastoFinancieroTitular(data?.response?.result?.gastoFinanciero[0]?.cuotaEstimadaTitular);
                     dataSocio.datosFinancieros = datosFinancierosObj;
 
 
@@ -528,7 +526,7 @@ const NuevaProspeccion = (props) => {
                 if (!datosFinan.montoGastoFinaCodeudor || datosFinan.montoGastoFinaCodeudor === "" || datosFinan.montoGastoFinaCodeudor === " " || IsNullOrEmpty(datosFinan.montoGastoFinaCodeudor)) datosFinan.montoGastoFinaCodeudor = 0;
 
                 //TODO CAMBIAR LA CEDULA
-                await fetchNuevaSimulacionScore("C", "1105952475", nombreSocioTC, datosUsuario[0].strUserOficina, datosUsuario[0].strOficial, datosUsuario[0]?.strCargo, datosFinan.montoIngresos, datosFinan.montoEgresos, datosFinan.montoRestaGstFinanciero, datosFinan.montoGastoFinaCodeudor,
+                await fetchNuevaSimulacionScore("C", "1150214375", nombreSocioTC, datosUsuario[0].strUserOficina, datosUsuario[0].strOficial, datosUsuario[0]?.strCargo, datosFinan.montoIngresos, datosFinan.montoEgresos, datosFinan.montoRestaGstFinanciero, datosFinan.montoGastoFinaCodeudor,
                     props.token, (data) => {
                         setIdClienteScore(data.int_cliente);
                         setCupoSugeridoCoopmego(data.str_cupo_sugerido)
@@ -547,18 +545,38 @@ const NuevaProspeccion = (props) => {
             if (!datosFinan.montoRestaGstFinanciero || datosFinan.montoRestaGstFinanciero === "" || datosFinan.montoRestaGstFinanciero === " " || IsNullOrEmpty(datosFinan.montoRestaGstFinanciero)) datosFinan.montoRestaGstFinanciero = 0;
             if (!datosFinan.montoGastoFinaCodeudor || datosFinan.montoGastoFinaCodeudor === "" || datosFinan.montoGastoFinaCodeudor === " " || IsNullOrEmpty(datosFinan.montoGastoFinaCodeudor)) datosFinan.montoGastoFinaCodeudor = 0;
 
-            //str_num_documento, ente, nombres, apellidos, celular, correo, cupoSoli, comentario, comentarioAdic, ingresos, egresos, gastoFinanciero, gastoCodeudor, cupoAval,cupoCoopmego, score, token, onSucces, dispatch
             let apellidosCliente = (apellidoMaterno !== null && apellidoMaterno !== '') ? apellidoPaterno + " " + apellidoMaterno : apellidoPaterno;
-            fetchAddProspecto(documento, enteSocio, nombreSocio, apellidosCliente, celularSocio, correoSocio, datosFinancierosObj.montoSolicitado.toString(), comentario, comentarioAdic,
-                datosFinan.montoIngresos.toString(), datosFinan.montoEgresos.toString(), datosFinan.montoRestaGstFinanciero.toString(), datosFinan.montoGastoFinaCodeudor.toString(), cupoSugeridoAval.toString(), cupoSugeridoCoopmego.toString(), puntajeScore.toString(), calificacionRiesgo, decisionBuro, gastoFinancieroTitular.toString(), 
-                props.token, (data) => {
+            let body = {
+                str_num_documento: documento,
+                int_ente: enteSocio ? enteSocio : 0,
+                str_nombres: nombreSocio,
+                str_apellidos: apellidosCliente,
+                str_celular: celularSocio,
+                str_correo: correoSocio,
+                mny_cupo_solicitado: datosFinancierosObj.montoSolicitado.toString(),
+                str_id_autoriza_cons_buro: "",
+                str_id_autoriza_datos_per: "",
+                str_comentario: comentario,
+                str_comentario_adicional: comentarioAdic,
+                mny_total_ingresos: datosFinan.montoIngresos.toString(),
+                mny_total_egresos: datosFinan.montoEgresos.toString(),
+                mny_gastos_codeudor: datosFinan.montoGastoFinaCodeudor.toString(),
+                mny_cupo_sug_aval: cupoSugeridoAval.toString(),
+                mny_cupo_sug_coopmego: cupoSugeridoCoopmego.toString(),
+                str_score: puntajeScore.toString(),
+                str_calificacion_buro: calificacionRiesgo,
+                str_decision_buro: decisionBuro,
+                mny_gastos_financiero_titular: datosFinancierosObj.montoGastoFinaTitular.toString(), //Gasto Financiero como Titular
+                mny_resta_gastos_financiero: datosFinancierosObj.montoRestaGstFinanciero.toString(), //Resta Gasto Financiero
+            };
+
+            fetchAddProspecto(body,props.token, (data) => {
                 setProspectoIDCreado(data.int_id_prospecto);
                 setVisitadosSteps([...visitadosSteps, actualStepper + 1])
                 setActualStepper(4);
                 setStep(-1);
             }, dispatch)
-
-           
+   
         }
         
         if (step === -1) {

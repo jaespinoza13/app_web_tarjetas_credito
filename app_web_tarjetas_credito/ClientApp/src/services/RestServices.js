@@ -1111,34 +1111,9 @@ export function fetchGetInfoFinan(ente, token, onSucces, dispatch) {
 * @param {(contenido:string, nroTotalRegistros: number) => void} onSuccess
 * @param {Function} dispatch
 */
-export function fetchAddProspecto(str_num_documento, ente, nombres, apellidos, celular, correo, cupoSoli, comentario, comentarioAdic, ingresos, egresos, gastoFinanciero, gastoCodeudor, cupoAval, cupoCoopmego, score, calificacionRiesgo, decisionBuro, gastoFinancieroTitular,token, onSucces, dispatch) {
-    if (dispatch) dispatch(setErrorRedirigir(""));
-
-    let body = {
-        str_num_documento,
-        int_ente: ente || 0,
-        str_nombres: nombres,
-        str_apellidos: apellidos,
-        str_celular: celular,
-        str_correo: correo,
-        mny_cupo_solicitado: cupoSoli,
-        str_id_autoriza_cons_buro: "",
-        str_id_autoriza_datos_per: "",
-        str_comentario: comentario,
-        str_comentario_adicional: comentarioAdic,
-        mny_total_ingresos: ingresos,
-        mny_total_egresos: egresos,
-        mny_gastos_financiero: gastoFinanciero,
-        mny_gastos_codeudor: gastoCodeudor,
-        mny_cupo_sugerido_aval: cupoAval,
-        mny_cupo_sug_coopmego: cupoCoopmego,
-        str_score: score,
-        str_calificacion_buro: calificacionRiesgo,
-        str_decision_buro: decisionBuro,
-        mny_gastos_financiero_titular: gastoFinancieroTitular
-    }
-
+export function fetchAddProspecto(body, token, onSucces, dispatch) {
     //console.log("body", body)
+    if (dispatch) dispatch(setErrorRedirigir(""));
     ServicioPostExecute(addProspecto, body, token, { dispatch: dispatch }).then((data) => {
         //console.log("DATA",  data)
         if (data) {

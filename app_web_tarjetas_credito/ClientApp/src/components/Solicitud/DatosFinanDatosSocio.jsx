@@ -121,7 +121,7 @@ const DatosFinanDatosSocio = (props) => {
         //TODO CAMBIAR LA CEDULA, oficina matriz
         await fetchNuevaSimulacionScore("C", props.dataSimulacion.cedula, props.dataSimulacion.nombresApellidos, userOficina, strOficial, strRol, montoIngresosSimul, montoEgresosSimul, montoRestaGast, montoGastoCodeud,
             props.token, (data) => {
-                console.log("DATA SCORE ", data)
+                //console.log("DATA SCORE ", data)
                 setCupoSugeNuevSimulacion(data.str_cupo_sugerido)
                 setMontoGastoFinaCodeudorSimul(data.str_gastos_codeudor)
 
