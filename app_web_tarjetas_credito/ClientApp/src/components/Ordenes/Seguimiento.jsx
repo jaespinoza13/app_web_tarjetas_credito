@@ -84,6 +84,25 @@ function Seguimiento(props) {
     //Identificador de item seguimiento
     const [seguimientoIdAccion, setSeguimientoIdAccion] = useState(0);
 
+    //Variables para habilitar permisos
+   
+    const [tienePermisoListarPendPersonalizarTC, setTienePermisoListarPersonalizarTC] = useState(false);
+    const [tienePermisoListarPendRecibirOperacTC, setTienePermisoListarPendRecibirOperacTC] = useState(false);
+    const [tienePermisoListarPendEnviarAgenciasTC, setTienePermisoListarPendEnviarAgenciasTC] = useState(false);
+    const [tienePermisoEnviarPersonalizarTC, setTienePermisoEnviarPersonalizarTC] = useState(false);
+    const [tienePermisoVericarOperacionesTC, setTienePermisoVericarOperacionesTC] = useState(false);
+    const [tienePermisoEnviarAgenciaTC, setTienePermisoEnviarAgenciaTC] = useState(false);
+    const [tienePermisoRechazarOperacionesTC, setTienePermisoRechazarOperacionesTC] = useState(false);
+
+    const [tienePermisoListarPendRecibirAgenciaTC, setTienePermisoListarPendRecibirAgenciaTC] = useState(false);
+    const [tienePermisoListarPendActivarTC, setTienePermisoListarPendActivarTC] = useState(false);
+    const [tienePermisoActivarTC, setTienePermisoActivarTC] = useState(false);
+    const [tienePermisoReceptarTC, setTienePermisoReceptarTC] = useState(false);
+
+
+    const [tienePermisoEntregarTC, setTienePermisoEntregarTC] = useState(false);
+
+
     //Modales
     const [modalCambioEstadoOrdenes, setModalCambioEstadoOrdenes] = useState(false);
     const [textoCambioEstadoOrden, setTextoCambioEstadoOrden] = useState("");
@@ -111,7 +130,6 @@ function Seguimiento(props) {
             setSeguimientoOrdenRedux(false);
             setTextoBotonAccion("Enviar");
         }
-        //TODO: VALIDAR RECHAZADA OPERACIONES
         else if (selectFiltrarOrdenes === "EST_SEG_ENV_PER") {
             setSeguimientoOrdenRedux(true);
             setTextoBotonAccion("Recibir");
@@ -160,7 +178,7 @@ function Seguimiento(props) {
             //TRAE FUNCIONALIDADES (SETTINGS)
             fetchGetFuncionalidadesTC(props.token, (data) => {
                 //console.log(data.lst_funcSettings)
-                console.log(data.lst_funcSettings2)
+                //console.log(data.lst_funcSettings2)
                 console.log(data.lst_func_seguimiento_settings)
                 setFuncionalidades(data.lst_func_seguimiento_settings);
             }, dispatch)
@@ -173,6 +191,7 @@ function Seguimiento(props) {
 
     useEffect(() => {
         //Para definir el toogle del perfil que este logueado (Se usa permisos de funcionalidad y parametros)
+        //(Hace la union de funcionalidades con parametros, ej: fun_nombre LISTAR_PENDIENTE_PERSONALIZAR_TC;  parametro prm_valor_ini es LISTAR_PENDIENTE_PERSONALIZAR_TC)
         if (props?.funcionalidadesStore?.permisos?.length > 0 && lstParamsSeguimiento?.length > 0 && estadosSeguimientoTC?.length > 0) {
             //console.log(props?.funcionalidadesStore?.permisos)
             //console.log(lstParamsSeguimiento)
@@ -210,11 +229,65 @@ function Seguimiento(props) {
                     //console.log("toogleOpciones ", toogleOpciones)
                     obtenerLstSeguimientoTC(toogleOpciones[0].prm_id);
                 }
-
             }        
-
         }
     }, [props?.funcionalidadesStore?.permisos, lstParamsSeguimiento, estadosSeguimientoTC])
+
+
+    useEffect(() => {
+        //Asignaciones de permisos para botones paso de bandejas
+        if (funcionalidades?.length > 0 && props?.funcionalidadesStore?.permisos?.length > 0) {
+            //console.log("props?.funcionalidadesStore?.permisos ", props?.funcionalidadesStore?.permisos)
+            //console.log("funcionalidades ", funcionalidades)
+
+            /*OPERACIONES*/ 
+            setTienePermisoListarPersonalizarTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => {
+                return funcionalidades.some(funcionalidad => funcionalidad.funcionalidad === permisosAccion.fun_nombre && funcionalidad.funcionalidad === "LISTAR_PENDIENTE_PERSONALIZAR_TC")
+            }))
+            setTienePermisoListarPendRecibirOperacTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => {
+                return funcionalidades.some(funcionalidad => funcionalidad.funcionalidad === permisosAccion.fun_nombre && funcionalidad.funcionalidad === "LISTAR_PENDIENTE_VERIFICAR_TC")
+            }))
+            setTienePermisoListarPendRecibirOperacTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => {
+                return funcionalidades.some(funcionalidad => funcionalidad.funcionalidad === permisosAccion.fun_nombre && funcionalidad.funcionalidad === "LISTAR_PENDIENTE_DISTRIBUIR_TC")
+            }))
+            setTienePermisoEnviarPersonalizarTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => {
+                return funcionalidades.some(funcionalidad => funcionalidad.funcionalidad === permisosAccion.fun_nombre && funcionalidad.funcionalidad === "PERMISO_ENVIAR_PERSONALIZAR_TC")
+            }))
+            setTienePermisoVericarOperacionesTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => {
+                return funcionalidades.some(funcionalidad => funcionalidad.funcionalidad === permisosAccion.fun_nombre && funcionalidad.funcionalidad === "PERMISO_VERIFICAR_TC_OPERACIONES")
+            }))
+
+            setTienePermisoEnviarAgenciaTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => {
+                return funcionalidades.some(funcionalidad => funcionalidad.funcionalidad === permisosAccion.fun_nombre && funcionalidad.funcionalidad === "PERMISO_ENVIAR_AGENCIA_TC")
+            }))
+
+            setTienePermisoRechazarOperacionesTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => {
+                return funcionalidades.some(funcionalidad => funcionalidad.funcionalidad === permisosAccion.fun_nombre && funcionalidad.funcionalidad === "PERMISO_RECHAZAR_TC_OPERACIONES")
+            }))
+
+            /*ASISTENTE DE AGENCIA*/
+            setTienePermisoListarPendRecibirAgenciaTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => {
+                return funcionalidades.some(funcionalidad => funcionalidad.funcionalidad === permisosAccion.fun_nombre && funcionalidad.funcionalidad === "LISTAR_PENDIENTE_RECIBIR_AGENCIA_TC")
+            }))
+            setTienePermisoListarPendActivarTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => {
+                return funcionalidades.some(funcionalidad => funcionalidad.funcionalidad === permisosAccion.fun_nombre && funcionalidad.funcionalidad === "LISTAR_PENDIENTE_ACTIVAR_TC")
+            }))
+
+            setTienePermisoActivarTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => {
+                return funcionalidades.some(funcionalidad => funcionalidad.funcionalidad === permisosAccion.fun_nombre && funcionalidad.funcionalidad === "PERMISO_ACTIVAR_TC")
+            }))
+
+            setTienePermisoReceptarTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => {
+                return funcionalidades.some(funcionalidad => funcionalidad.funcionalidad === permisosAccion.fun_nombre && funcionalidad.funcionalidad === "PERMISO_RECEPTAR_TC_AGENCIA")
+            }))
+
+
+            /*ASISTENTE DE PLATAFORMA*/
+            setTienePermisoEntregarTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => {
+                return funcionalidades.some(funcionalidad => funcionalidad.funcionalidad === permisosAccion.fun_nombre && funcionalidad.funcionalidad === "PERMISO_ENTREGAR_TC_SOCIO")
+            }))
+        }
+    }, [funcionalidades, props?.funcionalidadesStore])
 
     useEffect(() => {
         let itemOrdenesSeleccionadas = [];
@@ -240,50 +313,6 @@ function Seguimiento(props) {
             [clave]: valor
         }));
     }
-
-
-
-
-    const ordenesAgencias = [
-        {
-            fecha_rel: "12/07/2024", num_total_tarjetas: 10, num_tarjetas_error: 1, oficina: "EL VALLE", fecha_envio: "14/07/2024",
-            lst_socios: [
-                { cedula: "1101898147", nombres: "NICOLE ALBAN", solicitud: "2", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "ESTÁNDAR", fecha_proceso: "12/07/2024 14:38", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
-                { cedula: "1150214370", nombres: "DANNY VASQUEZ", solicitud: "1", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "BLACK", fecha_proceso: "12/07/2024 14:42", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
-                { cedula: "0111978465", nombres: "LUIS CONDE", solicitud: "13", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLD", fecha_proceso: "12/07/2024 15:00", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
-                { cedula: "1106849276", nombres: "SAMANTA CARRION", solicitud: "5", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "BLACK", fecha_proceso: "13/07/2024 15:36", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
-                { cedula: "0681486841", nombres: "FULANITO CABRERA", solicitud: "7", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLD", fecha_proceso: "13/07/2024 15:37", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
-                { cedula: "1954984972", nombres: "MARTHA PINEDA", solicitud: "9", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "ESTÁNDAR", fecha_proceso: "14/07/2024 17:10", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
-                { cedula: "0981864365", nombres: "PIEDA TOLEDO", solicitud: "10", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "BLACK", fecha_proceso: "14/07/2024 17:20", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
-                { cedula: "1104732936", nombres: "LEO MONTALVAN", solicitud: "4", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "BLACK", fecha_proceso: "15/07/2024 11:30", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
-                { cedula: "0515846844", nombres: "LUISA VALDEZ", solicitud: "11", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "ESTÁNDAR", fecha_proceso: "15/07/2024 11:45", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
-                { cedula: "0849655446", nombres: "MARIA ORTEGA", solicitud: "12", estado: "PEN_ENV_PERSONALIZAR", tipo_producto: "GOLD", fecha_proceso: "15/07/2024 11:50", oficina_solicita: "EL VALLER", tipo_tarjeta: "Principal" },
-            ]
-        }
-
-    ]
-
-    const tarjetas = [
-        { ente: "15188", cedula: "1101898147", nombres: "NICOLE ALBAN", tipo_producto: "ESTÁNDAR", fecha_proceso: "12/07/2024 22:30", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
-        { ente: "49456", cedula: "1150214370", nombres: "DANNY VASQUEZ", tipo_producto: "GOLD", fecha_proceso: "12/07/2024 22:30", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
-        { ente: "84684", cedula: "0111978465", nombres: "LUIS CONDE", tipo_producto: "GOLD", fecha_proceso: "12/07/2024 22:30", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
-        { ente: "95464", cedula: "1106849276", nombres: "SAMANTA CARRION", tipo_producto: "GOLD", fecha_proceso: "13/07/2024 15:35", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
-        { ente: "11546", cedula: "0681486841", nombres: "FULANITO CABRERA", tipo_producto: "GOLD", fecha_proceso: "13/07/2024 15:35", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
-        { ente: "186424", cedula: "1954984972", nombres: "MARTHA PINEDA", tipo_producto: "ESTÁNDAR", fecha_proceso: "14/07/2024 17:30", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
-        { ente: "2298", cedula: "0981864365", nombres: "PIEDA TOLEDO", tipo_producto: "GOLD", fecha_proceso: "14/07/2024 17:30", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
-        { ente: "6849", cedula: "1104732936", nombres: "LEO MONTALVAN", tipo_producto: "BLACK", fecha_proceso: "12/07/2024 22:30", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
-        { ente: "97678", cedula: "0515846844", nombres: "LUISA VALDEZ", tipo_producto: "ESTÁNDAR", fecha_proceso: "12/07/2024 16:30", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
-        { ente: "15864", cedula: "0849655446", nombres: "MARIA ORTEGA", tipo_producto: "GOLD", fecha_proceso: "12/07/2024 16:30", oficina_solicita: "EL VALLER", tipo_tarjeta: "Principal" },
-    ]
-
-    const tarjetasV2 = [
-        { ente: "1111", cedula: "1306543210", nombres: "JORGE SANCHEZ", tipo_producto: "ESTÁNDAR", fecha_proceso: "14/07/2024 15:30", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
-        { ente: "2222", cedula: "1001234567", nombres: "PATRICIA LOPEZ", tipo_producto: "GOLD", fecha_proceso: "14/07/2024 15:30", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
-        { ente: "3333", cedula: "1203456789", nombres: "CLAUDIA HERRERA", tipo_producto: "BLACK", fecha_proceso: "14/07/2024 15:30", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
-        { ente: "4443", cedula: "0509876543", nombres: "PEDRO RAMOS", tipo_producto: "GOLD", fecha_proceso: "14/07/2024 15:35", oficina_solicita: "EL VALLE", tipo_tarjeta: "Principal" },
-    ]
-
-
 
     const closeModalCambioEstadoOrdenes = () => {
         setModalCambioEstadoOrdenes(false);
@@ -521,6 +550,9 @@ function Seguimiento(props) {
                 {/*    <img className="img-icons-acciones" src="Imagenes/search.svg" alt="Visualizar documentos"></img>*/}
                 {/*</button>*/}
 
+
+                {tienePermisoActivarTC && 
+
                 <button className="btn_mg_icons noborder" title="Activar TC"
                     onClick={() => {
                         setSeguimientoIdAccion(Number(seguimiento));
@@ -528,7 +560,8 @@ function Seguimiento(props) {
                         setModalCambioEstadoOrdenes(true);
                     }}>
                     <img className="img-icons-acciones" src="Imagenes/activate.svg" alt="Activar Tc"></img>
-                </button>
+                    </button>
+                }
 
             </div>
         )
@@ -557,6 +590,8 @@ function Seguimiento(props) {
                 {/*    <img className="img-icons-acciones" src="Imagenes/upload_file.svg" alt="Subir Doc Escaneado"></img>*/}
                 {/*</button>*/}
 
+                {tienePermisoEntregarTC &&
+
                 <div onClick={() => {
                     setSeguimientoIdAccion(Number(seguimiento));
                     setTextoCambioEstadoOrden('¿Esta seguro de realizar la entrega de la tarjeta de crédito?');
@@ -569,7 +604,8 @@ function Seguimiento(props) {
                         padding: 0,
                     }}>
                     </CreditScoreRoundedIcon>
-                </div>
+                    </div>
+                }
 
 
                 {/*<button className="btn_mg_icons noborder" title="Entregar Tc"*/}
@@ -585,40 +621,29 @@ function Seguimiento(props) {
         )
     }
 
-
-
     return (
         <div className="f-row w-100" >
             <div className="container_mg">
                 <div className='f-row w-100'>
-
-
-                    {datosUsuario.length > 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE OPERACIONES" && subMenuOpcionesPerfil?.length > 0 &&
+                    {datosUsuario.length > 0 && (tienePermisoEnviarPersonalizarTC || tienePermisoVericarOperacionesTC || tienePermisoEnviarAgenciaTC) && subMenuOpcionesPerfil?.length > 0 &&
                         <div className="f-row w-100 justify-content-center">
                             <div className="mb-4" style={{ marginTop: "2.5rem" }}>
                                 <TogglerV2 toggles={subMenuOpcionesPerfil} selectedToggle={(e) => filtrarTarjetas(e)}></TogglerV2>
                             </div>
-
                         </div>
                     }
-
-                    {datosUsuario.length > 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" && subMenuOpcionesPerfil?.length > 0 &&
-
+                    {datosUsuario.length > 0 && (tienePermisoReceptarTC || tienePermisoActivarTC) && subMenuOpcionesPerfil?.length > 0 &&
                         <div className="f-row w-100 justify-content-center">
                             <div className="mb-4" style={{ marginTop: "2.5rem" }}>
                                 <TogglerV2 toggles={subMenuOpcionesPerfil} selectedToggle={(e) => accionAsistenteAgenciaHandler(e)}></TogglerV2>
                             </div>
-
                         </div>
-
                     }
-
-
                 </div>
 
 
                 {/*BANDEJAS PARA ASISTENTE DE OPERACIONES*/}
-                {datosUsuario.length > 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE OPERACIONES" && selectFiltrarOrdenes === "EST_SEG_PEN_ENV_PER" &&
+                {tienePermisoListarPendPersonalizarTC && selectFiltrarOrdenes === "EST_SEG_PEN_ENV_PER" &&
                     <div className="contentTableOrden mt-3 mb-3">
                         {lstSeguimientoTC.length > 0 && lstSeguimientoTC.map((orden, index) => {
                             return (
@@ -637,7 +662,7 @@ function Seguimiento(props) {
                     </div>
                 }
 
-                {datosUsuario.length > 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE OPERACIONES" && selectFiltrarOrdenes === "EST_SEG_ENV_PER" &&
+                {tienePermisoListarPendRecibirOperacTC && selectFiltrarOrdenes === "EST_SEG_ENV_PER" &&
                     <div className="contentTableOrden mt-3 mb-3">
                         {lstSeguimientoTC.length > 0 && lstSeguimientoTC.map((orden, index) => {
                             return (
@@ -655,8 +680,7 @@ function Seguimiento(props) {
                         })}
                     </div>
                 }
-
-                {datosUsuario.length > 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE OPERACIONES" && selectFiltrarOrdenes === "EST_SEG_VER_OPR" &&
+                {tienePermisoListarPendEnviarAgenciasTC && selectFiltrarOrdenes === "EST_SEG_VER_OPR" &&
                     <div className="contentTableOrden mt-3 mb-3">
                         {lstSeguimientoTC.length > 0 && lstSeguimientoTC.map((orden, index) => {
                             return (
@@ -667,35 +691,34 @@ function Seguimiento(props) {
                                     returnItems={returnItemsHandler}
                                     pantallaTituloExponer="Seguimiento"
                                     opcionHeader={true}
-                                    opcionItemDisable={true}
+                                    opcionItemDisable={false}
                                 ></ComponentItemsOrden>
                                 </Fragment>
                             )
                         })}
                     </div>
                 }
-                {lstSeguimientoTC.length === 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE OPERACIONES" &&
+                {lstSeguimientoTC.length === 0 && (selectFiltrarOrdenes === "EST_SEG_PEN_ENV_PER" || selectFiltrarOrdenes === "EST_SEG_ENV_PER" || selectFiltrarOrdenes === "EST_SEG_VER_OPR") &&
+                    <div className="f-row mt-4 mb-5 align-content-center justify-content-center">
+                        <h3 className="strong">Sin datos para mostrar</h3>
+                    </div>
+                }
+                {lstSeguimientoTC.length === 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" && (boolSeccionActivacionTarjetas === true || boolSeccionRecepcionTarjetas === true ) &&
                     <div className="f-row mt-4 mb-5 align-content-center justify-content-center">
                         <h3 className="strong">Sin datos para mostrar</h3>
                     </div>
                 }
 
-                {/*todo: temporal tarjetasV2 */}
-                {lstSeguimientoTC.length === 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" && boolSeccionActivacionTarjetas === true &&
-                    <div className="f-row mt-4 mb-5 align-content-center justify-content-center">
-                        <h3 className="strong">Sin datos para mostrar</h3>
-                    </div>
-                }
-
-                {lstSeguimientoTC.length === 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" && boolSeccionRecepcionTarjetas === true &&
-                    <div className="f-row mt-4 mb-5 align-content-center justify-content-center">
-                        <h3 className="strong">Sin datos para mostrar</h3>
-                    </div>
-                }
+                {/*{lstSeguimientoTC.length === 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" && boolSeccionRecepcionTarjetas === true &&*/}
+                {/*    <div className="f-row mt-4 mb-5 align-content-center justify-content-center">*/}
+                {/*        <h3 className="strong">Sin datos para mostrar</h3>*/}
+                {/*    </div>*/}
+                {/*}*/}
                 {/*FIN BANDEJAS PARA ASISTENTE DE OPERACIONES*/}
 
 
                 {/*BANDEJAS PARA ASISTENTE DE AGENCIA*/}
+                {/*{boolSeccionRecepcionTarjetas === true && datosUsuario.length > 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" && lstSeguimientoTC.length > 0 &&*/}
                 {boolSeccionRecepcionTarjetas === true && datosUsuario.length > 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" && lstSeguimientoTC.length > 0 &&
                     <div className="contentTableOrden mt-3 mb-3">
                         {lstSeguimientoTC.length > 0 && lstSeguimientoTC.map((orden, index) => {
@@ -715,7 +738,9 @@ function Seguimiento(props) {
                     </div>
                 }
 
+                {/*{boolSeccionActivacionTarjetas === true && datosUsuario.length > 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" && lstSeguimientoTC.length > 0  &&*/}
                 {boolSeccionActivacionTarjetas === true && datosUsuario.length > 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" && lstSeguimientoTC.length > 0  &&
+
                     <div className="contentTableOrden mt-3 mb-3">
                         <Table headers={headersTarjetas}>
                             {lstSeguimientoTC[0]?.lst_ord_ofi.map((seguim, index) => {
@@ -762,15 +787,25 @@ function Seguimiento(props) {
 
 
                 {/*SECCION BOTONES PARA ASISTENTE DE OPERACIONES*/}
-                {datosUsuario.length > 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE OPERACIONES" && lstSeguimientoTC.length > 0 && 
+                {tienePermisoEnviarPersonalizarTC  && lstSeguimientoTC.length > 0 && selectFiltrarOrdenes === "EST_SEG_PEN_ENV_PER" &&
                     <div className='row w-100 mt-2 f-row justify-content-center'>
-                        <Button onClick={modalCambioEstadoOrdenesHandler} className="btn_mg__primary" disabled={(selectFiltrarOrdenes === "EST_SEG_ENV_PER" && numtotalTarjetasCambioEstado.length === 0) ? true: false}>{textoBotonAccion}</Button>
+                        <Button onClick={modalCambioEstadoOrdenesHandler} className="btn_mg__primary">{textoBotonAccion}</Button>
+                    </div>
+                }
+                {tienePermisoVericarOperacionesTC && lstSeguimientoTC.length > 0 && selectFiltrarOrdenes === "EST_SEG_ENV_PER" &&
+                    <div className='row w-100 mt-2 f-row justify-content-center'>
+                        <Button onClick={modalCambioEstadoOrdenesHandler} className="btn_mg__primary" disabled={(selectFiltrarOrdenes === "EST_SEG_ENV_PER" && numtotalTarjetasCambioEstado.length === 0) ? true : false}>{textoBotonAccion}</Button>
+                    </div>
+                }
+                {tienePermisoEnviarAgenciaTC && lstSeguimientoTC.length > 0 && selectFiltrarOrdenes === "EST_SEG_VER_OPR" &&
+                    <div className='row w-100 mt-2 f-row justify-content-center'>
+                        <Button onClick={modalCambioEstadoOrdenesHandler} className="btn_mg__primary" disabled={( selectFiltrarOrdenes === "EST_SEG_VER_OPR" && numtotalTarjetasCambioEstado.length === 0) ? true : false}>{textoBotonAccion}</Button>
                     </div>
                 }
                 
 
                 {/*SECCION BOTONES PARA ASISTENTE DE AGENCIA*/}
-                {boolSeccionRecepcionTarjetas === true && datosUsuario.length > 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" && lstSeguimientoTC.length > 0 && 
+                {tienePermisoReceptarTC && boolSeccionRecepcionTarjetas === true && lstSeguimientoTC.length > 0 && 
                     <div className='row w-100 mt-2 f-row justify-content-center'>
                         <Button onClick={modalCambioEstadoOrdenesHandler} className="btn_mg__primary" disabled={(selectFiltrarOrdenes === "EST_SEG_ENV_AGN" && numtotalTarjetasCambioEstado.length === 0) ? true : false}>{textBtnAccionAsistenteAgencia}</Button>
                     </div>

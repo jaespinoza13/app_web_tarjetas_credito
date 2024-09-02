@@ -10,7 +10,6 @@ import Card from '../Common/Card';
 import { get } from '../../js/crypt';
 import Button from '../Common/UI/Button';
 import Toggler from '../Common/UI/Toggler';
-import Table from '../Common/Table';
 import { setSolicitudStateAction } from '../../redux/Solicitud/actions';
 import { setProspectoStateAction } from '../../redux/Prospecto/actions';
 import Paginacion from '../Common/Paginacion';

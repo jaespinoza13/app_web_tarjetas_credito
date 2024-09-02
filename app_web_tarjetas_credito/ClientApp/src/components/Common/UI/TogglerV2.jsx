@@ -23,7 +23,7 @@ const TogglerV2 = (props) => {
             {props.toggles.map((element, index) => (
                 <Button
                     key={element.key}
-                    className={`btn_mg__togglerv2 ${element.key === activeIndex ? 'active' : ''} ${index === 0 ? 'inicialBotton' : ''} ${index === tamArray ? 'endBotton' : ''} ${(index !== tamArray && index !== 0) ? 'middBotton' : ''}`}
+                    className={`btn_mg__togglerv2 ${element.key === activeIndex ? 'active' : ''} ${(index === 0 && tamArray !== 0) ? 'inicialBotton' : ''} ${(index === tamArray && tamArray !== 0 )? 'endBotton' : ''} ${(index !== tamArray && index !== 0) ? 'middBotton' : ''}`}
                     onClick={() => { togglerHandler(element.key) }}>
                     {
                         <Fragment key={element.key}>

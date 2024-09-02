@@ -15,7 +15,7 @@ const AccordionV2 = (props) => {
 
 
 
-    const [estadoBtnDespl, setEstadoBtnDespl] = useState(true);
+    const [estadoBtnDespl, setEstadoBtnDespl] = useState(false);
     const [estadoLoadingInfoSocio, setEstadoLoadingInfoSocio] = useState(false);
 
 
