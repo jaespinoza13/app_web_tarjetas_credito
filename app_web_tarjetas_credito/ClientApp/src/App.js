@@ -1,4 +1,4 @@
-import React, { Component, useEffect, useState } from 'react';
+import React, { Component, useEffect, useRef, useState } from 'react';
 import { getAuthenticated, getUser, removeSession } from 'react-session-persist';
 import { Route, Switch, Redirect } from 'react-router';
 import Layout from './components/Layout';
@@ -37,13 +37,14 @@ import RecibirOrdenesOficinas from './components/Ordenes/RecibirOrdenesOficinas'
 import EntregaSocio from './components/EntregaTarjetaCredito/EntregaSocio';
 import Activacion from './components/EntregaTarjetaCredito/Activacion';
 import VerDetalle from './components/Prospeccion/VerDetalle';
+import TarjetasRechazadas from './components/Ordenes/TarjetasRechazadas';
 
 
 const mapStateToProps = (state) => {
     return {
         token: state.tokenActive.data,
         listaFuncionalidades: state.GetListaFuncionalidades.data,
-        parametrosTC: state.GetParametrosTC.data
+        parametrosTC: state.GetParametrosTC.data,
     };
 };
 
@@ -56,9 +57,10 @@ function Menus({ listaMenus, id_perfil, token, setListas, setListaFunc, listaFun
     const [idPerfil, setIdPerfil] = useState(id_perfil);
     const [listaMenusi, setListaMenus] = useState([]);
     const [listaUrls, setListaUrls] = useState([]);
-    const [existeParametrosSistema, setExisteParametrosSistema] = useState(false);
+    //const [existeParametrosSistema, setExisteParametrosSistema] = useState(false);
+    const existeParametrosSistema = useRef(false);
     const [sended, setSended] = useState(false);
-    const [sendedParams, setSendedParams] = useState(false);
+    //const [sendedParams, setSendedParams] = useState(false);
 
     useEffect(() => {
         if (!IsNullOrWhiteSpace(token)) {
@@ -96,11 +98,10 @@ function Menus({ listaMenus, id_perfil, token, setListas, setListaFunc, listaFun
 
     //OBTENCION DE PARAMETROS DEL SISTEMA
     useEffect(() => {
-        if (idPerfil > 0 && !IsNullOrWhiteSpace(tokeni) && validateToken(tokeni) && existeParametrosSistema === false && !sendedParams) {
-            setSendedParams(true);
+        if (idPerfil > 0 && !IsNullOrWhiteSpace(tokeni) && validateToken(tokeni) && existeParametrosSistema.current === false) {
+            existeParametrosSistema.current = true;
             //Obtener parametros y se almacena por medio de redux
-            fetchGetParametrosSistema("", tokeni, (data) => {
-                setExisteParametrosSistema(true);
+            fetchGetParametrosSistema("", tokeni, (data) => {   
                 dispatch(setParametrosTCStateAction({ lst_parametros: data.lst_parametros }));
             }, dispatch)
             fetchGetPermisosPerfil(tokeni, (data) => {
@@ -108,7 +109,7 @@ function Menus({ listaMenus, id_perfil, token, setListas, setListaFunc, listaFun
                //console.log("lst_funcionalidades ", data.lst_funcionalidades)
             }, dispatch)
         }
-    }, [idPerfil, tokeni, existeParametrosSistema.length, dispatch, sendedParams, existeParametrosSistema]);
+    }, [idPerfil, tokeni, dispatch, existeParametrosSistema]);
        
 
     useEffect(() => {
@@ -239,6 +240,16 @@ class App extends Component {
                         {this.state.isAuthenticated ? (
                             <>
                                 <Route exact path='/seguimiento' component={Seguimiento} />
+                            </>
+                        ) : (
+                            <Route render={() => <Redirect to="/auth" />} />
+                        )}
+                    </Route>
+
+                    <Route path='/rechazadas'>
+                        {this.state.isAuthenticated ? (
+                            <>
+                                <Route exact path='/rechazadas' component={TarjetasRechazadas} />
                             </>
                         ) : (
                             <Route render={() => <Redirect to="/auth" />} />

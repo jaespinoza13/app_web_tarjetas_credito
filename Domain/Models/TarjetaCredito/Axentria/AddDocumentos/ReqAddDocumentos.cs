@@ -5,6 +5,7 @@ namespace Domain.Models.TarjetaCredito.Axentria.AddDocumentos
     public class ReqAddDocumentos: Header
     {
         public bool bln_separar { get; set; }
+        public int int_id_separador { get; set; }
         public string str_ruta_arc { get; set; } = string.Empty;
         public string str_nombre_arc { get; set; } = string.Empty;
         public string str_identificacion { get; set; } = string.Empty;

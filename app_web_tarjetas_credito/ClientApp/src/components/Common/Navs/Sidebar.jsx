@@ -59,11 +59,11 @@ function Sidebar(props) {
 
         setDatosUsuario([{ strCargo: strRol, strOficial: strOficial, strUserOficial: userOficial, strUserOficina: userOficina }]);
     }, [])
-    /*
+    
     useEffect(() => {
         console.log(datosUsuario)
     }, [datosUsuario])
-    */
+    
     return (
         /*<div className="content">*/
         <div className={`sidebar ${collapsed && 'sidebar_min'}`} id="sidebar">
@@ -155,7 +155,8 @@ function Sidebar(props) {
 
 
 
-                    {perfilUsuario !== "" && (perfilUsuario === "ASISTENTE DE OPERACIONES" || perfilUsuario === "ASISTENTE DE AGENCIA" || perfilUsuario === "ASISTENTE DE PLATAFORMA DE SERVICIOS") &&
+                    {perfilUsuario !== "" && (perfilUsuario === "ASISTENTE DE OPERACIONES" || perfilUsuario === "ASISTENTE DE AGENCIA" || perfilUsuario === "ASISTENTE DE PLATAFORMA DE SERVICIOS"
+                        || perfilUsuario ==="SUPERVISOR DE PLATAFORMA DE SERVICIOS") &&
                         <div className="sidebar_menu__item">
                             <NavItem>
                                 <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'seguimiento') ? 'active' : ''}`} to="/seguimiento">
@@ -176,6 +177,34 @@ function Sidebar(props) {
                                                 display: collapsed ? "none" : "block",
 
                                             }}>Seguimiento</div>
+                                    </div>
+                                </NavLink>
+                            </NavItem>
+                        </div>
+                    }
+
+                    {perfilUsuario !== "" && perfilUsuario === "ASISTENTE DE OPERACIONES" &&
+
+                        <div className="sidebar_menu__item">
+                            <NavItem>
+                                <NavLink tag={Link} className={`text-dark ${(funcionalidadActiva === 'rechazadas') ? 'active' : ''}`} to="/rechazadas">
+                                    <div className="f-row" style={{ width: collapsed ? "25px" : "" }}>
+                                        <CachedRoundedIcon
+                                            sx={{
+                                                fontSize: 26,
+                                                marginLeft: collapsed ? 1.7 : 0.7,
+                                                marginRight: collapsed ? 1.7 : 0.7,
+                                                transition: "0.3s ease",
+                                            }}
+                                        ></CachedRoundedIcon>
+                                        {/*<img src="Imagenes/menu.png" alt="Solicitudes" className="ml-1 mr-3"></img>*/}
+                                        <div className={`tituloItemMenu`}
+                                            style={{
+                                                transform: "translateY(0.1rem)",
+                                                transition: "opacity 0.3s ease",
+                                                display: collapsed ? "none" : "block",
+
+                                            }}>Rechazadas</div>
                                     </div>
                                 </NavLink>
                             </NavItem>

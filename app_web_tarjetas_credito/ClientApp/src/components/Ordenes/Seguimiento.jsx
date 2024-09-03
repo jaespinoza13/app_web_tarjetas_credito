@@ -19,6 +19,7 @@ import Modal from '../Common/Modal/Modal';
 import DriveFolderUploadRoundedIcon from '@mui/icons-material/DriveFolderUploadRounded';
 import CreditScoreRoundedIcon from '@mui/icons-material/CreditScoreRounded';
 import UploadDocumentos from "../Common/UploaderDocuments";
+import ReplyAllRoundedIcon from '@mui/icons-material/ReplyAllRounded';
 
 const mapStateToProps = (state) => {
     var bd = state.GetWebService.data;
@@ -53,30 +54,14 @@ function Seguimiento(props) {
     const [controlConsultaCargaComp, setControlConsultaCargaComp] = useState(false);
     const [selectFiltrarOrdenes, setSelectFiltrarOrdenes] = useState("");
     const [totalTarjetasAccionDiccionario, setTotalTarjetasAccionDiccionario] = useState([]);
+    const [totalTarjetasListado, setTotalTarjetasListado] = useState(0);
     const [numtotalTarjetasCambioEstado, setNumtotalTarjetasCambioEstado] = useState([]);
     const [subMenuOpcionesPerfil, setSubMenuOpcionesPerfil] = useState([]);
     const [funcionalidades, setFuncionalidades] = useState([]);
 
-    const [comboOpcionesSeguimiento, setComboOpcionesSeguimiento] = useState(
-        [
-            { image: "", textPrincipal: `PEND. DE PERSONALIZAR`, textSecundario: "", key: 0, nemonico: "PENDIENTE DE PERSONALIZAR" },
-            { image: "", textPrincipal: `PENDIENTE DE VERIFICAR`, textSecundario: "", key: 1, nemonico: "PENDIENTE DE VERIFICAR" },
-            { image: "", textPrincipal: `PENDIENTE DE DISTRIBUIR`, textSecundario: "", key: 2, nemonico: "PENDIENTE DE DISTRIBUIR" },
-        ]);
-
-    const [comboOpcionesSegAsisteAgencia, setComboOpcionesSegAsisteAgencia] = useState(
-        [
-            { image: "", textPrincipal: `RECEPTAR TARJETAS DE CRÉDITO`, textSecundario: "", key: 0 },
-            { image: "", textPrincipal: `ACTIVAR TARJETAS DE CRÉDITO`, textSecundario: "", key: 1 },
-        ]);
-
     const headersTarjetas =
         [{ key: 0, nombre: "Identificación" }, { key: 1, nombre: "Nombre del titular" }, { key: 2, nombre: "Fecha proceso" }, { key: 3, nombre: "Tipo de tarjeta" }, { key: 4, nombre: "Tipo de producto" }, { key: 5, nombre: "Acciones" }]
 
-
-    // Secciones para activar componentes
-    const [boolSeccionRecepcionTarjetas, setBoolSeccionRecepcionTarjetas] = useState(false);
-    const [boolSeccionActivacionTarjetas, setBoolSeccionActivacionTarjetas] = useState(false);
 
     //Info sesión
     const [datosUsuario, setDatosUsuario] = useState([]);
@@ -85,7 +70,7 @@ function Seguimiento(props) {
     const [seguimientoIdAccion, setSeguimientoIdAccion] = useState(0);
 
     //Variables para habilitar permisos
-   
+
     const [tienePermisoListarPendPersonalizarTC, setTienePermisoListarPersonalizarTC] = useState(false);
     const [tienePermisoListarPendRecibirOperacTC, setTienePermisoListarPendRecibirOperacTC] = useState(false);
     const [tienePermisoListarPendEnviarAgenciasTC, setTienePermisoListarPendEnviarAgenciasTC] = useState(false);
@@ -99,18 +84,19 @@ function Seguimiento(props) {
     const [tienePermisoActivarTC, setTienePermisoActivarTC] = useState(false);
     const [tienePermisoReceptarTC, setTienePermisoReceptarTC] = useState(false);
 
-
+    const [tienePermisoListarPendEntregarTC, setTienePermisoListarPendEntregarTC] = useState(false);
     const [tienePermisoEntregarTC, setTienePermisoEntregarTC] = useState(false);
 
 
     //Modales
-    const [modalCambioEstadoOrdenes, setModalCambioEstadoOrdenes] = useState(false);
+    const [isOpenModalCambioEstadoSiguiente, setIsOpenModalCambioEstadoSiguiente] = useState(false);
     const [textoCambioEstadoOrden, setTextoCambioEstadoOrden] = useState("");
-    const [modalVisibleOk, setModalVisibleOk] = useState(false);
+    const [isModalVisibleOk, setIsModalVisibleOk] = useState(false);
     const [textoTitulo, setTextoTitulo] = useState("");
 
     const [isOpenModalAccionTarjeta, setIsOpenModalAccionTarjeta] = useState(false);
     const [isOpenModalGestorDocumental, setIsOpenModalGestorDocumental] = useState(false);
+    const [isOpenModalDevolverTC, setIsOpenModalDevolverTC] = useState(false);
 
     //Axentria
     const [separadores, setSeparadores] = useState([]);
@@ -120,7 +106,7 @@ function Seguimiento(props) {
         if (props.seguimientoOrden.seguimientoCedula) {
             //setSeguimientoIdAccion(props.seguimientoOrden)
             setIsOpenModalAccionTarjeta(true);
-            console.log("PADRE ",props.seguimientoOrden)
+            //console.log("PADRE ",props.seguimientoOrden)
         }
     }, [props.seguimientoOrden])
 
@@ -174,7 +160,7 @@ function Seguimiento(props) {
                     })));
             }
             consultarParametrosSeguimiento();
-            
+
             //TRAE FUNCIONALIDADES (SETTINGS)
             fetchGetFuncionalidadesTC(props.token, (data) => {
                 //console.log(data.lst_funcSettings)
@@ -191,7 +177,7 @@ function Seguimiento(props) {
 
     useEffect(() => {
         //Para definir el toogle del perfil que este logueado (Se usa permisos de funcionalidad y parametros)
-        //(Hace la union de funcionalidades con parametros, ej: fun_nombre LISTAR_PENDIENTE_PERSONALIZAR_TC;  parametro prm_valor_ini es LISTAR_PENDIENTE_PERSONALIZAR_TC)
+        //(Hace la union de funcionalidades con parametros, ej: fun_nombre VER_ORDEN_PENDIENTE_ENVIAR_PERSONALIZAR;  parametro prm_valor_ini es VER_ORDEN_PENDIENTE_ENVIAR_PERSONALIZAR)
         if (props?.funcionalidadesStore?.permisos?.length > 0 && lstParamsSeguimiento?.length > 0 && estadosSeguimientoTC?.length > 0) {
             //console.log(props?.funcionalidadesStore?.permisos)
             //console.log(lstParamsSeguimiento)
@@ -205,8 +191,7 @@ function Seguimiento(props) {
                     paramOpciones = [...paramOpciones, parametroEncontrado];
                 }
             });
-            if (paramOpciones.length > 0)
-            {
+            if (paramOpciones.length > 0) {
                 paramOpciones?.forEach(paramOpc => {
                     let separador = paramOpc?.prm_valor_fin.split('|');
                     let estadoParametroSeguimiento = estadosSeguimientoTC?.find(paramEstadoSeg => paramEstadoSeg?.prm_nemonico === separador[0]?.toString());
@@ -224,12 +209,15 @@ function Seguimiento(props) {
                 toogleOpciones.sort((a, b) => a.prm_id - b.prm_id);
                 setSubMenuOpcionesPerfil(toogleOpciones);
 
-                //Obtener la informacion de seeguimiento para ASISTENTE DE PLATAFORMA DE SERVICIOS
-                if (datosUsuario[0]?.strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS") {
+                //SI SOLO SE TIENE UNA ACCION POR ROL, SE REALIZA LA CONSULTA DIRECTAMENTE PARA PRESENTARLA EN COMPONENTE, ejemplo para ASISTENTE DE PLATAFORMA DE SERVICIOS
+                if (props?.funcionalidadesStore?.permisos.some(permisosAccion => permisosAccion.fun_nombre === "VER_ORDEN_POR_ENTREGAR_SOCIO")) {
                     //console.log("toogleOpciones ", toogleOpciones)
-                    obtenerLstSeguimientoTC(toogleOpciones[0].prm_id);
+                    //obtenerLstSeguimientoTC(toogleOpciones[0].prm_id);
+                    let estadoFiltrar = toogleOpciones.find(estadoSeg => estadoSeg.key === 'EST_SEG_POR_ENT_SOC')
+                    //console.log("estadoFiltrar ", estadoFiltrar)
+                    obtenerLstSeguimientoTC(estadoFiltrar?.prm_id);
                 }
-            }        
+            }
         }
     }, [props?.funcionalidadesStore?.permisos, lstParamsSeguimiento, estadosSeguimientoTC])
 
@@ -240,52 +228,30 @@ function Seguimiento(props) {
             //console.log("props?.funcionalidadesStore?.permisos ", props?.funcionalidadesStore?.permisos)
             //console.log("funcionalidades ", funcionalidades)
 
-            /*OPERACIONES*/ 
-            setTienePermisoListarPersonalizarTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => {
-                return funcionalidades.some(funcionalidad => funcionalidad.funcionalidad === permisosAccion.fun_nombre && funcionalidad.funcionalidad === "LISTAR_PENDIENTE_PERSONALIZAR_TC")
-            }))
-            setTienePermisoListarPendRecibirOperacTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => {
-                return funcionalidades.some(funcionalidad => funcionalidad.funcionalidad === permisosAccion.fun_nombre && funcionalidad.funcionalidad === "LISTAR_PENDIENTE_VERIFICAR_TC")
-            }))
-            setTienePermisoListarPendRecibirOperacTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => {
-                return funcionalidades.some(funcionalidad => funcionalidad.funcionalidad === permisosAccion.fun_nombre && funcionalidad.funcionalidad === "LISTAR_PENDIENTE_DISTRIBUIR_TC")
-            }))
-            setTienePermisoEnviarPersonalizarTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => {
-                return funcionalidades.some(funcionalidad => funcionalidad.funcionalidad === permisosAccion.fun_nombre && funcionalidad.funcionalidad === "PERMISO_ENVIAR_PERSONALIZAR_TC")
-            }))
-            setTienePermisoVericarOperacionesTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => {
-                return funcionalidades.some(funcionalidad => funcionalidad.funcionalidad === permisosAccion.fun_nombre && funcionalidad.funcionalidad === "PERMISO_VERIFICAR_TC_OPERACIONES")
-            }))
-
-            setTienePermisoEnviarAgenciaTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => {
-                return funcionalidades.some(funcionalidad => funcionalidad.funcionalidad === permisosAccion.fun_nombre && funcionalidad.funcionalidad === "PERMISO_ENVIAR_AGENCIA_TC")
-            }))
-
-            setTienePermisoRechazarOperacionesTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => {
-                return funcionalidades.some(funcionalidad => funcionalidad.funcionalidad === permisosAccion.fun_nombre && funcionalidad.funcionalidad === "PERMISO_RECHAZAR_TC_OPERACIONES")
-            }))
+            /*OPERACIONES*/
+            setTienePermisoListarPersonalizarTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => permisosAccion.fun_nombre === "VER_ORDEN_PENDIENTE_ENVIAR_PERSONALIZAR"))
+            setTienePermisoListarPendRecibirOperacTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => permisosAccion.fun_nombre === "VER_ORDEN_ENVIADA_PERSONALIZAR"))
+            setTienePermisoListarPendEnviarAgenciasTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => permisosAccion.fun_nombre === "VER_ORDEN_VERIFICAR_OPERACIONES"))
+            setTienePermisoEnviarPersonalizarTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => permisosAccion.fun_nombre === "PERMISO_ENVIAR_PERSONALIZAR_TC"))
+            setTienePermisoVericarOperacionesTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => permisosAccion.fun_nombre === "PERMISO_VERIFICAR_TC_OPERACIONES"))
+            setTienePermisoEnviarAgenciaTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => permisosAccion.fun_nombre === "PERMISO_ENVIAR_AGENCIA_TC"))
+            setTienePermisoRechazarOperacionesTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => permisosAccion.fun_nombre === "PERMISO_RECHAZAR_TC_OPERACIONES"))
 
             /*ASISTENTE DE AGENCIA*/
-            setTienePermisoListarPendRecibirAgenciaTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => {
-                return funcionalidades.some(funcionalidad => funcionalidad.funcionalidad === permisosAccion.fun_nombre && funcionalidad.funcionalidad === "LISTAR_PENDIENTE_RECIBIR_AGENCIA_TC")
-            }))
-            setTienePermisoListarPendActivarTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => {
-                return funcionalidades.some(funcionalidad => funcionalidad.funcionalidad === permisosAccion.fun_nombre && funcionalidad.funcionalidad === "LISTAR_PENDIENTE_ACTIVAR_TC")
-            }))
+            setTienePermisoListarPendRecibirAgenciaTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => permisosAccion.fun_nombre === "VER_ORDEN_ENVIADO_AGENCIA"))
+            setTienePermisoListarPendActivarTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => permisosAccion.fun_nombre === "VER_ORDEN_POR_ACTIVAR"))
 
-            setTienePermisoActivarTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => {
-                return funcionalidades.some(funcionalidad => funcionalidad.funcionalidad === permisosAccion.fun_nombre && funcionalidad.funcionalidad === "PERMISO_ACTIVAR_TC")
-            }))
-
-            setTienePermisoReceptarTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => {
-                return funcionalidades.some(funcionalidad => funcionalidad.funcionalidad === permisosAccion.fun_nombre && funcionalidad.funcionalidad === "PERMISO_RECEPTAR_TC_AGENCIA")
-            }))
+            setTienePermisoActivarTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => permisosAccion.fun_nombre === "PERMISO_ACTIVAR_TC"))
+            setTienePermisoReceptarTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => permisosAccion.fun_nombre === "PERMISO_RECEPTAR_TC_AGENCIA"))
 
 
             /*ASISTENTE DE PLATAFORMA*/
+            setTienePermisoListarPendEntregarTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => permisosAccion.fun_nombre === "VER_ORDEN_POR_ENTREGAR_SOCIO"))
+            setTienePermisoEntregarTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => permisosAccion.fun_nombre === "PERMISO_ENTREGAR_TC_SOCIO"))
+            /*
             setTienePermisoEntregarTC(props?.funcionalidadesStore?.permisos.some(permisosAccion => {
                 return funcionalidades.some(funcionalidad => funcionalidad.funcionalidad === permisosAccion.fun_nombre && funcionalidad.funcionalidad === "PERMISO_ENTREGAR_TC_SOCIO")
-            }))
+            }))*/
         }
     }, [funcionalidades, props?.funcionalidadesStore])
 
@@ -315,8 +281,11 @@ function Seguimiento(props) {
     }
 
     const closeModalCambioEstadoOrdenes = () => {
-        setModalCambioEstadoOrdenes(false);
+        setIsOpenModalCambioEstadoSiguiente(false);
         setTextoCambioEstadoOrden("");
+    }
+    const closeModalDevolverTC = () => {
+        setIsOpenModalDevolverTC(false);
     }
 
     const closeModalAccionTarjeta = () => {
@@ -342,35 +311,35 @@ function Seguimiento(props) {
             if (itemOrdenes.length > 0) {
                 let paramEstadoSeguimiento = subMenuOpcionesPerfil.find(opciones => opciones.key === selectFiltrarOrdenes);
                 actualizarOrdenes(paramEstadoSeguimiento.prm_id_sig_estado, itemOrdenes, (callback) => {
-                    setTextoTitulo("Las tarjetas de crédito se han enviado a personalizar.")
-                    setModalVisibleOk(true);
+                    setTextoTitulo("Las tarjetas de crédito se enviaron correctamente.")
+                    setIsModalVisibleOk(true);
                     filtrarTarjetas(selectFiltrarOrdenes);//Realizar nueva consulta
-                });              
-                    
+                });
+
             } else {
                 return
             }
         }
 
         else if (selectFiltrarOrdenes === "EST_SEG_ENV_PER") {
-            let paramEstadoSeguimiento = subMenuOpcionesPerfil.find(opciones => opciones.key === selectFiltrarOrdenes);            
+            let paramEstadoSeguimiento = subMenuOpcionesPerfil.find(opciones => opciones.key === selectFiltrarOrdenes);
             if (numtotalTarjetasCambioEstado.length > 0) {
                 actualizarOrdenes(paramEstadoSeguimiento.prm_id_sig_estado, numtotalTarjetasCambioEstado, (callback) => {
-                    setTextoTitulo("Las tarjetas de crédito han sido verificadas con éxito.")
-                    setModalVisibleOk(true);
+                    setTextoTitulo("Las tarjetas de crédito han cambiado su estado a verificadas.")
+                    setIsModalVisibleOk(true);
                     filtrarTarjetas(selectFiltrarOrdenes);//Realizar nueva consulta
                 });
             } else {
                 return
             }
-            
-        }        
+
+        }
         else if (selectFiltrarOrdenes === "EST_SEG_VER_OPR") { //Para enviar a las agencias (distibucion TC)
             let paramEstadoSeguimiento = subMenuOpcionesPerfil.find(opciones => opciones.key === selectFiltrarOrdenes);
             if (numtotalTarjetasCambioEstado.length > 0) {
                 actualizarOrdenes(paramEstadoSeguimiento.prm_id_sig_estado, numtotalTarjetasCambioEstado, (callback) => {
-                    setTextoTitulo("Se han distribuido las tarjetas de crédito con éxito.")
-                    setModalVisibleOk(true);
+                    setTextoTitulo("Las tarjetas de crédito han cambiado su estado a distribuidas.")
+                    setIsModalVisibleOk(true);
                     filtrarTarjetas(selectFiltrarOrdenes);//Realizar nueva consulta
                 });
             } else {
@@ -383,7 +352,7 @@ function Seguimiento(props) {
             if (numtotalTarjetasCambioEstado.length > 0) {
                 actualizarOrdenes(paramEstadoSeguimiento.prm_id_sig_estado, numtotalTarjetasCambioEstado, (callback) => {
                     setTextoTitulo("Las tarjetas de crédito se cambiaron de estado a Recibido");
-                    setModalVisibleOk(true);
+                    setIsModalVisibleOk(true);
                     filtrarTarjetas(selectFiltrarOrdenes);//Realizar nueva consulta
                 });
             } else {
@@ -400,7 +369,7 @@ function Seguimiento(props) {
             tarjetasArray.push();
             actualizarOrdenes(subMenuOpcionesPerfil[0]?.prm_id_sig_estado, tarjetasArray, (callback) => {
                 setTextoTitulo(tituloMensajeAviso);
-                setModalVisibleOk(true);
+                setIsModalVisibleOk(true);
                 setSeguimientoIdAccion(0);
                 obtenerLstSeguimientoTC(subMenuOpcionesPerfil[0].prm_id);  //Realizar nueva consulta
             });
@@ -409,28 +378,52 @@ function Seguimiento(props) {
         }
     }
 
+    const devolverTCHandler = async (tituloMensajeAviso) => {
+        closeModalDevolverTC();
+        if (seguimientoIdAccion !== 0) {
+            let tarjetasArray = [seguimientoIdAccion];
+            tarjetasArray.push();
+
+            let estadoSeguimientoAnterior = estadosSeguimientoTC.find(estadoSegui => estadoSegui.prm_nemonico === "EST_SEG_POR_ENT_SOC")//"EST_SEG_ENV_AGN")
+            console.log("estadoSeguimientoAnterior ", estadoSeguimientoAnterior)
+            //TODO: buscar el ID de la anterio bandeja
+            
+            actualizarOrdenes(estadoSeguimientoAnterior?.int_id_parametro, tarjetasArray, (callback) => {
+                setTextoTitulo(tituloMensajeAviso);
+                setIsModalVisibleOk(true);
+                setSeguimientoIdAccion(0);
+                let estadoFiltrar = subMenuOpcionesPerfil.find(estadoSeg => estadoSeg.key === 'EST_SEG_POR_ACT')
+                obtenerLstSeguimientoTC(estadoFiltrar.prm_id); 
+            });
+        } else {
+            return
+        }
+    }
+
     const actualizarOrdenes = async (nuevoEstado, listaItems, callbackReturn) => {
-        await fetchUpdateOrdenes(nuevoEstado, listaItems, props.token, (data) => { 
+        await fetchUpdateOrdenes(nuevoEstado, listaItems, props.token, (data) => {
             callbackReturn(true);
         }, dispatch)
-        
+
     }
 
     const accionAsistenteAgenciaHandler = (valor) => {
         let valorParametro = subMenuOpcionesPerfil.find(opciones => opciones.key === valor);
         //setSelectAccionAsistAgencia(valor);
         if (valor === "EST_SEG_ENV_AGN") { //RECEPTAR TARJETAS CREDITO
-            obtenerLstSeguimientoTC(valorParametro.prm_id);
-            setBoolSeccionRecepcionTarjetas(true);
-            setBoolSeccionActivacionTarjetas(false);
-            setTextBtnAccionAsistenteAgencia("Recibir");
             setSelectFiltrarOrdenes(valor);
+            obtenerLstSeguimientoTC(valorParametro.prm_id);
+            //setBoolSeccionRecepcionTarjetas(true);
+            //setBoolSeccionActivacionTarjetas(false);
+            setTextBtnAccionAsistenteAgencia("Recibir");
+            setTotalTarjetasAccionDiccionario([]);
         }
         else if (valor === "EST_SEG_POR_ACT") { //ACTIVACION DE TARJETAS CREDITO
-            obtenerLstSeguimientoTC(valorParametro.prm_id);
-            setBoolSeccionActivacionTarjetas(true);
-            setBoolSeccionRecepcionTarjetas(false);
             setSelectFiltrarOrdenes(valor);
+            obtenerLstSeguimientoTC(valorParametro.prm_id);
+            //setBoolSeccionActivacionTarjetas(true);
+            //setBoolSeccionRecepcionTarjetas(false);
+            setTotalTarjetasAccionDiccionario([]);
         }
 
     }
@@ -446,6 +439,15 @@ function Seguimiento(props) {
         setSelectFiltrarOrdenes(keyToogle);
         obtenerLstSeguimientoTC(itemToogle.prm_id);
         setTotalTarjetasAccionDiccionario([]);
+    }
+
+    const obtenerLstSeguimientoTC = async (valorSelect) => {
+        await fetchGetOrdenes(Number(valorSelect), props.token, (data) => { //12883 PEN_ENV_PERSONALIZAR  | 12884 ENV_PERSONALIZADOR |  12885 VERIFICADA_OPERACIONES
+            //console.log("lst_ordenes_tc_ ", data.lst_ordenes_tc);
+            const conteoTarjetas = data.lst_ordenes_tc.reduce((acumulador, tarj) => acumulador + tarj.int_total_tarjetas, 0);
+            setTotalTarjetasListado(conteoTarjetas);
+            setLstSeguimientoTC(data.lst_ordenes_tc);
+        }, dispatch)
     }
 
     const consultarParametrosSeguimiento = async () => {
@@ -465,31 +467,29 @@ function Seguimiento(props) {
         }, dispatch)
     }
 
-
-    const obtenerLstSeguimientoTC = async (valorSelect) => {
-        await fetchGetOrdenes(Number(valorSelect), props.token, (data) => { //12883 PEN_ENV_PERSONALIZAR  | 12884 ENV_PERSONALIZADOR |  12885 VERIFICADA_OPERACIONES
-            //console.log("lst_ordenes_tc_ ", data.lst_ordenes_tc);
-            setLstSeguimientoTC(data.lst_ordenes_tc);
-        }, dispatch)
-    }
-
     const cerrarModalVisible = () => {
         setTextoTitulo("");
-        setModalVisibleOk(false);
+        setIsModalVisibleOk(false);
     }
 
 
     const modalCambioEstadoOrdenesHandler = () => {
         if (selectFiltrarOrdenes === "EST_SEG_PEN_ENV_PER") {
-            setTextoCambioEstadoOrden("¿Está seguro de enviar a personalizar las tarjetas de crédito?");
+            let texto = `¿Está seguro de enviar a personalizar ${totalTarjetasListado} tarjeta/s de crédito?`
+            setTextoCambioEstadoOrden(texto);
         } else if (selectFiltrarOrdenes === "EST_SEG_ENV_PER") {
-            setTextoCambioEstadoOrden("¿Está seguro de recibir las tarjetas de crédito?");
+            let texto = `¿Está seguro de recibir ${numtotalTarjetasCambioEstado.length} tarjeta/s de crédito?`
+            setTextoCambioEstadoOrden(texto);
         } else if (selectFiltrarOrdenes === "EST_SEG_VER_OPR") {
-            setTextoCambioEstadoOrden("¿Está seguro de hacer el envío de tarjetas de crédito a las oficinas/agencias?");
+            let texto = `¿Está seguro de hacer el envío de ${numtotalTarjetasCambioEstado.length} tarjeta/s de crédito a las oficinas/agencias?`
+
+            //let texto = `<div class="mr-1">¿Está seguro de hacer el envío de <h3 class="strong">${numtotalTarjetasCambioEstado.length}</h3> tarjeta/s de crédito a las oficinas/agencias?</div>`
+            setTextoCambioEstadoOrden(texto);
         } else if (selectFiltrarOrdenes === "EST_SEG_ENV_AGN") {
-            setTextoCambioEstadoOrden("¿Está seguro de cambiar a Recibido para las tarjetas de crédito seleccionadas?");
+            let texto = `¿Está seguro de recibir ${numtotalTarjetasCambioEstado.length} tarjeta/s de crédito?`
+            setTextoCambioEstadoOrden(texto);
         }
-        setModalCambioEstadoOrdenes(true)
+        setIsOpenModalCambioEstadoSiguiente(true)
     }
 
 
@@ -519,107 +519,9 @@ function Seguimiento(props) {
                 setIsOpenModalGestorDocumental(true)
             }, dispatch);
         }
-        
+
     }
 
-
-    // ACCIONES PARA TABLE
-    const AccionesAsistenteAgencia = ({ seguimiento }) => {
-        //console.log("AccionesAsistentePlataforma ", seguimiento) //f-row w-100 icon-retorno
-        return (
-            <div className="f-row" style={{ gap: "6px", justifyContent: "center" }}>
-
-
-                <button className="btn_mg_icons noborder mr-1" title="Imprimir contrato" onClick={descargarContratoHandler}>
-                    <img className="img-icons-acciones" src="Imagenes/printIcon.svg" alt="Imprimir contrato"></img>
-                </button>
-
-                <div onClick={openModalGestorDocumentalHandler} title="Gestor documental" className="btn_mg_icons noborder mr-1">
-                    <DriveFolderUploadRoundedIcon
-                        sx={{
-                            fontSize: 35,
-                            marginTop: 0.5,
-                            padding: 0,
-                        }}
-                    >
-                    </DriveFolderUploadRoundedIcon>
-                </div>
-                
-
-                {/*<button className="btn_mg_icons noborder" title="Visualizar documentos">*/}
-                {/*    <img className="img-icons-acciones" src="Imagenes/search.svg" alt="Visualizar documentos"></img>*/}
-                {/*</button>*/}
-
-
-                {tienePermisoActivarTC && 
-
-                <button className="btn_mg_icons noborder" title="Activar TC"
-                    onClick={() => {
-                        setSeguimientoIdAccion(Number(seguimiento));
-                        setTextoCambioEstadoOrden('¿Esta seguro de activar la tarjeta de crédito?');
-                        setModalCambioEstadoOrdenes(true);
-                    }}>
-                    <img className="img-icons-acciones" src="Imagenes/activate.svg" alt="Activar Tc"></img>
-                    </button>
-                }
-
-            </div>
-        )
-    }
-
-
-    const AccionesAsistentePlataforma = ({ seguimiento }) => {
-        return (
-            <div className="f-row" style={{ gap: "6px", justifyContent: "center" }}>
-
-                <button className="btn_mg_icons noborder mr-1" title="Imprimir contrato" onClick={descargarContratoHandler}>
-                    <img className="img-icons-acciones" src="Imagenes/printIcon.svg" alt="Imprimir contrato"></img>
-                </button>
-
-                <div onClick={openModalGestorDocumentalHandler} title="Gestor documental" className="btn_mg_icons noborder mr-1">
-                    <DriveFolderUploadRoundedIcon
-                        sx={{
-                            fontSize: 35,
-                            marginTop: 0.5,
-                            padding: 0,
-                        }}
-                    >
-                    </DriveFolderUploadRoundedIcon>
-                </div>
-                {/*<button className="btn_mg_icons noborder" title="Subir Doc Escaneado">*/}
-                {/*    <img className="img-icons-acciones" src="Imagenes/upload_file.svg" alt="Subir Doc Escaneado"></img>*/}
-                {/*</button>*/}
-
-                {tienePermisoEntregarTC &&
-
-                <div onClick={() => {
-                    setSeguimientoIdAccion(Number(seguimiento));
-                    setTextoCambioEstadoOrden('¿Esta seguro de realizar la entrega de la tarjeta de crédito?');
-                    setModalCambioEstadoOrdenes(true);
-                }} title="Entregar Tc" className="btn_mg_icons noborder mr-1">
-                <CreditScoreRoundedIcon
-                    sx={{
-                        fontSize: 35,
-                        marginTop: 0.5,
-                        padding: 0,
-                    }}>
-                    </CreditScoreRoundedIcon>
-                    </div>
-                }
-
-
-                {/*<button className="btn_mg_icons noborder" title="Entregar Tc"*/}
-                {/*    onClick={() => {*/}
-                {/*        setSeguimientoIdAccion(Number(seguimiento));*/}
-                {/*        setTextoCambioEstadoOrden('¿Esta seguro de realizar la entrega de la tarjeta de crédito?');*/}
-                {/*        setModalCambioEstadoOrdenes(true);*/}
-                {/*    }}>*/}
-                {/*    <img className="img-icons-acciones" src="Imagenes/entregar.svg" alt="Entregar Tc"></img>*/}
-                {/*</button>*/}
-
-            </div>
-        )
-    }
 
     return (
         <div className="f-row w-100" >
@@ -645,17 +547,20 @@ function Seguimiento(props) {
                 {/*BANDEJAS PARA ASISTENTE DE OPERACIONES*/}
                 {tienePermisoListarPendPersonalizarTC && selectFiltrarOrdenes === "EST_SEG_PEN_ENV_PER" &&
                     <div className="contentTableOrden mt-3 mb-3">
+                        {lstSeguimientoTC.length > 0 &&
+                            <h3 style={{ fontSize: "1.3rem" }} className="strong mb-1">Total de tarjetas: {totalTarjetasListado}</h3>
+                        }
                         {lstSeguimientoTC.length > 0 && lstSeguimientoTC.map((orden, index) => {
                             return (
-                                <Fragment key={orden.str_oficina_entrega}>  
-                                <ComponentItemsOrden
-                                    index={index}
-                                    orden={orden}
-                                    returnItems={returnItemsHandler}
-                                    pantallaTituloExponer="Seguimiento"
-                                    opcionHeader={false}
-                                    opcionItemDisable={true}
-                                ></ComponentItemsOrden>
+                                <Fragment key={orden.str_oficina_entrega}>
+                                    <ComponentItemsOrden
+                                        index={index}
+                                        orden={orden}
+                                        returnItems={returnItemsHandler}
+                                        pantallaTituloExponer="Seguimiento"
+                                        opcionHeader={false}
+                                        opcionItemDisable={true}
+                                    ></ComponentItemsOrden>
                                 </Fragment>
                             )
                         })}
@@ -664,16 +569,19 @@ function Seguimiento(props) {
 
                 {tienePermisoListarPendRecibirOperacTC && selectFiltrarOrdenes === "EST_SEG_ENV_PER" &&
                     <div className="contentTableOrden mt-3 mb-3">
+                        {lstSeguimientoTC.length > 0 &&
+                            <h3 style={{ fontSize: "1.3rem" }} className="strong mb-1">Total de tarjetas: {totalTarjetasListado}</h3>
+                        }
                         {lstSeguimientoTC.length > 0 && lstSeguimientoTC.map((orden, index) => {
                             return (
-                                <Fragment key={orden.str_oficina_entrega}>  
-                                <ComponentItemsOrden
-                                    index={index}
-                                    orden={orden}
-                                    returnItems={returnItemsHandler}
-                                    pantallaTituloExponer="Seguimiento"
-                                    opcionHeader={true}
-                                    opcionItemDisable={false}
+                                <Fragment key={orden.str_oficina_entrega}>
+                                    <ComponentItemsOrden
+                                        index={index}
+                                        orden={orden}
+                                        returnItems={returnItemsHandler}
+                                        pantallaTituloExponer="Seguimiento"
+                                        opcionHeader={true}
+                                        opcionItemDisable={false}
                                     ></ComponentItemsOrden>
                                 </Fragment>
                             )
@@ -682,45 +590,39 @@ function Seguimiento(props) {
                 }
                 {tienePermisoListarPendEnviarAgenciasTC && selectFiltrarOrdenes === "EST_SEG_VER_OPR" &&
                     <div className="contentTableOrden mt-3 mb-3">
+                        {lstSeguimientoTC.length > 0 &&
+                            <h3 style={{ fontSize: "1.3rem" }} className="strong mb-1">Total de tarjetas: {totalTarjetasListado}</h3>
+                        }
                         {lstSeguimientoTC.length > 0 && lstSeguimientoTC.map((orden, index) => {
                             return (
-                                <Fragment key={orden.str_oficina_entrega}>                                
-                                <ComponentItemsOrden
-                                    index={index}
-                                    orden={orden}
-                                    returnItems={returnItemsHandler}
-                                    pantallaTituloExponer="Seguimiento"
-                                    opcionHeader={true}
-                                    opcionItemDisable={false}
-                                ></ComponentItemsOrden>
+                                <Fragment key={orden.str_oficina_entrega}>
+                                    <ComponentItemsOrden
+                                        index={index}
+                                        orden={orden}
+                                        returnItems={returnItemsHandler}
+                                        pantallaTituloExponer="Seguimiento"
+                                        opcionHeader={true}
+                                        opcionItemDisable={false}
+                                    ></ComponentItemsOrden>
                                 </Fragment>
                             )
                         })}
                     </div>
                 }
+
                 {lstSeguimientoTC.length === 0 && (selectFiltrarOrdenes === "EST_SEG_PEN_ENV_PER" || selectFiltrarOrdenes === "EST_SEG_ENV_PER" || selectFiltrarOrdenes === "EST_SEG_VER_OPR") &&
                     <div className="f-row mt-4 mb-5 align-content-center justify-content-center">
                         <h3 className="strong">Sin datos para mostrar</h3>
                     </div>
                 }
-                {lstSeguimientoTC.length === 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" && (boolSeccionActivacionTarjetas === true || boolSeccionRecepcionTarjetas === true ) &&
-                    <div className="f-row mt-4 mb-5 align-content-center justify-content-center">
-                        <h3 className="strong">Sin datos para mostrar</h3>
-                    </div>
-                }
-
-                {/*{lstSeguimientoTC.length === 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" && boolSeccionRecepcionTarjetas === true &&*/}
-                {/*    <div className="f-row mt-4 mb-5 align-content-center justify-content-center">*/}
-                {/*        <h3 className="strong">Sin datos para mostrar</h3>*/}
-                {/*    </div>*/}
-                {/*}*/}
                 {/*FIN BANDEJAS PARA ASISTENTE DE OPERACIONES*/}
 
-
                 {/*BANDEJAS PARA ASISTENTE DE AGENCIA*/}
-                {/*{boolSeccionRecepcionTarjetas === true && datosUsuario.length > 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" && lstSeguimientoTC.length > 0 &&*/}
-                {boolSeccionRecepcionTarjetas === true && datosUsuario.length > 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" && lstSeguimientoTC.length > 0 &&
+                {tienePermisoListarPendRecibirAgenciaTC && selectFiltrarOrdenes === "EST_SEG_ENV_AGN" && lstSeguimientoTC.length > 0 &&
                     <div className="contentTableOrden mt-3 mb-3">
+                        {lstSeguimientoTC.length > 0 &&
+                            <h3 style={{ fontSize: "1.3rem" }} className="strong mb-1">Total de tarjetas: {totalTarjetasListado}</h3>
+                        }
                         {lstSeguimientoTC.length > 0 && lstSeguimientoTC.map((orden, index) => {
                             return (
                                 <Fragment key={index}>
@@ -737,10 +639,7 @@ function Seguimiento(props) {
                         })}
                     </div>
                 }
-
-                {/*{boolSeccionActivacionTarjetas === true && datosUsuario.length > 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" && lstSeguimientoTC.length > 0  &&*/}
-                {boolSeccionActivacionTarjetas === true && datosUsuario.length > 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" && lstSeguimientoTC.length > 0  &&
-
+                {tienePermisoListarPendActivarTC && selectFiltrarOrdenes === "EST_SEG_POR_ACT" && lstSeguimientoTC.length > 0 &&
                     <div className="contentTableOrden mt-3 mb-3">
                         <Table headers={headersTarjetas}>
                             {lstSeguimientoTC[0]?.lst_ord_ofi.map((seguim, index) => {
@@ -752,7 +651,49 @@ function Seguimiento(props) {
                                         <td>{seguim.str_tipo_propietario}</td>
                                         <td><Chip type={seguim.str_tipo_tarjeta}>{seguim.str_tipo_tarjeta}</Chip></td>
                                         <td>
-                                            <AccionesAsistenteAgencia seguimiento={seguim.int_seg_id}/>
+                                            <div className="f-row" style={{ gap: "6px", justifyContent: "center" }}>
+                                                <div onClick={() => {
+                                                    setSeguimientoIdAccion(Number(seguim.int_seg_id));
+                                                    setIsOpenModalDevolverTC(true);
+                                                }} title="Devolver" className="btn_mg_icons noborder mr-1">
+                                                    <ReplyAllRoundedIcon
+                                                        sx={{
+                                                            fontSize: 35,
+                                                            marginTop: 0.5,
+                                                            padding: 0,
+                                                        }}>
+                                                    </ReplyAllRoundedIcon>
+                                                </div>
+
+
+                                                <button className="btn_mg_icons noborder mr-1" title="Imprimir contrato" onClick={descargarContratoHandler}>
+                                                    <img className="img-icons-acciones" src="Imagenes/printIcon.svg" alt="Imprimir contrato"></img>
+                                                </button>
+
+                                                <div onClick={openModalGestorDocumentalHandler} title="Gestor documental" className="btn_mg_icons noborder mr-1">
+                                                    <DriveFolderUploadRoundedIcon
+                                                        sx={{
+                                                            fontSize: 35,
+                                                            marginTop: 0.5,
+                                                            padding: 0,
+                                                        }}
+                                                    >
+                                                    </DriveFolderUploadRoundedIcon>
+                                                </div>
+
+                                                {tienePermisoActivarTC &&
+
+                                                    <button className="btn_mg_icons noborder" title="Activar TC"
+                                                        onClick={() => {
+                                                            setSeguimientoIdAccion(Number(seguim.int_seg_id));
+                                                            setTextoCambioEstadoOrden('¿Esta seguro de activar la tarjeta de crédito?');
+                                                            setIsOpenModalCambioEstadoSiguiente(true);
+                                                        }}>
+                                                        <img className="img-icons-acciones" src="Imagenes/activate.svg" alt="Activar Tc"></img>
+                                                    </button>
+                                                }
+
+                                            </div>
                                         </td>
                                     </tr>
                                 );
@@ -760,10 +701,15 @@ function Seguimiento(props) {
                         </Table>
                     </div>
                 }
+                {lstSeguimientoTC.length === 0 && (selectFiltrarOrdenes === "EST_SEG_ENV_AGN" || selectFiltrarOrdenes === "EST_SEG_POR_ACT") &&
+                    <div className="f-row mt-4 mb-5 align-content-center justify-content-center">
+                        <h3 className="strong">Sin datos para mostrar</h3>
+                    </div>
+                }
                 {/*FIN BANDEJAS PARA ASISTENTE DE AGENCIA*/}
 
                 {/*BANDEJA PARA ASISTENTE  DE PLATAFORMA DE SERVICIOS*/}
-                {datosUsuario.length > 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS" && lstSeguimientoTC.length > 0 &&               
+                {tienePermisoListarPendEntregarTC && lstSeguimientoTC.length > 0 &&
                     <div className="contentTableOrden mt-3 mb-3">
                         <Table headers={headersTarjetas}>
                             {lstSeguimientoTC[0]?.lst_ord_ofi.map((seguim, index) => {
@@ -771,11 +717,55 @@ function Seguimiento(props) {
                                     <tr key={seguim.int_seg_id}>
                                         <td>{seguim.str_identificacion}</td>
                                         <td>{seguim.str_denominacion_socio}</td>
-                                        <td>{dateFormat("dd-MMM-yyyy HH:MIN:SS",seguim.dtt_fecha_entrega)}</td>
+                                        <td>{dateFormat("dd-MMM-yyyy HH:MIN:SS", seguim.dtt_fecha_entrega)}</td>
                                         <td>{seguim.str_tipo_propietario}</td>
                                         <td><Chip type={seguim.str_tipo_tarjeta}>{seguim.str_tipo_tarjeta}</Chip></td>
                                         <td>
-                                            <AccionesAsistentePlataforma seguimiento={seguim.int_seg_id}/>
+                                            <div className="f-row" style={{ gap: "6px", justifyContent: "center" }}>
+
+                                                <button className="btn_mg_icons noborder mr-1" title="Imprimir contrato" onClick={descargarContratoHandler}>
+                                                    <img className="img-icons-acciones" src="Imagenes/printIcon.svg" alt="Imprimir contrato"></img>
+                                                </button>
+
+                                                <div onClick={openModalGestorDocumentalHandler} title="Gestor documental" className="btn_mg_icons noborder mr-1">
+                                                    <DriveFolderUploadRoundedIcon
+                                                        sx={{
+                                                            fontSize: 35,
+                                                            marginTop: 0.5,
+                                                            padding: 0,
+                                                        }}
+                                                    >
+                                                    </DriveFolderUploadRoundedIcon>
+                                                </div>
+
+
+                                                {tienePermisoEntregarTC &&
+                                                    <div onClick={() => {
+                                                        setSeguimientoIdAccion(Number(seguim.int_seg_id));
+                                                        setTextoCambioEstadoOrden('¿Esta seguro de realizar la entrega de la tarjeta de crédito?');
+                                                        setIsOpenModalCambioEstadoSiguiente(true);
+                                                    }} title="Entregar Tc" className="btn_mg_icons noborder mr-1">
+                                                        <CreditScoreRoundedIcon
+                                                            sx={{
+                                                                fontSize: 35,
+                                                                marginTop: 0.5,
+                                                                padding: 0,
+                                                            }}>
+                                                        </CreditScoreRoundedIcon>
+                                                    </div>
+                                                }
+
+
+                                                {/*<button className="btn_mg_icons noborder" title="Entregar Tc"*/}
+                                                {/*    onClick={() => {*/}
+                                                {/*        setSeguimientoIdAccion(Number(seguimiento));*/}
+                                                {/*        setTextoCambioEstadoOrden('¿Esta seguro de realizar la entrega de la tarjeta de crédito?');*/}
+                                                {/*        setIsOpenModalCambioEstadoSiguiente(true);*/}
+                                                {/*    }}>*/}
+                                                {/*    <img className="img-icons-acciones" src="Imagenes/entregar.svg" alt="Entregar Tc"></img>*/}
+                                                {/*</button>*/}
+
+                                            </div>
                                         </td>
                                     </tr>
                                 );
@@ -783,11 +773,17 @@ function Seguimiento(props) {
                         </Table>
                     </div>
                 }
+                {tienePermisoListarPendEntregarTC && lstSeguimientoTC.length === 0 && selectFiltrarOrdenes === "" &&
+                    <div className="f-row mt-4 mb-5 align-content-center justify-content-center">
+                        <br /><br />
+                        <h3 className="mt-4 strong">Sin datos para mostrar</h3>
+                    </div>
+                }
                 {/*FIN BANDEJA PARA ASISTENTE  DE PLATAFORMA DE SERVICIOS*/}
 
 
                 {/*SECCION BOTONES PARA ASISTENTE DE OPERACIONES*/}
-                {tienePermisoEnviarPersonalizarTC  && lstSeguimientoTC.length > 0 && selectFiltrarOrdenes === "EST_SEG_PEN_ENV_PER" &&
+                {tienePermisoEnviarPersonalizarTC && lstSeguimientoTC.length > 0 && selectFiltrarOrdenes === "EST_SEG_PEN_ENV_PER" &&
                     <div className='row w-100 mt-2 f-row justify-content-center'>
                         <Button onClick={modalCambioEstadoOrdenesHandler} className="btn_mg__primary">{textoBotonAccion}</Button>
                     </div>
@@ -799,13 +795,12 @@ function Seguimiento(props) {
                 }
                 {tienePermisoEnviarAgenciaTC && lstSeguimientoTC.length > 0 && selectFiltrarOrdenes === "EST_SEG_VER_OPR" &&
                     <div className='row w-100 mt-2 f-row justify-content-center'>
-                        <Button onClick={modalCambioEstadoOrdenesHandler} className="btn_mg__primary" disabled={( selectFiltrarOrdenes === "EST_SEG_VER_OPR" && numtotalTarjetasCambioEstado.length === 0) ? true : false}>{textoBotonAccion}</Button>
+                        <Button onClick={modalCambioEstadoOrdenesHandler} className="btn_mg__primary" disabled={(selectFiltrarOrdenes === "EST_SEG_VER_OPR" && numtotalTarjetasCambioEstado.length === 0) ? true : false}>{textoBotonAccion}</Button>
                     </div>
                 }
-                
 
                 {/*SECCION BOTONES PARA ASISTENTE DE AGENCIA*/}
-                {tienePermisoReceptarTC && boolSeccionRecepcionTarjetas === true && lstSeguimientoTC.length > 0 && 
+                {tienePermisoReceptarTC && selectFiltrarOrdenes === "EST_SEG_ENV_AGN" && lstSeguimientoTC.length > 0 &&
                     <div className='row w-100 mt-2 f-row justify-content-center'>
                         <Button onClick={modalCambioEstadoOrdenesHandler} className="btn_mg__primary" disabled={(selectFiltrarOrdenes === "EST_SEG_ENV_AGN" && numtotalTarjetasCambioEstado.length === 0) ? true : false}>{textBtnAccionAsistenteAgencia}</Button>
                     </div>
@@ -815,33 +810,37 @@ function Seguimiento(props) {
 
             </div>
 
+            {/*TODO CAMBIAR */}
             <ModalDinamico
-                modalIsVisible={modalCambioEstadoOrdenes}
+                modalIsVisible={isOpenModalCambioEstadoSiguiente}
                 titulo={`Aviso!!!`}
                 onCloseClick={closeModalCambioEstadoOrdenes}
                 type="sm"
             >
                 <div className="pbmg4 ptmg4">
-                    <div className="f-row mb-4">
-                        <h3 className="">{textoCambioEstadoOrden}</h3>
+                    <div className="f-col w-100 mb-4">
+                         <h3 className="strong">{textoCambioEstadoOrden}</h3>
+                        {/*<div className="f-row w-100 mb-4">*/}
+                        {/*    <div style={{ display: "contents" }} dangerouslySetInnerHTML={{ __html: textoCambioEstadoOrden }} />*/}
+                        {/*</div>*/}
                     </div>
                     <div className="center_text_items">
                         {datosUsuario[0]?.strCargo !== "ASISTENTE DE PLATAFORMA DE SERVICIOS" && datosUsuario[0]?.strCargo !== "ASISTENTE DE AGENCIA" &&
                             <button className="btn_mg btn_mg__primary mt-2" disabled={false} type="submit" onClick={cambioEstadoTCSeguimientoHandler}>Sí</button>
-                        }                        
-                        {datosUsuario[0]?.strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS" && 
-                            <button className="btn_mg btn_mg__primary mt-2" disabled={false} type="submit"
-                                onClick={() => cambioEstadoTCAgenciaOficinas("La tarjeta de crédito se cambio al estado por Activarse")}>Sí</button>
                         }
-                        
+                        {datosUsuario[0]?.strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS" &&
+                            <button className="btn_mg btn_mg__primary mt-2" disabled={false} type="submit"
+                                onClick={() => cambioEstadoTCAgenciaOficinas("La tarjeta de crédito ha cambiado su estado a por activarse.")}>Sí</button>
+                        }
+
                         {datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" && selectFiltrarOrdenes === "EST_SEG_ENV_AGN" &&
                             <button className="btn_mg btn_mg__primary mt-2" disabled={false} type="submit"
                                 onClick={cambioEstadoTCSeguimientoHandler}>Sí</button>
-                        } 
+                        }
 
-                        {datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" && selectFiltrarOrdenes === "EST_SEG_POR_ACT" && 
-                            <button className="btn_mg btn_mg__primary mt-2" disabled={false} type="submit" 
-                                onClick={() => cambioEstadoTCAgenciaOficinas("La tarjeta de crédito se activo con éxito")}>Sí</button>
+                        {datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" && selectFiltrarOrdenes === "EST_SEG_POR_ACT" &&
+                            <button className="btn_mg btn_mg__primary mt-2" disabled={false} type="submit"
+                                onClick={() => cambioEstadoTCAgenciaOficinas("La tarjeta de crédito fue activada con éxito.")}>Sí</button>
                         }
                         <button className="btn_mg btn_mg__secondary mt-2 " onClick={closeModalCambioEstadoOrdenes}>No</button>
                     </div>
@@ -849,8 +848,23 @@ function Seguimiento(props) {
                 </div>
             </ModalDinamico>
 
+            <ModalDinamico
+                modalIsVisible={isOpenModalDevolverTC}
+                titulo={`Aviso`}
+                onCloseClick={closeModalDevolverTC}
+                type="sm"
+            >
+                <div className="f-row mb-4">
+                    <h3 className="">¿Esta seguro de devolver la tarjeta de crédito al (Asistente de Plataforma)?</h3>
+                </div>
+                <div className="pbmg4 ptmg4 center_text_items">
+                    <button className="btn_mg btn_mg__primary mt-2" disabled={false} type="submit" onClick={()=>devolverTCHandler("Se ha devuelto la tarjeta de crédito con éxito.")}>Sí</button>
+                    <button className="btn_mg btn_mg__secondary mt-2 " onClick={closeModalDevolverTC}>No</button>
+                </div>
+            </ModalDinamico>
+
             <Modal
-                modalIsVisible={modalVisibleOk}
+                modalIsVisible={isModalVisibleOk}
                 titulo={`Aviso!`}
                 onNextClick={cerrarModalVisible}
                 onCloseClick={cerrarModalVisible}
@@ -863,7 +877,7 @@ function Seguimiento(props) {
                 </div>
             </Modal>
 
-
+            {/*TODO CAMBIAR */}
             <Modal
                 modalIsVisible={isOpenModalAccionTarjeta}
                 type="md"
@@ -873,22 +887,25 @@ function Seguimiento(props) {
                 titulo="Acción a realizar">
 
                 <div className="f-row w-100" style={{ marginTop: "2rem", marginBottom: "2rem" }}>
-                    <div className="f-row">
-                        <h3 className="strong mr-2 mt-1">Acción que puede realizar: </h3>
-                    </div>
+                    {tienePermisoRechazarOperacionesTC &&
+                        <>
 
-                    {datosUsuario[0]?.strCargo === "ASISTENTE DE OPERACIONES" &&
-                        <select style={{ width: "55%" }}>
-                            <option value="-1">SELECCIONE UNA ACCION</option>
-                            <option value="RECHAZADA_OPERACIONES">RECHAZAR</option>
-                        </select>            
+                        <div className="f-row">
+                            <h3 className="strong mr-2 mt-1">Acciones que puede realizar: </h3>
+                        </div>
+                            <select style={{ width: "55%" }}>
+                                <option value="-1">SELECCIONE UNA ACCION</option>
+                                <option value="RECHAZADA_OPERACIONES">RECHAZAR</option>
+                            </select>
+                        </>
+
                     }
-                    {datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" &&
-                        <select style={{ width: "55%" }}>
-                            <option value="-1">SELECCIONE UNA ACCION</option>
-                            <option value="RECHAZADA_AGENCIA">RECHAZAR</option>
-                        </select>
-                    }
+                    {/*{datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" &&*/}
+                    {/*    <select style={{ width: "55%" }}>*/}
+                    {/*        <option value="-1">SELECCIONE UNA ACCION</option>*/}
+                    {/*        <option value="RECHAZADA_AGENCIA">RECHAZAR</option>*/}
+                    {/*    </select>*/}
+                    {/*}*/}
                 </div>
             </Modal>
 
@@ -904,21 +921,19 @@ function Seguimiento(props) {
                 mainText="Salir"
             >
                 <div className={"m-2"}>
-                    <UploadDocumentos
-                        grupoDocumental={separadores}
-                        contenido={separadores}
-                        token={props.token}
-                        cedulaSocio={"1150214375"}
-                        solicitud={null}
-                        datosSocio={{ str_nombres: "FULANITO", str_apellido_paterno: "FABIAN", str_apellido_materno: "MARTINEZ" }}
-                        datosUsuario={datosUsuario}
-                        seleccionToogleSolicitud={""}
-                        oficinaSolicitud={"MATRIZ"}
-                        estadoSolicitud={"APROBADA"}
-                        cupoSolicitado={"-"}
-                        oficialSolicitud={""}
-                        calificacionRiesgo={""}
-                    ></UploadDocumentos>
+                    {props.token && isOpenModalGestorDocumental &&
+                        <UploadDocumentos
+                            token={props.token}
+                            grupoDocumental={separadores}
+                            contenido={separadores}
+                            cedulaSocio={"1103684385"}
+                            solicitud={24}
+                            datosSocio={{ str_nombres: "FULANITO", str_apellido_paterno: "FABIAN", str_apellido_materno: "MARTINEZ" }}
+                            datosUsuario={datosUsuario}
+                            presentarEncabezado={false}
+                            seleccionToogleSolicitud={null}
+                        ></UploadDocumentos>
+                    }
                 </div>
             </Modal>
 
