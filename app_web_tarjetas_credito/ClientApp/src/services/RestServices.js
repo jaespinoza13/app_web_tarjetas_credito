@@ -1573,7 +1573,7 @@ export function fetchGetSeparadores( token, onSucces, dispatch) {
      
     }
     ServicioPostExecute(getSeparadores, body, token, { dispatch: dispatch }).then((data) => {
-        console.log("Separadores,", data);
+        //console.log("Separadores,", data);
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
@@ -1592,7 +1592,7 @@ export function fetchGetSeparadores( token, onSucces, dispatch) {
     });
 }
 
-export async function fetchAddDocumentosAxentria(solicitudId, versionDoc,requiereSeparar, rutaArchivo, nombreArchivo, identificacionSocio, usuCarga, nombreSocio, nombreGrupo, referencia, archivo, token, onSucces, dispatch) {
+export async function fetchAddDocumentosAxentria(solicitudId, idGrupoDocumental, versionDoc,requiereSeparar, rutaArchivo, nombreArchivo, identificacionSocio, usuCarga, nombreSocio, nombreGrupo, referencia, archivo, token, onSucces, dispatch) {
     if (dispatch) dispatch(setErrorRedirigir(""));
 
     let body = {
@@ -1606,14 +1606,15 @@ export async function fetchAddDocumentosAxentria(solicitudId, versionDoc,requier
         str_nombre_socio: nombreSocio,
         str_nombre_grupo: nombreGrupo,
         str_referencia: referencia,
+        int_id_separador: Number(idGrupoDocumental),
         loadfile: {
             file: archivo
         } 
     }
-    console.log("BODY ADD ARC ", body)
+    //console.log("BODY ADD ARC ", body)
     
     await ServicioPostExecute(addDocumentosAxentria, body, token, { dispatch: dispatch }).then((data) => {
-        console.log("Add Doc Axe,", data);
+        //console.log("Add Doc Axe,", data);
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));
@@ -1929,7 +1930,7 @@ export async function  fetchUpdateOrdenes(estado,lstOrdenes, token, onSucces, di
     }
     console.log(body)
     await ServicioPostExecute(updOrdenesTc, body, token, { dispatch: dispatch }).then((data) => {
-        //console.log("data ", data)
+        console.log("data ", data)
         if (data) {
             if (data.error) {
                 if (dispatch) dispatch(setAlertText({ code: "1", text: data.error }));

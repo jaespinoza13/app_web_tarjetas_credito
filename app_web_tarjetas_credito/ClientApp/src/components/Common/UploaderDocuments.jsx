@@ -61,6 +61,7 @@ const UploadDocumentos = (props) => {
     //Input para modal de busqueda
     const [inputSolicitud, setInputSolicitud] = useState("");
 
+    const [presentarEncabezadoModulo, setPresentarEncabezadoModulo] = useState(true); 
 
     const resetCargarArchivos = () => {
         //console.log("RESETEAR")
@@ -280,7 +281,7 @@ const UploadDocumentos = (props) => {
     //Inicializador
     useEffect(() => {
         const conteoRegistros = props.contenido.length;
-        //console.log("TOTAL REG ",conteoRegistros)
+        //console.log("TOTAL REG ", props.contenido)
         setTotalRegistros(conteoRegistros);
 
         /* EN caso se requiera solo seleccionar las filas q tenga cargado el archivo
@@ -291,12 +292,19 @@ const UploadDocumentos = (props) => {
         */
 
         if (props.solicitud) {
+            //console.log(props.solicitud)
+            //console.log(props.token)
             setInputSolicitud(props.solicitud)
             fetchGetDocumentosAxentria(props.solicitud, props.token, (data) => {
                 setDocumentosSolicitudCruce(data.lst_documentos)
             }, dispatch);
         }
 
+        if (props.presentarEncabezado === undefined || props.presentarEncabezado === null) {
+            setPresentarEncabezadoModulo(true)
+        } else {
+            setPresentarEncabezadoModulo(props.presentarEncabezado)
+        }
 
 
     }, [])
@@ -308,12 +316,14 @@ const UploadDocumentos = (props) => {
             //Se realiza una clonacion del objeto para no modificar el original
             let resultaSeparadores = structuredClone(props.contenido)
             documentosSolicitudCruce.forEach(documento => {
-                //console.log(documento)
+                //console.log(documento) 
                 let grupoSeparadorIndex = resultaSeparadores.findIndex(grupoDoc => grupoDoc.str_separador === documento.str_grupo);
-                resultaSeparadores[grupoSeparadorIndex].str_login_carga = documento.str_usuario_carga;
-                resultaSeparadores[grupoSeparadorIndex].dtt_fecha_sube = documento.dtt_ult_modificacion;
-                resultaSeparadores[grupoSeparadorIndex].str_version = documento.str_version_doc;
-                resultaSeparadores[grupoSeparadorIndex].int_id_doc_relacionado = documento.int_id_doc;
+                if (Number(grupoSeparadorIndex) !== -1) {
+                    resultaSeparadores[grupoSeparadorIndex].str_login_carga = documento.str_usuario_carga;
+                    resultaSeparadores[grupoSeparadorIndex].dtt_fecha_sube = documento.dtt_ult_modificacion;
+                    resultaSeparadores[grupoSeparadorIndex].str_version = documento.str_version_doc;
+                    resultaSeparadores[grupoSeparadorIndex].int_id_doc_relacionado = documento.int_id_doc;
+                }                
             })
             setTablaContenido([...resultaSeparadores]);
         } else if (documentosSolicitudCruce.length === 0 && props.contenido) {
@@ -356,6 +366,7 @@ const UploadDocumentos = (props) => {
             archivosLimpieza.forEach(element => {
                 let indexArchivo;
                 indexArchivo = tablaContenido.findIndex(fila => fila.str_nombre_separador === element.name.split('.')[0])
+                if (Number(indexArchivo) === -1) return //Sino existe grupo documental, no se sube documento
                 tablaContenido[indexArchivo].str_ruta_arc = element.webkitRelativePath;
                 tablaContenido[indexArchivo].str_login_carga = props.datosUsuario[0].strUserOficial;
                 arregloArchivos.push({ id_separador: tablaContenido[indexArchivo].int_id_separador, archivo: element });
@@ -401,7 +412,7 @@ const UploadDocumentos = (props) => {
                 contadorPublicacion.current = 0;
                 controlTerminaSubirDocs.current = false;
 
-                props.seleccionToogleSolicitud(1);
+                props?.seleccionToogleSolicitud(1);
 
             } else if (controlArchivosSubidosErr.current?.length > 0 && controlTerminaSubirDocs.current === true) {
 
@@ -446,7 +457,7 @@ const UploadDocumentos = (props) => {
                 convertorArchivo(busquedaArchivo.archivo).then(
                     archivoABase64 => {
                         let versionSubirNuevo = archivoPub?.str_version ? (Number(archivoPub?.str_version) + 1) : 1;
-                        publicarAxentriaHandler(validarSeparador, versionSubirNuevo, archivoPub.str_ruta_ar, archivoPub.str_nombre_separador, archivoPub.str_separador, archivoABase64).then(data => {
+                        publicarAxentriaHandler(validarSeparador, archivoPub.int_id_separador, versionSubirNuevo, archivoPub.str_ruta_ar, archivoPub.str_nombre_separador, archivoPub.str_separador, archivoABase64).then(data => {
 
                             if (data?.str_res_codigo === "000") {
                                 let archivoOK = [{
@@ -482,12 +493,12 @@ const UploadDocumentos = (props) => {
         }
     }
 
-    const publicarAxentriaHandler = async (validarSeparador, version, rutaArchivo, nombreSeparador, grupoSeparador, archivoABase64) => {
+    const publicarAxentriaHandler = async (validarSeparador, int_id_separador, version, rutaArchivo, nombreSeparador, grupoSeparador, archivoABase64) => {
         let respuesta = null;
-        await fetchAddDocumentosAxentria(props.solicitud, version, validarSeparador, rutaArchivo, nombreSeparador, props.cedulaSocio, props.datosUsuario[0].strUserOficial,
+        await fetchAddDocumentosAxentria(props.solicitud, int_id_separador, version, validarSeparador, rutaArchivo, nombreSeparador, props.cedulaSocio, props.datosUsuario[0].strUserOficial,
             props.datosSocio?.str_nombres + ' ' + props.datosSocio?.str_apellido_paterno + ' ' + props.datosSocio?.str_apellido_materno,
             grupoSeparador, '', archivoABase64, props.token, (data) => {
-                console.log(data)
+                //console.log(data)
                 respuesta = data;
             }, dispatch);
         return respuesta;
@@ -502,92 +513,97 @@ const UploadDocumentos = (props) => {
 
     return (
         <div className="content_uploader">
-            <h4 className='strong mb-1'>Información General</h4>
-            <div className='border_content'>
-                <div className='m-2'>
-                    <div style={{ display: "flex" }}>
-                        <p className='normal'>SOCIO: </p>
-                        <p className="negrita">{props.datosSocio?.str_nombres} {props.datosSocio?.str_apellido_paterno} {props.datosSocio?.str_apellido_materno}</p>
-                    </div>
+            {presentarEncabezadoModulo &&
+                <Fragment key="Encabezado">
 
-                    <section className='elements_tres_column mt-3'>
+                    <h4 className='strong mb-1'>Información General</h4>
+                    <div className='border_content'>
+                        <div className='m-2'>
+                            <div style={{ display: "flex" }}>
+                                <p className='normal'>SOCIO: </p>
+                                <p className="negrita">{props.datosSocio?.str_nombres} {props.datosSocio?.str_apellido_paterno} {props.datosSocio?.str_apellido_materno}</p>
+                            </div>
 
-                        <div style={{ display: "flex" }}>
-                            <p className='normal'>TIPO DOCUMENTO: </p>
-                            <p className="negrita">CÉDULA</p>
+                            <section className='elements_tres_column mt-3'>
+
+                                <div style={{ display: "flex" }}>
+                                    <p className='normal'>TIPO DOCUMENTO: </p>
+                                    <p className="negrita">CÉDULA</p>
+                                </div>
+
+                                {/*<div style={{ display: "flex" }}>*/}
+                                {/*    <p className='normal'>FECHA ULT. MODIF.: </p>*/}
+                                {/*    <p className="negrita">-</p>*/}
+                                {/*</div>*/}
+
+                                <div style={{ display: "flex" }}>
+                                    <p className='normal'>SOLICITUD NRO: </p>
+                                    <p className="negrita"> {props?.solicitud}</p>
+                                </div>
+
+                                <div style={{ display: "flex" }}>
+                                    <p className='normal'>OFICIAL: </p>
+                                    <p className="negrita">{props.oficialSolicitud}</p>
+                                </div>
+
+                            </section>
+
+                            <section className='elements_tres_column mt-3'>
+                                <div style={{ display: "flex" }}>
+                                    <p className='normal'>DOCUMENTO: </p>
+                                    <p className="negrita">{props.cedulaSocio}</p>
+                                </div>
+
+                                <div style={{ display: "flex" }}>
+                                    <p className='normal'>ESTADO CALIFICACION: </p>
+                                    <p className="negrita">{props.calificacionRiesgo} </p>
+                                </div>
+
+                                {/*<div style={{ display: "flex" }}>*/}
+                                {/*    <p className='normal'>TRAMITE NRO: </p>*/}
+                                {/*    <p className="negrita"> </p>*/}
+                                {/*</div>*/}
+
+
+                                <div style={{ display: "flex" }}>
+                                    <p className='normal'>VALOR SOLICITADO: </p>
+                                    <p className="negrita">{`${numberFormatMoney(props.cupoSolicitado)}`} </p>
+                                </div>
+
+                            </section>
+
+                            <section className='elements_tres_column mt-3'>
+                                <div style={{ display: "flex" }}>
+                                    <p className='normal'>OFICINA: </p>
+                                    <p className="negrita">{props.oficinaSolicitud}</p>
+                                </div>
+
+                                <div style={{ display: "flex" }}>
+                                    <p className='normal'>ESTADO DE LA SOLICITUD: </p>
+                                    <p className="negrita">{props.estadoSolicitud}</p>
+                                </div>
+
+
+                                <div style={{ display: "flex" }}>
+                                    <p className='normal'>ENTE APROBADOR: </p>
+                                    <p className="negrita">COMITE GENERAL DE CRÉDITO</p>
+                                </div>
+
+                            </section>
+
+                            <section className='elements_tres_column mt-3'>
+
+                                {/*<div style={{ display: "flex" }}>*/}
+                                {/*    <p className='normal'>PRODUCTO </p>*/}
+                                {/*    <p className="negrita">TARJETA DE CRÉDITO </p>*/}
+                                {/*</div>*/}
+
+                            </section>
+
                         </div>
-
-                        {/*<div style={{ display: "flex" }}>*/}
-                        {/*    <p className='normal'>FECHA ULT. MODIF.: </p>*/}
-                        {/*    <p className="negrita">-</p>*/}
-                        {/*</div>*/}
-
-                        <div style={{ display: "flex" }}>
-                            <p className='normal'>SOLICITUD NRO: </p>
-                            <p className="negrita"> {props?.solicitud}</p>
-                        </div>
-
-                        <div style={{ display: "flex" }}>
-                            <p className='normal'>OFICIAL: </p>
-                            <p className="negrita">{props.oficialSolicitud}</p>
-                        </div>
-
-                    </section>
-
-                    <section className='elements_tres_column mt-3'>
-                        <div style={{ display: "flex" }}>
-                            <p className='normal'>DOCUMENTO: </p>
-                            <p className="negrita">{props.cedulaSocio}</p>
-                        </div>
-
-                        <div style={{ display: "flex" }}>
-                            <p className='normal'>ESTADO CALIFICACION: </p>
-                            <p className="negrita">{props.calificacionRiesgo} </p>
-                        </div>
-
-                        {/*<div style={{ display: "flex" }}>*/}
-                        {/*    <p className='normal'>TRAMITE NRO: </p>*/}
-                        {/*    <p className="negrita"> </p>*/}
-                        {/*</div>*/}
-
-
-                        <div style={{ display: "flex" }}>
-                            <p className='normal'>VALOR SOLICITADO: </p>
-                            <p className="negrita">{`${numberFormatMoney(props.cupoSolicitado)}`} </p>
-                        </div>
-
-                    </section>
-
-                    <section className='elements_tres_column mt-3'>
-                        <div style={{ display: "flex" }}>
-                            <p className='normal'>OFICINA: </p>
-                            <p className="negrita">{props.oficinaSolicitud}</p>
-                        </div>
-
-                        <div style={{ display: "flex" }}>
-                            <p className='normal'>ESTADO DE LA SOLICITUD: </p>
-                            <p className="negrita">{props.estadoSolicitud}</p>
-                        </div>
-
-
-                        <div style={{ display: "flex" }}>
-                            <p className='normal'>ENTE APROBADOR: </p>
-                            <p className="negrita">COMITE GENERAL DE CRÉDITO</p>
-                        </div>
-
-                    </section>
-
-                    <section className='elements_tres_column mt-3'>
-
-                        {/*<div style={{ display: "flex" }}>*/}
-                        {/*    <p className='normal'>PRODUCTO </p>*/}
-                        {/*    <p className="negrita">TARJETA DE CRÉDITO </p>*/}
-                        {/*</div>*/}
-
-                    </section>
-
-                </div>
-            </div>
+                    </div>            
+                </Fragment>
+            }
 
             <div className='f-row center_text_items' style={{ width: "100%" }}>
 
