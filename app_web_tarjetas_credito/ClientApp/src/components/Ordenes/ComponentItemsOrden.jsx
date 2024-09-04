@@ -5,6 +5,8 @@ import Chip from "../Common/UI/Chip";
 import { connect, useDispatch } from "react-redux";
 import { setSeguimientOrdenAction } from "../../redux/SeguimientoOrden/actions";
 import { dateFormat } from "../../js/utiles";
+import InfoRoundedIcon from '@mui/icons-material/InfoRounded';
+import PopoverComponent from "../Common/UI/PopoverComponent";
 
 const mapStateToProps = (state) => {
     return {
@@ -135,7 +137,8 @@ const ComponentOrdenItems = ({ ordenItem, checkStatusSeleccion, returnItemOrden,
 
     const [tarjetasCheckBox, setTarjetaCheckBox] = useState([]);
     const [isActivarOpciones, setIsActivarOpciones] = useState();
-    const [controlActualizoRedux, setControlActualizoRedux] = useState(false);
+    const [isActivarVerDetalle, setIsActivarVerDetalle] = useState();
+    //const [controlActualizoRedux, setControlActualizoRedux] = useState(false);
 
     useEffect(() => {
         seleccionMultiple();
@@ -184,19 +187,34 @@ const ComponentOrdenItems = ({ ordenItem, checkStatusSeleccion, returnItemOrden,
     useEffect(() => {
         //console.log("PROPS seguimientoOrden ", seguimientoRedux)
         if (seguimientoRedux !== undefined && Object.entries(seguimientoRedux).length !== 0) {
-            setIsActivarOpciones(seguimientoRedux.seguimientoAccionClick)
-            setControlActualizoRedux(true)
+            setIsActivarOpciones(seguimientoRedux.seguimientoAccionClick);
+            setIsActivarVerDetalle(seguimientoRedux.visualizarDetalleItem);
+            //setControlActualizoRedux(true);
         }
     }, [seguimientoRedux])
 
+    const anchorOrigin = {
+        vertical: 'bottom',
+        horizontal: 'left',
+    }
+    const transformOrigin = {
+        vertical: 'top',
+        horizontal: 'center',
+    }
+
+    const stylePopover = {
+        marginRight: "25px"
+    }
+
     return (        
         <Fragment>
-            {controlActualizoRedux &&
+            {/*{controlActualizoRedux &&*/}
             <table className='table-accordion2' style={{ overflowY: "hidden" }}>
                 <thead className='thead-accordion2'>
                     <tr>
                         <th className='paddingSpacing'>Identificación</th>
                         <th className='paddingSpacing'>Nombre del titular</th>
+                        <th className='paddingSpacing'>Número de tarjeta</th>
                         <th className='paddingSpacing'>Fecha proceso</th>
                         <th className='paddingSpacing'>Tipo de tarjeta</th>
                         <th className='paddingSpacing'>Tipo de producto</th>
@@ -216,23 +234,78 @@ const ComponentOrdenItems = ({ ordenItem, checkStatusSeleccion, returnItemOrden,
                                     {!isActivarOpciones && cliente.str_identificacion}
                                 </td>
                                 <td className='paddingSpacing'>{cliente.str_denominacion_socio}</td>
+                                <td className='paddingSpacing'>{cliente.str_num_tarjeta}</td>
                                 <td className='paddingSpacing'>{dateFormat("dd-MMM-yyyy HH:MIN:SS", cliente.dtt_fecha_entrega)}</td>
                                 <td className='paddingSpacing'>{cliente.str_tipo_propietario}</td>
                                 <td className='paddingSpacing'> <Chip type={cliente.str_tipo_tarjeta}>{cliente.str_tipo_tarjeta}</Chip></td>
                                 <td className='paddingSpacing' style={{ textAlign: "end", paddingRight: "29px" }}>
-                                    <Input key={cliente.str_identificacion}
-                                        disabled={opcionItemDisable}
-                                        type="checkbox"
-                                        checked={tarjetasCheckBox.includes(cliente.int_seg_id)}
-                                        setValueHandler={() => checkTarjeta(cliente.int_seg_id)}
-                                    ></Input>
+                                    <div className="" style={{ display: "inline-flex" }}>
+                                        {isActivarVerDetalle &&
+                                            <PopoverComponent
+                                                style={stylePopover }
+                                                textoPrincipal={"Ver detalle"}
+                                                icon={InfoRoundedIcon}
+                                                transformOrigin={transformOrigin}
+                                                anchorOrigin={anchorOrigin}
+                                            >
+                                                <div className='f-col' style={{ width: "22rem" }}>
+                                                    <h3 className='strong mt-4 ml-4'>Titular</h3>
+                                                    <div className={`${cliente.str_tipo_propietario.toLowerCase() !== "adicional" ? "mb-3":"mb-1"}`}>
+                                                        <div className='text-value'>
+                                                            <h3>Nombre:</h3>
+                                                            <h3 className='strong'>Danny</h3>
+                                                        </div>
+                                                        <div className='text-value'>
+                                                            <h3>Identificación:</h3>
+                                                            <h3 className='strong'>1150214370</h3>
+                                                        </div>
+                                                        <div className='text-value'>
+                                                            <h3>Celular:</h3>
+                                                            <h3 className='strong'>0948668346</h3>
+                                                        </div>
+                                                        <div className='text-value'>
+                                                            <h3>Correo:</h3>
+                                                            <h3 className='strong'>danny@gmail.com</h3>
+                                                        </div>
+                                                    </div>
+                                                    {cliente.str_tipo_propietario.toLowerCase() === "adicional" &&
+                                                        <div className='mt-3 mb-3'>
+                                                            <h3 className='strong ml-4'>Adicional</h3>
+                                                            <div className='text-value'>
+                                                                <h3>Nombre:</h3>
+                                                                <h3 className='strong'>Danny</h3>
+                                                            </div>
+                                                            <div className='text-value'>
+                                                                <h3>Identificación:</h3>
+                                                                <h3 className='strong'>1150214370</h3>
+                                                            </div>
+                                                            <div className='text-value'>
+                                                                <h3>Celular:</h3>
+                                                                <h3 className='strong'>0948668346</h3>
+                                                            </div>
+                                                            <div className='text-value'>
+                                                                <h3>Correo:</h3>
+                                                                <h3 className='strong'>danny@gmail.com</h3>
+                                                            </div>
+                                                        </div>
+                                                    }                                                    
+                                                </div>
+                                            </PopoverComponent>
+                                        }
+                                        <Input key={cliente.str_identificacion}
+                                            disabled={opcionItemDisable}
+                                            type="checkbox"
+                                            checked={tarjetasCheckBox.includes(cliente.int_seg_id)}
+                                            setValueHandler={() => checkTarjeta(cliente.int_seg_id)}
+                                        ></Input>                                        
+                                    </div>
                                 </td>
                             </tr>
                         )
                     })}
                 </tbody>
                 </table>
-            }
+            {/*}*/}
         </Fragment>
         
     )

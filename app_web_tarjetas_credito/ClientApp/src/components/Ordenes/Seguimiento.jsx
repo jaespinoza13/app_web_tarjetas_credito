@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { useEffect } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import Button from '../Common/UI/Button';
-import { IsNullOrWhiteSpace, dateFormat } from '../../js/utiles';
+import { IsNullOrWhiteSpace, base64ToBlob, dateFormat, pdf_Prueba, verificarPdf } from '../../js/utiles';
 import "../../css/Components/Seguimiento.css";
 import Input from '../Common/UI/Input';
 import { Fragment } from 'react';
@@ -20,6 +20,7 @@ import DriveFolderUploadRoundedIcon from '@mui/icons-material/DriveFolderUploadR
 import CreditScoreRoundedIcon from '@mui/icons-material/CreditScoreRounded';
 import UploadDocumentos from "../Common/UploaderDocuments";
 import ReplyAllRoundedIcon from '@mui/icons-material/ReplyAllRounded';
+import DescriptionRoundedIcon from '@mui/icons-material/DescriptionRounded';
 
 const mapStateToProps = (state) => {
     var bd = state.GetWebService.data;
@@ -58,9 +59,10 @@ function Seguimiento(props) {
     const [numtotalTarjetasCambioEstado, setNumtotalTarjetasCambioEstado] = useState([]);
     const [subMenuOpcionesPerfil, setSubMenuOpcionesPerfil] = useState([]);
     const [funcionalidades, setFuncionalidades] = useState([]);
+    const [selectCambioEstadoTarjeta, setSelectCambioEstadoTarjeta] = useState("-1");
 
     const headersTarjetas =
-        [{ key: 0, nombre: "Identificación" }, { key: 1, nombre: "Nombre del titular" }, { key: 2, nombre: "Fecha proceso" }, { key: 3, nombre: "Tipo de tarjeta" }, { key: 4, nombre: "Tipo de producto" }, { key: 5, nombre: "Acciones" }]
+        [{ key: 0, nombre: "Identificación" }, { key: 1, nombre: "Nombre del titular" }, { key: 2, nombre: "Número de tarjeta" }, { key: 3, nombre: "Fecha proceso" }, { key: 4, nombre: "Tipo de tarjeta" }, { key: 5, nombre: "Tipo de producto" }, { key: 6, nombre: "Acciones" }]
 
 
     //Info sesión
@@ -92,6 +94,7 @@ function Seguimiento(props) {
     const [isOpenModalCambioEstadoSiguiente, setIsOpenModalCambioEstadoSiguiente] = useState(false);
     const [textoCambioEstadoOrden, setTextoCambioEstadoOrden] = useState("");
     const [isModalVisibleOk, setIsModalVisibleOk] = useState(false);
+    const [isModalVisibleContrato, setIsModalVisibleContrato] = useState(false);
     const [textoTitulo, setTextoTitulo] = useState("");
 
     const [isOpenModalAccionTarjeta, setIsOpenModalAccionTarjeta] = useState(false);
@@ -113,20 +116,20 @@ function Seguimiento(props) {
 
     useEffect(() => {
         if (selectFiltrarOrdenes === "EST_SEG_PEN_ENV_PER") {
-            setSeguimientoOrdenRedux(false);
+            setSeguimientoOrdenRedux(false, false);
             setTextoBotonAccion("Enviar");
         }
         else if (selectFiltrarOrdenes === "EST_SEG_ENV_PER") {
-            setSeguimientoOrdenRedux(true);
+            setSeguimientoOrdenRedux(true, true);
             setTextoBotonAccion("Recibir");
         }
         else if (selectFiltrarOrdenes === "EST_SEG_VER_OPR") {
-            setSeguimientoOrdenRedux(false);
+            setSeguimientoOrdenRedux(false, false);
             setTextoBotonAccion("Distribuir");
         } else if (selectFiltrarOrdenes === "EST_SEG_ENV_AGN") {
-            setSeguimientoOrdenRedux(true);
+            setSeguimientoOrdenRedux(false, false);
         } else {
-            setSeguimientoOrdenRedux(false);
+            setSeguimientoOrdenRedux(false, false);
         }
         //setTotalTarjetasAccionDiccionario([])
     }, [selectFiltrarOrdenes])
@@ -192,21 +195,23 @@ function Seguimiento(props) {
                 }
             });
             if (paramOpciones.length > 0) {
-                paramOpciones?.forEach(paramOpc => {
+                paramOpciones?.forEach((paramOpc, index) => {
                     let separador = paramOpc?.prm_valor_fin.split('|');
                     let estadoParametroSeguimiento = estadosSeguimientoTC?.find(paramEstadoSeg => paramEstadoSeg?.prm_nemonico === separador[0]?.toString());
-                    let estadoParamSeguimSigEstado = estadosSeguimientoTC?.find(paramEstadoSeg => paramEstadoSeg?.prm_nemonico === separador[2]?.toString());
+                    let estadoSiguientSeguim = estadosSeguimientoTC?.find(paramEstadoSeg => paramEstadoSeg?.prm_nemonico === separador[2]?.toString());
+                    let ordenPresentacionToogle = Number(separador[3])
                     let opcion = {
                         key: separador[0], //Se coloca el nemonico
                         textPrincipal: separador[1], //Nombre del campo a presentar
                         image: "",
                         textSecundario: "",
                         prm_id: estadoParametroSeguimiento?.prm_id,
-                        prm_id_sig_estado: estadoParamSeguimSigEstado?.prm_id,
+                        prm_id_sig_estado: estadoSiguientSeguim?.prm_id,
+                        ordenPresentacion: ordenPresentacionToogle ? ordenPresentacionToogle : index+1
                     }
                     toogleOpciones = [...toogleOpciones, opcion]
                 });
-                toogleOpciones.sort((a, b) => a.prm_id - b.prm_id);
+                toogleOpciones.sort((a, b) => a.ordenPresentacion - b.ordenPresentacion);
                 setSubMenuOpcionesPerfil(toogleOpciones);
 
                 //SI SOLO SE TIENE UNA ACCION POR ROL, SE REALIZA LA CONSULTA DIRECTAMENTE PARA PRESENTARLA EN COMPONENTE, ejemplo para ASISTENTE DE PLATAFORMA DE SERVICIOS
@@ -380,24 +385,30 @@ function Seguimiento(props) {
 
     const devolverTCHandler = async (tituloMensajeAviso) => {
         closeModalDevolverTC();
-        if (seguimientoIdAccion !== 0) {
-            let tarjetasArray = [seguimientoIdAccion];
-            tarjetasArray.push();
+        if (seguimientoIdAccion === 0) return
+        let tarjetasArray = [seguimientoIdAccion];
+        tarjetasArray.push();
+        let estadoSeguimientoAnterior = estadosSeguimientoTC.find(estadoSegui => estadoSegui.prm_nemonico === "EST_SEG_POR_ENT_SOC")
+        //console.log("estadoSeguimientoAnterior ", estadoSeguimientoAnterior)
+        actualizarOrdenes(estadoSeguimientoAnterior?.prm_id, tarjetasArray, (callback) => {
+            setTextoTitulo(tituloMensajeAviso);
+            setIsModalVisibleOk(true);
+            setSeguimientoIdAccion(0);
+            let estadoFiltrar = subMenuOpcionesPerfil.find(estadoSeg => estadoSeg.key === 'EST_SEG_POR_ACT')
+            obtenerLstSeguimientoTC(estadoFiltrar.prm_id);
+        });
+    }
 
-            let estadoSeguimientoAnterior = estadosSeguimientoTC.find(estadoSegui => estadoSegui.prm_nemonico === "EST_SEG_POR_ENT_SOC")//"EST_SEG_ENV_AGN")
-            console.log("estadoSeguimientoAnterior ", estadoSeguimientoAnterior)
-            //TODO: buscar el ID de la anterio bandeja
-            
-            actualizarOrdenes(estadoSeguimientoAnterior?.int_id_parametro, tarjetasArray, (callback) => {
-                setTextoTitulo(tituloMensajeAviso);
-                setIsModalVisibleOk(true);
-                setSeguimientoIdAccion(0);
-                let estadoFiltrar = subMenuOpcionesPerfil.find(estadoSeg => estadoSeg.key === 'EST_SEG_POR_ACT')
-                obtenerLstSeguimientoTC(estadoFiltrar.prm_id); 
-            });
-        } else {
-            return
-        }
+    const rechazarOperacionesHandler = async () => {
+        closeModalAccionTarjeta();
+        let tarjetasArray = [props.seguimientoOrden.seguimientoCedula]; 
+        tarjetasArray.push();
+        let estadoSeguimientoAnterior = estadosSeguimientoTC.find(estadoSegui => estadoSegui.prm_nemonico === selectCambioEstadoTarjeta)
+        actualizarOrdenes(estadoSeguimientoAnterior?.prm_id, tarjetasArray, (callback) => {
+            setTextoTitulo("La tarjeta fue enviada a las rechazadas");
+            setIsModalVisibleOk(true);
+            filtrarTarjetas(selectFiltrarOrdenes);//Realizar nueva consulta
+        });
     }
 
     const actualizarOrdenes = async (nuevoEstado, listaItems, callbackReturn) => {
@@ -428,9 +439,10 @@ function Seguimiento(props) {
 
     }
 
-    const setSeguimientoOrdenRedux = (activarAccionClick) => {
+    const setSeguimientoOrdenRedux = (activarAccionClick, visualizarDetalle) => {
         dispatch(setSeguimientOrdenAction({
             seguimientoAccionClick: activarAccionClick,
+            visualizarDetalleItem: visualizarDetalle
         }))
     }
 
@@ -472,6 +484,10 @@ function Seguimiento(props) {
         setIsModalVisibleOk(false);
     }
 
+    const cerrarModalVisibleContrato = () => {
+        setIsModalVisibleContrato(false);
+    }
+
 
     const modalCambioEstadoOrdenesHandler = () => {
         if (selectFiltrarOrdenes === "EST_SEG_PEN_ENV_PER") {
@@ -493,23 +509,47 @@ function Seguimiento(props) {
     }
 
 
-    const accionSeguimientoRealizar = () => {
-        console.log("FALTA IMPLEMENTAR")
 
-        closeModalAccionTarjeta();
+    const descargarContratoHandler = (tipoTarjeta) => {
+        //visualizarPdf();
+        if (tipoTarjeta.toLowerCase() === "principal") {
+            const pdfUrl = "Imagenes/CONTRATO.pdf";
+            
+            const link = document.createElement("a");
+            link.href = pdfUrl;
+            link.download = "document.pdf"; 
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            /* PARA VISUALIZAR SOLAMENTE EL PDF
+            let pdfPrueba = pdf_Prueba();
+             const blob = base64ToBlob(pdfPrueba, 'application/pdf');
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank');*/
+
+
+        } else if (tipoTarjeta.toLowerCase() === "adicional") {
+            setTextoTitulo("Importante: La generación del contrato no es necesaria para tarjetas adicionales.");
+            setIsModalVisibleOk(true);
+        }
+
+       
     }
 
-    const descargarContratoHandler = () => {
 
-        const pdfUrl = "Imagenes/CONTRATO.pdf";
-        const link = document.createElement("a");
-        link.href = pdfUrl;
-        link.download = "document.pdf"; // specify the filename
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+    const visualizarPdf = () => {
+        let pdfPrueba = pdf_Prueba();
+        let pdfId = document.getElementById("iFrame");
+        if (verificarPdf(pdfPrueba)) {
+            const blob = base64ToBlob(pdfPrueba, 'application/pdf');
+            const url = URL.createObjectURL(blob);
+            //console.log("url ", url)
+            pdfId.innerHTML = `<iframe  title='Reportes'  src='${url}' allowfullscreen></iframe>`;
+            //isModalVisibleOk
+            setIsModalVisibleContrato(true)
+        }
     }
-
 
     const openModalGestorDocumentalHandler = async () => {
         if (props.token) {
@@ -617,7 +657,7 @@ function Seguimiento(props) {
                 }
                 {/*FIN BANDEJAS PARA ASISTENTE DE OPERACIONES*/}
 
-                {/*BANDEJAS PARA ASISTENTE DE AGENCIA*/}
+                {/*BANDEJAS PARA ASISTENTE DE AGENCIA/ SUPERVISOR DE PLATAFORMA DE SERVICIOS*/}
                 {tienePermisoListarPendRecibirAgenciaTC && selectFiltrarOrdenes === "EST_SEG_ENV_AGN" && lstSeguimientoTC.length > 0 &&
                     <div className="contentTableOrden mt-3 mb-3">
                         {lstSeguimientoTC.length > 0 &&
@@ -639,19 +679,27 @@ function Seguimiento(props) {
                         })}
                     </div>
                 }
+                {/*ASISTENTE DE AGENCIA/ SUPERVISOR DE PLATAFORMA DE SERVICIOS*/}
                 {tienePermisoListarPendActivarTC && selectFiltrarOrdenes === "EST_SEG_POR_ACT" && lstSeguimientoTC.length > 0 &&
                     <div className="contentTableOrden mt-3 mb-3">
+                        {lstSeguimientoTC.length > 0 &&
+                            <h3 style={{ fontSize: "1.3rem" }} className="strong mb-1">Total de tarjetas: {totalTarjetasListado}</h3>
+                        }
                         <Table headers={headersTarjetas}>
                             {lstSeguimientoTC[0]?.lst_ord_ofi.map((seguim, index) => {
                                 return (
                                     <tr key={seguim.int_seg_id}>
                                         <td>{seguim.str_identificacion}</td>
                                         <td>{seguim.str_denominacion_socio}</td>
+                                        <td>{seguim.str_num_tarjeta}</td>
                                         <td>{seguim.dtt_fecha_entrega}</td>
                                         <td>{seguim.str_tipo_propietario}</td>
                                         <td><Chip type={seguim.str_tipo_tarjeta}>{seguim.str_tipo_tarjeta}</Chip></td>
                                         <td>
+
                                             <div className="f-row" style={{ gap: "6px", justifyContent: "center" }}>
+
+                                                {selectFiltrarOrdenes === "EST_SEG_POR_ACT" && 
                                                 <div onClick={() => {
                                                     setSeguimientoIdAccion(Number(seguim.int_seg_id));
                                                     setIsOpenModalDevolverTC(true);
@@ -664,10 +712,10 @@ function Seguimiento(props) {
                                                         }}>
                                                     </ReplyAllRoundedIcon>
                                                 </div>
+                                                }
 
-
-                                                <button className="btn_mg_icons noborder mr-1" title="Imprimir contrato" onClick={descargarContratoHandler}>
-                                                    <img className="img-icons-acciones" src="Imagenes/printIcon.svg" alt="Imprimir contrato"></img>
+                                                <button className="btn_mg_icons noborder mr-1" title="Visualizar contrato" onClick={descargarContratoHandler}>
+                                                    <img className="img-icons-acciones" src="Imagenes/printIcon.svg" alt="Visualizar contrato"></img>
                                                 </button>
 
                                                 <div onClick={openModalGestorDocumentalHandler} title="Gestor documental" className="btn_mg_icons noborder mr-1">
@@ -711,21 +759,38 @@ function Seguimiento(props) {
                 {/*BANDEJA PARA ASISTENTE  DE PLATAFORMA DE SERVICIOS*/}
                 {tienePermisoListarPendEntregarTC && lstSeguimientoTC.length > 0 &&
                     <div className="contentTableOrden mt-3 mb-3">
+                        {lstSeguimientoTC.length > 0 &&
+                            <h3 style={{ fontSize: "1.3rem" }} className="strong mb-1">Total de tarjetas: {totalTarjetasListado}</h3>
+                        }
                         <Table headers={headersTarjetas}>
                             {lstSeguimientoTC[0]?.lst_ord_ofi.map((seguim, index) => {
                                 return (
                                     <tr key={seguim.int_seg_id}>
                                         <td>{seguim.str_identificacion}</td>
                                         <td>{seguim.str_denominacion_socio}</td>
+                                        <td>{seguim.str_num_tarjeta}</td>
                                         <td>{dateFormat("dd-MMM-yyyy HH:MIN:SS", seguim.dtt_fecha_entrega)}</td>
                                         <td>{seguim.str_tipo_propietario}</td>
                                         <td><Chip type={seguim.str_tipo_tarjeta}>{seguim.str_tipo_tarjeta}</Chip></td>
                                         <td>
                                             <div className="f-row" style={{ gap: "6px", justifyContent: "center" }}>
 
-                                                <button className="btn_mg_icons noborder mr-1" title="Imprimir contrato" onClick={descargarContratoHandler}>
-                                                    <img className="img-icons-acciones" src="Imagenes/printIcon.svg" alt="Imprimir contrato"></img>
-                                                </button>
+                                                {/*<button className="btn_mg_icons noborder mr-1" title="Imprimir contrato" onClick={descargarContratoHandler}>*/}
+                                                {/*    <img className="img-icons-acciones" src="Imagenes/printIcon.svg" alt="Imprimir contrato"></img>*/}
+                                                {/*</button>*/}
+
+                                                <div onClick={() => descargarContratoHandler(seguim.str_tipo_propietario)} title="Generar contrato" className="btn_mg_icons noborder mr-1">
+                                                    <DescriptionRoundedIcon
+                                                        sx={{
+                                                            fontSize: 35,
+                                                            marginTop: 0.5,
+                                                            padding: 0,
+                                                        }}
+                                                    >
+                                                    </DescriptionRoundedIcon>
+                                                </div>
+
+
 
                                                 <div onClick={openModalGestorDocumentalHandler} title="Gestor documental" className="btn_mg_icons noborder mr-1">
                                                     <DriveFolderUploadRoundedIcon
@@ -854,8 +919,8 @@ function Seguimiento(props) {
                 onCloseClick={closeModalDevolverTC}
                 type="sm"
             >
-                <div className="f-row mb-4">
-                    <h3 className="">¿Esta seguro de devolver la tarjeta de crédito al (Asistente de Plataforma)?</h3>
+                <div className="f-row mt-4">
+                    <h3 className="strong">¿Desea devolver la tarjeta de crédito al Asistente de Plataforma?</h3>
                 </div>
                 <div className="pbmg4 ptmg4 center_text_items">
                     <button className="btn_mg btn_mg__primary mt-2" disabled={false} type="submit" onClick={()=>devolverTCHandler("Se ha devuelto la tarjeta de crédito con éxito.")}>Sí</button>
@@ -877,25 +942,38 @@ function Seguimiento(props) {
                 </div>
             </Modal>
 
+            <Modal
+                modalIsVisible={isModalVisibleContrato}
+                titulo={``}
+                onNextClick={cerrarModalVisibleContrato}
+                onCloseClick={cerrarModalVisibleContrato}
+                isBtnDisabled={false}
+                type="lg2"
+                mainText="Continuar"
+            >
+                <div className="containerViewPdf">
+                    <div id="iFrame" className="container_pdf"></div>
+                </div>
+            </Modal>
+
             {/*TODO CAMBIAR */}
             <Modal
                 modalIsVisible={isOpenModalAccionTarjeta}
                 type="md"
                 onCloseClick={closeModalAccionTarjeta}
-                onNextClick={accionSeguimientoRealizar}
+                onNextClick={rechazarOperacionesHandler}
                 mainText="Continuar"
                 titulo="Acción a realizar">
 
                 <div className="f-row w-100" style={{ marginTop: "2rem", marginBottom: "2rem" }}>
                     {tienePermisoRechazarOperacionesTC &&
                         <>
-
-                        <div className="f-row">
-                            <h3 className="strong mr-2 mt-1">Acciones que puede realizar: </h3>
-                        </div>
-                            <select style={{ width: "55%" }}>
-                                <option value="-1">SELECCIONE UNA ACCION</option>
-                                <option value="RECHAZADA_OPERACIONES">RECHAZAR</option>
+                            <div className="f-row">
+                                <h3 className="strong mr-2 mt-1">Acciones que puede realizar: </h3>
+                            </div>
+                            <select style={{ width: "55%" }} onChange={(e) => { setSelectCambioEstadoTarjeta(e.target.value)}} value={selectCambioEstadoTarjeta}>
+                                <option value="-1" disabled={true}>SELECCIONE UNA ACCION</option>
+                            <option value="EST_SEG_REC_OPR">RECHAZAR</option>
                             </select>
                         </>
 

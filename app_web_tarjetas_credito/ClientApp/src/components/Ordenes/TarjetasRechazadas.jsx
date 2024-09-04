@@ -55,7 +55,7 @@ function TarjetasRechazadas(props) {
     const [funcionalidades, setFuncionalidades] = useState([]);
 
     const headersTarjetas =
-        [{ key: 0, nombre: "Identificación" }, { key: 1, nombre: "Nombre del titular" }, { key: 2, nombre: "Fecha proceso" }, { key: 3, nombre: "Tipo de tarjeta" }, { key: 4, nombre: "Tipo de producto" }, { key: 5, nombre: "Oficina" }, { key: 6, nombre: "Acciones" }]
+        [{ key: 0, nombre: "Identificación" }, { key: 1, nombre: "Nombre del titular" }, { key: 2, nombre: "Número de tarjeta" }, { key: 3, nombre: "Fecha proceso" }, { key: 4, nombre: "Tipo de tarjeta" }, { key: 5, nombre: "Tipo de producto" }, { key: 6, nombre: "Oficina" }, { key: 7, nombre: "Acciones" }]
 
 
     //Info sesión
@@ -232,8 +232,8 @@ function TarjetasRechazadas(props) {
     const obtenerLstSeguimientoTC = async (idSeguimiento) => {
         await fetchGetOrdenes(Number(idSeguimiento), props.token, (data) => {
             //console.log("lst_ordenes_tc_ ", data.lst_ordenes_tc);
-            //const conteoTarjetas = data.lst_ordenes_tc.reduce((acumulador, tarj) => acumulador + tarj.int_total_tarjetas, 0);
-            //setTotalTarjetasListado(conteoTarjetas);
+            const conteoTarjetas = data.lst_ordenes_tc.reduce((acumulador, tarj) => acumulador + tarj.int_total_tarjetas, 0);
+            setTotalTarjetasListado(conteoTarjetas);
             let dataResulta = [];
             data.lst_ordenes_tc.forEach(orden => dataResulta.push(orden.lst_ord_ofi));
             //console.log("dataResulta ", dataResulta.flat())
@@ -323,12 +323,16 @@ function TarjetasRechazadas(props) {
                 </div>
 
                 <div className="contentTableOrden mt-3 mb-3">
+                    {lstSeguimientoTC.length > 0 &&
+                        <h3 style={{ fontSize: "1.3rem" }} className="strong mb-1">Total de tarjetas: {totalTarjetasListado}</h3>
+                    }
                     <Table headers={headersTarjetas}>
                         {lstSeguimientoTC.map((seguim, index) => {
                             return (
                                 <tr key={seguim.int_seg_id}>
                                     <td>{seguim.str_identificacion}</td>
                                     <td>{seguim.str_denominacion_socio}</td>
+                                    <td>{seguim.str_num_tarjeta}</td>
                                     <td>{seguim.dtt_fecha_entrega}</td>
                                     <td>{seguim.str_tipo_propietario}</td>
                                     <td><Chip type={seguim.str_tipo_tarjeta}>{seguim.str_tipo_tarjeta}</Chip></td>
