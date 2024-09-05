@@ -155,7 +155,7 @@ function Sidebar(props) {
 
 
 
-                    {perfilUsuario !== "" && (perfilUsuario === "ASISTENTE DE OPERACIONES" || perfilUsuario === "ASISTENTE DE AGENCIA" || perfilUsuario === "ASISTENTE DE PLATAFORMA DE SERVICIOS"
+                    {perfilUsuario !== "" && (perfilUsuario === "ASISTENTE DE OPERACIONES" || perfilUsuario === "ASISTENTE DE AGENCIA" || perfilUsuario === "ASISTENTE DE PLATAFORMA DE SERVICIOS" || perfilUsuario === "ASISTENTE DE PLATAFORMA DE SERVICIOS Y CAPTACIONES" 
                         || perfilUsuario ==="SUPERVISOR DE PLATAFORMA DE SERVICIOS") &&
                         <div className="sidebar_menu__item">
                             <NavItem>

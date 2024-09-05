@@ -58,7 +58,7 @@ function Home(props) {
         if (datosUsuario.length > 0 && datosUsuario[0]?.strCargo === "ASISTENTE DE OPERACIONES") {
             navigate.push("/reprocesar")
         }
-        else if (datosUsuario.length > 0 && (datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" || datosUsuario[0]?.strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS" || datosUsuario[0]?.strCargo === "SUPERVISOR DE PLATAFORMA DE SERVICIOS")) {
+        else if (datosUsuario.length > 0 && (datosUsuario[0]?.strCargo === "ASISTENTE DE AGENCIA" || datosUsuario[0]?.strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS" || datosUsuario[0]?.strCargo === "SUPERVISOR DE PLATAFORMA DE SERVICIOS" || datosUsuario[0]?.strCargo === "ASISTENTE DE PLATAFORMA DE SERVICIOS Y CAPTACIONES")) {
             navigate.push("/seguimiento")
         }
          else if (datosUsuario.length > 0) {
